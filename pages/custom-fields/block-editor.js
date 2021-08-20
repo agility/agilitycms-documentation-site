@@ -6,18 +6,25 @@ const BlockEditor = dynamic(
   { ssr: false }
 )
 
-export default function Home() {
-  return (
-    <div>
-      <Head>
-        <title>Block Editor for Agility CMS (next js)</title>
-        <meta name="description" content="Block Editor for Agility CMS" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+export default function BlockEditorPage() {
+    const noScrollBars = `html, body { overflow: hidden }`;
+    return (
+        <div>
+        <Head>
+            <title>Block Editor for Agility CMS (next js)</title>
+            <meta name="description" content="Block Editor for Agility CMS" />
+            <link rel="icon" href="/favicon.ico" />
+            <style>
+                {noScrollBars}
+            </style>
+        </Head>
 
-      <main>
-          <BlockEditor />
-      </main>
-    </div>
-  )
+        <main>
+            <BlockEditor />
+        </main>
+        </div>
+    )
 }
+
+
+  

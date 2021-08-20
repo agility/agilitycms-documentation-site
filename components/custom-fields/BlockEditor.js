@@ -16,7 +16,7 @@ import InlineCode from '@editorjs/inline-code'
 import NestedList from '@editorjs/nested-list'
 import DragDrop from 'editorjs-drag-drop'
 //import Undo from 'editorjs-undo' //this has bugs...
-//import LinkAutocomplete from '@editorjs/link-autocomplete' //enable this to support link autocompletes (requires env-vars)
+import LinkAutocomplete from '@editorjs/link-autocomplete' //enable this to support link autocompletes (requires env-vars)
 
 const BlockEditor = () => {
 
@@ -108,13 +108,13 @@ const setupEditor = (auth, height, value, setValue, setHeight, containerRef, fie
             inlineCode: InlineCode,
             embed: Embed,
             //enable this if you have env-vars set
-            // link: {
-            //     class: LinkAutocomplete,
-            //     config: {
-            //         endpoint: '/api/link/search',
-            //         queryParam: 'q'
-            //     }
-            // }
+            link: {
+                class: LinkAutocomplete,
+                config: {
+                    endpoint: '/api/link/search',
+                    queryParam: 'q'
+                }
+            }
         },
         onChange: () => {
 
@@ -138,12 +138,12 @@ const setupEditor = (auth, height, value, setValue, setHeight, containerRef, fie
 
             //wait 200ms for initial height-sync
             window.setTimeout(function() {
-                heightChanged(containerRef.current.offsetHeight, height, setHeight)
+                heightChanged(document.body.clientHeight, height, setHeight)
             }, 200)
 
             //sync height every second
             window.setInterval(function () {
-                heightChanged(containerRef.current.offsetHeight, height, setHeight)
+                heightChanged(document.body.clientHeight, height, setHeight)
             }, 500)
         }
 
