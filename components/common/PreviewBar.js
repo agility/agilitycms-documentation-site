@@ -55,6 +55,7 @@ const PreviewBar = ({ isPreview, isDevelopmentMode }) => {
             <a
               href="https://manager.agilitycms.com"
               target="_blank"
+              rel="noreferrer"
               title="Agility CMS"
             >
               <img
