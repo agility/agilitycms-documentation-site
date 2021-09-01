@@ -61,7 +61,7 @@ function classNames(...classes) {
 
 export default function Example() {
   return (
-    <div className="flex flex-col w-64 border-r border-gray-200 pt-4 pb-4 z-50">
+    <div className="flex flex-col w-64 border-r border-gray-200 pt-4 pb-4 z-50 fixed">
       <div className="flex-grow flex flex-col">
         <nav className="flex-1 px-2 space-y-1 bg-white" aria-label="Sidebar">
           {navigation.map((item) =>
