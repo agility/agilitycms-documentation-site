@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import Error from "next/error";
 import SEO from "./SEO";
 import LoadingWidget from "./LoadingWidget";
+import Header from '../common/Header'
 
 // set up handle preview
 const isPreview = handlePreview();
@@ -43,8 +44,10 @@ function Layout(props) {
         {!isPreview && (
           <div id="site">
             {/* preview bar here */}
-            {/* header here */}
-            <div className="flex flex-col min-h-screen">
+            <div className="sticky top-0 z-50">
+              <Header />
+            </div>
+            <div className="flex flex-col">
               <main className="flex-grow">
                 <AgilityPageTemplate {...props} />
               </main>

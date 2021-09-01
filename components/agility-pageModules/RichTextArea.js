@@ -13,7 +13,6 @@ const RichTextArea = ({ module }) => {
           dangerouslySetInnerHTML={renderHTML(fields.textblob)}
         />
       </div>
-      <img src="/assets/cat.jpeg" alt="testing lint" />
     </div>
   );
 };
