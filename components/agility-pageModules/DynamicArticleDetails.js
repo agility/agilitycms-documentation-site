@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { renderHTML } from "@agility/nextjs";
 import ArticleNav from '../common/ArticleNav'
+import Blocks from '../common/blocks/index'
 
 const DynamicArticleDetails = ({ module, dynamicPageItem }) => {
   // get module fields
@@ -11,10 +11,12 @@ const DynamicArticleDetails = ({ module, dynamicPageItem }) => {
      
       <div className="relative px-8">
         <div className="max-w-2xl mx-auto my-12 md:mt-18 lg:mt-20">
-          <div
-            className="prose max-w-full mx-auto"
-            dangerouslySetInnerHTML={renderHTML(dynamicPageItem.fields.title)}
-          />
+            <h1>
+                <span className="mt-2 block text-3xl text-center leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                    {dynamicPageItem.fields.title}
+                </span>
+            </h1>
+            <Blocks blocks={JSON.parse(dynamicPageItem.fields.content).blocks}/>
         </div>
         
       </div>

@@ -17,3 +17,4 @@ export const getPageTemplate = (templateName) => {
   if (!obj) return null;
   return obj?.template;
 };
+
