@@ -46,7 +46,7 @@ function Layout(props) {
             {/* preview bar here */}
             <Header />
             <AgilityPageTemplate {...props} />
-            {/* footer here */}
+
           </div>
         )}
       </div>

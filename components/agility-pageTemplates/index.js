@@ -1,9 +1,13 @@
 import MainTemplate from "./MainTemplate";
+import WithSidebarNavTemplate from "./WithSidebarNavTemplate";
 
 // All of the Agility Page Template Components that are in use in this site need to be imported into this index file.
 // Place Page Templates in allTemplates array below, passing in a name and the component.
 
-const allTemplates = [{ name: "MainTemplate", template: MainTemplate }];
+const allTemplates = [
+  { name: "MainTemplate", template: MainTemplate },
+  { name: "WithSidebarNavTemplate", template: WithSidebarNavTemplate },
+];
 
 export const getPageTemplate = (templateName) => {
   if (!templateName) return null;

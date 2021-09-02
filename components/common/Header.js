@@ -17,7 +17,8 @@
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { SearchIcon } from '@heroicons/react/solid'
-import { BellIcon, MenuIcon, XIcon, ChevronLeftIcon } from '@heroicons/react/outline'
+import { BellIcon, MenuIcon, XIcon, ChevronLeftIcon, SupportIcon } from '@heroicons/react/outline'
+import ButtonDropdown from '../common/ButtonDropdown'
 
 const user = {
   name: 'Tom Cook',
@@ -26,10 +27,11 @@ const user = {
     'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
 const navigation = [
-  { name: 'Dashboard', href: '#', current: true },
-  { name: 'Team', href: '#', current: false },
-  { name: 'Projects', href: '#', current: false },
-  { name: 'Calendar', href: '#', current: false },
+  { name: 'Home', href: '#', current: false },
+  { name: 'Overview', href: '#', current: true },
+  { name: 'Editors', href: '#', current: false },
+  { name: 'Developers', href: '#', current: false },
+  { name: 'Owners & Admins', href: '#', current: false }
 ]
 const userNavigation = [
   { name: 'Your Profile', href: '#' },
@@ -89,29 +91,40 @@ export default function Example() {
               </div>
 
               <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
-                <a href="#" className="flex items-center justify-center px-4 py-4 text-gray-500">
+                {/* <a href="#" className="flex items-center justify-center px-4 py-4 text-gray-500">
                         <ChevronLeftIcon className="w-3 mt-1" /> Back to main site
-                    </a>
-                    <a href="#" className="flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">
-                            Login
-                    </a>
+                </a> */}
+                <a href="#" className="flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                        Login
+                </a>
               </div>
             </div>
-            <nav className="hidden lg:py-2 lg:flex lg:space-x-8" aria-label="Global">
-              {navigation.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className={classNames(
-                    item.current ? 'bg-gray-100 text-gray-900' : 'text-gray-900 hover:bg-gray-50 hover:text-gray-900',
-                    'rounded-md py-2 px-3 inline-flex items-center text-sm font-medium'
-                  )}
-                  aria-current={item.current ? 'page' : undefined}
-                >
-                  {item.name}
-                </a>
-              ))}
+            <nav className="hidden lg:py-2 lg:flex " aria-label="Global">
+                <div className="lg:space-x-8">
+                    {navigation.map((item) => (
+                        <a
+                        key={item.name}
+                        href={item.href}
+                        className={classNames(
+                            item.current ? 'bg-gray-100 text-gray-900' : 'text-gray-900 hover:bg-gray-50 hover:text-gray-900',
+                            'rounded-md py-2 px-3 inline-flex items-center text-sm font-medium'
+                        )}
+                        aria-current={item.current ? 'page' : undefined}
+                        >
+                        {item.name}
+                        </a>
+                    ))}
+                </div>
+              
+                <div className="ml-auto">
+                    <ButtonDropdown />
+                    <a href="#" className="ml-6 text-gray-500">
+                        Get Support <SupportIcon className="w-5 inline" />
+                    </a>
+                </div>
             </nav>
+
+            
           </div>
 
           <Disclosure.Panel as="nav" className="lg:hidden" aria-label="Global">

@@ -2,55 +2,24 @@
 import { Disclosure } from '@headlessui/react'
 
 const navigation = [
-  { name: 'Dashboard', href: '#', current: true },
+  { name: 'Overview', href: '#', current: false },
   {
-    name: 'Team',
-    current: false,
+    name: 'Introduction',
+    current: true,
     children: [
-      { name: 'Overview', href: '#' },
-      { name: 'Members', href: '#' },
-      { name: 'Calendar', href: '#' },
-      { name: 'Settings', href: '#' },
+      { name: 'Intro to Agility CMS', href: '#', current: true },
+      { name: 'Getting Started', href: '#' },
+      { name: 'Concepts', href: '#' },
     ],
   },
   {
-    name: 'Projects',
+    name: 'Solutions',
     current: false,
     children: [
-      { name: 'Overview', href: '#' },
-      { name: 'Members', href: '#' },
-      { name: 'Calendar', href: '#' },
-      { name: 'Settings', href: '#' },
-    ],
-  },
-  {
-    name: 'Calendar',
-    current: false,
-    children: [
-      { name: 'Overview', href: '#' },
-      { name: 'Members', href: '#' },
-      { name: 'Calendar', href: '#' },
-      { name: 'Settings', href: '#' },
-    ],
-  },
-  {
-    name: 'Documents',
-    current: false,
-    children: [
-      { name: 'Overview', href: '#' },
-      { name: 'Members', href: '#' },
-      { name: 'Calendar', href: '#' },
-      { name: 'Settings', href: '#' },
-    ],
-  },
-  {
-    name: 'Reports',
-    current: false,
-    children: [
-      { name: 'Overview', href: '#' },
-      { name: 'Members', href: '#' },
-      { name: 'Calendar', href: '#' },
-      { name: 'Settings', href: '#' },
+      { name: 'Building a Website', href: '#' },
+      { name: 'Building a Content Hub', href: '#' },
+      { name: 'Managing Multiple Websites', href: '#' },
+      { name: 'Multi-Channel Publishing', href: '#' },
     ],
   },
 ]

@@ -10,7 +10,7 @@ const SEO = ({ title, description, keywords, ogImage, metaHTML }) => {
   }
   return (
     <Head>
-      <title>{title} | My Travel Blog</title>
+      <title>{title} | Agility CMS Docs</title>
       <meta name="generator" content="Agility CMS" />
       <meta name="agility_timestamp" content={new Date().toLocaleString()} />
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />

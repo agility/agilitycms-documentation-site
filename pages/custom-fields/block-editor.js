@@ -8,6 +8,8 @@ const BlockEditor = dynamic(
 
 export default function BlockEditorPage() {
     const noScrollBars = `html, body { overflow: hidden }`;
+    const boldHeaders = `h1, h2, h3, h4, h5, h6 { font-weight: bold!important}`
+    const defaultHeaderStyles = `h1 { font-size: 2rem!important } h2 { font-size: 1.5rem!important } h3 { font-size: 1.17rem!important } h4 { font-size: 1rem!important } h5 { font-size: 0.83rem} h6 { font-size: 0.67rem}`;
     return (
         <div>
         <Head>
@@ -16,6 +18,8 @@ export default function BlockEditorPage() {
             <link rel="icon" href="/favicon.ico" />
             <style>
                 {noScrollBars}
+                {boldHeaders}
+                {defaultHeaderStyles}
             </style>
         </Head>
 

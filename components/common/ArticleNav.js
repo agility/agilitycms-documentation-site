@@ -1,11 +1,8 @@
 /* This example requires Tailwind CSS v2.0+ */
 const navigation = [
-    { name: 'Dashboard', href: '#', current: true },
-    { name: 'Team', href: '#', current: false },
-    { name: 'Projects', href: '#', current: false },
-    { name: 'Calendar', href: '#', current: false },
-    { name: 'Documents', href: '#', current: false },
-    { name: 'Reports', href: '#', current: false },
+    { name: 'Article Section 1', href: '#', current: true },
+    { name: 'Article Section 2', href: '#', current: false },
+    { name: 'Article Section 3', href: '#', current: false },
   ]
   
   function classNames(...classes) {
