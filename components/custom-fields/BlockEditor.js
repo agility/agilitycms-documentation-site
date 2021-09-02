@@ -153,6 +153,7 @@ const setupEditor = (auth, height, value, setValue, setHeight, containerRef, fie
 }
 
 const heightChanged = (h, height, setHeight) => {
+    //console.log('Block Editor => Height Changed', h)
     if (h === height) return
 
     setHeight(h)
