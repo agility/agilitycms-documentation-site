@@ -21,11 +21,9 @@ handler.post(async(req, res) => {
     
     //parse the image from the request
     const image = req.files.image[0];
-    console.log(`Image from Request`, image);
     
     //get the dimensions of the image
     const size = sizeOf(image.path);
-    console.log(`Image dimensions`, size);
 
     //get the contents of the image
     let fileContent = fs.createReadStream(image.path)
@@ -39,8 +37,6 @@ handler.post(async(req, res) => {
       fileContent,
       mediaFolder: req.body?.assetFolder
     });
-
-    console.log(`Image upload Response`, uploadRes);
 
     //return the uploaded file details
     res.status(200).json({ 

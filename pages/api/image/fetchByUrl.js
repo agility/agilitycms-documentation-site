@@ -29,8 +29,6 @@ export default async function handler(req, res) {
       fileContent,
       mediaFolder: req.body?.assetFolder
     });
-    
-    console.log(`Image upload Response`, uploadRes);
 
     //return the uploaded file details
     res.status(200).json({ 
