@@ -28,7 +28,7 @@
     dotenv "^8.2.0"
     proper-lockfile "^4.1.2"
 
-"@agility/nextjs@^0.3.2":
+"@agility/nextjs@^0.3.1":
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/@agility/nextjs/-/nextjs-0.3.2.tgz#f7af88101794dc26f7afef9278a1627647615a87"
   integrity sha512-3lI7RaVnP7KoDmB0uPnbOiOjQNQuOfkXAAGcbaDHogl1iWal3GSn+o/nv1wawwbh4QudOYV1glcjcsRnkXq8NQ==
