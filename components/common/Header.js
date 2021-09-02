@@ -17,7 +17,7 @@
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { SearchIcon } from '@heroicons/react/solid'
-import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
+import { BellIcon, MenuIcon, XIcon, ChevronLeftIcon } from '@heroicons/react/outline'
 
 const user = {
   name: 'Tom Cook',
@@ -43,10 +43,10 @@ function classNames(...classes) {
 
 export default function Example() {
   return (
-    <Disclosure as="header" className="bg-white shadow">
+    <Disclosure id="Header" as="header" className="flex-shrink-0 bg-white shadow z-50 relative">
       {({ open }) => (
         <>
-          <div className="mx-auto px-2 sm:px-4 lg:divide-y lg:divide-gray-200 lg:px-8">
+          <div className="mx-auto px-2 sm:px-4  lg:px-8">
             <div className="relative h-16 flex justify-between">
               <div className="relative z-10 px-2 flex lg:px-0">
                 <div className="flex-shrink-0 flex items-center">
@@ -87,51 +87,14 @@ export default function Example() {
                   )}
                 </Disclosure.Button>
               </div>
-              <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
-                <button
-                  type="button"
-                  className="flex-shrink-0 bg-white rounded-full p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
 
-                {/* Profile dropdown */}
-                <Menu as="div" className="flex-shrink-0 relative ml-4">
-                  <div>
-                    <Menu.Button className="bg-white rounded-full flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                      <span className="sr-only">Open user menu</span>
-                      <img className="h-8 w-8 rounded-full" src={user.imageUrl} alt="" />
-                    </Menu.Button>
-                  </div>
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
-                  >
-                    <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 focus:outline-none">
-                      {userNavigation.map((item) => (
-                        <Menu.Item key={item.name}>
-                          {({ active }) => (
-                            <a
-                              href={item.href}
-                              className={classNames(
-                                active ? 'bg-gray-100' : '',
-                                'block py-2 px-4 text-sm text-gray-700'
-                              )}
-                            >
-                              {item.name}
-                            </a>
-                          )}
-                        </Menu.Item>
-                      ))}
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
+              <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
+                <a href="#" className="flex items-center justify-center px-4 py-4 text-gray-500">
+                        <ChevronLeftIcon className="w-3 mt-1" /> Back to main site
+                    </a>
+                    <a href="#" className="flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                            Login
+                    </a>
               </div>
             </div>
             <nav className="hidden lg:py-2 lg:flex lg:space-x-8" aria-label="Global">

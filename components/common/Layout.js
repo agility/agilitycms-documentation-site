@@ -39,19 +39,13 @@ function Layout(props) {
         keywords={page.seo.metaKeywords}
         metaHTML={page.seo.metaHTML}
       />
-      <div id="site-wrapper">
+      <div id="SiteWrapper" className="h-full">
         {isPreview && <LoadingWidget message="Loading Preview Mode" />}
         {!isPreview && (
-          <div id="site">
+          <div id="Site" className="flex flex-col h-full">
             {/* preview bar here */}
-            <div className="sticky top-0 z-50">
-              <Header />
-            </div>
-            <div className="flex flex-col">
-              <main className="flex-grow">
-                <AgilityPageTemplate {...props} />
-              </main>
-            </div>
+            <Header />
+            <AgilityPageTemplate {...props} />
             {/* footer here */}
           </div>
         )}

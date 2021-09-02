@@ -5,11 +5,11 @@ import Sidenav from '../common/Sidenav'
 
 const MainTemplate = (props) => {
   return (
-    <div id="main-template" className="flex bg-white lg:px-6">
-      <div className="hidden lg:flex lg:flex-shrink-0">
+    <div id="MainTemplate" className="flex flex-grow bg-white lg:px-2 overflow-hidden">
+      <div className="hidden lg:flex lg:flex-shrink-0 overflow-y-auto">
         <Sidenav />
       </div>
-      <div className="flex flex-col w-0 flex-1">
+      <div className="flex-grow overflow-y-auto">
         <ContentZone name="MainContentZone" {...props} getModule={getModule} />
       </div>
     </div>
