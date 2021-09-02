@@ -26,7 +26,6 @@ const BlockComponentDefinitions = {
 }
 
 const Blocks = ({ blocks }) => {
-    console.log('blocks', blocks);
     const BlockComponentsToRender = blocks.filter((block, id) => {
         if(BlockComponentDefinitions[block.type]){ 
             return true
@@ -37,7 +36,6 @@ const Blocks = ({ blocks }) => {
         const BlockComponent = BlockComponentDefinitions[block.type];
         return <BlockComponent key={block.id} id={block.id} {...block.data} />;
     })
-    console.log('Render Blocks', BlockComponentsToRender);
   return (
     <div>
       {BlockComponentsToRender}

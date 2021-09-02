@@ -14,8 +14,6 @@ const Table = ({ id, withHeadings, content}) => {
         rows = content.slice(1, content.length);
     }
 
-    console.log(rows);
-
     return (
         <div className="flex flex-col">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">

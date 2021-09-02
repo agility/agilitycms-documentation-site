@@ -18,7 +18,6 @@ export async function getStaticProps({
     defaultLocale,
   });
 
-  console.log("agilityProps: ", agilityProps);
 
   if (!agilityProps) {
     // We throw to make sure this fails at build time as this is never expected to happen
@@ -51,7 +50,6 @@ export async function getStaticPaths({ locales, defaultLocale }) {
 }
 
 const AgilityPage = (props) => {
-  console.log("Agility Page Props: ", props);
   return <Layout {...props} />;
 };
 
