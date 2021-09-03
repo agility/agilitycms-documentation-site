@@ -5,6 +5,7 @@ import Error from "next/error";
 import SEO from "./SEO";
 import LoadingWidget from "./LoadingWidget";
 import Header from '../common/Header'
+import PreviewWiget from "./PreviewWidget";
 
 // set up handle preview
 const isPreview = handlePreview();
@@ -43,10 +44,9 @@ function Layout(props) {
         {isPreview && <LoadingWidget message="Loading Preview Mode" />}
         {!isPreview && (
           <div id="Site" className="flex flex-col h-full">
-            {/* preview bar here */}
             <Header />
             <AgilityPageTemplate {...props} />
-
+            <PreviewWiget {...props} />
           </div>
         )}
       </div>
