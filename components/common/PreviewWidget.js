@@ -9,7 +9,10 @@ import { SpeakerphoneIcon, XIcon, EyeIcon } from '@heroicons/react/outline'
 
 const PreviewWiget = ({ isPreview, isDevelopmentMode }) => {
   const [open, setOpen] = useState(false);
-    
+
+  if(!isPreview && !isDevelopmentMode) {
+      return null;
+  }
 
   // handle view function to determine preview / live mode
   const handleView = () => {
