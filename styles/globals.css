@@ -21,8 +21,10 @@
   color: #243e63;
 } */
 
-
-
 #__next {
   @apply h-full
+}
+
+#ContentContainer {
+  min-height: 40rem;
 }

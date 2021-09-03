@@ -71,7 +71,7 @@ const Blocks = ({ blocks }) => {
     
     //create a grouping of blocks which either will be within a `prose` tailwindcss container or not
     let blockGroupings = [];
-    
+
     blocksFiltered.map((block, idx) => {
         const blockDef = BlockComponentDefinitions[block.type];
 
@@ -84,7 +84,7 @@ const Blocks = ({ blocks }) => {
           blockGroupings[blockGroupings.length -1].blocks.push({ Component: blockDef.component, block: block });
         }
     })
-    console.log(blockGroupings);
+   
   return (
       <div>
         {blockGroupings.map((blockGrouping, idx) => {

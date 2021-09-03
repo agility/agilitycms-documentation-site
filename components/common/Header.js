@@ -19,6 +19,7 @@ import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { SearchIcon } from '@heroicons/react/solid'
 import { BellIcon, MenuIcon, XIcon, ChevronLeftIcon, SupportIcon } from '@heroicons/react/outline'
 import ButtonDropdown from '../common/ButtonDropdown'
+import Link from 'next/link'
 
 const user = {
   name: 'Tom Cook',
@@ -27,11 +28,11 @@ const user = {
     'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
 const navigation = [
-  { name: 'Home', href: '#', current: false },
-  { name: 'Overview', href: '#', current: true },
-  { name: 'Editors', href: '#', current: false },
-  { name: 'Developers', href: '#', current: false },
-  { name: 'Owners & Admins', href: '#', current: false }
+  { name: 'Home', href: '/docs', current: false },
+  { name: 'Overview', href: '/docs/overview', current: true },
+  { name: 'Editors', href: '/docs/editors', current: false },
+  { name: 'Developers', href: '/docs/developers', current: false },
+  { name: 'Owners & Admins', href: '/docs/owners-admins', current: false }
 ]
 const userNavigation = [
   { name: 'Your Profile', href: '#' },
@@ -102,7 +103,7 @@ export default function Example() {
             <nav className="hidden lg:py-2 lg:flex " aria-label="Global">
                 <div className="lg:space-x-8">
                     {navigation.map((item) => (
-                        <a
+                        <Link
                         key={item.name}
                         href={item.href}
                         className={classNames(
@@ -112,7 +113,7 @@ export default function Example() {
                         aria-current={item.current ? 'page' : undefined}
                         >
                         {item.name}
-                        </a>
+                        </Link>
                     ))}
                 </div>
               
