@@ -159,7 +159,6 @@ SideBarNav.getCustomInitialProps = async ({
       name: section.fields.title,
       children: articlesInSection.map((article) => {
         const url = articleUrls[article.contentID];
-        console.log(url, pageInSitemap.path)
         return {
           name: article.fields.title,
           href: articleUrls[article.contentID],
