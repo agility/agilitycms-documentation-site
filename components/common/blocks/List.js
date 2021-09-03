@@ -3,16 +3,12 @@ import React from "react";
 const List =  ({ id, style, items }) => {
     if(style === 'unordered') {
         return (
-            <div className="prose">
-                <RenderUnorderedList items={items} />
-            </div>
+            <RenderUnorderedList items={items} />
         );
     }
     if(style === 'ordered') {
         return (
-            <div className="prose">
-                <RenderOrderedList items={items} />
-            </div>
+            <RenderOrderedList items={items} />
         );
     }
     

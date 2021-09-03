@@ -5,7 +5,7 @@ const Image =  ({ id, caption, file, stretched, withBackground, withBorder }) =>
     const url = file.url;
     const size = file.size;
     return (
-        <div className="prose">
+        <div>
             <img src={file.url} alt={caption} />
         </div>
     );

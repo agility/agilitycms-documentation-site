@@ -2,7 +2,7 @@ import React from "react";
 
 const Code =  () => {
     return (
-        <hr />
+        <hr className="mt-8 mb-8" />
     );
 };
 

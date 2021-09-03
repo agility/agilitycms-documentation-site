@@ -4,7 +4,7 @@ import { renderHTML } from '@agility/nextjs';
 
 const Quote = ({ id, text, caption }) => {
   return (
-    <div className="rounded-md bg-blue-50 p-4">
+    <div className="rounded-md bg-blue-50 p-4 mt-8 mb-8">
       <div className="flex">
         <div className="flex-shrink-0">
           <InformationCircleIcon className="h-5 w-5 text-blue-400" aria-hidden="true" />

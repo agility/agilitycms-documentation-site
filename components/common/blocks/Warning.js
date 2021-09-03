@@ -4,7 +4,7 @@ import { renderHTML } from '@agility/nextjs';
 
 const Warning = ({id, title, message }) => {
   return (
-    <div className="rounded-md bg-yellow-50 p-4">
+    <div className="rounded-md bg-yellow-50 p-4 mt-8 mb-8">
       <div className="flex">
         <div className="flex-shrink-0">
           <ExclamationIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
