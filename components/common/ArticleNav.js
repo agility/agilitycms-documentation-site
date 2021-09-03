@@ -1,26 +1,46 @@
 /* This example requires Tailwind CSS v2.0+ */
-const navigation = [
-    { name: 'Article Section 1', href: '#', current: true },
-    { name: 'Article Section 2', href: '#', current: false },
-    { name: 'Article Section 3', href: '#', current: false },
-  ]
+import { useEffect } from "react";
   
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
 export default function ArticleNav({ headings }) {
+
+    //set up the Article Nav sync for the reader
+    useEffect(() => {
+        
+        const $scrollContainer = document.getElementById('ScrollContainer');
+        const $articleNav = document.getElementById('ArticleNav');
+
+        //if we don't have an article nav or scroll container, return and don't do anything
+        if(!$articleNav || !$scrollContainer) return; 
+        
+        const $articleNavHeaders = $articleNav.children;
+        const $articleHeaders = document.querySelectorAll('#DynamicArticleDetails h2');
+        
+        //run on load...
+        syncArticleNav({$scrollContainer, $articleNav, $articleHeaders, $articleNavHeaders})
+        
+        //run again when we scroll
+        $scrollContainer.onscroll = () => {
+            syncArticleNav({$scrollContainer, $articleNav, $articleHeaders, $articleNavHeaders})
+        }
+
+        return () => $scrollContainer.onscroll = null;
+    },[]);
+
     const navigation = [];
     headings.map((heading, idx) => {
         navigation.push({
             name: heading.data.text,
             href: `#${heading.id}`,
-            current: false
+            current: false //property not being used, classes are applied manually using DOM manipulation -- see `syncArticleNav`
         })
     })
 
     return (
-        <nav className="space-y-1" aria-label="Sidebar">
+        <nav id="ArticleNav" className="space-y-1" aria-label="Article Nav">
             {navigation.map((item) => (
                 <a
                 key={item.name}
@@ -36,4 +56,42 @@ export default function ArticleNav({ headings }) {
             ))}
         </nav>
     )
+}
+
+const syncArticleNav = ({ $scrollContainer, $articleNav, $articleNavHeaders, $articleHeaders}) => {
+
+    //determine scroll position of container
+    let scrollPos = $scrollContainer.scrollTop;
+
+    //find the headers we've already scrolled psat
+    let $articleHeadersScrolledPast = [];
+    $articleHeaders.forEach((element, idx) => {
+        if(scrollPos >= element.offsetTop - 60) {
+            $articleHeadersScrolledPast.push(element)
+        } else if(
+            idx === $articleHeaders.length -1 && //if this is the last item
+            parseInt($scrollContainer.scrollTop) === ($scrollContainer.scrollHeight - $scrollContainer.offsetHeight)
+            ) {
+            //we have scrolled to the bottom, ensure we have the last heading selected
+            $articleHeadersScrolledPast.push(element);
+        }
+    });
+    
+    let $activeHeader = null;
+    if($articleHeadersScrolledPast.length > 0) {
+        $activeHeader = $articleHeadersScrolledPast[$articleHeadersScrolledPast.length - 1]
+    } else {
+        //default to first header
+        $activeHeader = $articleHeaders[0];
+    }
+
+    //update the classes on the Article Nav List
+    for(const obj of $articleNavHeaders) {
+                        
+        if(`#${$activeHeader.id}` === obj.getAttribute('href')) {
+            obj.classList.add('bg-gray-100', 'text-gray-900');
+        } else {
+            obj.classList.remove('bg-gray-100', 'text-gray-900');
+        }
+    }
 }

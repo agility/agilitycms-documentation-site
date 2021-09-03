@@ -3,6 +3,7 @@ import ArticleNav from '../common/ArticleNav'
 import Blocks from '../common/blocks/index'
 
 const DynamicArticleDetails = ({ module, dynamicPageItem }) => {
+
   // get module fields
   const { fields } = module;
   const blocks = JSON.parse(dynamicPageItem.fields.content).blocks;
@@ -13,8 +14,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem }) => {
   })
 
   return (
-    <div className="flex flex-row justify-center">
-     
+    <div id="DynamicArticleDetails" className="flex flex-row justify-center">
       <div className="relative px-8">
         <div className="text-lg max-w-prose mx-auto">
             <h1>
@@ -33,5 +33,6 @@ const DynamicArticleDetails = ({ module, dynamicPageItem }) => {
     
   );
 };
+
 
 export default DynamicArticleDetails;
