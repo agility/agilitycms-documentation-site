@@ -3,15 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "predev": "agility-next sync",
     "dev": "cross-env NODE_OPTIONS='--inspect' next dev",
-    "prebuild": "agility-next prebuild",
     "build": "next build",
     "export": "next export",
-    "postbuild": "agility-next postbuild",
     "start": "next start",
-    "cms-pull": "agility-next sync",
-    "cms-clean": "agility-next clean",
     "lint": "next lint"
   },
   "dependencies": {
