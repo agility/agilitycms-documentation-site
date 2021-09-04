@@ -1,6 +1,7 @@
 /* This example requires Tailwind CSS v2.0+ */
 import { Disclosure } from '@headlessui/react'
 import Link from 'next/link'
+import { getDynamicPageSitemapMapping } from '../../utils/sitemapUtils'
 
 
 
@@ -101,11 +102,11 @@ SideBarNav.getCustomInitialProps = async ({
   dynamicPageItem,
   pageInSitemap
 }) => {
-  //get all sections for this category
-
-  const category = item.fields.category;
-  
+  //the navigation object we'll pass to the frontend
   const navigation = [];
+
+  //the category of sections/articles to show in the sidebar
+  const category = item.fields.category; 
   
   //top level item (category landing page)
   navigation.push({
@@ -113,37 +114,29 @@ SideBarNav.getCustomInitialProps = async ({
     href: !dynamicPageItem ? pageInSitemap.path : getSectionBaseUrl(pageInSitemap.path),
     current: !dynamicPageItem ? true : false
   })
-
-  //get the sitemap so we can resolve the urls
-  let sitemap = await agility.getSitemapFlat({
-    channelName: channelName,
-    languageCode,
-  });
-
-  //build dictionary of dynamic page urls by contentID for url resolution
-  let articleUrls = {};
-  Object.keys(sitemap).forEach((path) => {
-    if (sitemap[path].contentID && sitemap[path].contentID > 0) {
-      articleUrls[sitemap[path].contentID] = path;
-    }
-  });
-
-
+  
   //get all sections for this category
-  const sections = await agility.getContentList({
-    referenceName: category.fields.sections.referencename,
-    languageCode: languageCode
-  })
+  const sections = category.fields.sections;
+
+  //get all the articles for this category
+  const articles = category.fields.articles;
+
+  
+  //validate we have sections AND articles to work with
+  if((sections === null || sections === undefined || sections.length === 0) ||
+     (articles === null || articles === undefined || articles.length === 0)
+  ) {
+    return {
+      navigation
+    }
+  };
+
+  //get a dictionary of dynamic page urls by contentID for url resolution
+  const articleUrls = await getDynamicPageSitemapMapping({ agilityApiClient: agility, channelName, languageCode });
 
   //filter out the child sections
   const topLevelSections = sections.filter((section, idx) => {
     return (!section.fields.parentSection_ValueField);
-  })
-
-  //get all articles for this category
-  const articles = await agility.getContentList({
-    referenceName: category.fields.articles.referencename,
-    languageCode: languageCode
   })
 
   //loop through top-level sections and add articles in
@@ -173,34 +166,9 @@ SideBarNav.getCustomInitialProps = async ({
     navigation
   }
 
-
-  // })
 }
 
 export default SideBarNav;
-
-  // const navigation = [
-  //   { name: 'Overview', href: '#', current: false },
-  //   {
-  //     name: 'Introduction',
-  //     current: true,
-  //     children: [
-  //       { name: 'Intro to Agility CMS', href: '#', current: true },
-  //       { name: 'Getting Started', href: '#' },
-  //       { name: 'Concepts', href: '#' },
-  //     ],
-  //   },
-  //   {
-  //     name: 'Solutions',
-  //     current: false,
-  //     children: [
-  //       { name: 'Building a Website', href: '#' },
-  //       { name: 'Building a Content Hub', href: '#' },
-  //       { name: 'Managing Multiple Websites', href: '#' },
-  //       { name: 'Multi-Channel Publishing', href: '#' },
-  //     ],
-  //   },
-  // ]
 
 const getSectionBaseUrl = (the_url) =>
 {
