@@ -49,8 +49,8 @@ export async function getStaticProps({
   locales,
 }) {
 
-  //HACK: set a global variable that our GraphQL client can read to determine whether we are in preview or not...
-  global.IS_PREVIEW = true;
+  // set a global variable that our GraphQL client can read to determine whether we are in preview or not...
+  global.IS_PREVIEW = (process.env.NODE_ENV === "development" || preview);
 
   const agilityProps = await getAgilityPageProps({
     preview,
