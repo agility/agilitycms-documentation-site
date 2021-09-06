@@ -1,6 +1,44 @@
 import Layout from "components/common/Layout";
 import { getAgilityPageProps, getAgilityPaths } from "@agility/nextjs/node";
 import { getModule } from "components/agility-pageModules";
+import { client }  from 'agility-graphql-client';
+import { gql } from "@apollo/client";
+import { global } from "@apollo/client/utilities/globals";
+
+const cacheSitemapInGraphQL = ({ sitemap, isPreview, isDevelopmentMode }) => {
+  //a hook that can be used to cache the sitemap so we don't need to request it up again within the app
+  
+  //convert to array which can be safely written to GraphQL
+  const sitemapFlat = Object.keys(sitemap).map((item) => {
+    if(!sitemap[item].contentID) sitemap[item].contentID = -1;
+    return sitemap[item];
+  })
+
+  //write the sitemap to graphQL cache... you can freely use it later - does not support any filtering
+  client.writeQuery({
+    query: gql`
+      query WriteSitemapFlat {
+        sitemap {
+          title
+          name
+          path
+          pageID
+          isFolder
+          redirect
+          visible {
+            menu
+            sitemap
+          } 
+          contentID         
+        }
+      }`,
+    data: {
+      sitemap: sitemapFlat
+    },
+    variables: {}
+  });
+
+}
 
 // getStaticProps function fetches data for all of your Agility Pages and Next.js will pre-render these pages at build time
 export async function getStaticProps({
@@ -10,19 +48,34 @@ export async function getStaticProps({
   defaultLocale,
   locales,
 }) {
+
+  //HACK: set a global variable that our GraphQL client can read to determine whether we are in preview or not...
+  global.IS_PREVIEW = true;
+
   const agilityProps = await getAgilityPageProps({
     preview,
     params,
     locale,
     getModule,
     defaultLocale,
+    apiOptions: {
+      expandAllContentLinks: false, //override this so that we don't get too much data back in GetPage API calls
+      contentLinkDepth: 2, 
+      onSitemapRetrieved: cacheSitemapInGraphQL //cache the sitemap in GraphQL so we can access it again from any component
+    }
   });
 
+  
 
-  if (!agilityProps) {
+  if (!agilityProps || agilityProps.notFound) {
     // We throw to make sure this fails at build time as this is never expected to happen
-    throw new Error(`Page not found`);
+    return {
+      notFound: true
+    }
   }
+
+  //TODO: do any other data lookups we need for global components like Header/Footer that aren't Page Modules
+  //here
 
   return {
     // return all props

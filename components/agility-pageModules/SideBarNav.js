@@ -2,7 +2,8 @@
 import { Disclosure } from '@headlessui/react'
 import Link from 'next/link'
 import { getDynamicPageSitemapMapping } from '../../utils/sitemapUtils'
-
+import { client, getContext } from 'agility-graphql-client';
+import { gql } from "@apollo/client";
 
 
 function classNames(...classes) {
@@ -116,23 +117,54 @@ SideBarNav.getCustomInitialProps = async ({
   })
   
   //get all sections for this category
-  const sections = category.fields.sections;
+  const sectionsRefName = category.fields.sections.referencename;
 
   //get all the articles for this category
-  const articles = category.fields.articles;
+  const articlesRefName = category.fields.articles.referencename;
 
   
   //validate we have sections AND articles to work with
-  if((sections === null || sections === undefined || sections.length === 0) ||
-     (articles === null || articles === undefined || articles.length === 0)
+  if((!sectionsRefName || !articlesRefName)
   ) {
     return {
       navigation
     }
   };
 
-  //get a dictionary of dynamic page urls by contentID for url resolution
-  const articleUrls = await getDynamicPageSitemapMapping({ agilityApiClient: agility, channelName, languageCode });
+  const { data } = await client.query({
+    query: gql`    
+    {
+      ${articlesRefName} {
+        contentID
+        fields {
+          title
+          section_ValueField
+        }
+      },
+      ${sectionsRefName} {
+        contentID
+        fields {
+          title
+          parentSection_ValueField
+        }
+      }
+    }
+    `,
+  });
+
+  const sections = data[sectionsRefName];
+  const articles = data[articlesRefName];
+
+  //validate we have sections AND articles to work with
+  if((!sections || !articles)
+  ) {
+    return {
+      navigation
+    }
+  };
+
+  //get a dictionary of dynamic page urls by contentID for url resolution (from cache)
+  const articleUrls = getDynamicPageSitemapMapping();
 
   //filter out the child sections
   const topLevelSections = sections.filter((section, idx) => {
