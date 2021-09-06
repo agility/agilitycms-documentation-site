@@ -132,7 +132,7 @@ SideBarNav.getCustomInitialProps = async ({
     }
   };
 
-  const { data } = await client.query({
+  const resp = await client.query({
     query: gql`    
     {
       ${articlesRefName} {
@@ -153,8 +153,9 @@ SideBarNav.getCustomInitialProps = async ({
     `,
   });
 
-  const sections = data[sectionsRefName];
-  const articles = data[articlesRefName];
+  console.log(resp);
+  const sections = resp.data[sectionsRefName];
+  const articles = resp.data[articlesRefName];
 
   //validate we have sections AND articles to work with
   if((!sections || !articles)
