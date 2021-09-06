@@ -27,13 +27,7 @@ const user = {
   imageUrl:
     'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
-const navigation = [
-  { name: 'Home', href: '/docs', current: false },
-  { name: 'Overview', href: '/docs/overview', current: true },
-  { name: 'Editors', href: '/docs/editors', current: false },
-  { name: 'Developers', href: '/docs/developers', current: false },
-  { name: 'Owners & Admins', href: '/docs/owners-admins', current: false }
-]
+
 const userNavigation = [
   { name: 'Your Profile', href: '#' },
   { name: 'Settings', href: '#' },
@@ -44,7 +38,9 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function Example() {
+export default function Header({ mainMenuLinks }) {
+  
+  const navigation = mainMenuLinks;
   return (
     <Disclosure id="Header" as="header" className="flex-shrink-0 bg-white shadow z-50 relative">
       {({ open }) => (
@@ -103,17 +99,17 @@ export default function Example() {
             <nav className="hidden lg:py-2 lg:flex " aria-label="Global">
                 <div className="lg:space-x-8">
                     {navigation.map((item) => (
-                        <Link
-                        key={item.name}
-                        href={item.href}
-                        className={classNames(
-                            item.current ? 'bg-gray-100 text-gray-900' : 'text-gray-900 hover:bg-gray-50 hover:text-gray-900',
-                            'rounded-md py-2 px-3 inline-flex items-center text-sm font-medium'
-                        )}
-                        aria-current={item.current ? 'page' : undefined}
-                        >
-                        {item.name}
-                        </Link>
+                      <Link key={item.name} href={item.href}>
+                        <a
+                          className={classNames(
+                              item.current ? 'bg-gray-100 text-gray-900' : 'text-gray-900 hover:bg-gray-50 hover:text-gray-900',
+                              'rounded-md py-2 px-3 inline-flex items-center text-sm font-medium'
+                          )}
+                          aria-current={item.current ? 'page' : undefined}
+                          >
+                          {item.name}
+                        </a>
+                      </Link>
                     ))}
                 </div>
               

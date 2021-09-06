@@ -25,7 +25,19 @@ const READ_SITEMAP_FOR_DYNAMIC_URL_RESOLUTION = gql`
         contentID        
       }
     }
-    `;
+`;
+
+const READ_SITEMAP_FOR_HEADER = gql`
+    query ReadSitemapFlat {
+      sitemap {
+        menuText
+        path
+        visible {
+          menu
+        }
+      }
+    }
+`;
 
 const READ_FULL_SITEMAP = gql`
     query ReadSitemapFlat {
@@ -43,10 +55,11 @@ const READ_FULL_SITEMAP = gql`
         contentID        
       }
     }
-    `;
+`;
 
 export {
     getDynamicPageSitemapMapping,
     READ_SITEMAP_FOR_DYNAMIC_URL_RESOLUTION,
-    READ_FULL_SITEMAP
+    READ_FULL_SITEMAP,
+    READ_SITEMAP_FOR_HEADER
 }

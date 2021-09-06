@@ -4,6 +4,7 @@ import { getModule } from "components/agility-pageModules";
 import { client }  from 'agility-graphql-client';
 import { gql } from "@apollo/client";
 import { global } from "@apollo/client/utilities/globals";
+import { READ_SITEMAP_FOR_HEADER } from "utils/sitemapUtils";
 
 const cacheSitemapInGraphQL = ({ sitemap, isPreview, isDevelopmentMode }) => {
   //a hook that can be used to cache the sitemap so we don't need to request it up again within the app
@@ -20,6 +21,7 @@ const cacheSitemapInGraphQL = ({ sitemap, isPreview, isDevelopmentMode }) => {
       query WriteSitemapFlat {
         sitemap {
           title
+          menuText
           name
           path
           pageID
@@ -65,7 +67,6 @@ export async function getStaticProps({
     }
   });
 
-  
 
   if (!agilityProps || agilityProps.notFound) {
     // We throw to make sure this fails at build time as this is never expected to happen
@@ -74,12 +75,30 @@ export async function getStaticProps({
     }
   }
 
-  //TODO: do any other data lookups we need for global components like Header/Footer that aren't Page Modules
-  //here
+  //do any other data lookups we need for global components like Header/Footer that aren't Page Modules
+  //get sitemap from cache
+  const { sitemap } = client.readQuery({
+    query: READ_SITEMAP_FOR_HEADER //does not support filtering
+  });
+
+  //only get the top and second level links and respsect whether they should be visible on menu
+  const mainMenuLinks = sitemap.filter((node) => {
+    return node.visible.menu && node.path.split('/').length < 4
+  }).map((node) => {    
+    return {
+      name: node.menuText,
+      href: node.path,
+      current: (agilityProps.sitemapNode.path === node.path) || (node.path.split('/').length > 2 && agilityProps.sitemapNode.path.indexOf(node.path) > -1)
+    }
+  })
+
+  const additionalPageProps = {
+    mainMenuLinks
+  }
 
   return {
     // return all props
-    props: agilityProps,
+    props: {...agilityProps, ...additionalPageProps},
 
     // Next.js will attempt to re-generate the page when a request comes in, at most once every 10 seconds
     // Read more on Incremental Static Regenertion here: https://nextjs.org/docs/basic-features/data-fetching#incremental-static-regeneration

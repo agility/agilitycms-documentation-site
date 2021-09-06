@@ -44,9 +44,9 @@ function Layout(props) {
         {isPreview && <LoadingWidget message="Loading Preview Mode" />}
         {!isPreview && (
           <div id="Site" className="flex flex-col h-full">
-            <Header />
+            <Header mainMenuLinks={props.mainMenuLinks} />
             <AgilityPageTemplate {...props} />
-            <PreviewWiget {...props} />
+            <PreviewWiget isPreview={props.isPreview} isDevelopmentMode={props.isDevelopmentMode} />
           </div>
         )}
       </div>

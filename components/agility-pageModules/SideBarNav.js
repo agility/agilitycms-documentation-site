@@ -95,6 +95,7 @@ const SideBarNav = ({ module, dynamicPageItem, customData}) => {
   )
 }
 
+
 SideBarNav.getCustomInitialProps = async ({
   agility,
   channelName,
