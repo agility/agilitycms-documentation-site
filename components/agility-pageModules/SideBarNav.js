@@ -126,6 +126,7 @@ SideBarNav.getCustomInitialProps = async ({
   //validate we have sections AND articles to work with
   if((!sectionsRefName || !articlesRefName)
   ) {
+    console.log('No `sectionsRefName` or `articlesRef` was found for this category');
     return {
       navigation
     }
@@ -158,6 +159,7 @@ SideBarNav.getCustomInitialProps = async ({
   //validate we have sections AND articles to work with
   if((!sections || !articles)
   ) {
+    console.log('No `sections` or `articles` were found for this category');
     return {
       navigation
     }
