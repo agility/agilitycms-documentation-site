@@ -15,7 +15,7 @@ const defaultOptions = {
 
 const httpLink = createHttpLink({
     uri: () => {
-        const type = global.IS_PREVIEW ? 'preview' : 'fetch';
+        const type = global?.IS_PREVIEW ? 'preview' : 'fetch';
         return `https://api.aglty.io/v1/${process.env.AGILITY_GUID}/${type}/${process.env.AGILITY_LOCALES}/graphql`
     }
   });
@@ -25,7 +25,7 @@ const authLink = setContext((_, { headers }) => {
     return {
         headers: {
             ...headers,
-            apiKey: global.IS_PREVIEW ? process.env.AGILITY_API_PREVIEW_KEY : process.env.AGILITY_API_FETCH_KEY,
+            apiKey: global?.IS_PREVIEW ? process.env.AGILITY_API_PREVIEW_KEY : process.env.AGILITY_API_FETCH_KEY,
         }
     }
 });
