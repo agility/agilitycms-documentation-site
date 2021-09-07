@@ -22,6 +22,9 @@ const SEO = ({ title, description, keywords, ogImage, metaHTML }) => {
         rel="stylesheet"
       />
       {/* <script dangerouslySetInnerHTML={{ __html: nightwind.init() }} /> */}
+      {/* Start of agilitycms Zendesk Widget script */}
+      <script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=75a855ec-8bb9-4017-a4d7-ebf0e3d7c77a"> </script>
+      {/* End of agilitycms Zendesk Widget script */}
       {ogImage && <meta property="og:image" content={ogImage} />}
       {additionalHeaderMarkup}
     </Head>
