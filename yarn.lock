@@ -28,10 +28,10 @@
     dotenv "^8.2.0"
     proper-lockfile "^4.1.2"
 
-"@agility/nextjs@^0.3.3-rc4":
-  version "0.3.3-rc3"
-  resolved "https://registry.yarnpkg.com/@agility/nextjs/-/nextjs-0.3.3-rc3.tgz#7a110f6236bc3b46f75e90439a5199931517b9c6"
-  integrity sha512-+gtpgGFty0W3+yfLYXJGxSEfgpL+VqYcxVac1ZDAJrdOKe1RVKHEmxJNLuUhesxdn5oWFLNZUb2wsvuLxxP3Lw==
+"@agility/nextjs@^0.3.3-rc6":
+  version "0.3.3-rc6"
+  resolved "https://registry.yarnpkg.com/@agility/nextjs/-/nextjs-0.3.3-rc6.tgz#386725563c800a93255163c1d24a2f455faa2eff"
+  integrity sha512-ySR8+i+H0FUWLgk9U4rh9aiT2zuqNBgLI+ch3IGmQKC+5tWL0shIYML3zgpnHVJrzIUTcp5NAkePLEP3apjbSg==
 
 "@apollo/client@^3.4.10":
   version "3.4.10"
@@ -3153,6 +3153,11 @@ next@^11.1.0:
     "@next/swc-darwin-x64" "11.1.2"
     "@next/swc-linux-x64-gnu" "11.1.2"
     "@next/swc-win32-x64-msvc" "11.1.2"
+
+nightwind@^1.1.12:
+  version "1.1.12"
+  resolved "https://registry.yarnpkg.com/nightwind/-/nightwind-1.1.12.tgz#ee8147abd41746b19e85916ca5ff92e6fd05621b"
+  integrity sha512-iJGJxeglk3vrRyFDH7shinvKuN/EcIbBtNVkko0Zni/XGVSHrBH0rsvqgp2HhkIf5B7iZU+2+kGhS2oItBnASQ==
 
 node-emoji@^1.11.0:
   version "1.11.0"

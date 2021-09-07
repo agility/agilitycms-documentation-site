@@ -1,6 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import ReactHtmlParser from "react-html-parser";
+//import nightwind from 'nightwind/helper'
 
 const SEO = ({ title, description, keywords, ogImage, metaHTML }) => {
   // setup and parse additional header markup
@@ -20,6 +21,7 @@ const SEO = ({ title, description, keywords, ogImage, metaHTML }) => {
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
         rel="stylesheet"
       />
+      {/* <script dangerouslySetInnerHTML={{ __html: nightwind.init() }} /> */}
       {ogImage && <meta property="og:image" content={ogImage} />}
       {additionalHeaderMarkup}
     </Head>

@@ -49,6 +49,7 @@
     "multiparty": "^4.2.2",
     "next": "^11.1.0",
     "next-connect": "^0.10.2",
+    "nightwind": "^1.1.12",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-html-parser": "^2.0.2",

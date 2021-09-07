@@ -7,6 +7,7 @@ import LoadingWidget from "./LoadingWidget";
 import Header from '../common/Header'
 import PreviewWiget from "./PreviewWidget";
 
+
 // set up handle preview
 const isPreview = handlePreview();
 
