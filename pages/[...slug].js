@@ -93,11 +93,11 @@ export async function getStaticProps({
         currentNodePath = '/';
       }
     }
-    console.log(path, )
+
     return {
       name: node.menuText,
       href: path,
-      current: (currentNodePath === path) || (currentNodePath.split('/').length > 2 && currentNodePath.path.indexOf(path) > -1)
+      current: (currentNodePath === path) || (currentNodePath.split('/').length > 2 && currentNodePath.indexOf(path) > -1)
     }
   })
 
