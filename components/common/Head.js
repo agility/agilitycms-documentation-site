@@ -3,7 +3,7 @@ import Head from "next/head";
 import ReactHtmlParser from "react-html-parser";
 //import nightwind from 'nightwind/helper'
 
-const SEO = ({ title, description, keywords, ogImage, metaHTML }) => {
+export default ({ title, description, keywords, ogImage, metaHTML }) => {
   // setup and parse additional header markup
   let additionalHeaderMarkup = null;
   if (metaHTML) {
@@ -21,6 +21,9 @@ const SEO = ({ title, description, keywords, ogImage, metaHTML }) => {
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
         rel="stylesheet"
       />
+      {process.env.ROBOTS_NO_INDEX &&
+        <meta name="robots" content="noindex"></meta>
+      }
       {/* <script dangerouslySetInnerHTML={{ __html: nightwind.init() }} /> */}
       {/* Start of agilitycms Zendesk Widget script */}
       <script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=75a855ec-8bb9-4017-a4d7-ebf0e3d7c77a"> </script>
@@ -30,5 +33,3 @@ const SEO = ({ title, description, keywords, ogImage, metaHTML }) => {
     </Head>
   );
 };
-
-export default SEO;

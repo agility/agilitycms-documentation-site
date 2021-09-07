@@ -113,7 +113,7 @@ SideBarNav.getCustomInitialProps = async ({
   //top level item (category landing page)
   navigation.push({
     name: category.fields.title,
-    href: !dynamicPageItem ? pageInSitemap.path : getSectionBaseUrl(sitemapNode.path),
+    href: !dynamicPageItem ? sitemapNode.path : getSectionBaseUrl(sitemapNode.path),
     current: !dynamicPageItem ? true : false
   })
   

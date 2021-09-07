@@ -2,7 +2,7 @@ import { getPageTemplate } from "components/agility-pageTemplates";
 import { handlePreview } from "@agility/nextjs";
 import { useRouter } from "next/router";
 import Error from "next/error";
-import SEO from "./SEO";
+import Head from "./Head";
 import LoadingWidget from "./LoadingWidget";
 import Header from '../common/Header'
 import PreviewWiget from "./PreviewWidget";
@@ -35,7 +35,7 @@ function Layout(props) {
 
   return (
     <>
-      <SEO
+      <Head
         title={sitemapNode?.title}
         description={page.seo.metaDescription}
         keywords={page.seo.metaKeywords}

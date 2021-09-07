@@ -28,10 +28,10 @@
     dotenv "^8.2.0"
     proper-lockfile "^4.1.2"
 
-"@agility/nextjs@^0.3.3-rc6":
-  version "0.3.3-rc6"
-  resolved "https://registry.yarnpkg.com/@agility/nextjs/-/nextjs-0.3.3-rc6.tgz#386725563c800a93255163c1d24a2f455faa2eff"
-  integrity sha512-ySR8+i+H0FUWLgk9U4rh9aiT2zuqNBgLI+ch3IGmQKC+5tWL0shIYML3zgpnHVJrzIUTcp5NAkePLEP3apjbSg==
+"@agility/nextjs@^0.3.3-rc7":
+  version "0.3.3-rc7"
+  resolved "https://registry.yarnpkg.com/@agility/nextjs/-/nextjs-0.3.3-rc7.tgz#0ebe64ff3c2fdd06f19eb7cd52a73c3e8420c2d7"
+  integrity sha512-lB0sv0cV6qKzoC7UxPU5atV/y74lUJ0F/tXYlgo49y0v58eeqs4ipiVZYfpyPGGLgWr6WF7YhKBtWdY5D0/JmQ==
 
 "@apollo/client@^3.4.10":
   version "3.4.10"
