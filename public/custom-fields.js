@@ -653,8 +653,8 @@ var BlockEditorCustomField = function() {
     // $(".col-lg-4", row).addClass("hidden")
     $(".tab-CONTENT-tab", row).css("padding", 0)
 
-    //var url = 'http://localhost:3000/custom-fields/block-editor'; //for testing locally
-    var url = 'https://agilitycms-documentation-site.vercel.app/custom-fields/block-editor';
+    //var url = 'http://localhost:3000/docs/custom-fields/block-editor'; //for testing locally
+    var url = 'https://agilitycms-documentation-site.vercel.app/docs/custom-fields/block-editor';
     var iframe = document.createElement('iframe');
     iframe.className = "rt-field";
     iframe.width = '100%';
