@@ -93,7 +93,7 @@ export async function getStaticProps({
         currentNodePath = '/';
       }
     }
-    console.log('FIX ERROR WITH ACTIVE STATE')
+
     return {
       name: node.menuText,
       href: path,

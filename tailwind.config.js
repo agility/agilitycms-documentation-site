@@ -12,9 +12,9 @@ module.exports = {
       },
     },
     fontFamily: {
-      display: ["Inter", "system-ui"],
+      display: ["'Muli'", "system-ui"],
       sans: [
-        "Inter var",
+        "'Muli'",
         "system-ui",
         "-apple-system",
         "BlinkMacSystemFont",
