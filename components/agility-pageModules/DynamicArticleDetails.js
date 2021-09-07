@@ -10,7 +10,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
   const [positiveFeedbackSubmitted, setPositiveFeedbackSubmitted] = useState(false);
   const [negativeFeedbackSubmitted, setNegativeFeedbackSubmitted] = useState(false);
   const [negativeFeedbackClicked, setNegativeFeedbackClicked] = useState(false);
-  const url = sitemapNode.path;
+  const url = `/docs/${sitemapNode.path}`;
 
   // get module fields
   const { fields } = module;

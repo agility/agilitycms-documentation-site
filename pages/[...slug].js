@@ -84,11 +84,20 @@ export async function getStaticProps({
   //only get the top and second level links and respsect whether they should be visible on menu
   const mainMenuLinks = sitemap.filter((node) => {
     return node.visible.menu && node.path.split('/').length < 4
-  }).map((node) => {    
+  }).map((node, idx) => { 
+    let path = node.path;
+    let currentNodePath = agilityProps.sitemapNode.path;
+    if(path === '/home') {
+      path = '/'
+      if(currentNodePath === '/home') {
+        currentNodePath = '/';
+      }
+    }
+    console.log(path, )
     return {
       name: node.menuText,
-      href: node.path,
-      current: (agilityProps.sitemapNode.path === node.path) || (node.path.split('/').length > 2 && agilityProps.sitemapNode.path.indexOf(node.path) > -1)
+      href: path,
+      current: (currentNodePath === path) || (currentNodePath.split('/').length > 2 && currentNodePath.path.indexOf(path) > -1)
     }
   })
 
