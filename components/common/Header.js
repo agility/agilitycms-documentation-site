@@ -89,7 +89,7 @@ export default function Header({ mainMenuLinks }) {
   
   const navigation = mainMenuLinks;
   return (
-    <Disclosure id="Header" as="header" className="flex-shrink-0 bg-white shadow z-50 relative">
+    <Disclosure id="Header" as="header" className="flex-shrink-0 bg-white shadow z-40 relative">
       {({ open }) => (
         <>
           <div className="mx-auto px-2 sm:px-4  lg:px-8">

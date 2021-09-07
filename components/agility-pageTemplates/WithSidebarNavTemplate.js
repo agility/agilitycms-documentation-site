@@ -4,7 +4,6 @@ import { getModule } from "components/agility-pageModules";
 import Footer from '../common/Footer'
 
 const WithSidebarNavTemplate = (props) => {
-    
 
     return (
         <div id="WithSidebarNavTemplate" className="flex flex-grow bg-white overflow-hidden">

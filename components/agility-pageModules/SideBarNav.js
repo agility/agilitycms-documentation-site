@@ -15,7 +15,7 @@ const SideBarNav = ({ module, dynamicPageItem, customData}) => {
   const navigation = customData.navigation;
 
   return (
-    <div id="SideNav" className="flex flex-col w-64 border-r border-gray-200 pt-4 pb-4 z-50 h-full">
+    <div id="SideNav" className="flex flex-col w-64 border-r border-gray-200 pt-4 pb-4 z-40 h-full">
       <div className="flex-grow flex flex-col">
         <nav className="flex-1 px-2 space-y-1 bg-white" aria-label="Sidebar">
           {navigation.map((item) =>
@@ -102,7 +102,7 @@ SideBarNav.getCustomInitialProps = async ({
   languageCode,
   item,
   dynamicPageItem,
-  pageInSitemap
+  sitemapNode
 }) => {
   //the navigation object we'll pass to the frontend
   const navigation = [];
@@ -113,7 +113,7 @@ SideBarNav.getCustomInitialProps = async ({
   //top level item (category landing page)
   navigation.push({
     name: category.fields.title,
-    href: !dynamicPageItem ? pageInSitemap.path : getSectionBaseUrl(pageInSitemap.path),
+    href: !dynamicPageItem ? pageInSitemap.path : getSectionBaseUrl(sitemapNode.path),
     current: !dynamicPageItem ? true : false
   })
   
@@ -136,14 +136,14 @@ SideBarNav.getCustomInitialProps = async ({
   const { data } = await client.query({
     query: gql`    
     {
-      ${articlesRefName} {
+      ${articlesRefName} (sort: "properties.itemOrder") {
         contentID
         fields {
           title
           section_ValueField
         }
       },
-      ${sectionsRefName} {
+      ${sectionsRefName} (sort: "properties.itemOrder") {
         contentID
         fields {
           title
@@ -190,7 +190,7 @@ SideBarNav.getCustomInitialProps = async ({
         return {
           name: article.fields.title,
           href: articleUrls[article.contentID],
-          current: url === pageInSitemap.path
+          current: url === sitemapNode.path
         }
       })
     })

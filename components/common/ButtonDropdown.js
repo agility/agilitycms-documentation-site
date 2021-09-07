@@ -29,7 +29,7 @@ export default function ButtonDropdown({ name, children, children2 }) {
         <Menu.Items className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1">
             {children.map((item) => (
-              <Menu.Item>
+              <Menu.Item key={item.href}>
                   <a
                     href={item.href}
                     key={item.href}
@@ -42,7 +42,7 @@ export default function ButtonDropdown({ name, children, children2 }) {
             ))}
             <hr className="mt-2 mb-2"/>
             {children2.map((item) => (
-              <Menu.Item>
+              <Menu.Item key={item.href}>
                   <a
                     href={item.href}
                     key={item.href}
