@@ -2,7 +2,7 @@ import { getPageTemplate } from "components/agility-pageTemplates";
 import { handlePreview } from "@agility/nextjs";
 import { useRouter } from "next/router";
 import Error from "next/error";
-import HeadSEO from "./Head";
+import HeadSEO from "./HeadSEO";
 import LoadingWidget from "./LoadingWidget";
 import Header from '../common/Header'
 import PreviewWiget from "./PreviewWidget";

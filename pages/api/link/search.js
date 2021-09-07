@@ -34,9 +34,9 @@ export default async function handler(req, res) {
 
     const results = searchResults.map(item => {
       return {
-        href: `${item.path}`, //TODO: these need to absolute URLs with the website domain specified, get this from env-vars
+        href: `/docs/${item.path}`, 
         name: item.title,
-        description: item.path
+        description: `/docs/${item.path}`
       }
     })
 

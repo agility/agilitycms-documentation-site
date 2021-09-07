@@ -3,7 +3,7 @@ import Head from "next/head";
 import ReactHtmlParser from "react-html-parser";
 //import nightwind from 'nightwind/helper'
 
-export default HeadSEO = ({ title, description, keywords, ogImage, metaHTML }) => {
+const HeadSEO = ({ title, description, keywords, ogImage, metaHTML }) => {
   // setup and parse additional header markup
   let additionalHeaderMarkup = null;
   if (metaHTML) {
@@ -33,3 +33,5 @@ export default HeadSEO = ({ title, description, keywords, ogImage, metaHTML }) =
     </Head>
   );
 };
+
+export default HeadSEO;
