@@ -1,5 +1,6 @@
 import agility from '@agility/content-fetch'
 import FuzzySearch from 'fuzzy-search'
+import nextConfig from 'next.config';
 
 export default async function handler(req, res) {
 
@@ -10,7 +11,7 @@ export default async function handler(req, res) {
     const api = agility.getApi({
         guid: process.env.AGILITY_GUID, 
         apiKey: process.env.AGILITY_API_PREVIEW_KEY, 
-        isPreview: true,
+        isPreview: true
     });
 
     //get the sitemap
@@ -34,9 +35,9 @@ export default async function handler(req, res) {
 
     const results = searchResults.map(item => {
       return {
-        href: `/docs/${item.path}`, 
+        href: `${nextConfig.basePath}${item.path}`, 
         name: item.title,
-        description: `/docs/${item.path}`
+        description: `${nextConfig.basePath}${item.path}`
       }
     })
 

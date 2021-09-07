@@ -3,6 +3,7 @@ import { Fragment, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { SpeakerphoneIcon } from '@heroicons/react/outline'
 import axios from 'axios'
+import nextConfig from 'next.config'
 
 export default function SubmitNegativeFeedback({ url, title, setNegativeFeedbackSubmitted, setNegativeFeedbackClicked }) {
   const [open, setOpen] = useState(true);
@@ -25,7 +26,7 @@ export default function SubmitNegativeFeedback({ url, title, setNegativeFeedback
     if(!text || text.length === 0) return;
 
     //post it... fire and forget
-    axios.post(`/api/feedback/sendNegative`, {
+    axios.post(`${nextConfig.basePath}/api/feedback/sendNegative`, {
         url,
         title,
         text

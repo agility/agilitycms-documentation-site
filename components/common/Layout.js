@@ -6,10 +6,10 @@ import HeadSEO from "./HeadSEO";
 import LoadingWidget from "./LoadingWidget";
 import Header from '../common/Header'
 import PreviewWiget from "./PreviewWidget";
-
+import nextConfig from "next.config";
 
 // set up handle preview
-const isPreview = handlePreview();
+const isPreview = handlePreview({previewHandlerUrl: `${nextConfig.basePath}/api/preview`});
 
 function Layout(props) {
   const { page, sitemapNode, dynamicPageItem, notFound, pageTemplateName } =

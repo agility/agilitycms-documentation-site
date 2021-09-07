@@ -4,13 +4,14 @@ import Blocks from '../common/blocks/index'
 import { ThumbUpIcon, ThumbDownIcon } from "@heroicons/react/outline";
 import SubmitNegativeFeedback from '../common/SubmitNegativeFeedback'
 import axios from 'axios'
+import nextConfig from "next.config";
 
 const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 
   const [positiveFeedbackSubmitted, setPositiveFeedbackSubmitted] = useState(false);
   const [negativeFeedbackSubmitted, setNegativeFeedbackSubmitted] = useState(false);
   const [negativeFeedbackClicked, setNegativeFeedbackClicked] = useState(false);
-  const url = `/docs/${sitemapNode.path}`;
+  const url = `${nextConfig.basePath}${sitemapNode.path}`;
 
   // get module fields
   const { fields } = module;
@@ -69,7 +70,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 const sendPositiveFeedback = ({url, title, setPositiveFeedbackSubmitted}) => {
   
   //fire and forget
-  axios.post(`/api/feedback/sendPositive`, {
+  axios.post(`${nextConfig.basePath}/api/feedback/sendPositive`, {
     url,
     title
   })
