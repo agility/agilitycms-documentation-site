@@ -17,25 +17,72 @@
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { SearchIcon } from '@heroicons/react/solid'
-import { BellIcon, MenuIcon, XIcon, ChevronLeftIcon, SupportIcon } from '@heroicons/react/outline'
+import { LoginIcon, MenuIcon, XIcon, SupportIcon } from '@heroicons/react/outline'
 import ButtonDropdown from '../common/ButtonDropdown'
 import Link from 'next/link'
 
-const user = {
-  name: 'Tom Cook',
-  email: 'tom@example.com',
-  imageUrl:
-    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-}
-
-const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
-]
-
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
+}
+
+const apiSDKsButton = {
+  name: 'APIs & SDKs',
+  children: [
+    {
+      name: 'Next.js',
+      href: '#',
+    },
+    {
+      name: 'Gatsby',
+      href: '#'
+    },
+    {
+      name: 'Nuxt',
+      href: '#'
+    },
+    {
+      name: 'Eleventy',
+      href: '#'
+    },
+    {
+      name: 'ASP.NET',
+      href: '#'
+    },
+    {
+      name: 'Angular',
+      href: '#'
+    },
+  ],
+  children2: [
+    {
+      name: 'JavaScript / Node',
+      href: '#'
+    },
+    {
+      name: 'Content Fetch REST API',
+      href: '#'
+    },
+    {
+      name: 'GraphQL API',
+      href: '#'
+    },
+    {
+      name: 'Content Management API',
+      href: '#'
+    }
+  ]
+}
+
+const loginButton = {
+  name: 'Login',
+  href: 'https://manager.agilitycms.com/',
+  icon: LoginIcon
+}
+
+const supportButton = {
+  name: 'Get Support',
+  href: 'https://help.agilitycms.com/hc/en-us/requests/new',
+  icon: SupportIcon
 }
 
 export default function Header({ mainMenuLinks }) {
@@ -88,11 +135,8 @@ export default function Header({ mainMenuLinks }) {
               </div>
 
               <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
-                {/* <a href="#" className="flex items-center justify-center px-4 py-4 text-gray-500">
-                        <ChevronLeftIcon className="w-3 mt-1" /> Back to main site
-                </a> */}
-                <a href="#" className="flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">
-                        Login
+                <a href={loginButton.href} rel="noreferrer" className="flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                        {loginButton.name}
                 </a>
               </div>
             </div>
@@ -114,9 +158,9 @@ export default function Header({ mainMenuLinks }) {
                 </div>
               
                 <div className="ml-auto">
-                    <ButtonDropdown />
-                    <a href="#" className="ml-6 text-gray-500">
-                        Get Support <SupportIcon className="w-5 inline" />
+                    <ButtonDropdown {...apiSDKsButton} />
+                    <a href={supportButton.href} rel="noreferrer" className="ml-6 text-gray-500">
+                        {supportButton.name} <supportButton.icon className="w-5 inline" />
                     </a>
                 </div>
             </nav>
@@ -141,32 +185,14 @@ export default function Header({ mainMenuLinks }) {
               ))}
             </div>
             <div className="border-t border-gray-200 pt-4 pb-3">
-              <div className="px-4 flex items-center">
-                <div className="flex-shrink-0">
-                  <img className="h-10 w-10 rounded-full" src={user.imageUrl} alt="" />
-                </div>
-                <div className="ml-3">
-                  <div className="text-base font-medium text-gray-800">{user.name}</div>
-                  <div className="text-sm font-medium text-gray-500">{user.email}</div>
-                </div>
-                <button
-                  type="button"
-                  className="ml-auto flex-shrink-0 bg-white rounded-full p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
-              </div>
-              <div className="mt-3 px-2 space-y-1">
-                {userNavigation.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className="block rounded-md py-2 px-3 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-                  >
-                    {item.name}
-                  </a>
-                ))}
+              
+              <div className=" px-2 space-y-1">
+                <a href={loginButton.href} rel="noreferrer" className="block rounded-md py-2 px-3 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900">
+                        {loginButton.name} <loginButton.icon className="w-5 inline" />
+                    </a>
+                <a href={supportButton.href} rel="noreferrer" className="block rounded-md py-2 px-3 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900">
+                        {supportButton.name} <supportButton.icon className="w-5 inline" />
+                </a>
               </div>
             </div>
           </Disclosure.Panel>
