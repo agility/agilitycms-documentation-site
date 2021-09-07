@@ -49,6 +49,7 @@ export default async (req, res) => {
 
     const content = JSON.parse(article.fields.content);
 
+    //TODO: add the category of this article
     const object = {
         objectID: article.contentID,
         title: article.fields.title,
