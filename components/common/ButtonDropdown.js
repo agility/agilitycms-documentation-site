@@ -32,6 +32,7 @@ export default function ButtonDropdown({ name, children, children2 }) {
               <Menu.Item>
                   <a
                     href={item.href}
+                    key={item.href}
                     rel="noreferrer"
                     className='text-gray-700 block px-4 py-2 text-sm hover:bg-gray-50 hover:text-gray-900'
                   >
@@ -44,6 +45,7 @@ export default function ButtonDropdown({ name, children, children2 }) {
               <Menu.Item>
                   <a
                     href={item.href}
+                    key={item.href}
                     rel="noreferrer"
                     className='text-gray-700 block px-4 py-2 text-sm hover:bg-gray-50 hover:text-gray-900'
                   >
