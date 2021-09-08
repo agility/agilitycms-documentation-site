@@ -13,7 +13,7 @@ export default function HeroCategories({ module }) {
     const { fields } = module;
     
     const supportLinks = fields.categories.map((cat) => {
-        console.log(cat, icons)
+        
         
         return {
             name: cat.fields.title,
