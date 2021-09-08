@@ -5,6 +5,7 @@ import Table from '@editorjs/table'
 import Paragraph from '@editorjs/paragraph'
 import Warning from '@editorjs/warning'
 import Code from '@editorjs/code'
+import basePath from "../../next.config"
 
 import Image from '@editorjs/image'
 import Raw from '@editorjs/raw'
@@ -94,8 +95,8 @@ const setupEditor = (auth, height, value, setValue, setHeight, containerRef, fie
                 class: Image,
                 config: {
                     endpoints: {
-                        byFile: '/api/image/uploadByFile',
-                        byUrl: '/api/image/fetchByUrl'
+                        byFile: `${basePath}/api/image/uploadByFile`,
+                        byUrl: `${basePath}/api/image/fetchByUrl`
                     },
                     additionalRequestData: { ...auth, ...custom }
                 }
