@@ -4,6 +4,7 @@ import SideBarNav from "./SideBarNav";
 import BlockEditor from "./BlockEditor";
 import HeroCategories from './HeroCategories'
 import ListOfLinks from './ListofLinks'
+import RightOrLeftAlignedLinks from './RightOrLeftAlignedLinks'
 
 // All of the Agility Page Module Components that are in use in this site need to be imported into this index file.
 // Place Page Modules in allModules array below, passing in a name and the component.
@@ -15,6 +16,7 @@ const allModules = [
   { name: "BlockEditor", module: BlockEditor },
   { name: "HeroCategories", module: HeroCategories },
   { name: "ListOfLinks", module: ListOfLinks },
+  { name: "RightOrLeftAlignedLinks", module: RightOrLeftAlignedLinks },
 ];
 
 export const getModule = (moduleName) => {
