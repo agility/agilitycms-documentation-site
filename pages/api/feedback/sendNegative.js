@@ -3,7 +3,7 @@ import axios from 'axios'
 export default async function handler(req, res) {
     if (req.method === 'POST') {
       // Process a POST request
-      console.log(process.env);
+      
       if(process.env.ENDPOINT_SEND_NEGATIVE_FEEDBACK_URL) {
         const endpointRes = await axios.post(process.env.ENDPOINT_SEND_NEGATIVE_FEEDBACK_URL, {
             url: req.body.url,

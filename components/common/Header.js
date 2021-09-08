@@ -92,7 +92,7 @@ const supportButton = {
   icon: SupportIcon
 }
 
-const searchClient = algoliasearch(process.env.NEXT_PUBLIC_APP_ID, process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY);
+const searchClient = algoliasearch(process.env.NEXT_PUBLIC_ALGOLIA_APP_ID, process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY);
 
 export default function Header({ mainMenuLinks }) {
   
