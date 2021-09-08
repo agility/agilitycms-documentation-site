@@ -31,7 +31,7 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-const ListofLinks = ({ module, customData }) => {
+const RightOrLeftAlignedLinks = ({ module, customData }) => {
     const { fields } = module;
     const { actions } = customData;
     return (
@@ -100,7 +100,7 @@ const ListofLinks = ({ module, customData }) => {
     )
 }
 
-ListofLinks.getCustomInitialProps = async ({
+RightOrLeftAlignedLinks.getCustomInitialProps = async ({
     agility,
     channelName,
     languageCode,
@@ -147,4 +147,4 @@ ListofLinks.getCustomInitialProps = async ({
   }
 
 
-export default ListofLinks;
+export default RightOrLeftAlignedLinks;
