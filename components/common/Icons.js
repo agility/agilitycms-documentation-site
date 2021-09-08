@@ -14,7 +14,8 @@ import {
     GlobeAltIcon,
     CogIcon,
     UsersIcon,
-    ExternalLinkIcon
+    ExternalLinkIcon,
+    StatusOnlineIcon
   } from '@heroicons/react/outline'
 
 export default {
@@ -33,5 +34,6 @@ export default {
     GlobeAltIcon,
     CogIcon,
     UsersIcon,
-    ExternalLinkIcon
+    ExternalLinkIcon,
+    StatusOnlineIcon
 }

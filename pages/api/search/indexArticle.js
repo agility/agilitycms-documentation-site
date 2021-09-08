@@ -10,7 +10,7 @@ export default async (req, res) => {
   
     const referenceName = req.body.referenceName;
 
-    if(!referenceName.endsWith('articles')) {
+    if(!referenceName || !referenceName.endsWith('articles')) {
         //kickout
         res.status(200).end();
         return;

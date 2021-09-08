@@ -128,14 +128,6 @@ export default function Header({ mainMenuLinks }) {
 
                     <Autocomplete />
 
-                    {/* <input
-                      id="search"
-                      name="search"
-                      className="block w-full bg-white border border-gray-300 rounded-md py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:outline-none focus:text-gray-900 focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      placeholder="Search"
-                      type="search"
-                      autoComplete="off"
-                    /> */}
                   </div>
                 </div>
               </div>
@@ -235,7 +227,7 @@ function Autocomplete() {
           return [
             // (3) Use an Algolia index source.
             {
-              sourceId: 'products',
+              sourceId: 'articles',
               getItemInputValue({ item }) {
                 return item.query;
               },
