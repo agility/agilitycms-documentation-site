@@ -2,7 +2,6 @@ import algoliasearch from "algoliasearch";
 import { client } from 'agility-graphql-client';
 import { gql } from "@apollo/client";
 import { getDynamicPageURL } from "@agility/nextjs/node";
-import nextConfig from "next.config";
 
 const algoliaClient = algoliasearch(process.env.ALGOLIA_APP_ID, process.env.ALGOLIA_ADMIN_API_KEY);
 const index = algoliaClient.initIndex("doc_site");
@@ -55,7 +54,7 @@ export default async (req, res) => {
         title: article.fields.title,
         content: convertBlocksToIndexableContent(content.blocks),
         section: article.fields.section.fields.title,
-        url: `${nextConfig.basePath}${url}`
+        url: `${url}`
     }
 
     //save it in Algolia
