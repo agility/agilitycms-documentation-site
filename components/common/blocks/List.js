@@ -1,4 +1,5 @@
 import React from "react";
+import { renderHTML } from "@agility/nextjs"
 
 const List =  ({ id, style, items }) => {
     if(style === 'unordered') {
@@ -21,7 +22,7 @@ const RenderUnorderedList = ({items}) => {
             {items.map((item, idx) => {
                 return (
                     <li key={idx}>
-                        {item.content} 
+                        <span dangerouslySetInnerHTML={renderHTML(item.content)}></span> 
                         <RenderUnorderedList items={item.items} />
                     </li>)
             })}
@@ -36,7 +37,7 @@ const RenderOrderedList = ({items}) => {
             {items.map((item, idx) => {
                 return (
                     <li key={idx}>
-                        {item.content} 
+                        <span dangerouslySetInnerHTML={renderHTML(item.content)}></span>
                         <RenderOrderedList items={item.items} />
                     </li>)
             })}
