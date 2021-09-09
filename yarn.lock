@@ -4576,7 +4576,7 @@ trouter@^3.1.0:
   dependencies:
     regexparam "^1.3.0"
 
-truncate-html@^1.0.3:
+truncate-html@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/truncate-html/-/truncate-html-1.0.4.tgz#268de7ba2650d697d748f1692a78197a88886e9d"
   integrity sha512-FpDAlPzpJ3jlZiNEahRs584FS3jOSQafgj4cC9DmAYPct6uMZDLY625+eErRd43G35vGDrNq3i7b4aYUQ/Bxqw==

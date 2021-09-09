@@ -35,7 +35,7 @@ const ListofLinks = ({ module, customData }) => {
     const { fields } = module;
     const { actions } = customData;
     return (
-    <div className="mx-auto my-10">
+    <div className="mx-auto my-10 sm:px-6">
         <h2 className="mb-10 text-center text-3xl font-extrabold tracking-tight text-gray-900">{fields.title}</h2>
         <div className="rounded-lg m-auto mb-20  max-w-5xl bg-gray-200 overflow-hidden shadow-xl divide-y divide-gray-200 sm:divide-y-0 sm:grid sm:grid-cols-2 sm:gap-px">
         {actions.map((action, actionIdx) => {
