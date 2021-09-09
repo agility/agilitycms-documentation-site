@@ -2,6 +2,7 @@ import algoliasearch from "algoliasearch";
 import { client } from 'agility-graphql-client';
 import { gql } from "@apollo/client";
 import { getDynamicPageURL } from "@agility/nextjs/node";
+import truncate from "truncate-html";
 
 const algoliaClient = algoliasearch(process.env.ALGOLIA_APP_ID, process.env.ALGOLIA_ADMIN_API_KEY);
 const index = algoliaClient.initIndex("doc_site");
@@ -30,6 +31,7 @@ export default async (req, res) => {
                     title
                     content
                     section {
+                        contentID
                         fields {
                             title
                         }
@@ -47,14 +49,25 @@ export default async (req, res) => {
     })
 
     const content = JSON.parse(article.fields.content);
+    const category = await getCategoryOfSection({sectionContentID: article.fields.section.contentID});
+    let categoryLabel = 'Page';
 
-    //TODO: add the category of this article
+    if(category) {
+        categoryLabel = category.fields.title;
+    }
+
+    let sectionLabel = null;
+    if(article.fields.section) {
+        sectionLabel = article.fields.section.title;
+    }
+
     const object = {
         objectID: article.contentID,
         title: article.fields.title,
         content: convertBlocksToIndexableContent(content.blocks),
-        section: article.fields.section.fields.title,
-        url: `${url}`
+        section: sectionLabel,
+        url: `${url}`,
+        category: categoryLabel
     }
 
     //save it in Algolia
@@ -84,5 +97,32 @@ const convertBlocksToIndexableContent = (blocks) => {
     })
 
     return textArr.join(' ').replace(/(<([^>]+)>)/ig, '').replace(/&nbsp;/g, ' ');
+}
+
+const getCategoryOfSection = async ({sectionContentID}) => {
+    const { data } = await client.query({
+        query: gql`    
+        {
+            doccategories  {
+                contentID
+                fields {
+                  title
+                  subTitle
+                  sections {
+                    contentID
+                  }
+                }
+              }
+        }`,
+    });
+
+    const category = data.doccategories.find((cat) => {
+        if(cat.fields.sections) {
+            return cat.fields.sections.find((section) => section.contentID === sectionContentID);
+        }
+    })
+
+    return category;
+
 }
 
