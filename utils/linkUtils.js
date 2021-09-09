@@ -6,13 +6,15 @@ const normalizeListedLinks = ({ listedLinks }) => {
     const articleUrls = getDynamicPageSitemapMapping();
 
     const list = listedLinks.map((item) => {
-        const hasArticle = item.fields.article;
-        if(hasArticle) {
+        const article = item.fields.article;
+        
+        if(article) {
+            let description = getArticleDescription(article);
             return {
-                title: item.fields.article.fields.title,
-                href: articleUrls[item.fields.article.contentID],
-                description: item.fields.article.fields.description ? item.fields.article.fields.description : item.fields.description,
-                icon: item.fields.article.fields.concept ? item.fields.article.fields.concept.fields.icon : null
+                title: article.fields.title,
+                href: articleUrls[article.contentID],
+                description: description,
+                icon: article.fields.concept ? article.fields.concept.fields.icon : null
             }
         } else {
             return {
@@ -32,21 +34,8 @@ const normalizeListedArticles = ({ listedArticles }) => {
 
     const list = listedArticles.map((item) => {
         const article = item.fields.article;
-        let description = article.fields.description;
-        if(!description) {
-            const firstParagraph = JSON.parse(article.fields.content).blocks.find((block) => block.type === 'paragraph');
-            console.log(firstParagraph)
-            if(firstParagraph) {
-                truncate.setup({
-                    stripTags: true,
-                    length: 155
-                })
-                description = truncate(firstParagraph.data.text);
-            } else {
-                description = null;
-            }
-        }
         if(article) {
+            let description = getArticleDescription(article);
             return {
                 title: article.fields.title,
                 href: articleUrls[article.contentID],
@@ -62,6 +51,24 @@ const normalizeListedArticles = ({ listedArticles }) => {
     return list.filter((article) => article !== null);
 }
 
+const getArticleDescription = (article) => {
+    let description = article.fields.description ? article.fields.description : null;
+    if(!description) {
+        const firstParagraph = JSON.parse(article.fields.content).blocks.find((block) => block.type === 'paragraph');
+        
+        if(firstParagraph) {
+            truncate.setup({
+                stripTags: true,
+                length: 100
+            })
+            description = truncate(firstParagraph.data.text);
+        } else {
+            description = null;
+        }
+    }
+    return description;
+
+}
 
 export {
     normalizeListedLinks,

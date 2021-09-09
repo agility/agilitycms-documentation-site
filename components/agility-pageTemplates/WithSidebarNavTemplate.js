@@ -7,7 +7,7 @@ const WithSidebarNavTemplate = (props) => {
 
     return (
         <div id="WithSidebarNavTemplate" className="flex flex-grow bg-white overflow-hidden">
-        <div className="hidden lg:px-2 lg:flex lg:flex-shrink-0 overflow-y-auto">
+        <div className="hidden lg:pl-2 lg:flex lg:flex-shrink-0 overflow-y-auto">
             <ContentZone name="SidebarContentZone" {...props} getModule={getModule} />
         </div>
         <div id="ScrollContainer" className="flex-grow overflow-y-auto">
