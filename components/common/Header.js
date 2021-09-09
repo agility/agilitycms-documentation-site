@@ -180,17 +180,18 @@ export default function Header({ mainMenuLinks }) {
           <Disclosure.Panel as="nav" className="lg:hidden" aria-label="Global">
             <div className="pt-2 pb-3 px-2 space-y-1">
               {navigation.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className={classNames(
-                    item.current ? 'bg-gray-100 text-gray-900' : 'text-gray-900 hover:bg-gray-50 hover:text-gray-900',
-                    'block rounded-md py-2 px-3 text-base font-medium'
-                  )}
-                  aria-current={item.current ? 'page' : undefined}
-                >
-                  {item.name}
-                </a>
+                <Link key={item.name}
+                    href={item.href}>
+                  <a
+                    className={classNames(
+                      item.current ? 'bg-gray-100 text-gray-900' : 'text-gray-900 hover:bg-gray-50 hover:text-gray-900',
+                      'block rounded-md py-2 px-3 text-base font-medium'
+                    )}
+                    aria-current={item.current ? 'page' : undefined}
+                  >
+                    {item.name}
+                  </a>
+                </Link>
               ))}
             </div>
             <div className="border-t border-gray-200 pt-4 pb-3">
