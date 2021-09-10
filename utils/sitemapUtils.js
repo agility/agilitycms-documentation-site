@@ -1,5 +1,6 @@
 import { client } from 'agility-graphql-client';
 import { gql } from "@apollo/client";
+import agility from '@agility/content-fetch'
 
 const getDynamicPageSitemapMapping = ()  => {
     //get the sitemap from cache
@@ -57,8 +58,32 @@ const READ_FULL_SITEMAP = gql`
     }
 `;
 
+const getDynamicPageSitemapMappingREST = async (isPreview) => {
+  const api = agility.getApi({
+    guid: process.env.AGILITY_GUID,
+    apiKey: isPreview ? process.env.AGILITY_API_PREVIEW_KEY : process.env.AGILITY_API_FETCH_KEY,
+    isPreview
+  })
+  const sitemapFlat = await api.getSitemapFlat({
+    channelName: 'website',
+    languageCode: 'en-us'
+  })
+
+  let articleUrls = {};
+    Object.keys(sitemapFlat).forEach((key) => {
+        const item = sitemapFlat[key];
+        if (item.contentID && item.contentID > 0) {
+            articleUrls[item.contentID] = item.path;
+        }
+    });
+    
+  return articleUrls;
+
+}
+
 export {
     getDynamicPageSitemapMapping,
+    getDynamicPageSitemapMappingREST,
     READ_SITEMAP_FOR_DYNAMIC_URL_RESOLUTION,
     READ_FULL_SITEMAP,
     READ_SITEMAP_FOR_HEADER
