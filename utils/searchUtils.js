@@ -1,5 +1,7 @@
 import { client } from 'agility-graphql-client';
 import { gql } from "@apollo/client";
+import truncate from 'truncate-html';
+import { getArticleDescription } from './linkUtils';
 
 const normalizeArticle = async ({ article, category, url }) => {
     const content = JSON.parse(article.fields.content);
@@ -7,23 +9,30 @@ const normalizeArticle = async ({ article, category, url }) => {
         category = await getCategoryOfSection({sectionContentID: article.fields.section.contentID});
     }
     let categoryLabel = 'Page';
-
     if(category) {
         categoryLabel = category.fields.title;
     }
 
     let sectionLabel = null;
     if(article.fields.section) {
-        sectionLabel = article.fields.section.title;
+        sectionLabel = article.fields.section.fields.title;
+    }
+
+    let conceptLabel = null;
+    if(article.fields.concept) {
+        conceptLabel = article.fields.concept.fields.title;
     }
 
     const object = {
         objectID: article.contentID,
         title: article.fields.title,
-        content: convertBlocksToIndexableContent(content.blocks),
+        description: getArticleDescription(article),
+        headings: getHeadings(content.blocks),
         section: sectionLabel,
+        concept: conceptLabel,
         url: `${url}`,
-        category: categoryLabel
+        category: categoryLabel,
+        itemOrder: article.properties.itemOrder
     }
 
     return object;
@@ -56,10 +65,24 @@ const getCategoryOfSection = async ({sectionContentID}) => {
 
 }
 
+const getHeadings = (blocks) => {
+    const headings = [];
+    blocks.forEach((block) => {
+        console.log(block);
+        if(block.type === 'header') {
+            headings.push(block.data.text);
+        }
+    });
+    return headings;
+}
+
 const convertBlocksToIndexableContent = (blocks) => {
     const textArr = [];
     blocks.map((block) => {
         if(block.type === 'paragraph') {
+            textArr.push(block.data.text)
+        }
+        if(block.type === 'header') {
             textArr.push(block.data.text)
         }
         // if(block.type === 'table') {
@@ -76,7 +99,14 @@ const convertBlocksToIndexableContent = (blocks) => {
         // }
     })
 
-    return textArr.join(' ').replace(/(<([^>]+)>)/ig, '').replace(/&nbsp;/g, ' ');
+    truncate.setup({ 
+        stripTags: true,
+         length: 100,
+         decodeEntities: true,
+         reserveLastWord: true
+    })
+
+    return truncate(textArr.join(' '));
 }
 
 export {

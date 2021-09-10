@@ -17,13 +17,14 @@
 import React, { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { SearchIcon } from '@heroicons/react/solid'
-import { LoginIcon, MenuIcon, XIcon, SupportIcon } from '@heroicons/react/outline'
+import { LoginIcon, MenuIcon, XIcon, SupportIcon, ChevronRightIcon } from '@heroicons/react/outline'
 import ButtonDropdown from '../common/ButtonDropdown'
 import Link from 'next/link'
 
 import algoliasearch from 'algoliasearch/lite';
 import { createAutocomplete } from '@algolia/autocomplete-core';
 import { getAlgoliaResults } from '@algolia/autocomplete-preset-algolia';
+import { renderHTML } from '@agility/nextjs'
 
 
 
@@ -117,7 +118,7 @@ export default function Header({ mainMenuLinks }) {
               </div>
               <div className="relative z-0 flex-1 px-2 flex items-center justify-center sm:absolute sm:inset-0">
               
-                <div className="w-full sm:max-w-xs">
+                <div className="w-full max-w-xs lg:max-w-xl">
                   <label htmlFor="search" className="sr-only">
                     Search
                   </label>
@@ -125,9 +126,7 @@ export default function Header({ mainMenuLinks }) {
                     <div className="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
                       <SearchIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </div>
-
                     <Autocomplete />
-
                   </div>
                 </div>
               </div>
@@ -288,8 +287,15 @@ function Autocomplete() {
                         })}
                       >
                         <Link href={item.url}>
-                          <a className="px-5 py-2 block w-full">
-                          {item.title}
+                          <a className="SearchResult px-5 py-2 block w-full hover:bg-gray-50">
+                              <span className="SearchResult__titlee block text-indigo-600 text-sm font-bold" dangerouslySetInnerHTML={renderHTML(item._highlightResult.title.value)}></span>
+
+                              {item._highlightResult.description &&
+                                <span className="SearchResult__description block text-sm mb-2" dangerouslySetInnerHTML={renderHTML(item._highlightResult.description.value)}></span>
+                              }
+                              <span className="SearchResult__category-section block text-xs font-light text-gray-600">
+                                {item.category} <ChevronRightIcon className="inline w-2"/> {item.section}
+                              </span>
                           </a>
                         </Link>
                         

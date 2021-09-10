@@ -72,5 +72,6 @@ const getArticleDescription = (article) => {
 
 export {
     normalizeListedLinks,
-    normalizeListedArticles
+    normalizeListedArticles,
+    getArticleDescription
 }

@@ -28,3 +28,7 @@
 #ContentContainer {
   min-height: 40rem;
 }
+
+/* .SearchResult mark {
+  @apply bg-indigo-900 text-white
+} */

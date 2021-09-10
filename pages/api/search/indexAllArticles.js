@@ -20,11 +20,20 @@ export default async (req, res) => {
                   title
                   subTitle
                   articles {
+                    properties {
+                      itemOrder
+                    }
                     contentID
                     fields {
                       title
                       content
+                      description
                       section {
+                        fields {
+                          title
+                        }
+                      }
+                      concept {
                         fields {
                           title
                         }

@@ -30,7 +30,14 @@ export default async (req, res) => {
                 fields {
                     title
                     content
+                    description
                     section {
+                        contentID
+                        fields {
+                            title
+                        }
+                    }
+                    concept {
                         contentID
                         fields {
                             title
