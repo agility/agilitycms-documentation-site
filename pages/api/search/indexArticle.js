@@ -60,8 +60,6 @@ export default async (req, res) => {
         url
     })
 
-    console.log(object);
-
     //save it in Algolia
     await index.saveObject(object)
 

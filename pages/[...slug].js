@@ -93,7 +93,6 @@ export async function getStaticProps({
         currentNodePath = '/';
       }
     }
-    
     return {
       name: node.menuText,
       href: path,
@@ -101,8 +100,40 @@ export async function getStaticProps({
     }
   })
 
+  const { data } = await client.query({
+    query: gql`
+    {
+      header  {
+        fields {
+          primaryDropdownLinks (sort: "properties.itemOrder") {
+            fields {
+              link {
+                text
+                href
+              }
+            }
+          }
+          secondaryDropdownLinks (sort: "properties.itemOrder") {
+            fields {
+              link {
+                text
+                href
+              }
+            }
+          }
+        }
+      }
+    }`
+  })
+
+
+  const primaryDropdownLinks = data.header[0].fields.primaryDropdownLinks.map((link) => link.fields.link);
+  const secondaryDropdownLinks = data.header[0].fields.secondaryDropdownLinks.map((link) => link.fields.link);
+
   const additionalPageProps = {
-    mainMenuLinks
+    mainMenuLinks,
+    primaryDropdownLinks,
+    secondaryDropdownLinks
   }
 
   return {

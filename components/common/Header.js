@@ -33,53 +33,6 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-const apiSDKsButton = {
-  name: 'APIs & SDKs',
-  children: [
-    {
-      name: 'Next.js',
-      href: '#',
-    },
-    {
-      name: 'Gatsby',
-      href: '#'
-    },
-    {
-      name: 'Nuxt',
-      href: '#'
-    },
-    {
-      name: 'Eleventy',
-      href: '#'
-    },
-    {
-      name: 'ASP.NET',
-      href: '#'
-    },
-    {
-      name: 'Angular',
-      href: '#'
-    },
-  ],
-  children2: [
-    {
-      name: 'JavaScript / Node',
-      href: '#'
-    },
-    {
-      name: 'Content Fetch REST API',
-      href: '#'
-    },
-    {
-      name: 'GraphQL API',
-      href: '#'
-    },
-    {
-      name: 'Content Management API',
-      href: '#'
-    }
-  ]
-}
 
 const loginButton = {
   name: 'Login',
@@ -95,11 +48,24 @@ const supportButton = {
 
 const searchClient = algoliasearch(process.env.NEXT_PUBLIC_ALGOLIA_APP_ID, process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY);
 
-export default function Header({ mainMenuLinks }) {
+export default function Header({ mainMenuLinks, primaryDropdownLinks, secondaryDropdownLinks }) {
   
   const navigation = mainMenuLinks;
-
-
+  const apiSDKsButton = {
+    name: 'APIs & SDKs',
+    children: primaryDropdownLinks.map((l) => {
+      return {
+        name: l.text,
+        href: l.href
+      }
+    }),
+    children2: secondaryDropdownLinks.map((l) => {
+      return {
+        name: l.text,
+        href: l.href
+      }
+    })
+  }
 
   return (
     <Disclosure id="Header" as="header" className="flex-shrink-0 bg-white shadow z-40 relative">

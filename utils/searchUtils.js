@@ -68,7 +68,6 @@ const getCategoryOfSection = async ({sectionContentID}) => {
 const getHeadings = (blocks) => {
     const headings = [];
     blocks.forEach((block) => {
-        console.log(block);
         if(block.type === 'header') {
             headings.push(block.data.text);
         }
