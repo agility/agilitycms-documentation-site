@@ -6,7 +6,7 @@ const Image =  ({ id, caption, file, stretched, withBackground, withBorder }) =>
     const size = file.size;
     return (
         <div>
-            <img src={file.url} alt={caption} />
+            <img className="m-auto" src={file.url} alt={caption} />
         </div>
     );
 };
