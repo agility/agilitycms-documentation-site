@@ -121,10 +121,12 @@ ListofLinks.getCustomInitialProps = async ({
             filer: 'properties.itemOrder',
             contentLinkDepth: 3
         })
-    
-        actions = normalizeListedLinks({
-            listedLinks: children.items
-        })
+        
+        if(children && children.items) {
+            actions = normalizeListedLinks({
+                listedLinks: children.items
+            })
+        }
     }
 
     return {
