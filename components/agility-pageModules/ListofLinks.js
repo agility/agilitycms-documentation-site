@@ -112,18 +112,21 @@ ListofLinks.getCustomInitialProps = async ({
     sitemapNode
   }) => {
     
-    const children = await agility.getContentList({
-        referenceName: item.fields.children.referencename,
-        languageCode,
-        filer: 'properties.itemOrder',
-        contentLinkDepth: 3
-    })
+    let actions = [];
+    
+    if(item.fields.children && item.fields.children.referencename) {
+        const children = await agility.getContentList({
+            referenceName: item.fields.children.referencename,
+            languageCode,
+            filer: 'properties.itemOrder',
+            contentLinkDepth: 3
+        })
+    
+        actions = normalizeListedLinks({
+            listedLinks: children.items
+        })
+    }
 
-    const actions = normalizeListedLinks({
-        listedLinks: children.items
-    })
-
-  
     return {
       actions
     }
