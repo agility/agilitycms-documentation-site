@@ -21,6 +21,14 @@
   color: #243e63;
 } */
 
+.prose {
+  @apply font-light
+}
+
+.prose b, .prose strong{
+  @apply font-bold
+}
+
 #__next {
   @apply h-full
 }
@@ -30,5 +38,5 @@
 }
 
 /* .SearchResult mark {
-  @apply bg-indigo-900 text-white
+  @apply bg-purple-900 text-white
 } */

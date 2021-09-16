@@ -52,17 +52,18 @@ const ListofLinks = ({ module, customData }) => {
                     actionIdx === 1 ? 'sm:rounded-tr-lg' : '',
                     actionIdx === actions.length - 2 ? 'sm:rounded-bl-lg' : '',
                     actionIdx === actions.length - 1 ? 'rounded-bl-lg rounded-br-lg sm:rounded-bl-none' : '',
-                    'relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500'
+                    'relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-purple-500'
                 )}
                 >
 
-                <div className=" flex flex-row">
+                <div className=" flex flex-row group">
                     <div className="mr-6">
                         {ActionIcon &&
                         <span
                             className={classNames(
-                            'bg-indigo-600',
+                            'bg-purple-800',
                             'text-white',
+                            'group-hover:bg-purple-600 transition-colors',
                             'rounded-lg inline-flex p-3 ring-4 ring-white'
                             )}
                         >

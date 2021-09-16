@@ -74,13 +74,20 @@ export default function Header({ mainMenuLinks, primaryDropdownLinks, secondaryD
           <div className="mx-auto px-2 sm:px-4  lg:px-8">
             <div className="relative h-16 flex justify-between">
               <div className="relative z-10 px-2 flex lg:px-0">
-                <div className="flex-shrink-0 flex items-center">
-                  <img
-                    className="block h-8 w-auto"
-                    src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
-                    alt="Workflow"
-                  />
-                </div>
+                
+                  <Link href="/">
+                    <a className="flex-shrink-0 flex items-center">
+                      
+                        <img
+                          className="block h-8 w-auto"
+                          src="/docs/assets/yellow.svg"
+                          alt="Workflow"
+                        />
+                        <span className="ml-1 mt-0 lg:mt-1 text-gray-600 text-2xl font-medium">docs</span>
+                      
+                      </a>
+                  </Link>
+                
               </div>
               <div className="relative z-0 flex-1 px-2 flex items-center justify-center sm:absolute sm:inset-0">
               
@@ -98,7 +105,7 @@ export default function Header({ mainMenuLinks, primaryDropdownLinks, secondaryD
               </div>
               <div className="relative z-10 flex items-center lg:hidden">
                 {/* Mobile menu button */}
-                <Disclosure.Button className="rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                <Disclosure.Button className="rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500">
                   <span className="sr-only">Open menu</span>
                   {open ? (
                     <XIcon className="block h-6 w-6" aria-hidden="true" />
@@ -109,7 +116,7 @@ export default function Header({ mainMenuLinks, primaryDropdownLinks, secondaryD
               </div>
 
               <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
-                <a href={loginButton.href} rel="noreferrer" className="flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                <a href={loginButton.href} rel="noreferrer" className="flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-purple-800 hover:bg-purple-600">
                         {loginButton.name}
                 </a>
               </div>
@@ -230,9 +237,11 @@ function Autocomplete() {
         {...autocomplete.getFormProps({ inputElement: inputRef.current })}
       >
         <input 
-        className="block w-full bg-white border border-gray-300 rounded-md py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:outline-none focus:text-gray-900 focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        placeholder="Search docs..."
-         {...autocomplete.getInputProps({})} />
+        className="block w-full bg-white border border-gray-300 rounded-md py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:outline-none focus:text-gray-900 focus:placeholder-gray-400 focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+         {...autocomplete.getInputProps({})
+         } 
+         placeholder="Search docs..."
+         />
       </form>
       
       <div className="aa-Panel relative" {...autocomplete.getPanelProps({})}>
@@ -255,7 +264,7 @@ function Autocomplete() {
                       >
                         <Link href={item.url}>
                           <a className="SearchResult px-5 py-2 block w-full hover:bg-gray-50">
-                              <span className="SearchResult__titlee block text-indigo-600 text-sm font-bold" dangerouslySetInnerHTML={renderHTML(item._highlightResult.title.value)}></span>
+                              <span className="SearchResult__titlee block text-purple-900 text-sm font-bold" dangerouslySetInnerHTML={renderHTML(item._highlightResult.title.value)}></span>
 
                               {item._highlightResult.description &&
                                 <span className="SearchResult__description block text-sm mb-2" dangerouslySetInnerHTML={renderHTML(item._highlightResult.description.value)}></span>

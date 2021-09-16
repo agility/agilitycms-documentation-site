@@ -84,7 +84,7 @@ const ArticleListing = ({ module, customData }) => {
                                 </div>
                                 {article.concept && 
                                 <div className="mt-6 flex items-center">
-                                    <span className="bg-indigo-100 text-indigo-800 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium">
+                                    <span className="bg-purple-100 text-purple-800 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium">
                                         {article.concept}
                                     </span>
                                 </div>

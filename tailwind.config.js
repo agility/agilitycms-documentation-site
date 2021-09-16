@@ -12,9 +12,9 @@ module.exports = {
       },
     },
     fontFamily: {
-      display: ["Inter", "system-ui"],
+      display: ["'Muli'", "system-ui"],
       sans: [
-        "Inter var",
+        "'Muli'",
         "system-ui",
         "-apple-system",
         "BlinkMacSystemFont",
@@ -80,6 +80,9 @@ module.exports = {
           800: "#192b45",
           900: "#16253b",
         },
+        purple: {
+          800: "#5800d4"
+        }
       },
     },
   },

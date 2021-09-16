@@ -30,10 +30,10 @@ const PreviewWiget = ({ isPreview, isDevelopmentMode }) => {
   return (
     <div title="You are in Preview Mode" className="fixed bottom-0 z-50 pb-2 sm:pb-5">
     <div className="w-44 mx-auto px-2 sm:px-6 lg:px-8">
-      <div className="p-2 rounded-lg bg-indigo-600 shadow-lg sm:p-3">
+      <div className="p-2 rounded-lg bg-purple-600 shadow-lg sm:p-3">
         <div className="flex items-center justify-between flex-wrap">
           <div className="w-0 flex-1 flex items-center">
-            <span className="flex p-2 rounded-lg bg-indigo-800">
+            <span className="flex p-2 rounded-lg bg-purple-800">
               <EyeIcon className="h-6 w-6 text-white" aria-hidden="true" />
             </span>
             
@@ -42,7 +42,7 @@ const PreviewWiget = ({ isPreview, isDevelopmentMode }) => {
             <button
               type="button"
               title="Click to exit Preview Mode"
-              className="-mr-1 flex p-2 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-white"
+              className="-mr-1 flex p-2 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-white"
               onClick={handleView}
             >
               <span className="sr-only">Close Preview</span>

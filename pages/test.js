@@ -34,7 +34,7 @@ const navigation = [
   { name: 'Recent', href: '#', icon: ClockIcon, current: false },
 ]
 const teams = [
-  { name: 'Engineering', href: '#', bgColorClass: 'bg-indigo-500' },
+  { name: 'Engineering', href: '#', bgColorClass: 'bg-purple-500' },
   { name: 'Human Resources', href: '#', bgColorClass: 'bg-green-500' },
   { name: 'Customer Success', href: '#', bgColorClass: 'bg-yellow-500' },
 ]
@@ -731,7 +731,7 @@ export default function Example() {
                   type="text"
                   name="search"
                   id="search"
-                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-9 sm:text-sm border-gray-300 rounded-md"
+                  className="focus:ring-purple-500 focus:border-purple-500 block w-full pl-9 sm:text-sm border-gray-300 rounded-md"
                   placeholder="Search"
                 />
               </div>

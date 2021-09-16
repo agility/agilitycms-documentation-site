@@ -49,7 +49,7 @@ const SideBarNav = ({ module, dynamicPageItem, customData}) => {
                         item.current
                           ? 'bg-gray-100 text-gray-900'
                           : 'bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900',
-                        'group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'
+                        'group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500'
                       )}
                     >
                       <svg
