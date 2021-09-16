@@ -110,23 +110,27 @@ RightOrLeftAlignedLinks.getCustomInitialProps = async ({
     sitemapNode
   }) => {
     
+    let actions = [];
+    
+    if(item.fields.children && item.fields.children.referencename) {
+        const children = await agility.getContentList({
+            referenceName: item.fields.children.referencename,
+            languageCode,
+            filer: 'properties.itemOrder',
+            contentLinkDepth: 3
+        })
+        
+        if(children && children.items) {
+            actions = normalizeListedLinks({
+                listedLinks: children.items
+            })
+        }
+    }
 
-    const children = await agility.getContentList({
-        referenceName: item.fields.children.referencename,
-        languageCode,
-        filer: 'properties.itemOrder',
-        contentLinkDepth: 3
-    })
-
-    const actions = normalizeListedLinks({
-        listedLinks: children.items
-    })
-
-  
     return {
       actions
     }
-  
+    
   }
 
 
