@@ -35,7 +35,7 @@ function classNames(...classes) {
 
 
 const loginButton = {
-  name: 'Login',
+  name: 'Sign In',
   href: 'https://manager.agilitycms.com/',
   icon: LoginIcon
 }

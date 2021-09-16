@@ -1,7 +1,7 @@
 module.exports = {
   mode: "jit",
   purge: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
-  darkMode: false, // or 'media' or 'class'
+  darkMode: 'class', // or 'media' or 'class'
   theme: {
     container: {
       screens: {
@@ -81,7 +81,8 @@ module.exports = {
           900: "#16253b",
         },
         purple: {
-          800: "#5800d4"
+          800: "#5800d4",
+          900: '#4600a8'
         }
       },
     },
@@ -89,5 +90,5 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [require("@tailwindcss/typography"), require('@tailwindcss/forms'), require('@tailwindcss/aspect-ratio'), require("nightwind")],
+  plugins: [require("@tailwindcss/typography"), require('@tailwindcss/forms'), require('@tailwindcss/aspect-ratio')],
 };
