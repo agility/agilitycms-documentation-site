@@ -25,7 +25,7 @@ export default function HeroCategories({ module }) {
     return (
         <div className="bg-white">
         {/* Header */}
-        <div className="relative pb-32 bg-gray-900">
+        <div className="relative pb-32 bg-gray-100">
             <div className="absolute inset-0">
                 {/* <img
                     className=""
@@ -34,8 +34,8 @@ export default function HeroCategories({ module }) {
                 /> */}
             </div>
             <div className="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8">
-            <h1 className="text-center text-4xl font-extrabold tracking-tight text-white md:text-5xl lg:text-6xl">{fields.title}</h1>
-            <p className="text-center mt-6 text-xl text-white">
+            <h1 className="text-center text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl">{fields.title}</h1>
+            <p className="text-center mt-6 text-xl">
                 {fields.subTitle}
             </p>
             </div>
