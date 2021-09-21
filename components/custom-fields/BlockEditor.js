@@ -112,7 +112,7 @@ const setupEditor = (auth, height, value, setValue, setHeight, containerRef, fie
             link: {
                 class: LinkAutocomplete,
                 config: {
-                    endpoint: '/api/link/search',
+                    endpoint: `${nextConfig.basePath}/api/link/search`,
                     queryParam: 'q'
                 }
             }
