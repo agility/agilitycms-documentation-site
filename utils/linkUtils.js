@@ -20,7 +20,7 @@ const normalizeListedLinks = ({ listedLinks }) => {
             return {
                 title: item.fields.explicitURL?.text,
                 href: item.fields.explicitURL?.href,
-                description: item.fields.description,
+                description: item.fields.description ? item.fields.description : null,
                 icon: item.fields.explicitIcon ? item.fields.explicitIcon : null
             }
         }
