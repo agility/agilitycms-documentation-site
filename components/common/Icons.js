@@ -17,7 +17,8 @@ import {
     ExternalLinkIcon,
     StatusOnlineIcon,
     CalendarIcon,
-    SearchCircleIcon
+    SearchCircleIcon,
+    DatabaseIcon
   } from '@heroicons/react/outline'
 
 export default {
@@ -39,5 +40,6 @@ export default {
     ExternalLinkIcon,
     StatusOnlineIcon,
     CalendarIcon,
-    SearchCircleIcon
+    SearchCircleIcon,
+    DatabaseIcon
 }
