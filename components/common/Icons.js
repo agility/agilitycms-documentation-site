@@ -24,7 +24,6 @@ import {
     CheckCircleIcon,
     ClockIcon,
     UserGroupIcon,
-    SupportIcon,
     PresentationChartLineIcon
   } from '@heroicons/react/outline'
 
