@@ -21,7 +21,7 @@ const normalizeListedLinks = ({ listedLinks }) => {
                 title: item.fields.explicitURL?.text,
                 href: item.fields.explicitURL?.href,
                 description: item.fields.description,
-                icon: item.fields.explicitIcon
+                icon: item.fields.explicitIcon ? item.fields.explicitIcon : null
             }
         }
     })
