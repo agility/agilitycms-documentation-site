@@ -22,7 +22,10 @@ import {
     ThumbUpIcon,
     ReplyIcon,
     CheckCircleIcon,
-    ClockIcon
+    ClockIcon,
+    UserGroupIcon,
+    SupportIcon,
+    PresentationChartLineIcon
   } from '@heroicons/react/outline'
 
 export default {
@@ -49,5 +52,8 @@ export default {
     ThumbUpIcon,
     ReplyIcon,
     CheckCircleIcon,
-    ClockIcon
+    ClockIcon,
+    UserGroupIcon,
+    SupportIcon,
+    PresentationChartLineIcon
 }
