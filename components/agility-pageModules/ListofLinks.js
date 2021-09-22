@@ -122,7 +122,6 @@ ListofLinks.getCustomInitialProps = async ({
             contentLinkDepth: 3
         })
 
-        console.log(children.items)
         
         if(children && children.items) {
             actions = normalizeListedLinks({
