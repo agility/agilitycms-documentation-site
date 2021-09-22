@@ -24,7 +24,8 @@ import {
     CheckCircleIcon,
     ClockIcon,
     UserGroupIcon,
-    PresentationChartLineIcon
+    PresentationChartLineIcon,
+    ShieldCheckIcon
   } from '@heroicons/react/outline'
 
 export default {
@@ -54,5 +55,6 @@ export default {
     ClockIcon,
     UserGroupIcon,
     SupportIcon,
-    PresentationChartLineIcon
+    PresentationChartLineIcon,
+    ShieldCheckIcon
 }
