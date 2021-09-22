@@ -20,7 +20,9 @@ import {
     SearchCircleIcon,
     DatabaseIcon,
     ThumbUpIcon,
-    ReplyIcon
+    ReplyIcon,
+    CheckCircleIcon,
+    ClockIcon
   } from '@heroicons/react/outline'
 
 export default {
@@ -45,5 +47,7 @@ export default {
     SearchCircleIcon,
     DatabaseIcon,
     ThumbUpIcon,
-    ReplyIcon
+    ReplyIcon,
+    CheckCircleIcon,
+    ClockIcon
 }
