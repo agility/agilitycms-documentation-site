@@ -47,7 +47,6 @@ export default function ButtonDropdown({ name, children, children2 }) {
               <Menu.Item key={item.name}>
                 <Link href={item.href}>
                   <a
-                    href={item.href}
                     rel="noreferrer"
                     className='text-gray-700 block px-4 py-2 text-sm hover:bg-gray-50 hover:text-gray-900'
                   >
