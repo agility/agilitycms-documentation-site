@@ -5,6 +5,7 @@ import BlockEditor from "./BlockEditor";
 import HeroCategories from './HeroCategories'
 import ListOfLinks from './ListofLinks'
 import RightOrLeftAlignedLinks from './RightOrLeftAlignedLinks'
+import RightOrLeftAlignedImageLinks from './RighOrLeftAlignedImageLinks'
 import ArticleListing from "./ArticleListing";
 import HeroHeading from "./HeroHeading";
 
@@ -19,6 +20,7 @@ const allModules = [
   { name: "HeroCategories", module: HeroCategories },
   { name: "ListOfLinks", module: ListOfLinks },
   { name: "RightOrLeftAlignedLinks", module: RightOrLeftAlignedLinks },
+  { name: "RightOrLeftAlignedImageLinks", module: RightOrLeftAlignedImageLinks },
   { name: "ArticleListing", module: ArticleListing },
   { name: "HeroHeading", module: HeroHeading },
 ];
