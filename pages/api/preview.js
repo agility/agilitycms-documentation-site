@@ -1,4 +1,5 @@
 import { validatePreview, getDynamicPageURL } from "@agility/nextjs/node";
+import nextConfig from "next.config";
 
 // A simple example for testing it manually from your browser.
 // If this is located at pages/api/preview.js, then
@@ -21,7 +22,7 @@ export default async (req, res) => {
 	if(req.query.ContentID) {
 		const dynamicPath = await getDynamicPageURL({contentID: req.query.ContentID, preview: true, slug: req.query.slug});
 		if(dynamicPath) {
-			previewUrl = dynamicPath;
+			previewUrl = `${nextConfig.basePath}${dynamicPath}`;
 		}
 	}
 

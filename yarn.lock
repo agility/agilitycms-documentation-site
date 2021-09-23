@@ -28,10 +28,10 @@
     dotenv "^8.2.0"
     proper-lockfile "^4.1.2"
 
-"@agility/nextjs@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@agility/nextjs/-/nextjs-0.4.0.tgz#d34e8ff68a8a2282f89b8c936dcd28f37591de7f"
-  integrity sha512-pTP/faetbofmdRnRfe+j7TGvSb8mIvLkHGzXsUpH/0GFfgQeDxNQcssBcouKjEDHkZiozzDq1GNVsUmHLvVkpQ==
+"@agility/nextjs@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@agility/nextjs/-/nextjs-0.4.1.tgz#113666ed67b2508d9cf28f5fa6266b5ad3770166"
+  integrity sha512-unQpRL6qrHSRVyiP16rJVCF9m+1gDi8REPI25YvCTpjiLqIsiKbLKg8l1/1DuWvngdTtYrPWR00hJYCWDxphDQ==
 
 "@algolia/autocomplete-core@^1.3.0":
   version "1.3.0"

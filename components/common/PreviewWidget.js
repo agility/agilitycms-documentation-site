@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 /* This example requires Tailwind CSS v2.0+ */
 import { SpeakerphoneIcon, XIcon, EyeIcon } from '@heroicons/react/outline'
+import nextConfig from "next.config";
 
 
 /**
@@ -22,7 +23,7 @@ const PreviewWiget = ({ isPreview, isDevelopmentMode }) => {
       
         const exit = confirm("Would you like to exit Preview Mode?");
         if (exit === true) {
-            window.location.href = `/api/exitPreview?slug=${window.location.pathname}`;
+            window.location.href = `${nextConfig.basePath}/api/exitPreview?slug=${window.location.pathname}`;
         } 
     }
   };
