@@ -48,7 +48,13 @@ function Layout(props) {
 
   const AgilityPageTemplate = getPageTemplate(pageTemplateName);
 
-  if (dynamicPageItem?.seo?.metaDescription) {
+  // if we have a dynamic item and it has a field called `decription` use it
+  if(dynamicPageItem?.fields?.description && dynamicPageItem.fields.description.length > 0) {
+    page.seo.metaDescription = dynamicPageItem?.fields?.description;
+  }
+
+  // 
+  if (dynamicPageItem?.seo?.metaDescription && dynamicPageItem.seo.metaDescription.length > 0) {
     page.seo.metaDescription = dynamicPageItem.seo.metaDescription;
   }
 
