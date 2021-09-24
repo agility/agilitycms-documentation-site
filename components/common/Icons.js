@@ -28,7 +28,8 @@ import {
     ShieldCheckIcon,
     ShareIcon,
     ColorSwatchIcon,
-    KeyIcon
+    KeyIcon,
+    DocumentReportIcon
   } from '@heroicons/react/outline'
 
 export default {
@@ -62,5 +63,6 @@ export default {
     ShieldCheckIcon,
     ShareIcon,
     ColorSwatchIcon,
-    KeyIcon
+    KeyIcon,
+    DocumentReportIcon
 }
