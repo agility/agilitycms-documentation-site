@@ -16,6 +16,8 @@ function Layout(props) {
   const { page, sitemapNode, dynamicPageItem, notFound, pageTemplateName } =
     props;
 
+  const router = useRouter();
+
   // if the route changes, scroll our scrollable container back to the top
   useEffect(() => {
     const handleStop = () => {
@@ -34,7 +36,6 @@ function Layout(props) {
 
   // If the page is not yet generated, this will be displayed
   // initially until getStaticProps() finishes running
-  const router = useRouter();
   if (router.isFallback) {
     return <LoadingWidget message="Loading Page" />;
   }
