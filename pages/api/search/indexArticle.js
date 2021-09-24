@@ -18,52 +18,61 @@ export default async (req, res) => {
     }
 
     const contentID = req.body.contentID;
+    const state = req.body.state;
+
+    if(contentID && state && state === 'Deleted') {
+        await index.deleteObject(contentID);
+        return;
+    } else {
     
-    const { data } = await client.query({
-        query: gql`    
-        {
-            ${referenceName} (contentID: ${contentID})  {
-                contentID
-                properties {
-                    itemOrder
-                }
-                fields {
-                    title
-                    content
-                    description
-                    section {
-                        contentID
-                        fields {
-                            title
+        const { data } = await client.query({
+            query: gql`    
+            {
+                ${referenceName} (contentID: ${contentID})  {
+                    contentID
+                    properties {
+                        itemOrder
+                    }
+                    fields {
+                        title
+                        content
+                        description
+                        section {
+                            contentID
+                            fields {
+                                title
+                            }
+                        }
+                        concept {
+                            contentID
+                            fields {
+                                title
+                            }
                         }
                     }
-                    concept {
-                        contentID
-                        fields {
-                            title
-                        }
-                    }
                 }
-            }
-        }`,
-    });
-    
-    const article = data[referenceName][0];
+            }`,
+        });
+        
+        const article = data[referenceName][0];
 
-    const url = await getDynamicPageURL({
-        contentID: article.contentID,
-        preview: false
-    })
+        const url = await getDynamicPageURL({
+            contentID: article.contentID,
+            preview: false
+        })
 
-    const object = await normalizeArticle({
-        article,
-        url
-    })
+        const object = await normalizeArticle({
+            article,
+            url
+        })
 
-    //save it in Algolia
-    await index.saveObject(object)
+        //save it in Algolia
+        await index.saveObject(object)
 
-    res.status(200).json(object);
+       
+    }
+
+    res.status(200).json();
 };
 
 
