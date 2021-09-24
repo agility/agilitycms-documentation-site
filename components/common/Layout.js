@@ -16,6 +16,22 @@ function Layout(props) {
   const { page, sitemapNode, dynamicPageItem, notFound, pageTemplateName } =
     props;
 
+  // if the route changes, scroll our scrollable container back to the top
+  useEffect(() => {
+    const handleStop = () => {
+      const $scrollContainer = document.getElementById('ScrollContainer');
+      if($scrollContainer) {
+        $scrollContainer.scrollTop = 0;
+      }
+    }
+    router.events.on('routeChangeComplete', handleStop)
+    router.events.on('routeChangeError', handleStop)
+    return () => {
+      router.events.off('routeChangeComplete', handleStop)
+      router.events.off('routeChangeError', handleStop)
+    }
+  }, [router])
+
   // If the page is not yet generated, this will be displayed
   // initially until getStaticProps() finishes running
   const router = useRouter();
@@ -28,23 +44,6 @@ function Layout(props) {
     return <Error statusCode={404} />;
   }
 
-  // if the route changes, scroll our scrollable container back to the top
-  useEffect(() => {
-    const handleStop = () => {
-      const $scrollContainer = document.getElementById('ScrollContainer');
-      if($scrollContainer) {
-        $scrollContainer.scrollTop = 0;
-      }
-    }
-
-    router.events.on('routeChangeComplete', handleStop)
-    router.events.on('routeChangeError', handleStop)
-
-    return () => {
-      router.events.off('routeChangeComplete', handleStop)
-      router.events.off('routeChangeError', handleStop)
-    }
-  }, [router])
 
   const AgilityPageTemplate = getPageTemplate(pageTemplateName);
 
