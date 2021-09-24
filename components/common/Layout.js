@@ -1,4 +1,5 @@
 import { getPageTemplate } from "components/agility-pageTemplates";
+import { useEffect } from "react";
 import { handlePreview } from "@agility/nextjs";
 import { useRouter } from "next/router";
 import Error from "next/error";
@@ -26,6 +27,24 @@ function Layout(props) {
   if (notFound === true) {
     return <Error statusCode={404} />;
   }
+
+  // if the route changes, scroll our scrollable container back to the top
+  useEffect(() => {
+    const handleStop = () => {
+      const $scrollContainer = document.getElementById('ScrollContainer');
+      if($scrollContainer) {
+        $scrollContainer.scrollTop = 0;
+      }
+    }
+
+    router.events.on('routeChangeComplete', handleStop)
+    router.events.on('routeChangeError', handleStop)
+
+    return () => {
+      router.events.off('routeChangeComplete', handleStop)
+      router.events.off('routeChangeError', handleStop)
+    }
+  }, [router])
 
   const AgilityPageTemplate = getPageTemplate(pageTemplateName);
 
