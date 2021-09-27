@@ -245,7 +245,23 @@ function Autocomplete() {
               <div key={`source-${index}`} className="aa-Source absolute bg-white z-50 border border-gray-300 w-full">
                 {items.length > 0 && (
                   <ul className="aa-List" {...autocomplete.getListProps()}>
-                    {items.map((item) => (
+                    {items.map((item) => {
+                      let description = null;
+                      if(item._snippetResult?.content && item._snippetResult.content.length > 0) {
+                        let snippetBlock = item._snippetResult.content.find((block) => {
+                          return block.data.text.matchLevel === "full";
+                        })
+                        
+                        if(snippetBlock) {
+                          description = snippetBlock.data.text.value;
+                        }
+                      }
+
+                      if(!description) {
+                        description = item._highlightResult.description.value
+                      }
+                       
+                      return (
                       <li
                         key={item.objectID}
                         className="aa-Item"
@@ -258,8 +274,8 @@ function Autocomplete() {
                           <a className="SearchResult px-5 py-2 block w-full hover:bg-gray-50">
                               <span className="SearchResult__titlee block text-indigo-600 text-sm font-bold" dangerouslySetInnerHTML={renderHTML(item._highlightResult.title.value)}></span>
 
-                              {item._highlightResult.description &&
-                                <span className="SearchResult__description block text-sm mb-2" dangerouslySetInnerHTML={renderHTML(item._highlightResult.description.value)}></span>
+                              {description &&
+                                <span className="SearchResult__description block text-sm mb-2" dangerouslySetInnerHTML={renderHTML(description)}></span>
                               }
                               <span className="SearchResult__category-section block text-xs font-light text-gray-600">
                                 {item.category} <ChevronRightIcon className="inline w-2"/> {item.section}
@@ -268,7 +284,7 @@ function Autocomplete() {
                         </Link>
                         
                       </li>
-                    ))}
+                    )})}
                   </ul>
                 )}
               </div>

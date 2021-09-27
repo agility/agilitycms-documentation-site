@@ -28,6 +28,7 @@ const normalizeArticle = async ({ article, category, url }) => {
         title: article.fields.title,
         description: getArticleDescription(article),
         headings: getHeadings(content.blocks),
+        content: JSON.parse(article.fields.content).blocks,
         section: sectionLabel,
         concept: conceptLabel,
         url: `${url}`,
