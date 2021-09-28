@@ -29,7 +29,8 @@ import {
     ShareIcon,
     ColorSwatchIcon,
     KeyIcon,
-    DocumentReportIcon
+    DocumentReportIcon,
+    ClipboardListIcon
   } from '@heroicons/react/outline'
 
 export default {
@@ -64,5 +65,6 @@ export default {
     ShareIcon,
     ColorSwatchIcon,
     KeyIcon,
-    DocumentReportIcon
+    DocumentReportIcon,
+    ClipboardListIcon
 }
