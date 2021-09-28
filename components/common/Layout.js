@@ -8,6 +8,7 @@ import LoadingWidget from "./LoadingWidget";
 import Header from '../common/Header'
 import PreviewWiget from "./PreviewWidget";
 import nextConfig from "next.config";
+import Script from 'next/script';
 
 // set up handle preview
 const isPreview = handlePreview({previewHandlerUrl: `${nextConfig.basePath}/api/preview`});
@@ -28,6 +29,7 @@ function Layout(props) {
     }
     router.events.on('routeChangeComplete', handleStop)
     router.events.on('routeChangeError', handleStop)
+
     return () => {
       router.events.off('routeChangeComplete', handleStop)
       router.events.off('routeChangeError', handleStop)
@@ -60,6 +62,8 @@ function Layout(props) {
 
   return (
     <>
+      {/* Zendesk Chat */}
+      <Script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=75a855ec-8bb9-4017-a4d7-ebf0e3d7c77a"> </Script>
       <HeadSEO
         title={sitemapNode?.title}
         description={page.seo.metaDescription}
