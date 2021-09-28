@@ -112,7 +112,7 @@ ArticleListing.getCustomInitialProps = async ({
     const children = await agility.getContentList({
         referenceName: item.fields.listedArticles.referencename,
         languageCode,
-        filer: 'properties.itemOrder',
+        sort: 'properties.itemOrder',
         contentLinkDepth: 3
     })
 

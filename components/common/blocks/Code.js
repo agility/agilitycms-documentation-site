@@ -1,12 +1,10 @@
-import React from "react";
+import Highlight from 'react-highlight'
 
 const Code =  ({ id, code}) => {
     return (
-        <pre>
-            <code className="block rounded-lg bg-gray-100 text-gray-700 px-5 py-5 whitespace-pre overflow-x-auto mb-8 mt-8">
-                {code}
-            </code>
-        </pre>
+        <Highlight className="block rounded-lg bg-gray-100 p-5 my-8">
+            {code}
+        </Highlight>
     );
 };
 
