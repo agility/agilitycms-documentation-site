@@ -29,6 +29,18 @@
   min-height: 40rem;
 }
 
+.prose code {
+  @apply text-base bg-gray-100 px-2 py-1 text-gray-700 font-normal
+}
+
+.prose code:before {
+  content: none;
+}
+
+.prose code:after {
+  content: none;
+}
+
 /* .SearchResult mark {
   @apply bg-indigo-900 text-white
 } */
