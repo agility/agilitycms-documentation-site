@@ -18,27 +18,23 @@ const CMSWidget = ({ isPreview, isDevelopmentMode, page, dynamicPageItem }) => {
   useEffect(() => {
       function onKey(e) {
         if ((e.metaKey || e.ctrlKey) && e.code === 'KeyQ') {
-            //setOpen(!!open);
             setOpen(!open);
-            console.log(open);
         }  
       }
       window.addEventListener('keydown', onKey);
       return () => window.removeEventListener('keydown', onKey)
   })
 
-
-  let itemPath = null;
-  if(dynamicPageItem) {
-      itemPath = `content/listitem-${dynamicPageItem.contentID}`;
-  } else {
-      itemPath = `pages/page-${page.pageID}`
-  }
-
-  const cmsURL = `https://manager.agilitycms.com/instance/${process.env.NEXT_PUBLIC_AGILITY_GUID}/en-us/${itemPath}`;
-
   const editPage = () => {
-      window.open(cmsURL)
+    let itemPath = null;
+    if(dynamicPageItem) {
+        itemPath = `content/listitem-${dynamicPageItem.contentID}`;
+    } else {
+        itemPath = `pages/page-${page.pageID}`
+    }
+  
+    const cmsURL = `https://manager.agilitycms.com/instance/${process.env.NEXT_PUBLIC_AGILITY_GUID}/en-us/${itemPath}`;
+    window.open(cmsURL)
   }
 
   if(open) {
