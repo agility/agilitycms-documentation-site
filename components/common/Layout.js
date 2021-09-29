@@ -6,7 +6,8 @@ import Error from "next/error";
 import HeadSEO from "./HeadSEO";
 import LoadingWidget from "./LoadingWidget";
 import Header from '../common/Header'
-import PreviewWiget from "./PreviewWidget";
+import PreviewWidget from "./PreviewWidget";
+import CMSWidget from "./CMSWidget";
 import nextConfig from "next.config";
 import Script from 'next/script';
 
@@ -76,7 +77,8 @@ function Layout(props) {
           <div id="Site" className="flex flex-col h-full">
             <Header mainMenuLinks={props.mainMenuLinks} primaryDropdownLinks={props.primaryDropdownLinks} secondaryDropdownLinks={props.secondaryDropdownLinks} />
             <AgilityPageTemplate {...props} />
-            <PreviewWiget isPreview={props.isPreview} isDevelopmentMode={props.isDevelopmentMode} />
+            <PreviewWidget isPreview={props.isPreview} isDevelopmentMode={props.isDevelopmentMode} />
+            <CMSWidget page={props.page} dynamicPageItem={props.dynamicPageItem} isPreview={props.isPreview} isDevelopmentMode={props.isDevelopmentMode} />
           </div>
         )}
       </div>
