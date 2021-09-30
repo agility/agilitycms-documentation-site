@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { renderHTML } from "@agility/nextjs";
+import React from "react";
 import Blocks from '../common/blocks/index'
 
 const BlockEditor = ({ module }) => {

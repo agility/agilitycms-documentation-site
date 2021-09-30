@@ -2,6 +2,7 @@ import { getPageTemplate } from "components/agility-pageTemplates";
 import { useEffect } from "react";
 import { handlePreview } from "@agility/nextjs";
 import { useRouter } from "next/router";
+import nProgress from "nprogress";
 import Error from "next/error";
 import HeadSEO from "./HeadSEO";
 import LoadingWidget from "./LoadingWidget";
@@ -22,18 +23,27 @@ function Layout(props) {
 
   // if the route changes, scroll our scrollable container back to the top
   useEffect(() => {
-    const handleStop = () => {
+    const handleScrollTop = () => {
       const $scrollContainer = document.getElementById('ScrollContainer');
       if($scrollContainer) {
         $scrollContainer.scrollTop = 0;
       }
     }
-    router.events.on('routeChangeComplete', handleStop)
-    router.events.on('routeChangeError', handleStop)
+    //scroll top
+    router.events.on('routeChangeComplete', handleScrollTop)
+    router.events.on('routeChangeError', handleScrollTop)
+
+    //load progress
+    router.events.on("routeChangeStart", nProgress.start);
+    router.events.on("routeChangeError", nProgress.done);
+    router.events.on("routeChangeComplete", nProgress.done);
 
     return () => {
-      router.events.off('routeChangeComplete', handleStop)
-      router.events.off('routeChangeError', handleStop)
+      router.events.off('routeChangeComplete', handleScrollTop)
+      router.events.off('routeChangeError', handleScrollTop)
+      router.events.off("routeChangeStart", nProgress.start);
+      router.events.off("routeChangeError", nProgress.done);
+      router.events.off("routeChangeComplete", nProgress.done);
     }
   }, [router])
 

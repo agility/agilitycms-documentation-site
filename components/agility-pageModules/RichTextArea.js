@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
-import { renderHTML } from "@agility/nextjs";
-import ArticleNav from '../common/ArticleNav'
+import React from "react";
+import { renderHTML } from "../../utils/htmlUtils";
 
 const RichTextArea = ({ module }) => {
   // get module fields

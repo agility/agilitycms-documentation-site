@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getHrefRel, getHrefTarget } from '../../utils/linkUtils'
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -47,7 +48,7 @@ const RightOrLeftAlignedImageLinks = ({ module, customData }) => {
                     
                     <div className="">
                         <h3 className="text-lg font-medium">
-                            <Link href={action.href}>
+                            <Link href={action.href} target={action.target} rel={action.rel}>
                                 <a className="focus:outline-none">
                                     {/* Extend touch target to entire panel */}
                                     <span className="absolute inset-0" aria-hidden="true" />
@@ -91,7 +92,9 @@ RightOrLeftAlignedImageLinks.getCustomInitialProps = async ({
                     title: item.fields.uRL?.text,
                     href: item.fields.uRL?.href,
                     image: item.fields.image?.url,
-                    imageAlt: item.fields.image?.label
+                    imageAlt: item.fields.image?.label,
+                    target: getHrefTarget(item.fields.uRL?.href),
+                    rel: getHrefRel(item.fields.uRL?.href)
                 }
             })
         }

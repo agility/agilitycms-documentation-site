@@ -1,5 +1,5 @@
 import React from "react";
-import { renderHTML } from "@agility/nextjs"
+import { renderHTML } from "../../../utils/htmlUtils"
 
 const List =  ({ id, style, items }) => {
     if(style === 'unordered') {

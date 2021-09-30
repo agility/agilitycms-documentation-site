@@ -1,10 +1,9 @@
 import React from "react";
-import { renderHTML } from "@agility/nextjs";
+import { renderHTML } from "../../../utils/htmlUtils";
 
 const Paragraph = ({ id, text}) => {
-    
     return (
-            <p dangerouslySetInnerHTML={renderHTML(text)} />
+            <p key={id} dangerouslySetInnerHTML={renderHTML(text)} />
     );
 };
 

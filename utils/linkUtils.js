@@ -14,14 +14,18 @@ const normalizeListedLinks = ({ listedLinks }) => {
                 title: article.fields.title,
                 href: articleUrls[article.contentID],
                 description: description,
-                icon: article.fields.concept ? article.fields.concept.fields.icon : null
+                icon: article.fields.concept ? article.fields.concept.fields.icon : null,
+                target: '_self',
+                rel: null
             }
         } else {
             return {
                 title: item.fields.explicitURL?.text,
                 href: item.fields.explicitURL?.href,
                 description: item.fields.description ? item.fields.description : null,
-                icon: item.fields.explicitIcon ? item.fields.explicitIcon : null
+                icon: item.fields.explicitIcon ? item.fields.explicitIcon : null,
+                target: getHrefTarget(item.fields.explicitURL?.href),
+                rel: getHrefRel(item.fields.explicitURL?.href)
             }
         }
     })
@@ -70,8 +74,24 @@ const getArticleDescription = (article) => {
 
 }
 
+const getHrefTarget = (href) => {
+    if(href && href.indexOf('://') > 0 || href.indexOf("//") === 0) {
+        return '_blank';
+    }
+    return '_self';
+}
+
+const getHrefRel = (href) => {
+    if(getHrefTarget(href) === '_blank') {
+        return 'noopener';
+    }
+    return null;
+}
+
 export {
     normalizeListedLinks,
     normalizeListedArticles,
-    getArticleDescription
+    getArticleDescription,
+    getHrefTarget,
+    getHrefRel
 }

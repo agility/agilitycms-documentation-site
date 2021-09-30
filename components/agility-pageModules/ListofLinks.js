@@ -75,7 +75,7 @@ const ListofLinks = ({ module, customData }) => {
                     <div>
                         <h3 className="text-lg font-medium">
                             <Link href={action.href}>
-                                <a className="focus:outline-none">
+                                <a className="focus:outline-none" target={action.target} rel={action.rel}>
                                     {/* Extend touch target to entire panel */}
                                     <span className="absolute inset-0" aria-hidden="true" />
                                     {action.title}
