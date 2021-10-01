@@ -16,6 +16,15 @@ const getTimestamp = () => {
         dt.getSeconds().toString().padStart(2, '0')}`
 }
 
+
+const loader = ({ src, width,height, quality }) => {
+    const w = width > 0 ? `&w=${width}` : ``
+    const h = height > 0 ? `&h=${height}` : ``
+    const format = src.toLowerCase().indexOf(".svg") === -1 ? "&format=auto" : ""
+    return `${src}?q=${quality || 100}${w}${h}${format}`
+    //return `${src}?form,at`
+}
+
 export {
-    getNewFileName, getTimestamp
+    getNewFileName, getTimestamp, loader
 }

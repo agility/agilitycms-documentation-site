@@ -3,7 +3,7 @@ import { renderHTML } from "../../../utils/htmlUtils";
 
 const Paragraph = ({ id, text}) => {
     return (
-            <p key={id} dangerouslySetInnerHTML={renderHTML(text)} />
+        <p key={id} dangerouslySetInnerHTML={renderHTML(text)} />
     );
 };
 
