@@ -17,14 +17,11 @@
 import React, { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { SearchIcon } from '@heroicons/react/solid'
-import { LoginIcon, MenuIcon, XIcon, SupportIcon, ChevronRightIcon } from '@heroicons/react/outline'
+import { LoginIcon, MenuIcon, XIcon, SupportIcon } from '@heroicons/react/outline'
 import ButtonDropdown from '../common/ButtonDropdown'
 import Link from 'next/link'
 
-import algoliasearch from 'algoliasearch/lite';
-import { createAutocomplete } from '@algolia/autocomplete-core';
-import { getAlgoliaResults } from '@algolia/autocomplete-preset-algolia';
-import { renderHTML } from '@agility/nextjs'
+import Search from './Search'
 
 
 
@@ -46,7 +43,6 @@ const supportButton = {
   icon: SupportIcon
 }
 
-const searchClient = algoliasearch(process.env.NEXT_PUBLIC_ALGOLIA_APP_ID, process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY);
 
 export default function Header({ mainMenuLinks, primaryDropdownLinks, secondaryDropdownLinks }) {
   
@@ -92,7 +88,7 @@ export default function Header({ mainMenuLinks, primaryDropdownLinks, secondaryD
                     <div className="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
                       <SearchIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </div>
-                    <Autocomplete />
+                    <Search />
                   </div>
                 </div>
               </div>
@@ -175,124 +171,4 @@ export default function Header({ mainMenuLinks, primaryDropdownLinks, secondaryD
       )}
     </Disclosure>
   )
-}
-
-
-function Autocomplete() {
-  // (1) Create a React state.
-  const inputRef = React.useRef(null)
-  const [autocompleteState, setAutocompleteState] = React.useState({});
-  const autocomplete = React.useMemo(
-    () =>
-      createAutocomplete({
-        onStateChange({ state }) {
-          // (2) Synchronize the Autocomplete state with the React state.
-          setAutocompleteState(state);
-        },
-        getSources() {
-          return [
-            // (3) Use an Algolia index source.
-            {
-              sourceId: 'articles',
-              getItemInputValue({ item }) {
-                return item.query;
-              },
-              getItems({ query }) {
-                return getAlgoliaResults({
-                  searchClient,
-                  queries: [
-                    {
-                      indexName: 'doc_site',
-                      query,
-                      params: {
-                        hitsPerPage: 4,
-                        highlightPreTag: '<mark>',
-                        highlightPostTag: '</mark>',
-                      },
-                    },
-                  ],
-                });
-              },
-              getItemUrl({ item }) {
-                return item.url;
-              },
-            },
-          ];
-        },
-      }),
-    []
-  );
-
-  return (
-    <div className="aa-Autocomplete" {...autocomplete.getRootProps({})}>
-      <form
-        className="aa-Form"
-        {...autocomplete.getFormProps({ inputElement: inputRef.current })}
-      >
-        <input 
-        className="block w-full bg-white border border-gray-300 rounded-md py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:outline-none focus:text-gray-900 focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-         {...autocomplete.getInputProps({})} 
-         placeholder="Search docs..."
-         />
-      </form>
-      
-      <div className="aa-Panel relative" {...autocomplete.getPanelProps({})}>
-        {autocompleteState.isOpen &&
-          autocompleteState.collections.map((collection, index) => {
-            const { source, items } = collection;
-            
-            return (
-              <div key={`source-${index}`} className="aa-Source absolute bg-white z-50 border border-gray-300 w-full">
-                {items.length > 0 && (
-                  <ul className="aa-List" {...autocomplete.getListProps()}>
-                    {items.map((item) => {
-                      let description = null;
-                      if(item._snippetResult?.content && item._snippetResult.content.length > 0) {
-                        let snippetBlock = item._snippetResult.content.find((block) => {
-                          return block.data.text.matchLevel === "full";
-                        })
-                        
-                        if(snippetBlock) {
-                          description = snippetBlock.data.text.value;
-                        }
-                      }
-
-                      if(!description) {
-                        description = item._highlightResult.description.value
-                      }
-                       
-                      return (
-                      <li
-                        key={item.objectID}
-                        className="aa-Item"
-                        {...autocomplete.getItemProps({
-                          item,
-                          source,
-                        })}
-                      >
-                        <Link href={item.url}>
-                          <a className="SearchResult px-5 py-2 block w-full hover:bg-gray-50">
-                              <span className="SearchResult__titlee block text-indigo-600 text-sm font-bold" dangerouslySetInnerHTML={renderHTML(item._highlightResult.title.value)}></span>
-
-                              {description &&
-                                <span className="SearchResult__description block text-sm mb-2" dangerouslySetInnerHTML={renderHTML(description)}></span>
-                              }
-                              <span className="SearchResult__category-section block text-xs font-light text-gray-600">
-                                {item.category} <ChevronRightIcon className="inline w-2"/> {item.section}
-                              </span>
-                          </a>
-                        </Link>
-                        
-                      </li>
-                    )})}
-                  </ul>
-                )}
-              </div>
-            );
-          })}
-      </div>
-    </div>
-  );
-
-  // ...
 }
