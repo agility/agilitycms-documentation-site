@@ -21,8 +21,29 @@
   color: #243e63;
 } */
 
+@import url("https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;600&display=swap");
+
+* {
+  font-family: "Mulish", sans-serif;
+}
+
+#marketing-content a {
+  color: #ffc414;
+  margin-left: 17px;
+}
+
+#marketing-content a::after {
+  content: "";
+  display: inline-block;
+  font-family: icomoon;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  margin-left: 6px;
+  position: relative;
+}
+
 #__next {
-  @apply h-full
+  @apply h-full;
 }
 
 #ContentContainer {
@@ -30,7 +51,7 @@
 }
 
 .prose code {
-  @apply text-base bg-gray-100 px-2 py-1 text-gray-700 font-normal
+  @apply text-base bg-gray-100 px-2 py-1 text-gray-700 font-normal;
 }
 
 .prose code:before {
@@ -44,5 +65,3 @@
 /* .SearchResult mark {
   @apply bg-indigo-900 text-white
 } */
-
-
