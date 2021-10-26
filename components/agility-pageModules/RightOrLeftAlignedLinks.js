@@ -32,7 +32,7 @@ function classNames(...classes) {
 const RightOrLeftAlignedLinks = ({ module, customData }) => {
   const { fields } = module;
   const { actions } = customData;
-  console.log(fields);
+
   return (
     <div
       className={classNames(

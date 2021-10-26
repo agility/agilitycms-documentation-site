@@ -53,8 +53,6 @@ SDKsFrameworks.getCustomInitialProps = async ({
 }) => {
   let actions = [];
 
-  console.log(item);
-
   if (item.fields.links && item.fields.links.referencename) {
     const children = await agility.getContentList({
       referenceName: item.fields.links.referencename,

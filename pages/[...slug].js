@@ -5,7 +5,7 @@ import { client } from "agility-graphql-client";
 import { gql } from "@apollo/client";
 import { global } from "@apollo/client/utilities/globals";
 import { READ_SITEMAP_FOR_HEADER } from "utils/sitemapUtils";
-import agility from "@agility/content-fetch";
+const agility = require("@agility/content-fetch");
 
 const cacheSitemapInGraphQL = ({ sitemap, isPreview, isDevelopmentMode }) => {
   //a hook that can be used to cache the sitemap so we don't need to request it up again within the app
@@ -145,8 +145,6 @@ export async function getStaticProps({
   const primaryDropdownLinks = data.header[0].fields.primaryDropdownLinks.map(
     (link) => link.fields.link
   );
-
-  console.log(primaryDropdownLinks);
 
   const secondaryDropdownLinks =
     data.header[0].fields.secondaryDropdownLinks.map(
