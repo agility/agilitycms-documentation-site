@@ -179,7 +179,7 @@ export default function Header({
                     className="text-gray-900 hover:text-purple"
                     href={supportButton.href}
                     target="_blank"
-                    rel="noopener"
+                    rel="noreferrer"
                   >
                     {supportButton.name}{" "}
                   </a>

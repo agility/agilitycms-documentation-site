@@ -13,7 +13,12 @@ const SDKsFrameworks = ({ module, customData }) => {
       <p className="text-darkerGray font-normal mb-12">{fields.subtitle}</p>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
         {actions.map((action, index) => (
-          <Link href={action.href} target={action.target} rel={action.rel}>
+          <Link
+            href={action.href}
+            target={action.target}
+            rel={action.rel}
+            key={action.title}
+          >
             <a title={action.title}>
               <div
                 key={index}
