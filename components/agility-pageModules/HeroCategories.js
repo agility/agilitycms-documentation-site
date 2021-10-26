@@ -66,7 +66,7 @@ export default function HeroCategories({ module }) {
                     <h3 className="text-2xl font-medium text-darkerGray tracking-normal">
                       {link.name}
                     </h3>
-                    <p className="mt-1 text-base text-darkGray font-light">
+                    <p className="mt-1 text-base text-darkGray">
                       {link.description}
                     </p>
                   </div>

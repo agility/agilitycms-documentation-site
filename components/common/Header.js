@@ -22,10 +22,12 @@ import {
   MenuIcon,
   XIcon,
   SupportIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/outline";
 import ButtonDropdown from "../common/ButtonDropdown";
 import Link from "next/link";
 import Search from "./Search";
+// import { ChevronRightIcon } from "@heroicons/react/solid";
 
 import { renderHTML } from "../../utils/htmlUtils";
 
@@ -76,11 +78,14 @@ export default function Header({
           <div className="flex justify-between">
             {marketingContent && (
               <>
-                <div
-                  id="marketing-content"
-                  className="text-sm"
-                  dangerouslySetInnerHTML={renderHTML(marketingContent, true)}
-                />
+                <div className="flex items-center">
+                  <div
+                    id="marketing-content"
+                    className="text-sm"
+                    dangerouslySetInnerHTML={renderHTML(marketingContent, true)}
+                  />
+                  <ChevronRightIcon className="ml-2 w-3 h-3" />
+                </div>
                 <div className="flex text-sm">
                   {preHeader.documentationLink && (
                     <Link href={preHeader.documentationLink?.href}>
