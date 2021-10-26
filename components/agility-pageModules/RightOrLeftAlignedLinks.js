@@ -63,7 +63,7 @@ const RightOrLeftAlignedLinks = ({ module, customData }) => {
             >
               <div className="flex flex-row">
                 <div className="border-transparent border-l-2 p-6 group-hover:border-brightPurple group-hover:bg-lightGray w-full transition duration-150 ease-in-out">
-                  <div class="flex">
+                  <div className="flex">
                     <div className="mr-6 mt-1">
                       {ActionIcon && (
                         <span>

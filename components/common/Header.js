@@ -97,7 +97,7 @@ export default function Header({
                       href={loginButton.href}
                       className="ml-8"
                       target="_blank"
-                      rel="noopener"
+                      rel="noreferrer"
                       title={loginButton.name}
                     >
                       {loginButton.name}
@@ -186,14 +186,6 @@ export default function Header({
                       </a>
                     </Link>
                   ))}
-                  {/* <a
-                    className="text-gray-900 hover:text-purple"
-                    href={supportButton.href}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {supportButton.name}{" "}
-                  </a> */}
                 </div>
                 <div className="ml-auto">
                   <ButtonDropdown {...apiSDKsButton} />
