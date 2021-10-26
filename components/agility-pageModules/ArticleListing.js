@@ -25,7 +25,7 @@ const ArticleListing = ({ module, customData }) => {
                       <p className="text-xl font-semibold text-darkerGray group-hover:text-brightPurple">
                         {article.title}
                       </p>
-                      <p className="mt-3 text-base text-darkGray font-light">
+                      <p className="mt-3 text-base text-darkGray">
                         {article.description}
                       </p>
                     </span>

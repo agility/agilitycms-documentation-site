@@ -132,7 +132,7 @@ const Search = () => {
                                   )}
                                 ></span>
                               )}
-                              <span className="SearchResult__category-section block text-xs font-light text-darkerGray">
+                              <span className="SearchResult__category-section block text-xs text-darkerGray">
                                 {item.category}{" "}
                                 <ChevronRightIcon className="inline w-2" />{" "}
                                 {item.section}

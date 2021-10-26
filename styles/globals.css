@@ -32,6 +32,10 @@
   margin-left: 17px;
 }
 
+.marketing-arrow {
+  color: #ffc414;
+}
+
 /* #marketing-content a::after {
   content: "";
   display: inline-block;

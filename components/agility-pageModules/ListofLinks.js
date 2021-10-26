@@ -52,7 +52,7 @@ const ListofLinks = ({ module, customData }) => {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-medium text-offWhite">
+                  <h3 className="text-lg font-bold text-offWhite">
                     <Link href={action.href}>
                       <a
                         className="focus:outline-none"

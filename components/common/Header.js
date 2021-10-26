@@ -84,25 +84,23 @@ export default function Header({
                     className="text-sm"
                     dangerouslySetInnerHTML={renderHTML(marketingContent, true)}
                   />
-                  <ChevronRightIcon className="ml-2 w-3 h-3" />
+                  <ChevronRightIcon className="ml-1 w-[14px] h-[14px] marketing-arrow font-bold" />
                 </div>
                 <div className="flex text-sm">
-                  {preHeader.documentationLink && (
-                    <Link href={preHeader.documentationLink?.href}>
-                      <a title={preHeader.documentationLink?.text}>
-                        {preHeader.documentationLink?.text}
-                      </a>
+                  {supportButton && (
+                    <Link href={supportButton.href}>
+                      <a title={supportButton.name}>{supportButton.name}</a>
                     </Link>
                   )}
-                  {preHeader.signInLink && (
+                  {loginButton && (
                     <a
-                      href={preHeader.signInLink?.href}
+                      href={loginButton.href}
                       className="ml-8"
-                      target={preHeader.signInLink?.target}
+                      target="_blank"
                       rel="noopener"
-                      title={preHeader.signInLink?.text}
+                      title={loginButton.name}
                     >
-                      {preHeader.signInLink?.text}
+                      {loginButton.name}
                     </a>
                   )}
                 </div>
@@ -122,11 +120,15 @@ export default function Header({
               <div className="relative h-16 flex justify-between">
                 <div className="relative z-10 px-2 flex lg:px-0">
                   <div className="flex-shrink-0 flex items-center">
-                    <img
-                      className="block h-8 w-auto"
-                      src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
-                      alt="Workflow"
-                    />
+                    <Link href="/">
+                      <a title="Agility CMS Docs">
+                        <img
+                          className="block h-8 w-auto"
+                          src="/docs/assets/agility-docs-logo.svg"
+                          alt="Agility CMS Docs"
+                        />
+                      </a>
+                    </Link>
                   </div>
                 </div>
                 <div className="relative z-0 flex-1 px-2 flex items-center justify-center sm:absolute sm:inset-0">
@@ -162,13 +164,17 @@ export default function Header({
                     target="_blank"
                     href="https://agilitycms.com/trial/"
                     rel="noreferrer"
-                    className="text-purple block border-2 border-purple py-2 px-4 font-semibold"
+                    className=" block border-2 py-2 px-4 font-semibold"
+                    style={{ color: "#5800d4", borderColor: "#5800d4" }}
                   >
                     Try For Free
                   </a>
                 </div>
               </div>
-              <nav className="hidden lg:py-2 lg:flex " aria-label="Global">
+              <nav
+                className="hidden lg:py-2 lg:flex items-center mb-2"
+                aria-label="Global"
+              >
                 <div className="lg:space-x-8">
                   {navigation.map((item) => (
                     <Link key={item.name} href={item.href}>
@@ -180,14 +186,14 @@ export default function Header({
                       </a>
                     </Link>
                   ))}
-                  <a
+                  {/* <a
                     className="text-gray-900 hover:text-purple"
                     href={supportButton.href}
                     target="_blank"
                     rel="noreferrer"
                   >
                     {supportButton.name}{" "}
-                  </a>
+                  </a> */}
                 </div>
                 <div className="ml-auto">
                   <ButtonDropdown {...apiSDKsButton} />
@@ -217,7 +223,7 @@ export default function Header({
                   </Link>
                 ))}
               </div>
-              <div className="border-t border-gray-200 pt-4 pb-3">
+              {/* <div className="border-t border-gray-200 pt-4 pb-3">
                 <div className=" px-2 space-y-1">
                   <a
                     href={loginButton.href}
@@ -236,7 +242,7 @@ export default function Header({
                     <supportButton.icon className="w-5 inline" />
                   </a>
                 </div>
-              </div>
+              </div> */}
             </Disclosure.Panel>
           </>
         )}

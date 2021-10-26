@@ -18,10 +18,10 @@ export default function ButtonDropdown({ name, children, children2 }) {
               open ? `border-purple` : ``
             }`}
           >
-            <Menu.Button className="flex justify-between w-52 text-purple">
+            <Menu.Button className="flex justify-between w-52 text-darkestGray">
               <p>{name}</p>
               <ChevronDownIcon
-                className="-mr-1 ml-2 h-5 w-5"
+                className="-mr-1 ml-2 h-5 w-5 text-purple"
                 aria-hidden="true"
               />
             </Menu.Button>

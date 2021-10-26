@@ -62,35 +62,38 @@ const RightOrLeftAlignedLinks = ({ module, customData }) => {
               className={classNames("relative group bg-white group")}
             >
               <div className="flex flex-row">
-                {/* <div className="mr-6">
-                  {ActionIcon && (
-                    <span
-                      className={classNames(
-                        "bg-indigo-600",
-                        "text-white",
-                        "rounded-lg inline-flex p-3 ring-4 ring-white"
-                      )}
-                    >
-                      <ActionIcon className="h-6 w-6" aria-hidden="true" />
-                    </span>
-                  )}
-                </div> */}
-
                 <div className="border-transparent border-l-2 p-6 group-hover:border-brightPurple group-hover:bg-lightGray w-full transition duration-150 ease-in-out">
-                  <h3 className="text-darkerGray group-hover:text-brightPurple text-lg font-bold">
-                    <Link href={action.href}>
-                      <a
-                        className="focus:outline-none"
-                        target={action.target}
-                        rel={action.rel}
-                      >
-                        {/* Extend touch target to entire panel */}
-                        <span className="absolute inset-0" aria-hidden="true" />
-                        {action.title}
-                      </a>
-                    </Link>
-                  </h3>
-                  <p className="mt-2 text-darkGray">{action.description}</p>
+                  <div class="flex">
+                    <div className="mr-6 mt-1">
+                      {ActionIcon && (
+                        <span>
+                          <ActionIcon
+                            className="h-6 w-6 text-brightPurple"
+                            aria-hidden="true"
+                          />
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="text-darkerGray group-hover:text-brightPurple text-lg font-bold">
+                        <Link href={action.href}>
+                          <a
+                            className="focus:outline-none"
+                            target={action.target}
+                            rel={action.rel}
+                          >
+                            {/* Extend touch target to entire panel */}
+                            <span
+                              className="absolute inset-0"
+                              aria-hidden="true"
+                            />
+                            {action.title}
+                          </a>
+                        </Link>
+                      </h3>
+                      <p className="mt-2 text-darkGray">{action.description}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

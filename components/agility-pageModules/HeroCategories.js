@@ -34,7 +34,7 @@ export default function HeroCategories({ module }) {
           <h1 className="text-center font-normal tracking-normal text-white text-3xl md:text-4xl">
             {fields.title}
           </h1>
-          <p className="text-center mt-6 text-lg text-white font-light">
+          <p className="text-center mt-6 text-lg text-white">
             {fields.subTitle}
           </p>
         </div>

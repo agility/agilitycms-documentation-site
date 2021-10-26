@@ -49,7 +49,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
             </div>
             <div className="flex flex-row mt-2 justify-center space-x-4">
               <button
-                className="text-gray-600 hover:text-purple bg-lightGray p-3 rounded-full"
+                className="text-gray-600 hover:text-brightPurple bg-lightGray p-3 rounded-full"
                 title="😊 Yes, helpful!"
                 onClick={() =>
                   sendPositiveFeedback({
@@ -62,7 +62,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
                 <ThumbUpIcon className="w-6 h-6" />
               </button>
               <button
-                className="text-gray-600 hover:text-purple bg-lightGray p-3 rounded-full"
+                className="text-gray-600 hover:text-brightPurple bg-lightGray p-3 rounded-full"
                 title="Submit Feedback"
                 onClick={() => setNegativeFeedbackClicked(true)}
               >
