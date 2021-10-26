@@ -50,6 +50,7 @@ export default function Header({
   primaryDropdownLinks,
   secondaryDropdownLinks,
   marketingContent,
+  preHeader,
 }) {
   const navigation = mainMenuLinks;
   const apiSDKsButton = {
@@ -70,13 +71,39 @@ export default function Header({
 
   return (
     <>
-      {marketingContent && (
-        <div className="px-2 sm:px-4 lg:px-8 py-3 bg-purple text-white">
-          <div
-            id="marketing-content"
-            className="text-sm"
-            dangerouslySetInnerHTML={renderHTML(marketingContent, true)}
-          />
+      {preHeader.showPreHeader === true && (
+        <div className="px-2 sm:px-4 lg:px-8 py-3 bg-purple text-white hidden md:block">
+          <div className="flex justify-between">
+            {marketingContent && (
+              <>
+                <div
+                  id="marketing-content"
+                  className="text-sm"
+                  dangerouslySetInnerHTML={renderHTML(marketingContent, true)}
+                />
+                <div className="flex text-sm">
+                  {preHeader.documentationLink && (
+                    <Link href={preHeader.documentationLink?.href}>
+                      <a title={preHeader.documentationLink?.text}>
+                        {preHeader.documentationLink?.text}
+                      </a>
+                    </Link>
+                  )}
+                  {preHeader.signInLink && (
+                    <a
+                      href={preHeader.signInLink?.href}
+                      className="ml-8"
+                      target={preHeader.signInLink?.target}
+                      rel="noopener"
+                      title={preHeader.signInLink?.text}
+                    >
+                      {preHeader.signInLink?.text}
+                    </a>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
       <Disclosure
@@ -127,11 +154,12 @@ export default function Header({
 
                 <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
                   <a
-                    href={loginButton.href}
+                    target="_blank"
+                    href="https://agilitycms.com/trial/"
                     rel="noreferrer"
-                    className="flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                    className="text-purple block border-2 border-purple py-2 px-4 font-semibold"
                   >
-                    {loginButton.name}
+                    Try For Free
                   </a>
                 </div>
               </div>
@@ -154,7 +182,6 @@ export default function Header({
                     rel="noopener"
                   >
                     {supportButton.name}{" "}
-                    {/* <supportButton.icon className="w-5 inline" /> */}
                   </a>
                 </div>
                 <div className="ml-auto">

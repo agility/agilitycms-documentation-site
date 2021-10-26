@@ -9,20 +9,35 @@ function classNames(...classes) {
 const ListofLinks = ({ module, customData }) => {
   const { fields } = module;
   const { actions } = customData;
+  const darkTheme = fields.darkTheme;
   return (
-    <div className="mx-auto my-10 py-20 sm:px-6 bg-darkerGray text-white">
+    <div
+      className={`mx-auto pt-14 pb-10 sm:px-6 ${
+        darkTheme === "true"
+          ? `bg-darkerGray text-white`
+          : `bg-white text-darkerGray`
+      }`}
+    >
       {fields.title && (
-        <h2 className="mb-10 text-center text-3xl font-normal tracking-normal text-offWhite">
+        <h2
+          className={`mb-10 text-center text-3xl font-medium tracking-normal ${
+            darkTheme === "true" ? `text-offWhite` : `text-darkerGray`
+          }`}
+        >
           {fields.title}
         </h2>
       )}
-      <div className="m-auto  mb-8 max-w-5xl overflow-hidden sm:grid sm:grid-cols-2 sm:gap-px">
+      <div className="m-auto mb-8 max-w-5xl overflow-hidden sm:grid sm:grid-cols-2 sm:gap-px">
         {actions.map((action, actionIdx) => {
           const ActionIcon = icons[action.icon];
           return (
             <div
               key={action.title}
-              className="relative group bg-darkerGray p-6 hover:bg-darkestGray border-transparent border-l-2 hover:border-brightPurple"
+              className={`relative group p-6 ${
+                darkTheme === "true"
+                  ? `bg-darkerGray hover:bg-darkestGray`
+                  : `bg-offWhite hover:bg-lightGray`
+              }  border-transparent border-l-2 hover:border-brightPurple`}
             >
               <div className="flex">
                 <div>

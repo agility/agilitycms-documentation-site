@@ -102,6 +102,7 @@ function Layout(props) {
               primaryDropdownLinks={props.primaryDropdownLinks}
               secondaryDropdownLinks={props.secondaryDropdownLinks}
               marketingContent={props.marketingContent}
+              preHeader={props.preHeader}
             />
             <AgilityPageTemplate {...props} />
             <PreviewWidget

@@ -11,7 +11,7 @@ const ArticleListing = ({ module, customData }) => {
       </div>
       <div className="relative max-w-7xl mx-auto">
         <div className="text-center">
-          <h2 className="text-3xl tracking-tight font-extrabold text-gray-900 sm:text-4xl">
+          <h2 className="text-3xl tracking-normal font-medium text-gray-900 sm:text-4xl">
             {fields.title}
           </h2>
         </div>

@@ -64,7 +64,7 @@ const Search = () => {
         {...autocomplete.getFormProps({ inputElement: inputRef.current })}
       >
         <input
-          className="block w-full border-none py-2 pl-10 pr-3 text-sm placeholder-darkGray bg-lightGray focus:outline-none focus:text-gray-900 focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          className="block w-full border-none py-2 pl-10 pr-3 text-sm pla ceholder-darkGray bg-lightGray focus:outline-none focus:text-gray-900 focus:placeholder-gray-400 focus:border-purple focus:ring-1 focus:ring-purple sm:text-sm"
           {...autocomplete.getInputProps({})}
           placeholder="Search docs..."
         />
@@ -81,7 +81,10 @@ const Search = () => {
                 className="aa-Source absolute bg-white z-50 border border-gray-300 w-full"
               >
                 {items.length > 0 && (
-                  <ul className="aa-List" {...autocomplete.getListProps()}>
+                  <ul
+                    className="aa-List custom-shadow"
+                    {...autocomplete.getListProps()}
+                  >
                     {items.map((item) => {
                       let description = null;
                       if (
@@ -113,9 +116,9 @@ const Search = () => {
                           })}
                         >
                           <Link href={item.url}>
-                            <a className="SearchResult px-5 py-2 block w-full hover:bg-gray-50">
+                            <a className="SearchResult px-5 py-2 block w-full hover:bg-lightGray">
                               <span
-                                className="SearchResult__titlee block text-indigo-600 text-sm font-bold"
+                                className="SearchResult__titlee block text-purple text-sm font-bold"
                                 dangerouslySetInnerHTML={renderHTML(
                                   item._highlightResult.title.value
                                 )}
@@ -123,13 +126,13 @@ const Search = () => {
 
                               {description && (
                                 <span
-                                  className="SearchResult__description block text-sm mb-2"
+                                  className="SearchResult__description block text-sm mb-2 text-darkestGray"
                                   dangerouslySetInnerHTML={renderHTML(
                                     description
                                   )}
                                 ></span>
                               )}
-                              <span className="SearchResult__category-section block text-xs font-light text-gray-600">
+                              <span className="SearchResult__category-section block text-xs font-light text-darkerGray">
                                 {item.category}{" "}
                                 <ChevronRightIcon className="inline w-2" />{" "}
                                 {item.section}

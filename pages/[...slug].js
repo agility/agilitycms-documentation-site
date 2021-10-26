@@ -109,6 +109,17 @@ export async function getStaticProps({
       {
         header {
           fields {
+            showPreHeader
+            signInLink {
+              text
+              href
+              target
+            }
+            documentationLink {
+              text
+              href
+              target
+            }
             primaryDropdownLinks(sort: "properties.itemOrder") {
               fields {
                 link {
@@ -134,6 +145,9 @@ export async function getStaticProps({
   const primaryDropdownLinks = data.header[0].fields.primaryDropdownLinks.map(
     (link) => link.fields.link
   );
+
+  console.log(primaryDropdownLinks);
+
   const secondaryDropdownLinks =
     data.header[0].fields.secondaryDropdownLinks.map(
       (link) => link.fields.link
@@ -152,11 +166,18 @@ export async function getStaticProps({
 
   const marketingContent = mainSiteHeader.fields.marketingBanner;
 
+  const preHeader = {
+    showPreHeader: data.header[0].fields.showPreHeader,
+    signInLink: data.header[0].fields.signInLink,
+    documentationLink: data.header[0].fields.documentationLink,
+  };
+
   const additionalPageProps = {
     mainMenuLinks,
     primaryDropdownLinks,
     secondaryDropdownLinks,
     marketingContent,
+    preHeader,
   };
 
   return {

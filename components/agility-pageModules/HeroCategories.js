@@ -57,7 +57,7 @@ export default function HeroCategories({ module }) {
               <Link href={link.href}>
                 <a>
                   <div className="flex-1 relative pt-16 px-6 pb-8 md:px-8">
-                    <div className="absolute top-0 p-5 inline-block bg-offwhite group-hover:bg-lightGray transition duration-150 ease-in-out rounded-full transform -translate-y-1/2">
+                    <div className="absolute top-0 p-5 inline-block bg-offwhite group-hover:bg-gray-200 transition duration-150 ease-in-out rounded-full transform -translate-y-1/2">
                       <link.icon
                         className="h-6 w-6 text-brightPurple"
                         aria-hidden="true"
