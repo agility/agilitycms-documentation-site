@@ -26,7 +26,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
   return (
     <div
       id="DynamicArticleDetails"
-      className="xl:flex xl:flex-row justify-center"
+      className="xl:flex xl:flex-row justify-center font-muli"
     >
       <div className="relative px-8">
         <div className="text-lg max-w-prose mx-auto">

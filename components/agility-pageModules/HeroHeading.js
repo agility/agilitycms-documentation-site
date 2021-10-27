@@ -3,16 +3,10 @@ export default function HeroHeading({ module }) {
   const { fields } = module;
 
   return (
-    <div className="bg-white">
+    <div className="bg-white font-muli">
       {/* Header */}
       <div className="relative">
-        <div className="absolute inset-0">
-          {/* <img
-                className="w-full h-full object-cover"
-                src="https://images.unsplash.com/photo-1525130413817-d45c1d127c42?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1920&q=60&&sat=-100"
-                alt=""
-            /> */}
-        </div>
+        <div className="absolute inset-0"></div>
         <div className="relative max-w-7xl mx-auto pt-24 px-4 sm:px-6 lg:px-8">
           {fields.image && fields.image.url && (
             <img className="mx-auto mb-8" src={fields.image.url + "?w=100"} />

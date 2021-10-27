@@ -15,7 +15,7 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
   return (
     <div
       id="SideNav"
-      className="flex flex-col w-64 border-r border-gray-200 pt-4 pb-4 z-40 h-full"
+      className="flex flex-col w-64 border-r border-gray-200 pt-4 pb-4 z-40 h-full font-muli"
     >
       <div className="flex-grow flex flex-col">
         <nav className="flex-1 space-y-1 bg-white" aria-label="Sidebar">
@@ -65,7 +65,7 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
                         <span
                           className={`${
                             open ? `text-darkestGray` : `text-darkGray`
-                          }`}
+                          } hover:text-purple`}
                         >
                           {item.name}
                         </span>

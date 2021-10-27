@@ -14,7 +14,7 @@
   }
   ```
 */
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { SearchIcon } from "@heroicons/react/solid";
 import {
@@ -22,12 +22,11 @@ import {
   MenuIcon,
   XIcon,
   SupportIcon,
-  ChevronRightIcon,
 } from "@heroicons/react/outline";
 import ButtonDropdown from "../common/ButtonDropdown";
 import Link from "next/link";
 import Search from "./Search";
-// import { ChevronRightIcon } from "@heroicons/react/solid";
+import { ChevronRightIcon } from "@heroicons/react/solid";
 
 import { renderHTML } from "../../utils/htmlUtils";
 
@@ -71,25 +70,48 @@ export default function Header({
     }),
   };
 
+  useEffect(() => {
+    const scrollContainer = document.getElementById("ScrollContainer");
+    scrollContainer.addEventListener("scroll", function (e) {
+      const scroll = this.scrollTop;
+      const preheader = document.getElementById("preheader");
+
+      if (scroll === 0) {
+        preheader.classList.add("md:block");
+      } else {
+        preheader.classList.remove("md:block");
+      }
+    });
+  }, []);
+
   return (
     <>
       {preHeader.showPreHeader === true && (
-        <div className="px-2 sm:px-4 lg:px-8 py-3 bg-purple text-white hidden md:block">
+        <div
+          className="px-2 sm:px-4 lg:px-8 py-3 bg-purple text-white hidden md:block font-muli"
+          id="preheader"
+        >
           <div className="flex justify-between">
             {marketingContent && (
               <>
                 <div className="flex items-center">
                   <div
                     id="marketing-content"
-                    className="text-sm"
+                    className="text-sm font-medium"
                     dangerouslySetInnerHTML={renderHTML(marketingContent, true)}
                   />
-                  <ChevronRightIcon className="ml-1 w-[14px] h-[14px] marketing-arrow font-bold" />
+                  <ChevronRightIcon className="w-[20px] h-[20px] marketing-arrow" />
                 </div>
                 <div className="flex text-sm">
                   {supportButton && (
                     <Link href={supportButton.href}>
-                      <a title={supportButton.name}>{supportButton.name}</a>
+                      <a
+                        title={supportButton.name}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {supportButton.name}
+                      </a>
                     </Link>
                   )}
                   {loginButton && (
@@ -112,7 +134,7 @@ export default function Header({
       <Disclosure
         id="Header"
         as="header"
-        className="flex-shrink-0 bg-white shadow z-40 relative"
+        className="flex-shrink-0 bg-white shadow z-40 relative font-muli"
       >
         {({ open }) => (
           <>
@@ -164,7 +186,7 @@ export default function Header({
                     target="_blank"
                     href="https://agilitycms.com/trial/"
                     rel="noreferrer"
-                    className=" block border-2 py-2 px-4 font-semibold"
+                    className="block border-2 py-2 px-4 font-semibold"
                     style={{ color: "#5800d4", borderColor: "#5800d4" }}
                   >
                     Try For Free
@@ -215,26 +237,6 @@ export default function Header({
                   </Link>
                 ))}
               </div>
-              {/* <div className="border-t border-gray-200 pt-4 pb-3">
-                <div className=" px-2 space-y-1">
-                  <a
-                    href={loginButton.href}
-                    rel="noreferrer"
-                    className="block rounded-md py-2 px-3 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-                  >
-                    {loginButton.name}{" "}
-                    <loginButton.icon className="w-5 inline" />
-                  </a>
-                  <a
-                    href={supportButton.href}
-                    rel="noreferrer"
-                    className="block rounded-md py-2 px-3 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-                  >
-                    {supportButton.name}{" "}
-                    <supportButton.icon className="w-5 inline" />
-                  </a>
-                </div>
-              </div> */}
             </Disclosure.Panel>
           </>
         )}

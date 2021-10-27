@@ -109,7 +109,9 @@ export default function SubmitNegativeFeedback({
                     id="submitFeedback"
                     name="message"
                     rows={3}
-                    className="h-32 mt-5 shadow-sm block w-full bg-lightGray text-darkestGray sm:text-sm border border-lightGray"
+                    className={`h-32 mt-5 shadow-sm block w-full focus:outline-none focus:ring-1 focus:ring-purple focus:border-transparent resize-none text-darkestGray sm:text-sm border border-lightGray  ${
+                      textCount > 0 ? `bg-white` : `bg-lightGray`
+                    }`}
                     maxLength={maxTextLength}
                     value={text}
                     onChange={updateText}

@@ -93,7 +93,7 @@ function Layout(props) {
         keywords={page.seo.metaKeywords}
         metaHTML={page.seo.metaHTML}
       />
-      <div id="SiteWrapper" className="h-full">
+      <div id="SiteWrapper" className="h-full font-muli">
         {isPreview && <LoadingWidget message="Loading Preview Mode" />}
         {!isPreview && (
           <div id="Site" className="flex flex-col h-full">
@@ -105,7 +105,7 @@ function Layout(props) {
               preHeader={props.preHeader}
             />
             <AgilityPageTemplate {...props} />
-            <PreviewWidget
+            {/* <PreviewWidget
               isPreview={props.isPreview}
               isDevelopmentMode={props.isDevelopmentMode}
             />
@@ -114,7 +114,7 @@ function Layout(props) {
               dynamicPageItem={props.dynamicPageItem}
               isPreview={props.isPreview}
               isDevelopmentMode={props.isDevelopmentMode}
-            />
+            /> */}
           </div>
         )}
       </div>

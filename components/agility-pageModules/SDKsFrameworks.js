@@ -6,7 +6,7 @@ const SDKsFrameworks = ({ module, customData }) => {
   const { fields } = module;
   const { actions } = customData;
   return (
-    <div className="max-w-2xl lg:max-w-5xl mx-auto my-10 text-center px-8">
+    <div className="max-w-2xl lg:max-w-5xl mx-auto my-10 text-center px-8 font-muli">
       <h2 className="mb-5 text-3xl font-medium tracking-normal text-darkerGray">
         {fields.title}
       </h2>

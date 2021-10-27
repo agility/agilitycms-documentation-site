@@ -21,11 +21,11 @@
   color: #243e63;
 } */
 
-@import url("https://fonts.googleapis.com/css?family=Muli:300,400,600&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Muli:100,200,300,400,600&display=swap");
 
-* {
+/* * {
   font-family: "Muli", sans-serif;
-}
+} */
 
 #marketing-content a {
   color: #ffc414;
@@ -36,15 +36,71 @@
   color: #ffc414;
 }
 
-/* #marketing-content a::after {
-  content: "";
-  display: inline-block;
-  font-family: icomoon;
-  font-size: 0.6875rem;
-  font-weight: 400;
-  margin-left: 6px;
-  position: relative;
-} */
+#marketing-content {
+  font-weight: 600;
+}
+
+.prose a {
+  color: #6d06ff;
+}
+
+span.hljs-string {
+  color: #7556e8;
+}
+
+/* code css */
+code.inline-code {
+  font-weight: 100;
+}
+
+code {
+  font-weight: normal !important;
+}
+
+code.hljs-keyword {
+  font-weight: bold !important;
+}
+
+code > span.hljs-string {
+  font-weight: 100 !important;
+}
+
+.prose code {
+  @apply text-base bg-gray-100 px-2 py-1 text-gray-700;
+}
+
+.prose code:before {
+  content: none;
+}
+
+.prose code:after {
+  content: none;
+}
+
+/* list item css */
+.prose ul > li::before {
+  background-color: #6d06ff;
+}
+
+.prose ul > li > ul > li::before {
+  background-color: #6b7280;
+}
+
+.prose ul > li > ol > li::before {
+  color: #6b7280;
+}
+
+.prose ol > li::before {
+  color: #6d06ff;
+}
+
+.prose ol > li > ol > li::before {
+  color: #6b7280;
+}
+
+.prose ol > li > ul > li::before {
+  background-color: #6b7280;
+}
 
 .custom-shadow {
   box-shadow: 0 5px 30px -8px rgb(85 63 164 / 25%);
@@ -56,18 +112,6 @@
 
 #ContentContainer {
   min-height: 40rem;
-}
-
-.prose code {
-  @apply text-base bg-gray-100 px-2 py-1 text-gray-700 font-normal;
-}
-
-.prose code:before {
-  content: none;
-}
-
-.prose code:after {
-  content: none;
 }
 
 /* .SearchResult mark {
