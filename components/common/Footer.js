@@ -22,8 +22,10 @@ const Footer = () => {
       <div style={{ backgroundColor: "#4600A8" }} className="py-32">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 flex justify-between">
           <div className="grid grid-cols-2">
-            {navigation.main.map((navItem) => (
-              <a href={navItem.href}>{navItem.name}</a>
+            {navigation.main.map((navItem, i) => (
+              <a href={navItem.href} key={navItem.name}>
+                {navItem.name}
+              </a>
             ))}
           </div>
           <div className="relative z-10">
