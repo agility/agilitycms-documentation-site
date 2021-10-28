@@ -11,15 +11,10 @@
 /* Import tailwind utility styles */
 @tailwind utilities;
 
-/* .prose h1,
-.prose h2,
-.prose h3,
-.prose h4,
-.prose h5,
-.prose h6,
-.prose blockquote {
-  color: #243e63;
-} */
+.prose h2
+{
+  font-weight: 600;
+}
 
 /* @import url("https://fonts.googleapis.com/css?family=Muli:100,200,300,400,600,700,900&display=swap"); */
 
