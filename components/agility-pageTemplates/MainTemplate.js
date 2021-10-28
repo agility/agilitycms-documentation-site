@@ -14,7 +14,7 @@ const MainTemplate = (props) => {
             getModule={getModule}
           />
         </div>
-        <Footer navigation={props.footerNavigation} bottomNavigation={props.footerBottomNavigation} />
+        <Footer navigation={props.footerNavigation} bottomNavigation={props.footerBottomNavigation} pageTemplateName={props.pageTemplateName} />
       </div>
     </div>
   );
