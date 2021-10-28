@@ -18,7 +18,11 @@ const navigation = {
   ],
 };
 
-const Footer = () => {
+const Footer = ({ props }) => {
+  const { pageTemplateName } = props;
+
+  console.log(pageTemplateName);
+
   // get year logic
   const getYear = () => {
     const d = new Date();
@@ -66,11 +70,23 @@ const Footer = () => {
     <footer className="text-white">
       <div
         style={{ backgroundColor: "#4600A8" }}
-        className="pt-10 pb-20 xl:py-28"
+        className="pt-10 pb-20 xl:py-24"
       >
-        <div className="max-w-2xl xl:max-w-7xl mx-auto px-6 md:px-8 xl:flex xl:justify-between">
+        <div
+          className={`mx-auto px-6 md:px-8 ${
+            pageTemplateName === "WithSidebarNavTemplate"
+              ? `md:max-w-2xl xl:flex xl:max-w-7xl md:justify-between`
+              : `lg:flex lg:justify-between max-w-2xl xl:max-w-6xl 2xl:max-w-7xl`
+          }`}
+        >
           <div className="grid grid-cols-2 md:grid-cols-3 gap-16 mt-8">
-            <div className="mb-0 md:mb-20">
+            <div
+              className={`${
+                pageTemplateName === "WithSidebarNavTemplate"
+                  ? `mb-20 xl:mb-0`
+                  : ``
+              }`}
+            >
               <h4 className="font-semibold mb-4">Product</h4>
               <ul
                 className="space-y-[15px]"
@@ -158,41 +174,38 @@ const Footer = () => {
               </ul>
             </div>
           </div>
-          <div className="relative z-10 overflow-hidden">
-            <img
-              src="/docs/assets/bg-top.svg"
-              className="absolute -top-18 -left-10 xl:top-0 xl:left-0"
-              style={{ zIndex: "-1" }}
-            />
+          <div className="relative">
+            <img src="/docs/assets/bg-top.svg" className="top-form-svg" />
             <div
-              style={{ backgroundColor: "#5800D4" }}
-              className="py-10 px-10 z-50 xl:max-w-lg"
+              className={`relative z-10 overflow-hidden ${
+                pageTemplateName === "WithSidebarNavTemplate"
+                  ? ``
+                  : `xl:max-w-md 2xl:max-w-lg`
+              }`}
             >
-              <h4 className="text-lg mb-3 font-semibold">Subscribe</h4>
-              <p className="font-light mb-8">
-                Get involved in our community and learn about our platform!
-              </p>
-              <div>
-                <form className="sm:flex" onSubmit={submitHandler}>
-                  <input
-                    name="email"
-                    type="email"
-                    placeholder="Email"
-                    className="border-2 border-white w-full flex-1 mr-4 focus:outline-none ring-0 focus:border-transparent text-darkerGray font-semibold mb-3 sm:mb-0"
-                    required
-                  />
-                  <button className="border-2 border-white px-4 py-3 outline-none w-full sm:w-auto flex justify-center items-center font-semibold">
-                    <span>Sign up</span>
-                    <ChevronRightIcon className="w-[20px] h-[20px] ml-2" />
-                  </button>
-                </form>
+              <div style={{ backgroundColor: "#5800D4" }} className="p-8 z-50">
+                <h4 className="text-lg mb-3 font-semibold">Subscribe</h4>
+                <p className="font-light mb-8">
+                  Get involved in our community and learn about our platform!
+                </p>
+                <div>
+                  <form className="sm:flex" onSubmit={submitHandler}>
+                    <input
+                      name="email"
+                      type="email"
+                      placeholder="Email"
+                      className="border-2 border-white w-full flex-1 mr-4 focus:outline-none ring-0 focus:border-transparent text-darkerGray font-semibold mb-3 sm:mb-0"
+                      required
+                    />
+                    <button className="border-2 border-white px-4 py-3 outline-none w-full sm:w-auto flex justify-center items-center font-semibold">
+                      <span>Sign up</span>
+                      <ChevronRightIcon className="w-[20px] h-[20px] ml-2" />
+                    </button>
+                  </form>
+                </div>
               </div>
             </div>
-            <img
-              src="/docs/assets/bg-bottom.svg"
-              className="absolute -bottom-10 -right-10 xl:bottom-0 xl:right-0"
-              style={{ zIndex: "-1" }}
-            />
+            <img src="/docs/assets/bg-bottom.svg" className="bottom-form-svg" />
           </div>
         </div>
       </div>

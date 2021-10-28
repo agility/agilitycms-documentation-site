@@ -26,7 +26,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
   return (
     <div
       id="DynamicArticleDetails"
-      className="xl:flex xl:flex-row justify-center font-muli"
+      className="xl:flex xl:flex-row justify-center font-muli mb-32"
     >
       <div className="relative px-8">
         <div className="text-lg max-w-prose mx-auto">
@@ -39,7 +39,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
         </div>
       </div>
 
-      <div className="hidden lg:block sticky top-0 w-60 flex-none max-h-96 pt-20">
+      <div className="hidden xl:block sticky top-0 w-60 flex-none max-h-96 pt-20">
         <ArticleNav headings={h2Blocks} />
         <hr className="mt-5 mb-5" />
         {!positiveFeedbackSubmitted && !negativeFeedbackSubmitted && (

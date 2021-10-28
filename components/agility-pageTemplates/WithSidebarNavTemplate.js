@@ -24,7 +24,7 @@ const WithSidebarNavTemplate = (props) => {
             getModule={getModule}
           />
         </div>
-        <Footer />
+        <Footer props={props} />
       </div>
     </div>
   );
