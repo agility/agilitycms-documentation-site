@@ -106,6 +106,10 @@ code > span.hljs-string {
   box-shadow: 0 5px 30px -8px rgb(85 63 164 / 25%);
 }
 
+.socials li a img {
+  filter: brightness(0) invert(1);
+}
+
 #__next {
   @apply h-full;
 }

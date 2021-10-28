@@ -11,7 +11,7 @@ export default function HeroHeading({ module }) {
           {fields.image && fields.image.url && (
             <img className="mx-auto mb-8" src={fields.image.url + "?w=100"} />
           )}
-          <h1 className="text-center text-4xl font-extrabold tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
+          <h1 className="text-center text-4xl font-semibold tracking-normal text-gray-900 md:text-5xl lg:text-6xl">
             {fields.title}
           </h1>
           <p className="text-center mt-6 text-xl text-gray-700">

@@ -14,7 +14,7 @@ export default function ButtonDropdown({ name, children, children2 }) {
       {({ open }) => (
         <>
           <div
-            className={`bg-lightGray p-2 border-b-2 border-transparent ${
+            className={`bg-lightGray pt-2 pb-1.5 px-2 border-b-2 border-transparent ${
               open ? `border-purple` : ``
             }`}
           >

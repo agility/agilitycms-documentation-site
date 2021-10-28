@@ -16,12 +16,6 @@ class MyDocument extends Document {
           {/* <script dangerouslySetInnerHTML={{ __html: nightwind.init() }} /> */}
           <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
           <link rel="stylesheet" href="/docs/css/highlight-js/lightfair.css" />
-          {/* <link
-            rel="stylesheet"
-            href="https://use.typekit.net/af/7fe570/00000000000000007735a0ee/30/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3"
-            as="font"
-            crossOrigin="anonymous"
-          /> */}
           <link
             rel="stylesheet"
             href="https://use.typekit.net/arl7bjd.css"
