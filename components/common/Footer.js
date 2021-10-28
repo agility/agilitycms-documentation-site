@@ -142,7 +142,7 @@ const Footer = (props) => {
               {bottomNavigation.map((link, idx) => {
                 return (
                   <>
-                    <li>
+                    <li key={link.href}>
                         <a href={link.href} target={link.target}>{link.name}</a>
                     </li>
                     {idx !== bottomNavigation.length - 1 &&
