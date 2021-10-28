@@ -31,7 +31,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
       <div className="relative px-8">
         <div className="text-lg max-w-prose mx-auto">
           <h1>
-            <span className="mt-20 mb-8 block text-3xl text-center leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+            <span className="mt-20 mb-8 block text-3xl text-center leading-8 tracking-tight text-gray-900 md:text-4xl font-semibold">
               {dynamicPageItem.fields.title}
             </span>
           </h1>
