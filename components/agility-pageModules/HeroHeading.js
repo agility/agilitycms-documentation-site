@@ -3,7 +3,7 @@ export default function HeroHeading({ module }) {
   const { fields } = module;
 
   return (
-    <div className="bg-white font-muli">
+    <div className="bg-white font-muli pb-10">
       {/* Header */}
       <div className="relative">
         <div className="absolute inset-0"></div>

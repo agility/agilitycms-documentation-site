@@ -6,11 +6,11 @@ const SDKsFrameworks = ({ module, customData }) => {
   const { fields } = module;
   const { actions } = customData;
   return (
-    <div className="max-w-2xl lg:max-w-5xl mx-auto my-10 text-center px-8 font-muli">
+    <div className="max-w-2xl lg:max-w-5xl mx-auto my-20 text-center px-8 font-muli">
       <h2 className="mb-5 text-3xl font-medium tracking-normal text-darkerGray">
         {fields.title}
       </h2>
-      <p className="text-darkerGray font-normal mb-12">{fields.subtitle}</p>
+      <p className="text-darkGray font-normal mb-12">{fields.subtitle}</p>
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
         {actions.map((action, index) => (
           <Link

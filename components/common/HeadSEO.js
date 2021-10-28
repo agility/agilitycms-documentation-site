@@ -3,7 +3,7 @@ import Head from "next/head";
 import ReactHtmlParser from "react-html-parser";
 //import nightwind from 'nightwind/helper'
 
-const HeadSEO = ({ title, description, keywords, ogImage, metaHTML }) => {
+const HeadSEO = ({ title, description, keywords, ogImage, metaHTML, noIndex }) => {
   // setup and parse additional header markup
   let additionalHeaderMarkup = null;
   if (metaHTML) {
@@ -12,6 +12,9 @@ const HeadSEO = ({ title, description, keywords, ogImage, metaHTML }) => {
   return (
     <Head>
       <title>{title} | Agility CMS Docs</title>
+      {(process.env.ROBOTS_NO_INDEX || noIndex) && (
+        <meta name="robots" content="noindex"></meta>
+      )}
       <meta name="generator" content="Agility CMS" />
       <meta name="agility_timestamp" content={new Date().toLocaleString()} />
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />

@@ -12,10 +12,10 @@ const ListofLinks = ({ module, customData }) => {
   const darkTheme = fields.darkTheme;
   return (
     <div
-      className={`mx-auto pt-14 pb-10 px-6 font-muli ${
+      className={`mx-auto px-6 font-muli ${
         darkTheme === "true"
-          ? `bg-darkerGray text-white`
-          : `bg-white text-darkerGray`
+          ? `bg-darkerGray text-white pt-14 pb-10`
+          : `bg-white text-darkerGray my-20`
       }`}
     >
       {fields.title && (
@@ -27,7 +27,7 @@ const ListofLinks = ({ module, customData }) => {
           {fields.title}
         </h2>
       )}
-      <div className="m-auto mb-8 max-w-5xl overflow-hidden sm:grid sm:grid-cols-2 sm:gap-px">
+      <div className={classNames(darkTheme !== "true" ? 'shadow-lg' : '', "m-auto mb-8 max-w-5xl overflow-hidden sm:grid sm:grid-cols-2 sm:gap-px")}>
         {actions.map((action, actionIdx) => {
           const ActionIcon = icons[action.icon];
           return (

@@ -10,9 +10,6 @@ class MyDocument extends Document {
     return (
       <Html className="h-full">
         <Head>
-          {process.env.ROBOTS_NO_INDEX && (
-            <meta name="robots" content="noindex"></meta>
-          )}
           {/* <script dangerouslySetInnerHTML={{ __html: nightwind.init() }} /> */}
           <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
           <link rel="stylesheet" href="/docs/css/highlight-js/lightfair.css" />
