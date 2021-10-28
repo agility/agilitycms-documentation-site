@@ -39,19 +39,19 @@ const RightOrLeftAlignedLinks = ({ module, customData }) => {
         fields.rightAlignLinks === "true"
           ? "lg:flex-row"
           : "lg:flex-row-reverse",
-        "flex flex-col max-w-2xl lg:max-w-5xl mx-auto my-10 px-4 font-muli"
+        "flex flex-col max-w-2xl lg:max-w-5xl mx-auto my-20 px-4 font-muli"
       )}
     >
       <div className="lg:w-2/5 text-center lg:text-left mb-5 lg:mb-0">
         <h2 className="mb-5 text-3xl font-medium tracking-normal text-darkerGray">
           {fields.title}
         </h2>
-        <p className="text-darkerGray font-normal">{fields.subTitle}</p>
+        <p className="text-darkGray font-normal">{fields.subTitle}</p>
       </div>
       <div
         className={classNames(
           fields.rightAlignLinks === "true" ? "lg:ml-auto" : "lg:mr-auto",
-          "lg:w-1/2 mb-10 overflow-hidden sm:grid sm:grid-cols-1 sm:gap-px"
+          "lg:w-1/2 mb-10 overflow-hidden sm:grid sm:grid-cols-1 sm:gap-px custom-shadow"
         )}
       >
         {actions.map((action, actionIdx) => {

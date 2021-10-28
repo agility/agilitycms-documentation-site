@@ -14,7 +14,7 @@ const RightOrLeftAlignedImageLinks = ({ module, customData }) => {
         fields.rightAlignLinks === "true"
           ? "lg:flex-row"
           : "lg:flex-row-reverse",
-        "flex flex-col max-w-2xl lg:max-w-5xl mx-auto my-10 font-muli"
+        "flex flex-col max-w-2xl lg:max-w-5xl mx-auto my-20 font-muli"
       )}
     >
       <div className="lg:w-2/5 text-center lg:text-left mb-5 lg:mb-0">
