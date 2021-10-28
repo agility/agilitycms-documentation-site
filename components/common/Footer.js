@@ -3,6 +3,10 @@ import * as PostUtil from "../../utils/postUtils";
 import { getLeadSource } from "utils/leadUtils";
 import { Fragment } from "react";
 
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
+
 const Footer = (props) => {
   // get year logic
   const getYear = () => {
@@ -58,10 +62,14 @@ const Footer = (props) => {
         className="pt-10 pb-20 xl:py-28"
       >
         <div className="max-w-2xl xl:max-w-7xl mx-auto px-6 md:px-8 xl:flex xl:justify-between">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-16 mt-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-16 mt-8 mb-12 xl:mb-0">
             {navigation.map((col, idx) => {
               return(
-               <div className="mb-0 md:mb-20">
+               <div 
+                className={classNames(
+                    "mb-0",
+                )}
+               >
                 <h4 className="font-semibold mb-4">{col.name}</h4>
                 <ul
                   className="space-y-[15px]"
@@ -123,7 +131,7 @@ const Footer = (props) => {
       </div>
       <div style={{ backgroundColor: "#380087" }} className="py-8 md:py-4">
         <div className="max-w-7xl mx-auto px-6 md:px-8 flex flex-col-reverse lg:flex-row justify-between">
-          <div className="lg:flex">
+          <div className="lg:flex md:pt-1.5">
             <p
               style={{ fontSize: "13px", marginRight: "50px" }}
               className="mb-8 lg:mb-0"
@@ -150,7 +158,7 @@ const Footer = (props) => {
           </div>
           <ul className="flex items-center socials text-center space-x-3 mb-8 lg:mb-0">
             <li style={{ width: "40px" }}>
-              <a>
+              <a href="http://twitter.com/agilitycms">
                 <img
                   src="https://static.agilitycms.com/social/twitter.svg"
                   alt="Twitter"
@@ -159,7 +167,7 @@ const Footer = (props) => {
               </a>
             </li>
             <li style={{ width: "40px" }}>
-              <a>
+              <a href="https://www.facebook.com/AgilityCMS/">
                 <img
                   src="https://static.agilitycms.com/social/facebook.svg"
                   alt="Twitter"
@@ -173,7 +181,7 @@ const Footer = (props) => {
               </a>
             </li>
             <li style={{ width: "40px" }}>
-              <a>
+              <a href="https://www.linkedin.com/company/agilitycms">
                 <img
                   src="https://static.agilitycms.com/layout/img/foter/linkedin-brands.svg"
                   alt="Twitter"
@@ -182,7 +190,7 @@ const Footer = (props) => {
               </a>
             </li>
             <li style={{ width: "40px" }}>
-              <a>
+              <a href="https://www.g2.com/products/agility-cms/reviews">
                 <img
                   src="https://static.agilitycms.com/Attachments/NewItems/g2-2019-logo-new_20190918165754_0.png"
                   alt="Twitter"
@@ -191,7 +199,7 @@ const Footer = (props) => {
               </a>
             </li>
             <li style={{ width: "40px" }}>
-              <a>
+              <a href="https://agilitycms-community.slack.com/join/shared_invite/enQtNzI2NDc3MzU4Njc2LWI2OTNjZTI3ZGY1NWRiNTYzNmEyNmI0MGZlZTRkYzI3NmRjNzkxYmI5YTZjNTg2ZTk4NGUzNjg5NzY3OWViZGI#/">
                 <img
                   src="https://static.agilitycms.com/email-marketing/monthly-newsletter/slack-ico-small.png"
                   alt="Twitter"
