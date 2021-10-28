@@ -75,7 +75,6 @@ export default function Header({
     scrollContainer.addEventListener("scroll", function (e) {
       const scroll = this.scrollTop;
       const preheader = document.getElementById("preheader");
-
       if (scroll === 0) {
         preheader.classList.add("md:block");
       } else {
@@ -97,7 +96,7 @@ export default function Header({
                 <div className="flex items-center">
                   <div
                     id="marketing-content"
-                    className="text-sm font-medium"
+                    style={{ fontSize: ".875rem", fontWeight: "400" }}
                     dangerouslySetInnerHTML={renderHTML(marketingContent, true)}
                   />
                   <ChevronRightIcon className="w-[20px] h-[20px] marketing-arrow" />
@@ -145,7 +144,7 @@ export default function Header({
                     <Link href="/">
                       <a title="Agility CMS Docs">
                         <img
-                          className="block h-8 w-auto"
+                          className="block h-6 md:h-8 w-auto"
                           src="/docs/assets/agility-docs-logo.svg"
                           alt="Agility CMS Docs"
                         />
@@ -153,7 +152,7 @@ export default function Header({
                     </Link>
                   </div>
                 </div>
-                <div className="relative z-0 flex-1 px-2 flex items-center justify-center sm:absolute sm:inset-0">
+                <div className="relative z-0 flex-1 px-2 hidden md:flex items-center justify-center sm:absolute sm:inset-0">
                   <div className="w-full max-w-xs lg:max-w-xl">
                     <label htmlFor="search" className="sr-only">
                       Search
@@ -169,9 +168,10 @@ export default function Header({
                     </div>
                   </div>
                 </div>
+
                 <div className="relative z-10 flex items-center lg:hidden">
                   {/* Mobile menu button */}
-                  <Disclosure.Button className="rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                  <Disclosure.Button className="p-2 inline-flex items-center justify-center text-darkestGray hover:bg-lightGray focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brightPurple">
                     <span className="sr-only">Open menu</span>
                     {open ? (
                       <XIcon className="block h-6 w-6" aria-hidden="true" />
@@ -226,9 +226,9 @@ export default function Header({
                     <a
                       className={classNames(
                         item.current
-                          ? "bg-gray-100 text-gray-900"
-                          : "text-gray-900 hover:bg-gray-50 hover:text-gray-900",
-                        "block rounded-md py-2 px-3 text-base font-medium"
+                          ? "bg-lightGray text-darkestGray"
+                          : "text-darkestGray hover:bg-lightGray hover:text-gray-900",
+                        "block py-2 px-3 text-base font-medium"
                       )}
                       aria-current={item.current ? "page" : undefined}
                     >
@@ -236,6 +236,22 @@ export default function Header({
                     </a>
                   </Link>
                 ))}
+
+                <div className="w-full px-1 py-3">
+                  <hr className="py-2 shadow-none" />
+                  <label htmlFor="search" className="sr-only">
+                    Search
+                  </label>
+                  <div className="relative">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
+                      <SearchIcon
+                        className="h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <Search />
+                  </div>
+                </div>
               </div>
             </Disclosure.Panel>
           </>

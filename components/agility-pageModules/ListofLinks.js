@@ -12,7 +12,7 @@ const ListofLinks = ({ module, customData }) => {
   const darkTheme = fields.darkTheme;
   return (
     <div
-      className={`mx-auto pt-14 pb-10 sm:px-6 font-muli ${
+      className={`mx-auto pt-14 pb-10 px-6 font-muli ${
         darkTheme === "true"
           ? `bg-darkerGray text-white`
           : `bg-white text-darkerGray`

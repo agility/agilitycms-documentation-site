@@ -15,7 +15,7 @@ const ArticleListing = ({ module, customData }) => {
             {fields.title}
           </h2>
         </div>
-        <div className="mt-12 max-w-lg mx-auto grid gap-5 md:grid-cols-2 lg:grid-cols-4 lg:max-w-none">
+        <div className="mt-12 mx-auto grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {articles.map((article) => (
             <Link key={article.title} href={article.href}>
               <a className="flex flex-col overflow-hidden border border-lightGray group hover:border-brightPurple transition duration-150 ease-in-out">
