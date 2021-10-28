@@ -226,7 +226,7 @@ export default function Header({
             >
               <div className="pt-2 pb-3 px-2 space-y-1">
                 {navigation.map((item) => (
-                  <Disclosure.Button className="w-full text-left">
+                  <Disclosure.Button key={item.href} className="w-full text-left">
                     <MenuLink item={item} />
                   </Disclosure.Button>
                 ))}
