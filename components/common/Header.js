@@ -190,7 +190,7 @@ export default function Header({
                     target="_blank"
                     href="https://agilitycms.com/trial/"
                     rel="noreferrer"
-                    className="border-2 pt-2 pb-1.5 px-4 font-semibold custom-hover"
+                    className="border-2 pt-2 pb-1.5 px-4 font-bold custom-hover"
                     style={{ color: "#5800d4", borderColor: "#5800d4" }}
                   >
                     Try For Free
