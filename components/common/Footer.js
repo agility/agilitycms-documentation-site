@@ -65,30 +65,38 @@ const Footer = (props) => {
         style={{ backgroundColor: "#4600A8" }}
         className="pt-10 pb-20 xl:py-24"
       >
-        <div className="max-w-2xl xl:max-w-7xl mx-auto px-6 md:px-8 xl:flex xl:justify-between">
+        <div
+          className={`mx-auto px-6 md:px-8 ${
+            pageTemplateName === "WithSidebarNavTemplate"
+              ? `max-w-2xl xl:max-w-7xl xl:flex xl:justify-between`
+              : `max-w-4xl lg:max-w-7xl lg:flex lg:justify-between`
+          }`}
+        >
           <div className="grid grid-cols-2 md:grid-cols-3 gap-16 mt-8 mb-12 xl:mb-0">
             {navigation.map((col, idx) => {
-              return(
-               <div key={col.name}>
-                <h4 className="font-semibold mb-4">{col.name}</h4>
-                <ul
-                  className="space-y-[15px]"
-                  style={{
-                    fontSize: "14px",
-                    color: "#cbdeff",
-                    fontWeight: "400",
-                  }}
-                >
-                  {col.children.map((link, idx2) => {
-                    return (
-                      <li key={link.href}>
-                          <a href={link.href} target={link.target}>{link.name}</a>
-                      </li>
-                    )
-                  })}
-                </ul>
-              </div>
-             )
+              return (
+                <div key={col.name}>
+                  <h4 className="font-semibold mb-4">{col.name}</h4>
+                  <ul
+                    className="space-y-[15px]"
+                    style={{
+                      fontSize: "14px",
+                      color: "#cbdeff",
+                      fontWeight: "400",
+                    }}
+                  >
+                    {col.children.map((link, idx2) => {
+                      return (
+                        <li key={link.href}>
+                          <a href={link.href} target={link.target}>
+                            {link.name}
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              );
             })}
           </div>
           <div className="relative">
@@ -143,13 +151,13 @@ const Footer = (props) => {
                 return (
                   <>
                     <li key={link.href}>
-                        <a href={link.href} target={link.target}>{link.name}</a>
+                      <a href={link.href} target={link.target}>
+                        {link.name}
+                      </a>
                     </li>
-                    {idx !== bottomNavigation.length - 1 &&
-                    <li>|</li>
-                    }
+                    {idx !== bottomNavigation.length - 1 && <li>|</li>}
                   </>
-                )
+                );
               })}
             </ul>
           </div>
