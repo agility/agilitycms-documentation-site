@@ -66,7 +66,7 @@ const Footer = (props) => {
         className="pt-10 pb-20 xl:py-24"
       >
         <div
-          className={`mx-auto px-6 md:px-8 ${
+          className={`mx-auto px-6 md:px-8 overflow-hidden ${
             pageTemplateName === "WithSidebarNavTemplate"
               ? `max-w-2xl xl:max-w-7xl xl:flex xl:justify-between`
               : `max-w-4xl lg:max-w-7xl lg:flex lg:justify-between`
