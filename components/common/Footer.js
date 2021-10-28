@@ -110,7 +110,7 @@ const Footer = () => {
               </ul>
             </div>
           </div>
-          <div className="relative z-10">
+          <div className="relative z-10 overflow-hidden">
             <img
               src="/docs/assets/bg-top.svg"
               className="absolute"
