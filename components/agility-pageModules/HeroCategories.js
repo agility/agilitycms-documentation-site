@@ -31,7 +31,7 @@ export default function HeroCategories({ module }) {
       <div className="relative bg-gray-100 bg-brightPurple">
         {/* <div className="absolute inset-0"></div> */}
         <div className="relative max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8">
-          <h1 className="text-center font-normal tracking-normal text-white text-3xl md:text-4xl">
+          <h1 className="text-center font-normal tracking-normal text-white text-3xl md:text-5xl">
             {fields.title}
           </h1>
           <p className="text-center mt-6 text-lg text-white">
@@ -45,7 +45,7 @@ export default function HeroCategories({ module }) {
         className="-mt-36 mb-10 max-w-7xl mx-auto relative z-10 pb-14 px-4 sm:px-6 lg:px-8 top-40"
         aria-labelledby="contact-heading"
       >
-        <h2 className="sr-only" id="hero-heading">
+        <h2 className="sr-only text">
           {fields.title}
         </h2>
         <div className="grid grid-cols-1 gap-y-20 lg:grid-cols-4 lg:gap-y-0 lg:gap-x-8">

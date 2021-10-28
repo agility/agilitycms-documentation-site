@@ -19,7 +19,7 @@ export default function ButtonDropdown({ name, children, children2 }) {
             }`}
           >
             <Menu.Button className="flex justify-between w-52 text-darkestGray">
-              <p>{name}</p>
+              <p className="font-semibold">{name}</p>
               <ChevronDownIcon
                 className="-mr-1 ml-2 h-5 w-5 text-purple"
                 aria-hidden="true"

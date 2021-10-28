@@ -35,7 +35,7 @@ function classNames(...classes) {
 }
 
 const loginButton = {
-  name: "Login",
+  name: "Sign In",
   href: "https://manager.agilitycms.com/",
   icon: LoginIcon,
 };
@@ -87,7 +87,7 @@ export default function Header({
     <>
       {preHeader.showPreHeader === true && (
         <div
-          className="px-2 sm:px-4 lg:px-8 py-3 bg-purple text-white hidden md:block font-muli"
+          className="px-2 sm:px-4 lg:px-8 pt-3 pb-2 bg-purple text-white hidden md:block font-muli"
           id="preheader"
         >
           <div className="flex justify-between">
@@ -99,7 +99,7 @@ export default function Header({
                     style={{ fontSize: ".875rem", fontWeight: "400" }}
                     dangerouslySetInnerHTML={renderHTML(marketingContent, true)}
                   />
-                  <ChevronRightIcon className="w-[20px] h-[20px] marketing-arrow" />
+                  <ChevronRightIcon className="w-[20px] h-[20px] mb-0.5 marketing-arrow" />
                 </div>
                 <div className="flex text-sm">
                   {supportButton && (
@@ -201,7 +201,7 @@ export default function Header({
                   {navigation.map((item) => (
                     <Link key={item.name} href={item.href}>
                       <a
-                        className="text-gray-900 hover:text-purple"
+                        className="text-gray-900 hover:text-purple font-semibold"
                         aria-current={item.current ? "page" : undefined}
                       >
                         {item.name}
