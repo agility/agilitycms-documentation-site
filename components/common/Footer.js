@@ -69,11 +69,7 @@ const Footer = (props) => {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-16 mt-8 mb-12 xl:mb-0">
             {navigation.map((col, idx) => {
               return(
-               <div 
-                className={classNames(
-                    "mb-0",
-                )}
-               >
+               <div key={col.name}>
                 <h4 className="font-semibold mb-4">{col.name}</h4>
                 <ul
                   className="space-y-[15px]"
@@ -85,9 +81,9 @@ const Footer = (props) => {
                 >
                   {col.children.map((link, idx2) => {
                     return (
-                      <li>
+                      <li key={link.href}>
                           <a href={link.href} target={link.target}>{link.name}</a>
-                    </li>
+                      </li>
                     )
                   })}
                 </ul>
