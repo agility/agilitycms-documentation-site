@@ -170,12 +170,70 @@ export async function getStaticProps({
     documentationLink: data.header[0].fields.documentationLink,
   };
 
+  // get the footer links from the main site
+  const mainSiteFooter = await api.getContentItem({
+    contentID: 16,
+    languageCode: "en-ca",
+    expandAllContentLinks: true
+  })
+
+  let footerNavigation = [];
+
+  footerNavigation.push({
+    name: mainSiteFooter.fields.column1Title,
+    children: []
+  })
+
+  mainSiteFooter.fields.column1Links.forEach((link) => {
+    footerNavigation[0].children.push({
+      name: link.fields.title,
+      href: link.fields.uRL.href,
+      target: link.fields.uRL?.target
+    })
+  })
+
+  footerNavigation.push({
+    name: mainSiteFooter.fields.column2Title,
+    children: []
+  })
+
+  mainSiteFooter.fields.column2Links.forEach((link) => {
+    footerNavigation[1].children.push({
+      name: link.fields.title,
+      href: link.fields.uRL.href,
+      target: link.fields.uRL?.target
+    })
+  })
+
+  footerNavigation.push({
+    name: mainSiteFooter.fields.column3Title,
+    children: []
+  })
+
+  mainSiteFooter.fields.column3Links.forEach((link) => {
+    footerNavigation[2].children.push({
+      name: link.fields.title,
+      href: link.fields.uRL.href,
+      target: link.fields.uRL?.target
+    })
+  })
+
+  const footerBottomNavigation = mainSiteFooter.fields.bottomLinks.map((link, idx) => {
+    return {
+      name: link.fields.title,
+      href: link.fields.uRL.href,
+      target: link.fields.uRL.target
+    }
+  });
+
   const additionalPageProps = {
     mainMenuLinks,
     primaryDropdownLinks,
     secondaryDropdownLinks,
     marketingContent,
     preHeader,
+    footerNavigation,
+    footerBottomNavigation
   };
 
   return {
@@ -206,5 +264,6 @@ export async function getStaticPaths({ locales, defaultLocale }) {
 const AgilityPage = (props) => {
   return <Layout {...props} />;
 };
+
 
 export default AgilityPage;
