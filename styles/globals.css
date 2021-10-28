@@ -107,7 +107,6 @@ code > span.hljs-string {
 }
 
 /* Footer */
-
 .socials li a img {
   filter: brightness(0) invert(1);
 }
@@ -129,6 +128,13 @@ code > span.hljs-string {
     bottom: -40px;
     right: -50px;
   }
+}
+
+/* custom hover */
+.custom-hover:hover {
+  transform: scale(1.03);
+  transition: all 0.35s;
+  backface-visibility: hidden;
 }
 
 #__next {

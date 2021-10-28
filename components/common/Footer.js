@@ -122,7 +122,7 @@ const Footer = (props) => {
                       className="border-2 border-white w-full flex-1 mr-4 focus:outline-none ring-0 focus:border-transparent text-darkerGray font-semibold mb-3 sm:mb-0"
                       required
                     />
-                    <button className="border-2 border-white px-4 py-3 outline-none w-full sm:w-auto flex justify-center items-center font-semibold">
+                    <button className="border-2 border-white px-4 py-3 outline-none w-full sm:w-auto flex justify-center items-center font-semibold custom-hover">
                       <span>Sign up</span>
                       <ChevronRightIcon className="w-[20px] h-[20px] ml-2" />
                     </button>

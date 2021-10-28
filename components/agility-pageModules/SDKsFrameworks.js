@@ -19,7 +19,7 @@ const SDKsFrameworks = ({ module, customData }) => {
             rel={action.rel}
             key={action.title}
           >
-            <a title={action.title}>
+            <a title={action.title} className="custom-hover">
               <div
                 key={index}
                 className="bg-lightGray p-6 flex justify-center items-center"
