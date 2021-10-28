@@ -106,8 +106,29 @@ code > span.hljs-string {
   box-shadow: 0 5px 30px -8px rgb(85 63 164 / 25%);
 }
 
+/* Footer */
+
 .socials li a img {
   filter: brightness(0) invert(1);
+}
+
+.bottom-form-svg {
+  position: absolute;
+  bottom: 0;
+  right: -50px;
+}
+
+.top-form-svg {
+  position: absolute;
+  top: -30px;
+  left: -50px;
+}
+
+@media (max-width: 425px) {
+  .bottom-form-svg {
+    bottom: -40px;
+    right: -50px;
+  }
 }
 
 #__next {
