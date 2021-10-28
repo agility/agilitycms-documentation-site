@@ -18,7 +18,7 @@ const RightOrLeftAlignedImageLinks = ({ module, customData }) => {
       )}
     >
       <div className="lg:w-2/5 text-center lg:text-left mb-5 lg:mb-0">
-        <h2 className="mb-5 text-3xl font-extrabold tracking-tight text-gray-900">
+        <h2 className="mb-5 text-3xl font-extrabold text-gray-900">
           {fields.title}
         </h2>
         <p className="text-gray-500">{fields.subTitle}</p>
