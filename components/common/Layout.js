@@ -70,12 +70,24 @@ function Layout(props) {
     page.seo.metaDescription = dynamicPageItem?.fields?.description;
   }
 
-  //
+  // set the meta description for a dynamic item
   if (
     dynamicPageItem?.seo?.metaDescription &&
     dynamicPageItem.seo.metaDescription.length > 0
   ) {
     page.seo.metaDescription = dynamicPageItem.seo.metaDescription;
+  }
+
+  // set the meta title for a dynamic item
+  if(
+    dynamicPageItem?.fields?.metaTitle &&
+    dynamicPageItem?.fields?.metaTitle.length > 0
+  ) {
+    sitemapNode.title = dynamicPageItem?.fields?.metaTitle
+  }
+  
+  if(dynamicPageItem?.sitemapVisible === false) {
+    page.seo.noIndex = true;
   }
 
   return (
@@ -92,6 +104,7 @@ function Layout(props) {
         description={page.seo.metaDescription}
         keywords={page.seo.metaKeywords}
         metaHTML={page.seo.metaHTML}
+        noIndex={page.seo.noIndex}
       />
       <div id="SiteWrapper" className="h-full font-muli">
         {isPreview && <LoadingWidget message="Loading Preview Mode" />}
