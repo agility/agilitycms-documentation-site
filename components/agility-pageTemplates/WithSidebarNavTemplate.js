@@ -24,7 +24,7 @@ const WithSidebarNavTemplate = (props) => {
             getModule={getModule}
           />
         </div>
-        <Footer />
+        <Footer navigation={props.footerNavigation} bottomNavigation={props.footerBottomNavigation} />
       </div>
     </div>
   );
