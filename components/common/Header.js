@@ -14,7 +14,7 @@
   }
   ```
 */
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { SearchIcon } from "@heroicons/react/solid";
 import {
@@ -82,6 +82,10 @@ export default function Header({
       }
     });
   }, []);
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  console.log(isOpen);
 
   return (
     <>
@@ -222,19 +226,9 @@ export default function Header({
             >
               <div className="pt-2 pb-3 px-2 space-y-1">
                 {navigation.map((item) => (
-                  <Link key={item.name} href={item.href}>
-                    <a
-                      className={classNames(
-                        item.current
-                          ? "bg-lightGray text-darkestGray"
-                          : "text-darkestGray hover:bg-lightGray hover:text-gray-900",
-                        "block py-2 px-3 text-base font-medium"
-                      )}
-                      aria-current={item.current ? "page" : undefined}
-                    >
-                      {item.name}
-                    </a>
-                  </Link>
+                  <Disclosure.Button className="w-full text-left">
+                    <MenuLink item={item} />
+                  </Disclosure.Button>
                 ))}
 
                 <div className="w-full px-1 py-3">
@@ -260,3 +254,23 @@ export default function Header({
     </>
   );
 }
+
+const MenuLink = ({ item }) => {
+  // let { href, children, ...rest } = props;
+  return (
+    <Link href={item.href}>
+      <a
+        className={classNames(
+          item.current
+            ? "bg-lightGray text-darkestGray"
+            : "text-darkestGray hover:bg-lightGray hover:text-gray-900",
+          "block py-2 px-3 text-base font-medium"
+        )}
+        aria-current={item.current ? "page" : undefined}
+        // {...rest}
+      >
+        {item.name}
+      </a>
+    </Link>
+  );
+};

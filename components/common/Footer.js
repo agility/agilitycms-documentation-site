@@ -8,9 +8,8 @@ function classNames(...classes) {
 }
 
 const Footer = (props) => {
+  // get page template name
   const { pageTemplateName } = props;
-
-  console.log(pageTemplateName);
 
   // get year logic
   const getYear = () => {
