@@ -27,7 +27,7 @@ const ListofLinks = ({ module, customData }) => {
           {fields.title}
         </h2>
       )}
-      <div className={classNames(darkTheme !== "true" ? 'shadow-lg' : '', "m-auto mb-8 max-w-5xl overflow-hidden sm:grid sm:grid-cols-2 sm:gap-px")}>
+      <div className={classNames(darkTheme !== "true" ? 'custom-shadow' : '', "m-auto mb-8 max-w-5xl overflow-hidden sm:grid sm:grid-cols-2 sm:gap-px")}>
         {actions.map((action, actionIdx) => {
           const ActionIcon = icons[action.icon];
           return (

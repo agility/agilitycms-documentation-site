@@ -51,7 +51,7 @@ const RightOrLeftAlignedLinks = ({ module, customData }) => {
       <div
         className={classNames(
           fields.rightAlignLinks === "true" ? "lg:ml-auto" : "lg:mr-auto",
-          "lg:w-1/2 mb-10 overflow-hidden sm:grid sm:grid-cols-1 sm:gap-px custom-shadow"
+          "lg:w-1/2 overflow-hidden sm:grid sm:grid-cols-1 sm:gap-px custom-shadow"
         )}
       >
         {actions.map((action, actionIdx) => {
