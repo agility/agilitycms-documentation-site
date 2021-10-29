@@ -1,5 +1,5 @@
 import { getPageTemplate } from "components/agility-pageTemplates";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { handlePreview } from "@agility/nextjs";
 import { useRouter } from "next/router";
 import nProgress from "nprogress";
@@ -11,6 +11,7 @@ import PreviewWidget from "./PreviewWidget";
 import CMSWidget from "./CMSWidget";
 import nextConfig from "next.config";
 import Script from "next/script";
+import { initGA, logPageView } from "../../utils/analyticUtils";
 
 // set up handle preview
 const isPreview = handlePreview({
@@ -22,6 +23,29 @@ function Layout(props) {
     props;
 
   const router = useRouter();
+
+  // google analytics
+  const [isGaLoaded, setIsGaLoaded] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === undefined) return;
+
+    const handleRouteChange = (url) => {
+      logPageView(url);
+    };
+
+    if (!window.GA_INITIALIZED) {
+      initGA();
+      window.GA_INITIALIZED = true;
+    }
+
+    router.events.on("routeChangeComplete", handleRouteChange);
+
+    return () => {
+      if (typeof window === undefined) return;
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router.events]);
 
   // if the route changes, scroll our scrollable container back to the top
   useEffect(() => {
@@ -79,14 +103,14 @@ function Layout(props) {
   }
 
   // set the meta title for a dynamic item
-  if(
+  if (
     dynamicPageItem?.fields?.metaTitle &&
     dynamicPageItem?.fields?.metaTitle.length > 0
   ) {
-    sitemapNode.title = dynamicPageItem?.fields?.metaTitle
+    sitemapNode.title = dynamicPageItem?.fields?.metaTitle;
   }
-  
-  if(dynamicPageItem?.sitemapVisible === false) {
+
+  if (dynamicPageItem?.sitemapVisible === false) {
     page.seo.noIndex = true;
   }
 
@@ -118,7 +142,7 @@ function Layout(props) {
               preHeader={props.preHeader}
             />
             <AgilityPageTemplate {...props} />
-            {/* <PreviewWidget
+            <PreviewWidget
               isPreview={props.isPreview}
               isDevelopmentMode={props.isDevelopmentMode}
             />
@@ -127,7 +151,7 @@ function Layout(props) {
               dynamicPageItem={props.dynamicPageItem}
               isPreview={props.isPreview}
               isDevelopmentMode={props.isDevelopmentMode}
-            /> */}
+            />
           </div>
         )}
       </div>
