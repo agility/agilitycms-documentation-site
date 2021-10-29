@@ -26,9 +26,9 @@ export default function HeroCategories({ module }) {
     };
   });
   return (
-    <div className="bg-brightPurple mb-56 font-muli">
+    <div className="bg-lightPurple mb-56 font-muli">
       {/* Header */}
-      <div className="relative bg-gray-100 bg-brightPurple">
+      <div className="relative bg-gray-100 bg-lightPurple">
         {/* <div className="absolute inset-0"></div> */}
         <div className="relative max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8">
           <h1 className="text-center font-normal tracking-normal text-white text-3xl md:text-5xl">

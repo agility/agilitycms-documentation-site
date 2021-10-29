@@ -36,7 +36,7 @@ const ListofLinks = ({ module, customData }) => {
               className={`relative group p-6 ${
                 darkTheme === "true"
                   ? `bg-darkerGray hover:bg-darkestGray`
-                  : `bg-offWhite hover:bg-lightGray`
+                  : `bg-offWhite hover:bg-lightGray hover:text-brightPurple`
               }  border-transparent border-l-2 hover:border-brightPurple`}
             >
               <div className="flex">
