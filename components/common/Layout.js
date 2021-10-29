@@ -142,7 +142,7 @@ function Layout(props) {
               preHeader={props.preHeader}
             />
             <AgilityPageTemplate {...props} />
-            <PreviewWidget
+            {/* <PreviewWidget
               isPreview={props.isPreview}
               isDevelopmentMode={props.isDevelopmentMode}
             />
@@ -151,7 +151,7 @@ function Layout(props) {
               dynamicPageItem={props.dynamicPageItem}
               isPreview={props.isPreview}
               isDevelopmentMode={props.isDevelopmentMode}
-            />
+            /> */}
           </div>
         )}
       </div>

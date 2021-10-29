@@ -39,7 +39,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
         </div>
       </div>
 
-      <div className="hidden xl:block sticky top-0 w-60 flex-none max-h-96 pt-20">
+      {/* <div className="hidden xl:block sticky top-0 w-60 flex-none max-h-96 pt-20 mb-[500px]">
         <ArticleNav headings={h2Blocks} />
         <hr className="mt-5 mb-5" />
         {!positiveFeedbackSubmitted && !negativeFeedbackSubmitted && (
@@ -86,7 +86,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
             setNegativeFeedbackSubmitted={setNegativeFeedbackSubmitted}
           />
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

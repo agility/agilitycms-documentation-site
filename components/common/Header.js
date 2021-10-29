@@ -133,7 +133,7 @@ export default function Header({
       <Disclosure
         id="Header"
         as="header"
-        className="flex-shrink-0 bg-white shadow z-40 relative font-muli"
+        className="flex-shrink-0 bg-white shadow z-40 relative font-muli sticky top-0"
       >
         {({ open }) => (
           <>

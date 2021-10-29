@@ -27,7 +27,7 @@ class MyDocument extends Document {
             media="screen and (min-width: 1px)"
           />
         </Head>
-        <body className="overflow-hidden h-full">
+        <body className="">
           <Main />
           <NextScript />
         </body>
