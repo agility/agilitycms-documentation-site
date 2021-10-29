@@ -109,8 +109,8 @@ function Layout(props) {
   ) {
     sitemapNode.title = dynamicPageItem?.fields?.metaTitle;
   }
-
-  if (dynamicPageItem?.sitemapVisible === false) {
+  
+  if (dynamicPageItem?.seo?.sitemapVisible === false) {
     page.seo.noIndex = true;
   }
 
