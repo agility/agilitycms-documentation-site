@@ -52,7 +52,7 @@ export default function HeroCategories({ module }) {
           {supportLinks.map((link) => (
             <div
               key={link.name}
-              className="flex flex-col bg-white shadow-lg group"
+              className="flex flex-col bg-white custom-shadow group"
             >
               <Link href={link.href}>
                 <a>
