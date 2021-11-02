@@ -27,12 +27,11 @@ export default function ArticleNav({ dynamicPageItem, sitemapNode }) {
 
   //set up the Article Nav sync for the reader
   useEffect(() => {
-    const $scrollContainer = document.getElementById("ScrollContainer");
     const $articleNav = document.getElementById("ArticleNav");
 
     //if we don't have an article nav or scroll container, return and don't do anything
-    if (!$articleNav || !$scrollContainer) return;
-
+    if (!$articleNav) return;
+    
     const $articleNavHeaders = $articleNav.children;
     const $articleHeaders = document.querySelectorAll(
       "#DynamicArticleDetails h2"
@@ -40,24 +39,22 @@ export default function ArticleNav({ dynamicPageItem, sitemapNode }) {
 
     //run on load...
     syncArticleNav({
-      $scrollContainer,
       $articleNav,
       $articleHeaders,
       $articleNavHeaders,
     });
 
     //run again when we scroll
-    $scrollContainer.onscroll = () => {
+    window.onscroll = () => {
       syncArticleNav({
-        $scrollContainer,
         $articleNav,
         $articleHeaders,
         $articleNavHeaders,
       });
     };
 
-    return () => ($scrollContainer.onscroll = null);
-  }, []);
+    return () => (window.onscroll = null);
+  }, [blocks]);
 
   const navigation = [];
   headings.map((heading, idx) => {
@@ -139,25 +136,16 @@ export default function ArticleNav({ dynamicPageItem, sitemapNode }) {
 }
 
 const syncArticleNav = ({
-  $scrollContainer,
-  $articleNav,
   $articleNavHeaders,
   $articleHeaders,
 }) => {
   //determine scroll position of container
-  let scrollPos = $scrollContainer.scrollTop;
+  let scrollPos = document.documentElement.scrollTop;
 
   //find the headers we've already scrolled psat
   let $articleHeadersScrolledPast = [];
   $articleHeaders.forEach((element, idx) => {
     if (scrollPos >= element.offsetTop - 60) {
-      $articleHeadersScrolledPast.push(element);
-    } else if (
-      idx === $articleHeaders.length - 1 && //if this is the last item
-      parseInt($scrollContainer.scrollTop) ===
-        $scrollContainer.scrollHeight - $scrollContainer.offsetHeight
-    ) {
-      //we have scrolled to the bottom, ensure we have the last heading selected
       $articleHeadersScrolledPast.push(element);
     }
   });
