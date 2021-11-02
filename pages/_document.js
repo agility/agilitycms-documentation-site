@@ -8,11 +8,8 @@ class MyDocument extends Document {
 
   render() {
     return (
-      <Html className="h-full">
+      <Html className="h-full" lang="en-US">
         <Head>
-          {/* <script dangerouslySetInnerHTML={{ __html: nightwind.init() }} /> */}
-          <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-          <link rel="stylesheet" href="/docs/css/highlight-js/lightfair.css" />
           <link
             rel="stylesheet"
             href="https://use.typekit.net/arl7bjd.css"

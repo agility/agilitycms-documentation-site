@@ -16,10 +16,12 @@ const TextBlocksWithImages = ({ module }) => {
                   <span className="inline-block w-[4px] h-[4px] rounded-full bg-darkerGray" />
                 </div>
                 <img
+                  alt={fields.image1.label}
                   src={fields.image1.url}
                   className="pb-2 w-[300px] hidden lg:block"
                 />
                 <img
+                  alt={fields.image1.label}
                   src={fields.image1.url}
                   className="pb-2 w-full block lg:hidden"
                 />
@@ -45,10 +47,12 @@ const TextBlocksWithImages = ({ module }) => {
                   <span className="inline-block w-[4px] h-[4px] rounded-full bg-darkerGray" />
                 </div>
                 <img
+                  alt={fields.image2.label}
                   src={fields.image2.url}
                   className="pb-2 w-[300px] hidden lg:block"
                 />
                 <img
+                  alt={fields.image2.label}
                   src={fields.image2.url}
                   className="pb-2 w-full block lg:hidden"
                 />
