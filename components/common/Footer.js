@@ -99,7 +99,7 @@ const Footer = (props) => {
             })}
           </div>
           <div className="relative">
-            <img src="/docs/assets/bg-top.svg" className="top-form-svg" />
+            <img src="/docs/assets/bg-top.svg" alt="Abstract background image on agilitycms.com" className="top-form-svg" />
             <div
               className={`relative z-10 overflow-hidden ${
                 pageTemplateName === "WithSidebarNavTemplate"
@@ -129,7 +129,7 @@ const Footer = (props) => {
                 </div>
               </div>
             </div>
-            <img src="/docs/assets/bg-bottom.svg" className="bottom-form-svg" />
+            <img alt="Abstract background image on agilitycms.com" src="/docs/assets/bg-bottom.svg" className="bottom-form-svg" />
           </div>
         </div>
       </div>
@@ -165,7 +165,7 @@ const Footer = (props) => {
               <a href="http://twitter.com/agilitycms">
                 <img
                   src="https://static.agilitycms.com/social/twitter.svg"
-                  alt="Twitter"
+                  alt="Twitter logo on agilitycms.com"
                   style={{ maxHeight: "25px", maxWidth: "28px", width: "100%" }}
                 />
               </a>
@@ -174,7 +174,7 @@ const Footer = (props) => {
               <a href="https://www.facebook.com/AgilityCMS/">
                 <img
                   src="https://static.agilitycms.com/social/facebook.svg"
-                  alt="Twitter"
+                  alt="Facebook logo on agilitycms.com"
                   style={{
                     maxHeight: "25px",
                     maxWidth: "28px",
@@ -188,7 +188,7 @@ const Footer = (props) => {
               <a href="https://www.linkedin.com/company/agilitycms">
                 <img
                   src="https://static.agilitycms.com/layout/img/foter/linkedin-brands.svg"
-                  alt="Twitter"
+                  alt="LinkedIn logo on agilitycms.com"
                   style={{ maxHeight: "25px", maxWidth: "28px" }}
                 />
               </a>
@@ -197,7 +197,7 @@ const Footer = (props) => {
               <a href="https://www.g2.com/products/agility-cms/reviews">
                 <img
                   src="https://static.agilitycms.com/Attachments/NewItems/g2-2019-logo-new_20190918165754_0.png"
-                  alt="Twitter"
+                  alt="G2 Crowd logo on agilitycms.com"
                   style={{ maxHeight: "25px", maxWidth: "28px" }}
                 />
               </a>
@@ -206,7 +206,7 @@ const Footer = (props) => {
               <a href="https://agilitycms-community.slack.com/join/shared_invite/enQtNzI2NDc3MzU4Njc2LWI2OTNjZTI3ZGY1NWRiNTYzNmEyNmI0MGZlZTRkYzI3NmRjNzkxYmI5YTZjNTg2ZTk4NGUzNjg5NzY3OWViZGI#/">
                 <img
                   src="https://static.agilitycms.com/email-marketing/monthly-newsletter/slack-ico-small.png"
-                  alt="Twitter"
+                  alt="Slack logo on agilitycms.com"
                   style={{ maxHeight: "25px", maxWidth: "28px" }}
                 />
               </a>

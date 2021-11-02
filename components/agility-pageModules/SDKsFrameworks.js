@@ -25,6 +25,7 @@ const SDKsFrameworks = ({ module, customData }) => {
                 className="bg-lightGray p-6 flex justify-center items-center"
               >
                 <img
+                  alt={action.imageAlt}
                   src={`${action.image}?w=40`}
                   className="w-10"
                   aria-hidden="true"

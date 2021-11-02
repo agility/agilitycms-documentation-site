@@ -47,6 +47,7 @@ const RightOrLeftAlignedImageLinks = ({ module, customData }) => {
                     )}
                   >
                     <img
+                      alt={action.imageAlt}
                       src={`${action.image}?w=40`}
                       className="w-10"
                       aria-hidden="true"

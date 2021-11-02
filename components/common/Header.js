@@ -146,7 +146,7 @@ export default function Header({
                         <img
                           className="block h-6 md:h-8 w-auto"
                           src="/docs/assets/agility-docs-logo.svg"
-                          alt="Agility CMS Docs"
+                          alt="The logo of Agility CMS Docs site on agilitycms.com"
                         />
                       </a>
                     </Link>
