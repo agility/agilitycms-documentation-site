@@ -8,7 +8,7 @@ class MyDocument extends Document {
 
   render() {
     return (
-      <Html className="h-full">
+      <Html className="h-full" lang="en-US">
         <Head>
           <html lang="en-US" />
           {/* <script dangerouslySetInnerHTML={{ __html: nightwind.init() }} /> */}
