@@ -14,7 +14,7 @@ const ListofLinks = ({ module, customData }) => {
     <div
       className={`mx-auto px-6 font-muli ${
         darkTheme === "true"
-          ? `bg-darkerGray text-white pt-14 pb-10`
+          ? `bg-black text-white pt-14 pb-10`
           : `bg-white text-darkerGray my-20`
       }`}
     >
@@ -27,7 +27,12 @@ const ListofLinks = ({ module, customData }) => {
           {fields.title}
         </h2>
       )}
-      <div className={classNames(darkTheme !== "true" ? 'custom-shadow' : '', "m-auto mb-8 max-w-5xl overflow-hidden sm:grid sm:grid-cols-2 sm:gap-px")}>
+      <div
+        className={classNames(
+          darkTheme !== "true" ? "custom-shadow" : "",
+          "m-auto mb-8 max-w-5xl overflow-hidden sm:grid sm:grid-cols-2 sm:gap-px"
+        )}
+      >
         {actions.map((action, actionIdx) => {
           const ActionIcon = icons[action.icon];
           return (
@@ -35,7 +40,7 @@ const ListofLinks = ({ module, customData }) => {
               key={action.title}
               className={`relative group p-6 ${
                 darkTheme === "true"
-                  ? `bg-darkerGray hover:bg-darkestGray`
+                  ? `bg-black hover:bg-darkestGray`
                   : `bg-offWhite hover:bg-lightGray hover:text-brightPurple`
               }  border-transparent border-l-2 hover:border-brightPurple`}
             >

@@ -138,13 +138,13 @@ export default function Header({
         {({ open }) => (
           <>
             <div className="mx-auto px-2 sm:px-4  lg:px-8">
-              <div className="relative h-16 flex justify-between">
+              <div className="relative h-[60px] flex justify-between">
                 <div className="relative z-10 px-2 flex lg:px-0">
                   <div className="flex-shrink-0 flex items-center">
                     <Link href="/">
                       <a title="Agility CMS Docs">
                         <img
-                          className="block h-6 md:h-8 w-auto"
+                          className="block w-[158px] h-[48px] w-auto"
                           src="/docs/assets/agility-docs-logo.svg"
                           alt="Agility CMS Docs"
                         />
@@ -152,7 +152,7 @@ export default function Header({
                     </Link>
                   </div>
                 </div>
-                <div className="relative z-0 flex-1 px-2 hidden md:flex items-center justify-center sm:absolute sm:inset-0">
+                <div className="relative z-0 flex-1 px-2 hidden lg:flex items-center justify-center sm:absolute sm:inset-0">
                   <div className="w-full max-w-xs lg:max-w-xl">
                     <label htmlFor="search" className="sr-only">
                       Search
@@ -169,16 +169,36 @@ export default function Header({
                   </div>
                 </div>
 
-                <div className="relative z-10 flex items-center lg:hidden">
-                  {/* Mobile menu button */}
-                  <Disclosure.Button className="p-2 inline-flex items-center justify-center text-darkestGray hover:bg-lightGray focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brightPurple">
-                    <span className="sr-only">Open menu</span>
-                    {open ? (
-                      <XIcon className="block h-6 w-6" aria-hidden="true" />
-                    ) : (
-                      <MenuIcon className="block h-6 w-6" aria-hidden="true" />
-                    )}
-                  </Disclosure.Button>
+                <div className="flex items-center">
+                  <div className="hidden sm:block lg:hidden mr-[32px] sm:relative sm:z-10">
+                    <a
+                      target="_blank"
+                      href="https://agilitycms.com/trial/"
+                      rel="noreferrer"
+                      className="py-[9px] px-[19px] font-bold custom-hover"
+                      style={{
+                        color: "#FFF",
+                        backgroundColor: "#5800d4",
+                        fontSize: ".875rem",
+                      }}
+                    >
+                      Try For Free
+                    </a>
+                  </div>
+                  <div className="relative z-10 flex items-center lg:hidden">
+                    {/* Mobile menu button */}
+                    <Disclosure.Button className="p-2 inline-flex items-center justify-center text-darkestGray hover:bg-lightGray focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brightPurple">
+                      <span className="sr-only">Open menu</span>
+                      {open ? (
+                        <XIcon className="block h-7 w-7" aria-hidden="true" />
+                      ) : (
+                        <MenuIcon
+                          className="block h-7 w-7"
+                          aria-hidden="true"
+                        />
+                      )}
+                    </Disclosure.Button>
+                  </div>
                 </div>
 
                 <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
@@ -221,17 +241,7 @@ export default function Header({
               aria-label="Global"
             >
               <div className="pt-2 pb-3 px-2 space-y-1">
-                {navigation.map((item) => (
-                  <Disclosure.Button
-                    key={item.href}
-                    className="w-full text-left"
-                  >
-                    <MenuLink item={item} />
-                  </Disclosure.Button>
-                ))}
-
-                <div className="w-full px-1 py-3">
-                  <hr className="py-2 shadow-none" />
+                <div className="w-full px-2 py-3">
                   <label htmlFor="search" className="sr-only">
                     Search
                   </label>
@@ -244,6 +254,31 @@ export default function Header({
                     </div>
                     <Search />
                   </div>
+                </div>
+                <div>
+                  {navigation.map((item) => (
+                    <Disclosure.Button
+                      key={item.href}
+                      className="w-full text-left"
+                    >
+                      <MenuLink item={item} />
+                    </Disclosure.Button>
+                  ))}
+                </div>
+                <div
+                  className="px-3"
+                  style={{ marginTop: "24px", marginBottom: "24px" }}
+                >
+                  <a
+                    target="_blank"
+                    href="https://agilitycms.com/trial/"
+                    rel="noreferrer"
+                    className="border-2 pt-2 pb-1.5 px-4 font-bold custom-hover block md:hidden w-full text-center"
+                    style={{ color: "#5800d4", borderColor: "#5800d4" }}
+                  >
+                    Try For Free
+                  </a>
+                  {/* <hr className="py-2 shadow-none" /> */}
                 </div>
               </div>
             </Disclosure.Panel>

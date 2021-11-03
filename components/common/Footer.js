@@ -65,11 +65,7 @@ const Footer = (props) => {
         className="pt-10 pb-20 xl:py-24"
       >
         <div
-          className={`mx-auto px-6 md:px-8 overflow-hidden ${
-            pageTemplateName === "WithSidebarNavTemplate"
-              ? `max-w-2xl xl:max-w-7xl xl:flex xl:justify-between`
-              : `max-w-4xl lg:max-w-7xl lg:flex lg:justify-between`
-          }`}
+          className={`mx-auto px-6 md:px-8 overflow-hidden max-w-2xl lg:max-w-6xl lg:flex lg:justify-between`}
         >
           <div className="grid grid-cols-2 md:grid-cols-3 gap-16 mt-8 mb-12 xl:mb-0">
             {navigation.map((col, idx) => {
@@ -99,7 +95,11 @@ const Footer = (props) => {
             })}
           </div>
           <div className="relative">
-            <img src="/docs/assets/bg-top.svg" className="top-form-svg" />
+            <img
+              src="/docs/assets/bg-top.svg"
+              className="top-form-svg"
+              alt="Agility Newsletter Background Image"
+            />
             <div
               className={`relative z-10 overflow-hidden ${
                 pageTemplateName === "WithSidebarNavTemplate"
@@ -129,12 +129,16 @@ const Footer = (props) => {
                 </div>
               </div>
             </div>
-            <img src="/docs/assets/bg-bottom.svg" className="bottom-form-svg" />
+            <img
+              src="/docs/assets/bg-bottom.svg"
+              className="bottom-form-svg"
+              alt="Agility Newsletter Background Image"
+            />
           </div>
         </div>
       </div>
-      <div style={{ backgroundColor: "#380087" }} className="py-8 md:py-4">
-        <div className="max-w-7xl mx-auto px-6 md:px-8 flex flex-col-reverse lg:flex-row justify-between">
+      <div style={{ backgroundColor: "#380087" }} className="py-[40px] md:py-6">
+        <div className="max-w-2xl lg:max-w-6xl mx-auto px-6 md:px-8 flex flex-col-reverse lg:flex-row justify-between">
           <div className="lg:flex md:pt-1.5">
             <p
               style={{ fontSize: "13px", marginRight: "50px" }}
