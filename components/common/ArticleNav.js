@@ -66,7 +66,7 @@ export default function ArticleNav({ dynamicPageItem, sitemapNode }) {
 
   return (
     <div>
-      <div>In this Article:</div>
+      <div className="font-medium mb-4 text-md">In this Article:</div>
       <nav id="ArticleNav" className="space-y-1" aria-label="Article Nav">
         {navigation.map((item) => (
           <a
