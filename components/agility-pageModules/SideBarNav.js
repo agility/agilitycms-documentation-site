@@ -15,7 +15,7 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
   return (
     <div
       id="SideNav"
-      className="flex flex-col w-64 border-r border-gray-200 pt-4 pb-4 z-40 h-full font-muli"
+      className="flex flex-col w-64 pt-4 pb-4 z-40 font-muli"
     >
       <div className="flex-grow flex flex-col">
         <nav className="flex-1 space-y-1 bg-white" aria-label="Sidebar">

@@ -10,6 +10,9 @@ class MyDocument extends Document {
     return (
       <Html className="h-full" lang="en-US">
         <Head>
+          <html lang="en-US" />
+          {/* <script dangerouslySetInnerHTML={{ __html: nightwind.init() }} /> */}
+          <link rel="stylesheet" href="/docs/css/highlight-js/lightfair.css" />
           <link
             rel="stylesheet"
             href="https://use.typekit.net/arl7bjd.css"
@@ -24,7 +27,7 @@ class MyDocument extends Document {
             media="screen and (min-width: 1px)"
           />
         </Head>
-        <body className="overflow-hidden h-full">
+        <body className="">
           <Main />
           <NextScript />
         </body>
