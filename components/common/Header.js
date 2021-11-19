@@ -99,7 +99,7 @@ export default function Header({
                     style={{ fontSize: ".875rem", fontWeight: "400" }}
                     dangerouslySetInnerHTML={renderHTML(marketingContent, true)}
                   />
-                  <ChevronRightIcon className="w-[20px] h-[20px] mb-0.5 marketing-arrow" />
+                  <ChevronRightIcon className="w-[20px] h-[20px] mb-0.5 marketing-arrow relative top-[2px]" />
                 </div>
                 <div className="flex text-sm">
                   {supportButton && (
