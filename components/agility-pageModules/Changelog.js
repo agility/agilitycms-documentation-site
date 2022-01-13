@@ -3,7 +3,17 @@ import Link from "next/link";
 import { DateTime } from "luxon"
 import { client } from 'agility-graphql-client';
 import { gql } from "@apollo/client";
+import Blocks from "../common/blocks/index";
 
+
+const ChangeBlock = ({ content }) => {
+
+	if (!content) return null
+
+	const blocks = JSON.parse(content).blocks;
+
+	return <Blocks blocks={blocks} />
+}
 
 const Changelog = ({ module, customData }) => {
 
@@ -44,6 +54,7 @@ const Changelog = ({ module, customData }) => {
 									<li key={change.contentID} className="ml-5">
 										<div>{change.fields.component} {change.fields.type}</div>
 										<div>{change.fields.title}</div>
+										<ChangeBlock content={change.fields.content} />
 
 										{/* component: "Platform"
 										title: "Updated version of Tiny MCE"
