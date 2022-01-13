@@ -6,14 +6,7 @@ import { gql } from "@apollo/client";
 import Blocks from "../common/blocks/index";
 
 
-const ChangeBlock = ({ content }) => {
 
-	if (!content) return null
-
-	const blocks = JSON.parse(content).blocks;
-
-	return <Blocks blocks={blocks} />
-}
 
 const Changelog = ({ module, customData }) => {
 
@@ -25,7 +18,7 @@ const Changelog = ({ module, customData }) => {
 	const getChangeDate = (dateStr) => {
 		const d = new Date(dateStr)
 		const dt = DateTime.fromJSDate(d)
-		return dt.toFormat("LLLL yyyy")
+		return dt.toFormat("LLLL dd, yyyy")
 	}
 
 	return (
@@ -45,45 +38,26 @@ const Changelog = ({ module, customData }) => {
 				<div className="mt-12">
 					{changeLogItems.map((item, index) => (
 						<div key={item.contentID} className="mt-6">
-							<h3 className="py-3 text-2xl border-b border-lightGray">{getChangeDate(item.fields.date)}</h3>
-							<div className="py-3">
-								{item.fields.description}
-							</div>
-							<ul className="list-disc">
-								{item.fields.changes.map((change) => (
-									<li key={change.contentID} className="ml-5">
-										<div>{change.fields.component} {change.fields.type}</div>
-										<div>{change.fields.title}</div>
-										<ChangeBlock content={change.fields.content} />
+							<h3 className="p-3 text-2xl bg-lightGray">{getChangeDate(item.fields.date)}</h3>
+							<div className="px-6 border border-lightGray">
+								<div className="py-3">
+									{item.fields.description}
+								</div>
+								<ul className="pl-6 list-disc">
+									{item.fields.changes.map((change) => (
+										<li key={change.contentID} className="pl-6 ">
+											<div>{change.fields.component} {change.fields.type}</div>
+											<div>{change.fields.title}</div>
+											<ChangeBlock content={change.fields.content} />
 
-										{/* component: "Platform"
+											{/* component: "Platform"
 										title: "Updated version of Tiny MCE"
 										type: "Improvement" */}
-									</li>
-								))}
+										</li>
+									))}
 
-							</ul>
-
-
-							{/* <div className="flex flex-col justify-between flex-1 p-6 bg-white">
-								<div className="flex-1">
-									<span className="block mt-2">
-										<p className="text-xl font-semibold text-darkerGray group-hover:text-brightPurple">
-											{article.title}
-										</p>
-										<p className="mt-3 text-base text-darkGray">
-											{article.description}
-										</p>
-									</span>
-								</div>
-								{article.concept && (
-									<div className="flex items-center mt-6">
-										<span className="bg-gray-100 text-darkerGray group-hover:text-brightPurple inline-flex items-center px-3 py-0.5 rounded-sm text-sm font-normal">
-											{article.concept}
-										</span>
-									</div>
-								)}
-							</div> */}
+								</ul>
+							</div>
 						</div>
 					))}
 				</div>
@@ -100,23 +74,6 @@ Changelog.getCustomInitialProps = async ({
 	dynamicPageItem,
 	sitemapNode,
 }) => {
-
-
-	// const items = await agility.getContentList({
-	// 	referenceName: item.fields.changelog.referencename,
-	// 	languageCode,
-	// 	sort: "fields.date",
-	// 	direction: "desc",
-	// 	contentLinkDepth: 3,
-	// 	expandAllContentLinks: true,
-	// 	take: 50
-	// });
-
-
-
-
-	// return items;
-
 
 
 	const { data } = await client.query({
@@ -147,5 +104,16 @@ Changelog.getCustomInitialProps = async ({
 	return data
 
 };
+
+
+const ChangeBlock = ({ content }) => {
+
+	if (!content) return null
+
+	const blocks = JSON.parse(content).blocks;
+	return (
+		<Blocks blocks={blocks} proseSize="sm" />
+	)
+}
 
 export default Changelog;
