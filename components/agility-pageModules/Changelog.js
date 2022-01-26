@@ -46,9 +46,11 @@ const Changelog = ({ module, customData }) => {
 								<ul className="pl-6 list-disc">
 									{item.fields.changes.map((change) => (
 										<li key={change.contentID} className="pl-6 ">
-											<div>{change.fields.component} {change.fields.type}</div>
-											<div>{change.fields.title}</div>
-											<ChangeBlock content={change.fields.content} />
+											<div>TAG:{change.fields.component}</div>
+											<div>TYPE OF CHANGE:{change.fields.type}</div>
+											<div>TITLE: {change.fields.title}</div>
+											<div>DESCRIPTION: {change.fields.description}</div>
+											<div>LINK URL: {change.fields.linkURL}</div>
 
 											{/* component: "Platform"
 										title: "Updated version of Tiny MCE"
@@ -78,27 +80,29 @@ Changelog.getCustomInitialProps = async ({
 
 	const { data } = await client.query({
 		query: gql`
-        {
-				changelog (take: 50, sort: "fields.date", direction:"desc") {
+		{
+			changelog (take: 50, sort: "fields.date", direction:"desc") {
+				contentID,
+				fields {
+					date,
+					description,
+					changes (take: 50, filter: "fields.internalOnly[ne]true") {
 					contentID,
+					properties {
+						itemOrder
+					},
 					fields {
-						date,
+						title,
+						type,
+						component
 						description,
-						changes (take: 50, filter: "fields.internalOnly[ne]true") {
-						contentID,
-						properties {
-							itemOrder
-						},
-						fields {
-							title,
-							type,
-							component,
-							content
-						}
-						}
+						linkURL
+					}
 					}
 				}
-		}`,
+			}
+		}
+		`,
 	});
 
 	return data
