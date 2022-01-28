@@ -15,9 +15,9 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
   return (
     <div
       id="SideNav"
-      className="flex flex-col w-64 pt-4 pb-4 z-40 font-muli"
+      className="z-40 flex flex-col w-64 pt-4 pb-4 font-muli"
     >
-      <div className="flex-grow flex flex-col">
+      <div className="flex flex-col flex-grow">
         <nav className="flex-1 space-y-1 bg-white" aria-label="Sidebar">
           {navigation.map((item) =>
             !item.children ? (
@@ -63,9 +63,8 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
                           <path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
                         </svg>
                         <span
-                          className={`${
-                            open ? `text-darkestGray` : `text-darkGray`
-                          } hover:text-purple`}
+                          className={`${open ? `text-darkestGray` : `text-darkGray`
+                            } hover:text-purple`}
                         >
                           {item.name}
                         </span>
@@ -73,7 +72,7 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
                       {open && (
                         <Disclosure.Panel
                           static
-                          className="space-y-1 bg-lightGray py-2"
+                          className="py-2 space-y-1 bg-lightGray"
                         >
                           {item.children.map((subItem) => {
                             return (
@@ -145,7 +144,7 @@ SideBarNav.getCustomInitialProps = async ({
   }
 
   const { data } = await client.query({
-    query: gql`    
+    query: gql`
     {
       ${articlesRefName} (sort: "properties.itemOrder") {
         contentID
@@ -198,13 +197,15 @@ SideBarNav.getCustomInitialProps = async ({
       children: articlesInSection.map((article) => {
         const url = articleUrls[article.contentID];
         return {
-          name: article.fields.title,
-          href: articleUrls[article.contentID],
-          current: url === sitemapNode.path,
+          name: article.fields.title || null,
+          href: articleUrls[article.contentID] || "#",
+          current: url === sitemapNode.path || null,
         };
       }),
     });
   });
+
+  console.log("navigation", navigation)
 
   return {
     navigation,
