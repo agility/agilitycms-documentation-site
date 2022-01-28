@@ -15,7 +15,9 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
   return (
     <div
       id="SideNav"
-      className="z-40 flex flex-col w-64 pt-4 pb-4 font-muli"
+      className="z-40 flex flex-col w-64 pb-4 font-muli pt-[130px] max-h-screen mt-[-124px] overflow-y-auto scrollbar-none"
+
+
     >
       <div className="flex flex-col flex-grow">
         <nav className="flex-1 space-y-1 bg-white" aria-label="Sidebar">
@@ -204,8 +206,6 @@ SideBarNav.getCustomInitialProps = async ({
       }),
     });
   });
-
-  console.log("navigation", navigation)
 
   return {
     navigation,
