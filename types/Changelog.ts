@@ -1,4 +1,4 @@
-export interface CustomData {
+export interface CustomDataProp {
     contentID: number;
     fields: Fields;
 }
@@ -21,4 +21,9 @@ export interface Fields1 {
     component: string;
     description?: string | null;
     linkURL?: null;
+    tags: {
+        fields: {
+            title: string
+        }
+    }[]
 }
