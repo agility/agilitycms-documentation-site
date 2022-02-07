@@ -1,6 +1,6 @@
 {
     "singleQuote": true,
-    "printWidth": 80,
+    "printWidth": 200,
     "editor.formatOnSave": true,
     "proseWrap": "always",
     "tabWidth": 4,
@@ -9,5 +9,6 @@
     "trailingComma": "none",
     "bracketSpacing": true,
     "jsxBracketSameLine": false,
-    "semi": true
+    "semi": true,
+    
 }
