@@ -14,7 +14,6 @@ const Changelog = ({ module, customData }) => {
 
 	const { fields } = module;
 
-
 	const getChangeDate = (dateStr) => {
 		const d = new Date(dateStr)
 		const dt = DateTime.fromJSDate(d)
@@ -37,20 +36,25 @@ const Changelog = ({ module, customData }) => {
 				</div>
 				<div className="mt-12">
 					{changeLogItems.map((item, index) => (
-						<div key={item.contentID} className="mt-6">
-							<h3 className="p-3 text-2xl bg-lightGray">{getChangeDate(item.fields.date)}</h3>
-							<div className="px-6 border border-lightGray">
-								<div className="py-3">
-									{item.fields.description}
-								</div>
-								<ul className="pl-6 list-disc">
+						<section key={item.contentID} className="mt-6">
+							<header className="flex items-center">
+								<div className="text-purple font-semibold min-w-[200px] text-right pr-4">{getChangeDate(item.fields.date)}</div>
+								<h3 className="p-3 text-2xl text-[16px] font-bold border-gray border-l-2">{item.fields.description}</h3>
+							</header>
+							
+							<div className="border-lightGray">
+								<ul className="list-disc ml-[200px] border-l-1 border-gray border-l-2 list-inside">
 									{item.fields.changes.map((change) => (
-										<li key={change.contentID} className="pl-6 ">
-											<div>TAG:{change.fields.component}</div>
-											<div>TYPE OF CHANGE:{change.fields.type}</div>
-											<div>TITLE: {change.fields.title}</div>
-											<div>DESCRIPTION: {change.fields.description}</div>
-											<div>LINK URL: {change.fields.linkURL}</div>
+										<li key={change.contentID} className="relative pl-6 mb-2">
+											<div className="absolute w-[200px] top-0 left-[-200px] flex justify-end pr-4">
+												<span className="bg-[#ECE5F6] ml-2 inline-block py-1 px-3 text-purple font-bold text-[11px] rounded-full">{change.fields.component}</span>
+												<span className="bg-[#ECE5F6] ml-2 inline-block py-1 px-3 text-purple font-bold text-[11px] rounded-full">{change.fields.type}</span>
+											</div>
+											
+											<h4 className="inline">{change.fields.title}
+												<span className="inline-block">{change.fields.description}</span>
+											</h4>
+											
 
 											{/* component: "Platform"
 										title: "Updated version of Tiny MCE"
@@ -60,7 +64,7 @@ const Changelog = ({ module, customData }) => {
 
 								</ul>
 							</div>
-						</div>
+						</section>
 					))}
 				</div>
 			</div>
@@ -68,15 +72,7 @@ const Changelog = ({ module, customData }) => {
 	);
 };
 
-Changelog.getCustomInitialProps = async ({
-	agility,
-	channelName,
-	languageCode,
-	item,
-	dynamicPageItem,
-	sitemapNode,
-}) => {
-
+Changelog.getCustomInitialProps = async () => {
 
 	const { data } = await client.query({
 		query: gql`
@@ -104,16 +100,12 @@ Changelog.getCustomInitialProps = async ({
 		}
 		`,
 	});
-
 	return data
-
 };
 
 
 const ChangeBlock = ({ content }) => {
-
 	if (!content) return null
-
 	const blocks = JSON.parse(content).blocks;
 	return (
 		<Blocks blocks={blocks} proseSize="sm" />
