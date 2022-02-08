@@ -22,8 +22,24 @@ export interface Fields1 {
     description?: string | null;
     linkURL?: null;
     tags: {
+        contentID: number;
         fields: {
-            title: string
-        }
-    }[]
+            title: string;
+        };
+    }[];
+}
+
+export interface ChangeLogTagsProp {
+    contentID: number;
+    fields: {
+        title: string
+    };
+}
+
+export interface ChangeLogProp {
+    module: any;
+    customData: {
+        changelog: CustomDataProp[];
+        changelogtags: ChangeLogTagsProp[];
+    };
 }
