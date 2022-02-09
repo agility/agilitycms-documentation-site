@@ -7,7 +7,7 @@ import ArticleNav from '../common/ArticleNav';
 const FullwidthTemplate = (props) => {
     return (
         <>
-            <div id="FullwidthTemplate" className="flex flex-grow bg-white">
+            <div id="FullwidthTemplate" className="grid grid-rows-1 grid-flow-col bg-white grid-cols-fullWidth">
                 <ContentZone
                     name="MainContentZone"
                     {...props}

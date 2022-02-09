@@ -47,6 +47,9 @@ module.exports = {
         darkestGray: "#25303D",
         black: "#171b20",
       },
+      gridTemplateColumns: {
+        'fullWidth': '256px 1fr',
+      }
     },
   },
   variants: {
@@ -57,5 +60,6 @@ module.exports = {
     require("@tailwindcss/forms"),
     require("@tailwindcss/aspect-ratio"),
     require("nightwind"),
+    require("tailwindcss-nested-groups"),
   ],
 };
