@@ -12,9 +12,7 @@ const getChangeDate = (dateStr: string) => {
 };
 
 const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
-    console.log(customData);
     const { changelog: changeLogItems, changelogtags: changeLogTags } = customData;
-    const { fields } = module;
     const [filterOptions, setFilterOptions] = useState([]);
     const [changeLogList, setChangeLogList] = useState([]);
     const [filterSelection, setFilterSelection] = useState<string[]>([]);
@@ -47,6 +45,7 @@ const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
                 }
                 return false;
             });
+            // destructure from original list and repleace 'changes' property with the filtered one above
             if (isShow) return { ...section, fields: { ...section.fields, changes: filteredSection } };
         });
 
@@ -56,7 +55,7 @@ const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
 
     return (
         <>
-            <div id="SideNav" className="z-40 flex flex-col pb-4 pt-4 w-64 font-muli xs:hidden sm:hidden md:block order-1 row-span-2">
+            <div id="SideNav" className="z-40 md:flex flex-col pb-4 pt-4 w-64 font-muli hidden order-1 row-span-2">
                 <div className="top-[128px] sticky overflow-y-auto lg:flex lg:flex-shrink-0">
                     <FilterBlock filterOptions={filterOptions} setFilterSelection={setFilterSelection} filterSelection={filterSelection} />
                 </div>
