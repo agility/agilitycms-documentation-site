@@ -6,7 +6,7 @@ import Footer from '../common/Footer';
 const FullwidthTemplate = (props) => {
     return (
         <>
-            <div id="FullwidthTemplate" className="md:grid grid-rows-1 grid-flow-col bg-white grid-cols-fullWidth">
+            <div id="FullwidthTemplate" className="lg:grid grid-rows-1 grid-flow-col bg-white grid-cols-fullWidth">
                 <ContentZone
                     name="MainContentZone"
                     {...props}

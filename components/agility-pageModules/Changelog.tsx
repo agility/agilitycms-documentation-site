@@ -55,7 +55,7 @@ const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
 
     return (
         <>
-            <div id="SideNav" className="z-40 md:flex flex-col pb-4 pt-4 w-64 font-muli hidden order-1 row-span-2">
+            <div id="SideNav" className="z-40 lg:flex flex-col pb-4 pt-4 w-64 font-muli hidden order-1 row-span-2">
                 <div className="top-[128px] sticky overflow-y-auto lg:flex lg:flex-shrink-0">
                     <FilterBlock filterOptions={filterOptions} setFilterSelection={setFilterSelection} filterSelection={filterSelection} />
                 </div>
