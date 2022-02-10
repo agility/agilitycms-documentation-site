@@ -89,7 +89,7 @@ const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
                                                             </div>
                                                             <h4 className="inline font-bold group-scope-hover:text-purple">
                                                                 {change.fields.title}
-                                                                <span className="inline-block pl-6 text-base font-normal">{change.fields.description}</span>
+                                                                <span className="block pl-6 text-base font-normal">{change.fields.description}</span>
                                                             </h4>
                                                         </a>
                                                     ) : (
@@ -104,7 +104,7 @@ const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
 
                                                             <h4 className="inline font-bold hover:text-darkGray">
                                                                 {change.fields.title}
-                                                                <span className="inline-block pl-6 text-base font-normal">{change.fields.description}</span>
+                                                                <span className="block pl-6 text-base font-normal">{change.fields.description}</span>
                                                             </h4>
                                                         </>
                                                     )}
