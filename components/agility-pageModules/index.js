@@ -1,5 +1,6 @@
 import RichTextArea from "./RichTextArea";
 import DynamicArticleDetails from "./DynamicArticleDetails";
+import Changelog from "./Changelog"
 import SideBarNav from "./SideBarNav";
 import BlockEditor from "./BlockEditor";
 import HeroCategories from "./HeroCategories";
@@ -30,6 +31,7 @@ const allModules = [
   { name: "HeroHeading", module: HeroHeading },
   { name: "SDKsFrameworks", module: SDKsFrameworks },
   { name: "TextBlocksWithImages", module: TextBlocksWithImages },
+  { name: "Changelog", module: Changelog },
 ];
 
 export const getModule = (moduleName) => {

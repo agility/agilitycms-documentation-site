@@ -136,7 +136,8 @@ code > span.hljs-string {
 }
 
 #ContentContainer {
-	min-height: 40rem;
+  min-height: 40rem;
+  width: 100%;
 }
 
 .scrollbar-none {

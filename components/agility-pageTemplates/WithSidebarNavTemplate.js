@@ -29,7 +29,7 @@ const WithSidebarNavTemplate = (props) => {
 
         <div
           id="ScrollContainer"
-          className="flex-grow border-l border-gray-200 w-full lg:flex lg:justify-center"
+          className="flex-grow w-full border-l border-gray-200 lg:flex lg:justify-center"
         >
           <div id="ContentContainer">
             <ContentZone
