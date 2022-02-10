@@ -37,7 +37,7 @@ const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
             // 1st level filtering: if there are no filters selected return all sections
             if (!section.fields.changes?.length && !filterSelection?.length) return section;
 
-            const filteredSection = section.fields.changes.filter((change) => {
+            const filteredSection = section.fields.changes?.filter((change) => {
                 // 2nd level filtering: if one of the tags is part of the filter list then show this section and return the bullet list
                 if (change.fields.tags.some((tag) => filterSelection.includes(tag.contentID.toString()) || !filterSelection.length)) {
                     isShow = true;
