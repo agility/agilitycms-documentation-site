@@ -21,8 +21,8 @@ const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
     useEffect(() => {
         const tagOptions = changeLogTags.map((tags) => ({ title: tags.fields.title, id: tags.contentID }));
         const tagList = changeLogItems.reduce((acc, cur) => {
-            cur.fields.changes.forEach((change) => {
-                change.fields.tags.forEach((tag) => acc.push(tag.fields.title));
+            cur.fields.changes?.forEach((change) => {
+                change.fields.tags?.forEach((tag) => acc.push(tag.fields.title));
             });
             return acc;
         }, []);
@@ -35,7 +35,7 @@ const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
             // disable this section by default until a filter is selected and one of the object tags are part of the filter
             let isShow = false;
             // 1st level filtering: if there are no filters selected return all sections
-            if (!section.fields.changes.length && !filterSelection.length) return section;
+            if (!section.fields.changes?.length && !filterSelection?.length) return section;
 
             const filteredSection = section.fields.changes.filter((change) => {
                 // 2nd level filtering: if one of the tags is part of the filter list then show this section and return the bullet list
@@ -55,15 +55,15 @@ const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
 
     return (
         <>
-            <div id="SideNav" className="z-40 lg:flex flex-col pb-4 pt-4 w-64 font-muli hidden order-1 row-span-2">
+            <div id="SideNav" className="z-40 flex-col order-1 hidden w-64 row-span-2 pt-4 pb-4 lg:flex font-muli">
                 <div className="top-[128px] sticky overflow-y-auto lg:flex lg:flex-shrink-0">
                     <FilterBlock filterOptions={filterOptions} setFilterSelection={setFilterSelection} filterSelection={filterSelection} />
                 </div>
             </div>
-            <div id="ScrollContainer" className="flex-grow w-full border-l border-gray-200 lg:flex lg:justify-center order-3 pt-20">
-                <div className="relative mb-20 px-4 font-muli sm:px-6 lg:px-8">
+            <div id="ScrollContainer" className="flex-grow order-3 w-full pt-20 border-l border-gray-200 lg:flex lg:justify-center">
+                <div className="relative px-4 mb-20 font-muli sm:px-6 lg:px-8">
                     <div className="absolute inset-0">
-                        <div className="h-1/3 bg-white sm:h-2/3" />
+                        <div className="bg-white h-1/3 sm:h-2/3" />
                     </div>
                     <div className="relative mx-auto max-w-7xl">
                         <div>
@@ -76,12 +76,12 @@ const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
 
                                     <div className="border-lightGray">
                                         <ul className="ml-[220px] border-l-1 border-gray border-l-2 list-inside list-disc">
-                                            {item.fields.changes.map((change) => (
-                                                <li key={change.contentID} className="relative pl-9 py-3 text-darkestGray">
+                                            {item.fields.changes?.map((change) => (
+                                                <li key={change.contentID} className="relative py-3 pl-9 text-darkestGray">
                                                     {change.fields.linkURL ? (
                                                         <a href={change.fields.linkURL} className="anchor group-scope">
                                                             <div className="w-[220px] left-[-220px] absolute top-0 flex justify-end mt-3 pr-4">
-                                                                {change.fields.tags.map((tag: any, index: Key) => (
+                                                                {change.fields.tags?.map((tag: any, index: Key) => (
                                                                     <span key={index} className="group-scope-hover:bg-[#ECE5F6] bg-gray-100 text-[11px] inline-block ml-2 px-3 py-1 group-scope-hover:text-purple text-gray-500 font-bold rounded-full">
                                                                         {tag.fields.title}
                                                                     </span>
@@ -95,7 +95,7 @@ const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
                                                     ) : (
                                                         <>
                                                             <div className="w-[200px] left-[-200px] absolute top-0 flex justify-end mt-3 pr-4">
-                                                                {change.fields.tags.map((tag: any, index: Key) => (
+                                                                {change.fields.tags?.map((tag: any, index: Key) => (
                                                                     <span key={index} className="bg-gray-100 text-[11px] inline-block ml-2 px-3 py-1 text-gray-500 font-bold rounded-full">
                                                                         {tag.fields.title}
                                                                     </span>
