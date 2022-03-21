@@ -255,8 +255,11 @@ export async function getStaticPaths({ locales, defaultLocale }) {
     defaultLocale,
   });
 
+  //remove the 404 and 500 page out of the paths to build as part of this slug
+  const filteredPaths = agilityPaths.filter(p => p !== "/404" && p !== "/500")
+
   return {
-    paths: agilityPaths,
+    paths: filteredPaths,
     fallback: true,
   };
 }
