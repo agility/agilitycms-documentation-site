@@ -11,6 +11,13 @@ export const logPageView = (url) => {
   console.log(`Logging pageview for ${url}`);
   ReactGA.set({ page: url });
   ReactGA.pageview(url);
+
+  //also log this page view in hubspot
+  const _hsq = (window._hsq = window._hsq || [])
+  if (_hsq) {
+    _hsq.push(["setPath", location.pathname])
+    _hsq.push(["trackPageView"])
+  }
 };
 
 export const logEvent = (category = "", action = "") => {
