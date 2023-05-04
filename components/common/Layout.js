@@ -116,13 +116,8 @@ function Layout(props) {
 
   return (
     <>
-      {/* Zendesk Chat */}
-      <Script
-        id="ze-snippet"
-        src="https://static.zdassets.com/ekr/snippet.js?key=75a855ec-8bb9-4017-a4d7-ebf0e3d7c77a"
-      >
-        {" "}
-      </Script>
+      {/* Hubspot Chat */}
+      <Script type="text/javascript" id="hs-script-loader" async defer src="//js-na1.hs-scripts.com/23239214.js"></Script>
       <HeadSEO
         title={sitemapNode?.title}
         description={page.seo.metaDescription}
