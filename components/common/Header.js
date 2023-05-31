@@ -1,8 +1,8 @@
 /*
-  This example requires Tailwind CSS v2.0+ 
-  
+  This example requires Tailwind CSS v2.0+
+
   This example requires some changes to your config:
-  
+
   ```
   // tailwind.config.js
   module.exports = {
@@ -142,11 +142,11 @@ export default function Header({
                 <div className="relative z-10 px-2 flex lg:px-0">
                   <div className="flex-shrink-0 flex items-center">
                     <Link href="/">
-                      <a title="Agility CMS Docs">
+                      <a title="Agility Docs">
                         <img
                           className="block h-7 md:h-8 w-auto"
                           src="/docs/assets/agility-docs-logo.svg"
-                          alt="The logo of Agility CMS Docs site on agilitycms.com"
+                          alt="The logo of Agility Docs site on agilitycms.com"
                         />
                       </a>
                     </Link>

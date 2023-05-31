@@ -11,7 +11,7 @@ const HeadSEO = ({ title, description, keywords, ogImage, metaHTML, noIndex }) =
   }
   return (
     <Head>
-      <title>{title} | Agility CMS Docs</title>
+      <title>{title} | Agility Docs</title>
       {(process.env.ROBOTS_NO_INDEX || noIndex) && (
         <meta name="robots" content="noindex"></meta>
       )}

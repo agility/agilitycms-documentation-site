@@ -28,16 +28,16 @@ const BlockEditor = () => {
     let custom = null;
     let editor = null;
     let fieldValue = null;
-    
+
 
     useEffect(() => {
         //get the field ready to wait for messages from the parent
-        console.log('Block Editor => Waiting for message from Agility CMS')
+        console.log('Block Editor => Waiting for message from Agility')
         window.addEventListener("message", function (e) {
-            
+
             //only care about these messages
             if(e.data.type === 'setInitialProps') {
-                console.log('Block Editor => Auth, fieldValue received from Agility CMS, setting up editor...')
+                console.log('Block Editor => Auth, fieldValue received from Agility, setting up editor...')
                 auth = e.data.message.auth;
                 custom = e.data.message.custom;
                 fieldValue = e.data.message.fieldValue ? JSON.parse(e.data.message.fieldValue) : null;
@@ -74,7 +74,7 @@ const BlockEditor = () => {
 }
 
 const setupEditor = (auth, height, value, setValue, setHeight, containerRef, fieldValue, custom) => {
-    
+
     const editor = new EditorJS({
         autofocus: false, //setting this to true will not do anything because this is in an iframe
         holder: document.querySelector('#editorjs'),
@@ -135,7 +135,7 @@ const setupEditor = (auth, height, value, setValue, setHeight, containerRef, fie
                 editor.render(fieldValue);
                 //undo.initialize(fieldValue);
             }
-            
+
 
             //wait 200ms for initial height-sync
             window.setTimeout(function() {

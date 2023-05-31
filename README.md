@@ -1,13 +1,13 @@
-# Agility CMS Documentation Site
+# Agility Documentation Site
 This is the source code for the [Agility Documentation](https://agilitycms.com/docs) site.
 
 [Demo](https://agilitycms.com/docs)
 
-[New to Agility CMS? Sign up for a FREE account](https://agilitycms.com/free) 
+[New to Agility CMS? Sign up for a FREE account](https://agilitycms.com/free)
 
 ## About This Site
 
-- Uses our [`@agility/next`](https://github.com/agility/agility-next) package to make getting started with Agility CMS and Next.js easy
+- Uses our [`@agility/next`](https://github.com/agility/agility-next) package to make getting started with Agility and Next.js easy
 - Uses the `getStaticProps` function from Next.js to allow for full SSG (Static Site Generation)
 - Supports [`next/image`](https://nextjs.org/docs/api-reference/next/image) for image optimization
 - Supports full [Page Management](https://help.agilitycms.com/hc/en-us/articles/360055805831)
@@ -32,7 +32,7 @@ To start development on this site:
 1. Clone this repository
 2. Run `yarn install`
 3. Rename the `.env.local.template` file to `.env.local`
-4. Retrieve your `GUID`, `API Keys (Preview/Fetch)`, and `Security Key` from Agility CMS by going to [Settings > API Keys](https://manager.agilitycms.com/settings/apikeys).
+4. Retrieve your `GUID`, `API Keys (Preview/Fetch)`, and `Security Key` from Agility by going to [Settings > API Keys](https://manager.agilitycms.com/settings/apikeys).
 
 [How to Retrieve your GUID and API Keys from Agility](https://help.agilitycms.com/hc/en-us/articles/360031919212-Retrieving-your-API-Key-s-Guid-and-API-URL-)
 

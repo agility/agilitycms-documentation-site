@@ -147,7 +147,7 @@ const Footer = (props) => {
               style={{ fontSize: "13px", marginRight: "50px" }}
               className="mb-8 lg:mb-0"
             >
-              © Copyright, Agility CMS {getYear()}
+              © Copyright, Agility Inc. {getYear()}
             </p>
             <ul
               style={{ fontSize: "13px" }}
