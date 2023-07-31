@@ -1,7 +1,7 @@
 import { ChevronRightIcon } from "@heroicons/react/solid";
 import * as PostUtil from "../../utils/postUtils";
 import { getLeadSource } from "utils/leadUtils";
-import { Fragment } from "react";
+import React, { Fragment } from "react";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -70,8 +70,8 @@ const Footer = (props) => {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-16 mt-8 mb-12 xl:mb-0">
             {navigation.map((col, idx) => {
               return (
-                <div key={col.name}>
-                  <h4 className="font-semibold mb-4">{col.name}</h4>
+                <div key={`${col.name}-${idx}`}>
+                  <h4 className="font-semibold mb-4">{col.name} </h4>
                   <ul
                     className="space-y-[15px]"
                     style={{
@@ -82,7 +82,7 @@ const Footer = (props) => {
                   >
                     {col.children.map((link, idx2) => {
                       return (
-                        <li key={link.href}>
+                        <li key={`${link.href}-${idx2}`}>
                           <a href={link.href} target={link.target}>
                             {link.name}
                           </a>
@@ -101,11 +101,10 @@ const Footer = (props) => {
               className="top-form-svg"
             />
             <div
-              className={`relative z-10 overflow-hidden ${
-                pageTemplateName === "WithSidebarNavTemplate"
-                  ? ``
-                  : `xl:max-w-md 2xl:max-w-lg`
-              }`}
+              className={`relative z-10 overflow-hidden ${pageTemplateName === "WithSidebarNavTemplate"
+                ? ``
+                : `xl:max-w-md 2xl:max-w-lg`
+                }`}
             >
               <div style={{ backgroundColor: "#5800D4" }} className="p-8 z-50">
                 <h4 className="text-lg mb-3 font-semibold">Subscribe</h4>
@@ -155,16 +154,16 @@ const Footer = (props) => {
             >
               {bottomNavigation.map((link, idx) => {
                 return (
-                  <>
-                    <li key={link.href}>
+                  <React.Fragment key={`${link.href}-${idx}`}>
+                    <li >
                       <a href={link.href} target={link.target}>
                         {link.name}
                       </a>
                     </li>
                     {idx !== bottomNavigation.length - 1 && (
-                      <li key={link.href}>|</li>
+                      <li>|</li>
                     )}
-                  </>
+                  </React.Fragment>
                 );
               })}
             </ul>
