@@ -6,216 +6,216 @@ import { client, getContext } from "agility-graphql-client";
 import { gql } from "@apollo/client";
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
+	return classes.filter(Boolean).join(" ");
 }
 
 const SideBarNav = ({ module, dynamicPageItem, customData }) => {
-  const navigation = customData.navigation;
+	const navigation = customData.navigation;
 
-  return (
-    <div
-      id="SideNav"
-      className="z-40 flex flex-col w-64 pb-4 font-muli pt-[130px] max-h-screen mt-[-124px] overflow-y-auto scrollbar-none"
+	return (
+		<div
+			id="SideNav"
+			className="z-40 flex flex-col w-64 pb-4 font-muli pt-[130px] max-h-screen mt-[-124px] overflow-y-auto scrollbar-none"
 
 
-    >
-      <div className="flex flex-col flex-grow">
-        <nav className="flex-1 space-y-1 bg-white" aria-label="Sidebar">
-          {navigation.map((item) =>
-            !item.children ? (
-              <div key={item.name} className="px-8">
-                <Link href={item.href}>
-                  <a
-                    className={classNames(
-                      item.current
-                        ? "text-darkestGray"
-                        : "bg-white text-darkGray hover:text-purple",
-                      "group w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md"
-                    )}
-                  >
-                    {item.name}
-                  </a>
-                </Link>
-              </div>
-            ) : (
-              <Disclosure as="div" key={item.name} className="space-y-1">
-                {({ open }) => {
-                  item.children.forEach((subItem) => {
-                    if (subItem.current) open = true;
-                  });
+		>
+			<div className="flex flex-col flex-grow">
+				<nav className="flex-1 space-y-1 bg-white" aria-label="Sidebar">
+					{navigation.map((item) =>
+						!item.children ? (
+							<div key={item.name} className="px-8">
+								<Link href={item.href}>
+									<a
+										className={classNames(
+											item.current
+												? "text-darkestGray"
+												: "bg-white text-darkGray hover:text-purple",
+											"group w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md"
+										)}
+									>
+										{item.name}
+									</a>
+								</Link>
+							</div>
+						) : (
+							<Disclosure as="div" key={item.name} className="space-y-1">
+								{({ open }) => {
+									item.children.forEach((subItem) => {
+										if (subItem.current) open = true;
+									});
 
-                  return (
-                    <>
-                      <Disclosure.Button
-                        className={classNames(
-                          item.current
-                            ? "bg-gray-100 text-darkestGray"
-                            : "bg-white text-gray-600 hover:text-purple",
-                          "group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-none px-8"
-                        )}
-                      >
-                        <svg
-                          className={classNames(
-                            open ? "text-gray-400 rotate-90" : "text-gray-300",
-                            "mr-2 flex-shrink-0 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
-                          )}
-                          viewBox="0 0 20 20"
-                          aria-hidden="true"
-                        >
-                          <path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
-                        </svg>
-                        <span
-                          className={`${open ? `text-darkestGray` : `text-darkGray`
-                            } hover:text-purple`}
-                        >
-                          {item.name}
-                        </span>
-                      </Disclosure.Button>
-                      {open && (
-                        <Disclosure.Panel
-                          static
-                          className="py-2 space-y-1 bg-lightGray"
-                        >
-                          {item.children.map((subItem) => {
-                            return (
-                              <Link key={subItem.name} href={subItem.href}>
-                                <a
-                                  className={classNames(
-                                    subItem.current
-                                      ? "bg-gray-100 text-darkestGray"
-                                      : "bg-white text-darkGray hover:text-purple",
-                                    "group w-full flex items-center pl-16 pr-2 py-2 text-sm font-medium bg-lightGray text-gray-600 rounded-md"
-                                  )}
-                                >
-                                  {subItem.name}
-                                </a>
-                              </Link>
-                            );
-                          })}
-                        </Disclosure.Panel>
-                      )}
-                    </>
-                  );
-                }}
-              </Disclosure>
-            )
-          )}
-        </nav>
-      </div>
-    </div>
-  );
+									return (
+										<>
+											<Disclosure.Button
+												className={classNames(
+													item.current
+														? "bg-gray-100 text-darkestGray"
+														: "bg-white text-gray-600 hover:text-purple",
+													"group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-none px-8"
+												)}
+											>
+												<svg
+													className={classNames(
+														open ? "text-gray-400 rotate-90" : "text-gray-300",
+														"mr-2 flex-shrink-0 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
+													)}
+													viewBox="0 0 20 20"
+													aria-hidden="true"
+												>
+													<path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
+												</svg>
+												<span
+													className={`${open ? `text-darkestGray` : `text-darkGray`
+														} hover:text-purple`}
+												>
+													{item.name}
+												</span>
+											</Disclosure.Button>
+											{open && (
+												<Disclosure.Panel
+													static
+													className="py-2 space-y-1 bg-lightGray"
+												>
+													{item.children.map((subItem) => {
+														return (
+															<Link key={subItem.name} href={subItem.href}>
+																<a
+																	className={classNames(
+																		!!subItem.current
+																			? " text-purple"
+																			: " text-darkGray hover:text-purple ",
+																		"group w-full flex items-center pl-16 pr-2 py-2 text-sm font-medium bg-lightGray text-gray-600 rounded-md"
+																	)}
+																>
+																	{subItem.name}
+																</a>
+															</Link>
+														);
+													})}
+												</Disclosure.Panel>
+											)}
+										</>
+									);
+								}}
+							</Disclosure>
+						)
+					)}
+				</nav>
+			</div>
+		</div>
+	);
 };
 
 SideBarNav.getCustomInitialProps = async ({
-  agility,
-  channelName,
-  languageCode,
-  item,
-  dynamicPageItem,
-  sitemapNode,
+	agility,
+	channelName,
+	languageCode,
+	item,
+	dynamicPageItem,
+	sitemapNode,
 }) => {
-  //the navigation object we'll pass to the frontend
-  const navigation = [];
+	//the navigation object we'll pass to the frontend
+	const navigation = [];
 
-  //the category of sections/articles to show in the sidebar
-  const category = item.fields.category;
+	//the category of sections/articles to show in the sidebar
+	const category = item.fields.category;
 
-  //top level item (category landing page)
-  navigation.push({
-    name: category.fields.title,
-    href: !dynamicPageItem
-      ? sitemapNode.path
-      : getSectionBaseUrl(sitemapNode.path),
-    current: !dynamicPageItem ? true : false,
-  });
+	//top level item (category landing page)
+	navigation.push({
+		name: category.fields.title,
+		href: !dynamicPageItem
+			? sitemapNode.path
+			: getSectionBaseUrl(sitemapNode.path),
+		current: !dynamicPageItem ? true : false,
+	});
 
-  //get all sections for this category
-  const sectionsRefName = category.fields.sections.referencename;
+	//get all sections for this category
+	const sectionsRefName = category.fields.sections.referencename;
 
-  //get all the articles for this category
-  const articlesRefName = category.fields.articles.referencename;
+	//get all the articles for this category
+	const articlesRefName = category.fields.articles.referencename;
 
-  //validate we have sections AND articles to work with
-  if (!sectionsRefName || !articlesRefName) {
-    console.log(
-      "No `sectionsRefName` or `articlesRef` was found for this category"
-    );
-    return {
-      navigation,
-    };
-  }
+	//validate we have sections AND articles to work with
+	if (!sectionsRefName || !articlesRefName) {
+		console.log(
+			"No `sectionsRefName` or `articlesRef` was found for this category"
+		);
+		return {
+			navigation,
+		};
+	}
 
-  const { data } = await client.query({
-    query: gql`
-    {
-      ${articlesRefName} (sort: "properties.itemOrder") {
-        contentID
-        fields {
-          title
-          section_ValueField
-        }
-      },
-      ${sectionsRefName} (sort: "properties.itemOrder") {
-        contentID
-        fields {
-          title
-          parentSection_ValueField
-        }
-      }
-    }
-    `,
-  });
+	const { data } = await client.query({
+		query: gql`
+		{
+			${articlesRefName} (sort: "properties.itemOrder") {
+				contentID
+				fields {
+					title
+					section_ValueField
+				}
+			},
+			${sectionsRefName} (sort: "properties.itemOrder") {
+				contentID
+				fields {
+					title
+					parentSection_ValueField
+				}
+			}
+		}
+		`,
+	});
 
-  const sections = data[sectionsRefName];
-  const articles = data[articlesRefName];
+	const sections = data[sectionsRefName];
+	const articles = data[articlesRefName];
 
-  //validate we have sections AND articles to work with
-  if (!sections || !articles) {
-    console.log("No `sections` or `articles` were found for this category");
-    return {
-      navigation,
-    };
-  }
+	//validate we have sections AND articles to work with
+	if (!sections || !articles) {
+		console.log("No `sections` or `articles` were found for this category");
+		return {
+			navigation,
+		};
+	}
 
-  //get a dictionary of dynamic page urls by contentID for url resolution (from cache)
-  const articleUrls = getDynamicPageSitemapMapping();
+	//get a dictionary of dynamic page urls by contentID for url resolution (from cache)
+	const articleUrls = getDynamicPageSitemapMapping();
 
-  //filter out the child sections
-  const topLevelSections = sections.filter((section, idx) => {
-    return !section.fields.parentSection_ValueField;
-  });
+	//filter out the child sections
+	const topLevelSections = sections.filter((section, idx) => {
+		return !section.fields.parentSection_ValueField;
+	});
 
-  //loop through top-level sections and add articles in
-  topLevelSections.forEach((section) => {
-    let articlesInSection = articles.filter((article) => {
-      return article.fields.section_ValueField == section.contentID;
-    });
+	//loop through top-level sections and add articles in
+	topLevelSections.forEach((section) => {
+		let articlesInSection = articles.filter((article) => {
+			return article.fields.section_ValueField == section.contentID;
+		});
 
-    //don't show a section if it has no articles
-    if (articlesInSection.length === 0) return;
+		//don't show a section if it has no articles
+		if (articlesInSection.length === 0) return;
 
-    navigation.push({
-      name: section.fields.title,
-      children: articlesInSection.map((article) => {
-        const url = articleUrls[article.contentID];
-        return {
-          name: article.fields.title || null,
-          href: articleUrls[article.contentID] || "#",
-          current: url === sitemapNode.path || null,
-        };
-      }),
-    });
-  });
+		navigation.push({
+			name: section.fields.title,
+			children: articlesInSection.map((article) => {
+				const url = articleUrls[article.contentID];
+				return {
+					name: article.fields.title || null,
+					href: articleUrls[article.contentID] || "#",
+					current: url === sitemapNode.path || null,
+				};
+			}),
+		});
+	});
 
-  return {
-    navigation,
-  };
+	return {
+		navigation,
+	};
 };
 
 export default SideBarNav;
 
 const getSectionBaseUrl = (the_url) => {
-  var the_arr = the_url.split("/");
-  the_arr.pop();
-  return the_arr.join("/");
+	var the_arr = the_url.split("/");
+	the_arr.pop();
+	return the_arr.join("/");
 };

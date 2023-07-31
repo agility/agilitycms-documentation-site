@@ -43,7 +43,7 @@ export default function HeroCategories({ module }) {
       {/* Overlapping cards */}
       <section
         className="-mt-36 mb-10 max-w-7xl mx-auto relative z-10 pb-14 px-4 sm:px-6 lg:px-8 top-40"
-        aria-labelledby="contact-heading"
+
       >
         <h2 className="sr-only text">
           {fields.title}
