@@ -29,7 +29,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 					<div className="flex justify-end gap-2 mt-5">
 						{showClassicMode &&
 							<ToggleSwitch
-								label="Classic Mode"
+								label="Classic UI Version"
 								checked={classicMode}
 								setChecked={(checked) => setClassicMode(checked)}
 							/>
