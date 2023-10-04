@@ -5,30 +5,32 @@ const normalizeListedLinks = ({ listedLinks }) => {
 
     const articleUrls = getDynamicPageSitemapMapping();
 
-    const list = listedLinks.map((item) => {
-        const article = item.fields.article;
-        
-        if(article) {
-            let description = getArticleDescription(article);
-            return {
-                title: article.fields.title,
-                href: articleUrls[article.contentID],
-                description: description,
-                icon: article.fields.concept ? article.fields.concept.fields.icon : null,
-                target: '_self',
-                rel: null
+    const list = listedLinks
+        .filter(item => item.fields.article || item.fields.explicitURL)
+        .map((item) => {
+            const article = item.fields.article;
+
+            if (article) {
+                let description = getArticleDescription(article);
+                return {
+                    title: article.fields.title,
+                    href: articleUrls[article.contentID],
+                    description: description,
+                    icon: article.fields.concept ? article.fields.concept.fields.icon : null,
+                    target: '_self',
+                    rel: null
+                }
+            } else {
+                return {
+                    title: item.fields.explicitURL?.text,
+                    href: item.fields.explicitURL?.href,
+                    description: item.fields.description ? item.fields.description : null,
+                    icon: item.fields.explicitIcon ? item.fields.explicitIcon : null,
+                    target: getHrefTarget(item.fields.explicitURL?.href),
+                    rel: getHrefRel(item.fields.explicitURL?.href)
+                }
             }
-        } else {
-            return {
-                title: item.fields.explicitURL?.text,
-                href: item.fields.explicitURL?.href,
-                description: item.fields.description ? item.fields.description : null,
-                icon: item.fields.explicitIcon ? item.fields.explicitIcon : null,
-                target: getHrefTarget(item.fields.explicitURL?.href),
-                rel: getHrefRel(item.fields.explicitURL?.href)
-            }
-        }
-    })
+        })
 
     return list;
 }
@@ -38,7 +40,7 @@ const normalizeListedArticles = ({ listedArticles }) => {
 
     const list = listedArticles.map((item) => {
         const article = item.fields.article;
-        if(article) {
+        if (article) {
             let description = getArticleDescription(article);
             return {
                 title: article.fields.title,
@@ -57,10 +59,10 @@ const normalizeListedArticles = ({ listedArticles }) => {
 
 const getArticleDescription = (article) => {
     let description = article.fields.description ? article.fields.description : null;
-    if(!description) {
+    if (!description) {
         const firstParagraph = JSON.parse(article.fields.content).blocks.find((block) => block.type === 'paragraph');
-        
-        if(firstParagraph) {
+
+        if (firstParagraph) {
             truncate.setup({
                 stripTags: true,
                 length: 100
@@ -75,14 +77,15 @@ const getArticleDescription = (article) => {
 }
 
 const getHrefTarget = (href) => {
-    if(href && href.indexOf('://') > 0 || href.indexOf("//") === 0) {
+    if (!href) return "_self";
+    if (href && href.indexOf('://') > 0 || href.indexOf("//") === 0) {
         return '_blank';
     }
     return '_self';
 }
 
 const getHrefRel = (href) => {
-    if(getHrefTarget(href) === '_blank') {
+    if (getHrefTarget(href) === '_blank') {
         return 'noopener';
     }
     return null;

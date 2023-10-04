@@ -236,6 +236,8 @@ export async function getStaticProps({
     footerBottomNavigation
   };
 
+
+
   return {
     // return all props
     props: { ...agilityProps, ...additionalPageProps },
