@@ -4,8 +4,9 @@ export default function handler(req: NextApiRequest,
 	res: NextApiResponse) {
 	console.log("req")
 	console.log(req.headers)
+	const cdnLoop = req.headers["cdn-loop"] || ""
 	const host = req.headers.host || ""
-	if (host.includes("agilitycms.com")) {
+	if (cdnLoop === "netlify") {
 		//only allow crawling on agility domains
 		res.setHeader("Content-Type", "text/plain")
 			.setHeader("Cache-Control", "public, max-age=86400")
@@ -14,6 +15,7 @@ export default function handler(req: NextApiRequest,
 
 		//disallow any crawling on non-agility domains
 		res
+			.setHeader("X-CDN-Loop", cdnLoop)
 			.setHeader("X-Host", host)
 			.setHeader("Content-Type", "text/plain")
 			.setHeader("Cache-Control", "public, max-age=86400")
