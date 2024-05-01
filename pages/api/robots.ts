@@ -15,6 +15,6 @@ export default function handler(req: NextApiRequest,
 		//disallow any crawling on non-agility domains
 		res.setHeader("Content-Type", "text/plain")
 			.setHeader("Cache-Control", "public, max-age=86400")
-			.send("User-agent: *\Disallow: /")
+			.send("User-agent: *\nDisallow: /")
 	}
 }
