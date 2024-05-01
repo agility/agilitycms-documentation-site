@@ -1,3 +1,11 @@
 module.exports = {
-    basePath: '/docs'
+    basePath: '/docs',
+    async rewrites() {
+        return [
+            {
+                source: '/robots.txt',
+                destination: '/api/robots'
+            }
+        ];
+    }
 };
