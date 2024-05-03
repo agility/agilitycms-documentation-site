@@ -10,7 +10,7 @@ export default function handler(req: NextApiRequest,
 		//only allow crawling on agility domains
 		res.setHeader("Content-Type", "text/plain")
 			.setHeader("Vary", "cdn-loop")
-			.setHeader("Cache-Control", "public, max-age=86400")
+			.setHeader("Cache-Control", "no-store")
 			.send("User-agent: *\nAllow: /")
 	} else {
 
@@ -20,7 +20,7 @@ export default function handler(req: NextApiRequest,
 			.setHeader("X-CDN-Loop", cdnLoop)
 			.setHeader("X-Host", host)
 			.setHeader("Content-Type", "text/plain")
-			.setHeader("Cache-Control", "public, max-age=86400")
+			.setHeader("Cache-Control", "no-store")
 			.send("User-agent: *\nDisallow: /")
 	}
 }
