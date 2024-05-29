@@ -23,13 +23,20 @@ const cleanHTML = (html, mainSite) => {
     // get link path
     const path = link.getAttribute("href");
 
+
     // if url is not absolute and is main site, append main site url
     if (isUrlAbsolute(path) === false && mainSite === true) {
       link.setAttribute("href", `https://www.agilitycms.com${path}`);
     }
 
     //set the appropriate target for the link
-    const target = getHrefTarget(link.getAttribute("href"));
+    let target = getHrefTarget(link.getAttribute("href"));
+    const href = link.getAttribute("href")
+    if (href.indexOf("https://agilitycms.com/docs") === 0) {
+      //if the link is to the docs, open in the same tab
+      target = "_self";
+    }
+
     link.setAttribute("target", target);
     if (target === "_blank") {
       link.setAttribute("rel", "noopener");
