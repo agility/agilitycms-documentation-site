@@ -9,6 +9,35 @@ const HeadSEO = ({ title, description, keywords, ogImage, metaHTML, noIndex }) =
   if (metaHTML) {
     additionalHeaderMarkup = ReactHtmlParser(metaHTML);
   }
+
+  const createSharingImage = ({ cloudName, text }) => {
+    const imageTransformations = [
+      'w_1600',
+      'h_900',
+      'c_fill',
+      'q_auto',
+      'f_auto'
+    ].join(',')
+    const textTransformations = [
+      'w_1400',
+      'c_fit',
+      'g_center',
+      'co_white',
+      `l_text:muli_96_center:${encodeURIComponent(text)}`
+    ].join(',')
+
+    const baseUrl = `https://res.cloudinary.com/${cloudName}/image/upload/`
+    return `${baseUrl}${imageTransformations}/${textTransformations}/docs/agility-og-docs.png`
+  }
+
+  let theOgImage = ogImage
+  if (!theOgImage) {
+    theOgImage = createSharingImage({
+      cloudName: "agility-cms",
+      text: title
+    })
+  }
+
   return (
     <Head>
       <title>{title} | Agility Docs</title>
@@ -20,7 +49,10 @@ const HeadSEO = ({ title, description, keywords, ogImage, metaHTML, noIndex }) =
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
-      {ogImage && <meta property="og:image" content={ogImage} />}
+      {theOgImage && <>
+        <meta property="og:image" content={theOgImage} />
+        <meta property="twitter:image" content={theOgImage} />
+      </>}
       {additionalHeaderMarkup}
     </Head>
   );
