@@ -2,8 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next"
 
 export default function handler(req: NextApiRequest,
 	res: NextApiResponse) {
-	console.log("req")
-	console.log(req.headers)
 	const cdnLoop = req.headers["cdn-loop"] || ""
 	const host = req.headers.host || ""
 	if (cdnLoop === "netlify") {
