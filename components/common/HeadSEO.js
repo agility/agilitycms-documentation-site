@@ -10,6 +10,13 @@ const HeadSEO = ({ title, description, keywords, ogImage, metaHTML, noIndex }) =
     additionalHeaderMarkup = ReactHtmlParser(metaHTML);
   }
 
+
+  /**
+   * Dynamically generate the og:image for sharing using the title and a base image with cloudinary.
+   * Hats off to Matías Hernández Arellano for sharing this: https://gist.github.com/matiasfha/27fc927bfcc63416e2602aedbf73f423
+   * @param {*} param0
+   * @returns
+   */
   const createSharingImage = ({ cloudName, text }) => {
     const imageTransformations = [
       'w_1600',
