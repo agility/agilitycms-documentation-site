@@ -49,7 +49,10 @@ const HeadSEO = ({ title, description, keywords, ogImage, metaHTML, noIndex }) =
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
-      {theOgImage && <meta property="og:image" content={theOgImage} />}
+      {theOgImage && <>
+        <meta property="og:image" content={theOgImage} />
+        <meta property="twitter:image" content={theOgImage} />
+      </>}
       {additionalHeaderMarkup}
     </Head>
   );
