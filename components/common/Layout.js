@@ -11,7 +11,7 @@ import PreviewWidget from "./PreviewWidget";
 import CMSWidget from "./CMSWidget";
 import nextConfig from "next.config";
 import Script from "next/script";
-import { initGA, logPageView } from "../../utils/analyticUtils";
+import { GoogleTagManager } from '@next/third-parties/google'
 
 // set up handle preview
 const isPreview = handlePreview({
@@ -95,6 +95,10 @@ function Layout(props) {
     <>
       {/* Hubspot Chat */}
       <Script type="text/javascript" id="hs-script-loader" async defer src="//js-na1.hs-scripts.com/23239214.js"></Script>
+
+      {/* Google Tag Manager */}
+      <GoogleTagManager gtmId="GTM-NJW8WMX" />
+
       <HeadSEO
         title={sitemapNode?.title}
         description={page.seo.metaDescription}
