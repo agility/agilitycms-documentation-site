@@ -24,29 +24,6 @@ function Layout(props) {
 
   const router = useRouter();
 
-  // google analytics
-  const [isGaLoaded, setIsGaLoaded] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === undefined) return;
-
-    const handleRouteChange = (url) => {
-      logPageView(url);
-    };
-
-    if (!window.GA_INITIALIZED) {
-      initGA();
-      window.GA_INITIALIZED = true;
-    }
-
-    router.events.on("routeChangeComplete", handleRouteChange);
-
-    return () => {
-      if (typeof window === undefined) return;
-      router.events.off("routeChangeComplete", handleRouteChange);
-    };
-  }, [router.events]);
-
   // if the route changes, scroll our scrollable container back to the top
   useEffect(() => {
     const handleScrollTop = () => {
