@@ -1,7 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import ReactHtmlParser from "react-html-parser";
-//import nightwind from 'nightwind/helper'
+
 
 const HeadSEO = ({ title, description, keywords, ogImage, metaHTML, noIndex }) => {
   // setup and parse additional header markup
