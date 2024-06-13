@@ -26,11 +26,11 @@ const HeadSEO = ({ title, description, keywords, ogImage, metaHTML, noIndex }) =
 			'f_auto'
 		].join(',')
 		const textTransformations = [
-			'w_1400',
+			'w_1600',
 			'c_fit',
 			'g_center',
 			'co_white',
-			`l_text:muli_96_center:${encodeURIComponent(text)}`
+			`l_text:muli_96_center:${encodeURIComponent(text).replaceAll("%2C", "%E2%80%9A")}`
 		].join(',')
 
 		const baseUrl = `https://res.cloudinary.com/${cloudName}/image/upload/`
