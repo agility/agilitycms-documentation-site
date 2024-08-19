@@ -101,13 +101,14 @@ export default function Header({
                   />
                   <ChevronRightIcon className="w-[20px] h-[20px] mb-0.5 marketing-arrow relative top-[2px]" />
                 </div>
-                <div className="flex text-sm">
+                <div className="flex text-sm items-center">
                   {supportButton && (
                     <Link href={supportButton.href}>
                       <a
                         title={supportButton.name}
                         target="_blank"
                         rel="noreferrer"
+                        className="whitespace-nowrap"
                       >
                         {supportButton.name}
                       </a>
@@ -116,10 +117,11 @@ export default function Header({
                   {loginButton && (
                     <a
                       href={loginButton.href}
-                      className="ml-8"
+                      className="ml-8 whitespace-nowrap"
                       target="_blank"
                       rel="noreferrer"
                       title={loginButton.name}
+
                     >
                       {loginButton.name}
                     </a>
@@ -301,7 +303,7 @@ const MenuLink = ({ item }) => {
           "block py-2 px-3 text-base font-medium"
         )}
         aria-current={item.current ? "page" : undefined}
-        // {...rest}
+      // {...rest}
       >
         {item.name}
       </a>
