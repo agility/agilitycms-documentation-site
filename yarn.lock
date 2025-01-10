@@ -2,13 +2,10 @@
 # yarn lockfile v1
 
 
-"@agility/content-fetch@^1.1.5":
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/@agility/content-fetch/-/content-fetch-1.1.5.tgz#b6fe8dc769a32ce757d65b4f1ff278f418e514d3"
-  integrity sha512-86lnIBW335ZjnpRpgP4OKPkmZBu9IEEvF44AL7UNcJEBkkYpCHn5PQaCGvU3E9q/vNOSjDvjNzQGIBawNXQNXQ==
-  dependencies:
-    axios "^0.21.1"
-    axios-cache-adapter "^2.4.1"
+"@agility/content-fetch@^2.0.8":
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/@agility/content-fetch/-/content-fetch-2.0.8.tgz#aa53366d70abd1576b62b8b2ea897054de5fc091"
+  integrity sha512-Sf6Hs8Pp9rCeNpAeJYFK19zA4S2lEQFy71NjR9N44K66NSQM9B199oypMWUKvI5AteNG+3qn35yD6Dk4/UhijQ==
 
 "@agility/content-management@^0.2.0":
   version "0.2.0"
@@ -1002,14 +999,6 @@ axe-core@^4.0.2:
   resolved "https://registry.npmjs.org/axe-core/-/axe-core-4.3.3.tgz"
   integrity sha512-/lqqLAmuIPi79WYfRpy2i8z+x+vxU3zX2uAm0gs1q52qTuKwolOj1P8XbufpXcsydrpKx2yGn2wzAnxCMV86QA==
 
-axios-cache-adapter@^2.4.1:
-  version "2.7.3"
-  resolved "https://registry.npmjs.org/axios-cache-adapter/-/axios-cache-adapter-2.7.3.tgz"
-  integrity sha512-A+ZKJ9lhpjthOEp4Z3QR/a9xC4du1ALaAsejgRGrH9ef6kSDxdFrhRpulqsh9khsEnwXxGfgpUuDp1YXMNMEiQ==
-  dependencies:
-    cache-control-esm "1.0.0"
-    md5 "^2.2.1"
-
 axios@^0.18.1:
   version "0.18.1"
   resolved "https://registry.npmjs.org/axios/-/axios-0.18.1.tgz"
@@ -1017,13 +1006,6 @@ axios@^0.18.1:
   dependencies:
     follow-redirects "1.5.10"
     is-buffer "^2.0.2"
-
-axios@^0.21.1:
-  version "0.21.2"
-  resolved "https://registry.npmjs.org/axios/-/axios-0.21.2.tgz"
-  integrity sha512-87otirqUw3e8CzHTMO+/9kh/FSgXt/eVDvipijwDtEuwbkySWZ9SBm6VEubmJ/kLKEoLQV/POhxXFb66bfekfg==
-  dependencies:
-    follow-redirects "^1.14.0"
 
 axios@^0.21.4:
   version "0.21.4"
@@ -1077,11 +1059,6 @@ browserslist@^4.16.8:
     electron-to-chromium "^1.3.811"
     escalade "^3.1.1"
     node-releases "^1.1.75"
-
-cache-control-esm@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/cache-control-esm/-/cache-control-esm-1.0.0.tgz"
-  integrity sha512-Fa3UV4+eIk4EOih8FTV6EEsVKO0W5XWtNs6FC3InTfVz+EjurjPfDXY5wZDo/lxjDxg5RjNcurLyxEJBcEUx9g==
 
 call-bind@^1.0.0, call-bind@^1.0.2:
   version "1.0.2"
@@ -1142,11 +1119,6 @@ character-reference-invalid@^1.0.0:
   version "1.1.4"
   resolved "https://registry.npmjs.org/character-reference-invalid/-/character-reference-invalid-1.1.4.tgz"
   integrity sha512-mKKUkUbhPpQlCOfIuZkvSEgktjPFIsZKRRbC6KWVEMvlzblj3i3asQv5ODsrwt0N3pHAEvjP8KTQPHkp0+6jOg==
-
-charenc@0.0.2:
-  version "0.0.2"
-  resolved "https://registry.npmjs.org/charenc/-/charenc-0.0.2.tgz"
-  integrity sha1-wKHS86cJLgN3S/qD8UwPxXkKhmc=
 
 cheerio@0.22.0:
   version "0.22.0"
@@ -1291,11 +1263,6 @@ cross-spawn@^7.0.1, cross-spawn@^7.0.2:
     path-key "^3.1.0"
     shebang-command "^2.0.0"
     which "^2.0.1"
-
-crypt@0.0.2:
-  version "0.0.2"
-  resolved "https://registry.npmjs.org/crypt/-/crypt-0.0.2.tgz"
-  integrity sha1-iNf/fsDfuG9xPch7u0LQRNPmxBs=
 
 css-select@^4.1.3:
   version "4.1.3"
@@ -2278,11 +2245,6 @@ is-buffer@^2.0.2:
   resolved "https://registry.npmjs.org/is-buffer/-/is-buffer-2.0.5.tgz"
   integrity sha512-i2R6zNFDwgEHJyQUtJEk0XFi1i0dPFn/oqjK3/vPCcDeJvW5NQ83V8QbicfF1SupOaB0h8ntgBC2YiE7dfyctQ==
 
-is-buffer@~1.1.6:
-  version "1.1.6"
-  resolved "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.6.tgz"
-  integrity sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==
-
 is-callable@^1.1.4, is-callable@^1.2.3:
   version "1.2.4"
   resolved "https://registry.npmjs.org/is-callable/-/is-callable-1.2.4.tgz"
@@ -2637,15 +2599,6 @@ luxon@^2.3.0:
   version "2.3.0"
   resolved "https://registry.npmjs.org/luxon/-/luxon-2.3.0.tgz"
   integrity sha512-gv6jZCV+gGIrVKhO90yrsn8qXPKD8HYZJtrUDSfEbow8Tkw84T9OnCyJhWvnJIaIF/tBuiAjZuQHUt1LddX2mg==
-
-md5@^2.2.1:
-  version "2.3.0"
-  resolved "https://registry.npmjs.org/md5/-/md5-2.3.0.tgz"
-  integrity sha512-T1GITYmFaKuO91vxyoQMFETst+O71VUPEU3ze5GNzDm0OWdP8v1ziTaAEPUr/3kLsY3Sftgz242A1SetQiDL7g==
-  dependencies:
-    charenc "0.0.2"
-    crypt "0.0.2"
-    is-buffer "~1.1.6"
 
 merge2@^1.3.0:
   version "1.4.1"
