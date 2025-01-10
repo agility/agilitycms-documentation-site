@@ -7,20 +7,12 @@ import { getDynamicPageSitemapMapping } from 'utils/sitemapUtils';
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  console.log('Generating sitemap');
-
-
-//   const articleUrls = getDynamicPageSitemapMapping();
-
-//   console.log('->', articleUrls)
   // Get the flat sitemap from Agility CMS
   const sitemap = await getSitemapFlat({
     channelName: process.env.AGILITY_SITEMAP || 'website',
     languageCode: process.env.AGILITY_LOCALES || 'en-ca',
   });
-
-  console.log('sitemap->', Object.keys(sitemap).length)
-
+  
   // Generate the sitemap XML
   const sitemapXml = generateSitemapXml(sitemap);
 
