@@ -32,3 +32,10 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# envs
+.env
+.env.local
+
+# sitemap
+sitemap.xml
