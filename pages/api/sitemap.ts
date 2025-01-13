@@ -17,11 +17,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const sitemapXml = generateSitemapXml(sitemap);
 
   // Write the sitemap to a file
-  const publicDir = path.join(process.cwd(), 'public', 'sitemap.xml');
+  const publicDir = path.join(process.cwd(), 'sitemap.xml');
   if(!fs.existsSync(publicDir)){
     fs.mkdirSync(publicDir)
   }
+
+  try {
+
   fs.writeFileSync(publicDir, sitemapXml);
+
+} catch {
+    res.status(500).json({message: 'Failed to generate sitemap.'})
+}
 
   res.status(200).json({ message: 'Sitemap generated successfully' });
 }
