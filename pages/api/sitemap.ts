@@ -12,13 +12,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     channelName: process.env.AGILITY_SITEMAP || 'website',
     languageCode: process.env.AGILITY_LOCALES || 'en-ca',
   });
-  
+
   // Generate the sitemap XML
   const sitemapXml = generateSitemapXml(sitemap);
 
   // Write the sitemap to a file
-  const sitemapPath = path.join(process.cwd(), 'public', 'sitemap.xml');
-  fs.writeFileSync(sitemapPath, sitemapXml);
+  const publicDir = path.join(process.cwd(), 'public', 'sitemap.xml');
+  if(!fs.existsSync(publicDir)){
+    fs.mkdirSync(publicDir)
+  }
+  fs.writeFileSync(publicDir, sitemapXml);
 
   res.status(200).json({ message: 'Sitemap generated successfully' });
 }
