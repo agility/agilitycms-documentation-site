@@ -3,11 +3,9 @@ import { NextApiRequest, NextApiResponse } from "next"
 export default function handler(req: NextApiRequest,
 	res: NextApiResponse) {
 
-	console.log("req.headers", req.headers)
-
 	const cdnLoop = req.headers["cdn-loop"] || ""
 	const host = req.headers.host || ""
-	if (cdnLoop === "netlify") {
+	if (cdnLoop && cdnLoop.indexOf("netlify") !== -1) {
 		//only allow crawling on agility domains
 		res.setHeader("Content-Type", "text/plain")
 			.setHeader("Vary", "cdn-loop")
