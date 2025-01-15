@@ -2,6 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next"
 
 export default function handler(req: NextApiRequest,
 	res: NextApiResponse) {
+
+	console.log("req.headers", req.headers)
+
 	const cdnLoop = req.headers["cdn-loop"] || ""
 	const host = req.headers.host || ""
 	if (cdnLoop === "netlify") {
@@ -9,7 +12,7 @@ export default function handler(req: NextApiRequest,
 		res.setHeader("Content-Type", "text/plain")
 			.setHeader("Vary", "cdn-loop")
 			.setHeader("Cache-Control", "no-store")
-			.send("User-agent: *\nAllow: /")
+			.send("sitemap: https://agilitycms.com/docs/sitemap.xml\n\n User-agent: *\nAllow: /")
 	} else {
 
 		//disallow any crawling on non-agility domains
