@@ -12,17 +12,15 @@ const ListofLinks = ({ module, customData }) => {
   const darkTheme = fields.darkTheme;
   return (
     <div
-      className={`mx-auto px-6 font-muli ${
-        darkTheme === "true"
+      className={`mx-auto px-6 font-muli ${darkTheme === "true"
           ? `bg-black text-white pt-14 pb-10`
           : `bg-white text-darkerGray my-20`
-      }`}
+        }`}
     >
       {fields.title && (
         <h2
-          className={`mb-10 text-center text-3xl font-medium tracking-normal ${
-            darkTheme === "true" ? `text-offWhite` : `text-darkerGray`
-          }`}
+          className={`mb-10 text-center text-3xl font-medium tracking-normal ${darkTheme === "true" ? `text-offWhite` : `text-darkerGray`
+            }`}
         >
           {fields.title}
         </h2>
@@ -38,11 +36,10 @@ const ListofLinks = ({ module, customData }) => {
           return (
             <div
               key={action.title}
-              className={`relative group p-6 ${
-                darkTheme === "true"
+              className={`relative group p-6 ${darkTheme === "true"
                   ? `bg-black hover:bg-darkestGray`
                   : `bg-offWhite hover:bg-lightGray hover:text-brightPurple`
-              }  border-transparent border-l-2 hover:border-brightPurple`}
+                }  border-transparent border-l-2 hover:border-brightPurple`}
             >
               <div className="flex">
                 <div>
@@ -58,16 +55,14 @@ const ListofLinks = ({ module, customData }) => {
 
                 <div>
                   <h3 className="text-lg font-bold text-offWhite">
-                    <Link href={action.href}>
-                      <a
-                        className="focus:outline-none"
-                        target={action.target}
-                        rel={action.rel}
-                      >
-                        {/* Extend touch target to entire panel */}
-                        <span className="absolute inset-0" aria-hidden="true" />
-                        {action.title}
-                      </a>
+                    <Link href={action.href} className="focus:outline-none"
+                      target={action.target}
+                      rel={action.rel}
+                    >
+                      {/* Extend touch target to entire panel */}
+                      <span className="absolute inset-0" aria-hidden="true" />
+                      {action.title}
+
                     </Link>
                   </h3>
                   <p className="mt-2 text-darkGray">{action.description}</p>

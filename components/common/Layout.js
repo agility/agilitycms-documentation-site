@@ -13,6 +13,7 @@ import nextConfig from "next.config";
 import Script from "next/script";
 import { GoogleTagManager } from '@next/third-parties/google'
 
+
 // set up handle preview
 const isPreview = handlePreview({
   previewHandlerUrl: `${nextConfig.basePath}/api/preview`,
