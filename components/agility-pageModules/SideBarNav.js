@@ -24,17 +24,16 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
 					{navigation.map((item) =>
 						!item.children ? (
 							<div key={item.name} className="px-8">
-								<Link href={item.href}>
-									<a
-										className={classNames(
-											item.current
-												? "text-darkestGray"
-												: "bg-white text-darkGray hover:text-purple",
-											"group w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md"
-										)}
-									>
-										{item.name}
-									</a>
+								<Link href={item.href}
+									className={classNames(
+										item.current
+											? "text-darkestGray"
+											: "bg-white text-darkGray hover:text-purple",
+										"group w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md"
+									)}
+								>
+									{item.name}
+
 								</Link>
 							</div>
 						) : (
@@ -78,17 +77,15 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
 												>
 													{item.children.map((subItem) => {
 														return (
-															<Link key={subItem.name} href={subItem.href}>
-																<a
-																	className={classNames(
-																		!!subItem.current
-																			? " text-purple"
-																			: " text-darkGray hover:text-purple ",
-																		"group w-full flex items-center pl-16 pr-2 py-2 text-sm font-medium bg-lightGray text-gray-600 rounded-md"
-																	)}
-																>
-																	{subItem.name}
-																</a>
+															<Link key={subItem.name} href={subItem.href} className={classNames(
+																!!subItem.current
+																	? " text-purple"
+																	: " text-darkGray hover:text-purple ",
+																"group w-full flex items-center pl-16 pr-2 py-2 text-sm font-medium bg-lightGray text-gray-600 rounded-md"
+															)}
+															>
+																{subItem.name}
+
 															</Link>
 														);
 													})}

@@ -115,29 +115,28 @@ const Search = () => {
                             source,
                           })}
                         >
-                          <Link href={item.url}>
-                            <a className="SearchResult px-5 py-2 block w-full hover:bg-lightGray">
+                          <Link href={item.url} className="SearchResult px-5 py-2 block w-full hover:bg-lightGray">
+                            <span
+                              className="SearchResult__titlee block text-purple text-sm font-bold"
+                              dangerouslySetInnerHTML={renderHTML(
+                                item._highlightResult.title.value
+                              )}
+                            ></span>
+
+                            {description && (
                               <span
-                                className="SearchResult__titlee block text-purple text-sm font-bold"
+                                className="SearchResult__description block text-sm mb-2 text-darkestGray"
                                 dangerouslySetInnerHTML={renderHTML(
-                                  item._highlightResult.title.value
+                                  description
                                 )}
                               ></span>
+                            )}
+                            <span className="SearchResult__category-section block text-xs text-darkerGray">
+                              {item.category}{" "}
+                              <ChevronRightIcon className="inline w-2" />{" "}
+                              {item.section}
+                            </span>
 
-                              {description && (
-                                <span
-                                  className="SearchResult__description block text-sm mb-2 text-darkestGray"
-                                  dangerouslySetInnerHTML={renderHTML(
-                                    description
-                                  )}
-                                ></span>
-                              )}
-                              <span className="SearchResult__category-section block text-xs text-darkerGray">
-                                {item.category}{" "}
-                                <ChevronRightIcon className="inline w-2" />{" "}
-                                {item.section}
-                              </span>
-                            </a>
                           </Link>
                         </li>
                       );

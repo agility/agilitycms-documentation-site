@@ -21,7 +21,10 @@ module.exports = {
       8: "8px",
     },
     fontFamily: {
-      muli: ["Muli", "sans-serif"],
+      fontFamily: {
+        sans: ['var(--font-mulish)']
+      },
+      muli: ['var(--font-mulish)', "sans-serif"],
       mono: [
         "Menlo",
         "Monaco",

@@ -14,9 +14,8 @@ export default function ButtonDropdown({ name, children, children2 }) {
       {({ open }) => (
         <>
           <div
-            className={`bg-lightGray pt-2 pb-1.5 px-2 border-b-2 border-transparent ${
-              open ? `border-purple` : ``
-            }`}
+            className={`bg-lightGray pt-2 pb-1.5 px-2 border-b-2 border-transparent ${open ? `border-purple` : ``
+              }`}
           >
             <Menu.Button className="flex justify-between w-52 text-darkestGray">
               <p className="font-semibold">{name}</p>
@@ -68,14 +67,12 @@ export default function ButtonDropdown({ name, children, children2 }) {
 const MenuLink = (props) => {
   let { href, children, ...rest } = props;
   return (
-    <Link href={href}>
-      <a
-        rel="noreferrer"
-        className="text-darkerGray font-semibold block px-4 py-2 text-sm hover:text-purple"
-        {...rest}
-      >
-        {children}
-      </a>
+    <Link href={href} rel="noreferrer"
+      className="text-darkerGray font-semibold block px-4 py-2 text-sm hover:text-purple"
+      {...rest}
+    >
+      {children}
+
     </Link>
   );
 };

@@ -55,22 +55,22 @@ export default function HeroCategories({ module }) {
               className="flex flex-col bg-white custom-shadow group"
             >
               <Link href={link.href}>
-                <a>
-                  <div className="flex-1 relative pt-16 pb-8 px-8">
-                    <div className="absolute top-0 p-5 inline-block bg-offwhite group-hover:bg-gray-200 transition duration-150 ease-in-out rounded-full transform -translate-y-1/2">
-                      <link.icon
-                        className="h-6 w-6 text-brightPurple"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <h3 className="text-2xl font-medium text-darkerGray tracking-normal">
-                      {link.name}
-                    </h3>
-                    <p className="mt-1 text-base text-darkGray">
-                      {link.description}
-                    </p>
+
+                <div className="flex-1 relative pt-16 pb-8 px-8">
+                  <div className="absolute top-0 p-5 inline-block bg-offwhite group-hover:bg-gray-200 transition duration-150 ease-in-out rounded-full transform -translate-y-1/2">
+                    <link.icon
+                      className="h-6 w-6 text-brightPurple"
+                      aria-hidden="true"
+                    />
                   </div>
-                </a>
+                  <h3 className="text-2xl font-medium text-darkerGray tracking-normal">
+                    {link.name}
+                  </h3>
+                  <p className="mt-1 text-base text-darkGray">
+                    {link.description}
+                  </p>
+                </div>
+
               </Link>
             </div>
           ))}

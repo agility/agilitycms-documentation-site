@@ -76,19 +76,18 @@ const RightOrLeftAlignedLinks = ({ module, customData }) => {
                     </div>
                     <div>
                       <h3 className="text-darkerGray group-hover:text-brightPurple text-lg font-bold">
-                        <Link href={action.href}>
-                          <a
-                            className="focus:outline-none"
-                            target={action.target}
-                            rel={action.rel}
-                          >
-                            {/* Extend touch target to entire panel */}
-                            <span
-                              className="absolute inset-0"
-                              aria-hidden="true"
-                            />
-                            {action.title}
-                          </a>
+                        <Link href={action.href}
+                          className="focus:outline-none"
+                          target={action.target}
+                          rel={action.rel}
+                        >
+                          {/* Extend touch target to entire panel */}
+                          <span
+                            className="absolute inset-0"
+                            aria-hidden="true"
+                          />
+                          {action.title}
+
                         </Link>
                       </h3>
                       <p className="mt-2 text-darkGray">{action.description}</p>

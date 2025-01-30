@@ -17,35 +17,33 @@ const ArticleListing = ({ module, customData }) => {
         </div>
         <div className="mt-12 mx-auto grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {articles.map((article, index) => (
-            <Link key={article.title} href={article.href}>
-              <a
-                className={`flex flex-col overflow-hidden border border-lightGray group hover:border-brightPurple transition duration-150 ease-in-out`}
-              >
-                <div className="flex-1 bg-white p-6 flex flex-col justify-between">
-                  <div className="flex-1">
-                    <span className="block mt-2">
-                      <p className="text-xl font-semibold text-darkerGray group-hover:text-brightPurple">
-                        {article.title}
-                      </p>
-                      <p className="mt-3 text-base text-darkGray">
-                        {article.description}
-                      </p>
+            <Link key={article.title} href={article.href} className={`flex flex-col overflow-hidden border border-lightGray group hover:border-brightPurple transition duration-150 ease-in-out`}
+            >
+              <div className="flex-1 bg-white p-6 flex flex-col justify-between">
+                <div className="flex-1">
+                  <span className="block mt-2">
+                    <p className="text-xl font-semibold text-darkerGray group-hover:text-brightPurple">
+                      {article.title}
+                    </p>
+                    <p className="mt-3 text-base text-darkGray">
+                      {article.description}
+                    </p>
+                  </span>
+                </div>
+                {article.concept && (
+                  <div className="mt-6 flex items-center">
+                    <span className="bg-gray-100 text-darkerGray group-hover:text-brightPurple inline-flex items-center px-3 py-0.5 rounded-sm text-sm font-normal">
+                      {article.concept}
                     </span>
                   </div>
-                  {article.concept && (
-                    <div className="mt-6 flex items-center">
-                      <span className="bg-gray-100 text-darkerGray group-hover:text-brightPurple inline-flex items-center px-3 py-0.5 rounded-sm text-sm font-normal">
-                        {article.concept}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </a>
+                )}
+              </div>
+
             </Link>
           ))}
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

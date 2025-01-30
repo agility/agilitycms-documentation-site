@@ -103,15 +103,13 @@ export default function Header({
                 </div>
                 <div className="flex text-sm items-center">
                   {supportButton && (
-                    <Link href={supportButton.href}>
-                      <a
-                        title={supportButton.name}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="whitespace-nowrap"
-                      >
-                        {supportButton.name}
-                      </a>
+                    <Link href={supportButton.href} title={supportButton.name}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="whitespace-nowrap"
+                    >
+                      {supportButton.name}
+
                     </Link>
                   )}
                   {loginButton && (
@@ -143,14 +141,13 @@ export default function Header({
               <div className="relative h-[60px] flex justify-between">
                 <div className="relative z-10 px-2 flex lg:px-0">
                   <div className="flex-shrink-0 flex items-center">
-                    <Link href="/">
-                      <a title="Agility Docs">
-                        <img
-                          className="block h-7 md:h-8 w-auto"
-                          src="/docs/assets/agility-docs-logo.svg"
-                          alt="The logo of Agility Docs site on agilitycms.com"
-                        />
-                      </a>
+                    <Link href="/" title="Agility Docs">
+                      <img
+                        className="block h-7 md:h-8 w-auto"
+                        src="/docs/assets/agility-docs-logo.svg"
+                        alt="The logo of Agility Docs site on agilitycms.com"
+                      />
+
                     </Link>
                   </div>
                 </div>
@@ -221,13 +218,11 @@ export default function Header({
               >
                 <div className="lg:space-x-8">
                   {navigation.map((item) => (
-                    <Link key={item.name} href={item.href}>
-                      <a
-                        className="text-gray-900 hover:text-purple font-semibold"
-                        aria-current={item.current ? "page" : undefined}
-                      >
-                        {item.name}
-                      </a>
+                    <Link key={item.name} href={item.href} className="text-gray-900 hover:text-purple font-semibold"
+                      aria-current={item.current ? "page" : undefined}
+                    >
+                      {item.name}
+
                     </Link>
                   ))}
                 </div>
@@ -286,7 +281,7 @@ export default function Header({
             </Disclosure.Panel>
           </>
         )}
-      </Disclosure>
+      </Disclosure >
     </>
   );
 }
@@ -294,19 +289,17 @@ export default function Header({
 const MenuLink = ({ item }) => {
   // let { href, children, ...rest } = props;
   return (
-    <Link href={item.href}>
-      <a
-        className={classNames(
-          item.current
-            ? "bg-lightGray text-darkestGray"
-            : "text-darkestGray hover:bg-lightGray hover:text-gray-900",
-          "block py-2 px-3 text-base font-medium"
-        )}
-        aria-current={item.current ? "page" : undefined}
-      // {...rest}
-      >
-        {item.name}
-      </a>
+    <Link href={item.href} className={classNames(
+      item.current
+        ? "bg-lightGray text-darkestGray"
+        : "text-darkestGray hover:bg-lightGray hover:text-gray-900",
+      "block py-2 px-3 text-base font-medium"
+    )}
+      aria-current={item.current ? "page" : undefined}
+    // {...rest}
+    >
+      {item.name}
+
     </Link>
   );
 };

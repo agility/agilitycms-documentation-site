@@ -61,12 +61,11 @@ const RightOrLeftAlignedImageLinks = ({ module, customData }) => {
                       href={action.href}
                       target={action.target}
                       rel={action.rel}
-                    >
-                      <a className="focus:outline-none">
-                        {/* Extend touch target to entire panel */}
-                        <span className="absolute inset-0" aria-hidden="true" />
-                        {action.title}
-                      </a>
+                      className="focus:outline-none">
+                      {/* Extend touch target to entire panel */}
+                      <span className="absolute inset-0" aria-hidden="true" />
+                      {action.title}
+
                     </Link>
                   </h3>
                 </div>

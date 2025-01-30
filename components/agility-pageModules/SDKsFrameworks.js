@@ -18,27 +18,26 @@ const SDKsFrameworks = ({ module, customData }) => {
             target={action.target}
             rel={action.rel}
             key={action.title}
-          >
-            <a title={action.title} className="custom-hover">
-              <div
-                key={index}
-                className="bg-lightGray p-6 flex justify-center items-center"
-              >
-                <img
-                  alt={action.title}
-                  src={`${action.image}?w=40`}
-                  className="w-10"
-                  aria-hidden="true"
-                />
-                <h3 className="ml-8 text-lg font-semibold text-darkerGray">
-                  {action.title}
-                </h3>
-              </div>
-            </a>
+            title={action.title} className="custom-hover">
+            <div
+              key={index}
+              className="bg-lightGray p-6 flex justify-center items-center"
+            >
+              <img
+                alt={action.title}
+                src={`${action.image}?w=40`}
+                className="w-10"
+                aria-hidden="true"
+              />
+              <h3 className="ml-8 text-lg font-semibold text-darkerGray">
+                {action.title}
+              </h3>
+            </div>
+
           </Link>
         ))}
       </div>
-    </div>
+    </div >
   );
 };
 
