@@ -1,5 +1,5 @@
 import { getPageTemplate } from "components/agility-pageTemplates";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { handlePreview } from "@agility/nextjs";
 import { useRouter } from "next/router";
 import nProgress from "nprogress";
@@ -10,8 +10,9 @@ import Header from "../common/Header";
 import PreviewWidget from "./PreviewWidget";
 import CMSWidget from "./CMSWidget";
 import nextConfig from "next.config";
-import Script from "next/script";
 import { GoogleTagManager } from '@next/third-parties/google'
+import { Intercom, show } from "@intercom/messenger-js-sdk";
+import { useIntercomHash } from "../../hooks/useIntercomHash";
 
 
 // set up handle preview
@@ -24,6 +25,72 @@ function Layout(props) {
     props;
 
   const router = useRouter();
+  
+  // TODO: Replace with actual user data from your authentication system
+  const user = {
+    isAuthenticated: true, // Changed to true for testing - set to false for anonymous
+    email: 'john.doe@example.com',
+    name: 'John Doe',
+    customAttributes: {
+      company: 'Acme Inc',
+      plan: 'Pro',
+    }
+  };
+
+  // Only fetch user hash for authenticated users (when Identity Verification is required)
+  const { userHash, loading, error } = useIntercomHash(user.isAuthenticated ? user.email : null);
+
+	useEffect(() => {
+		console.log('Intercom initialization:', { 
+			isAuthenticated: user.isAuthenticated, 
+			userHash: !!userHash, 
+			loading, 
+			error 
+		});
+
+		if (user.isAuthenticated) {
+			// Authenticated user - use Identity Verification if enabled in Intercom
+			if (userHash && !loading && !error) {
+				console.log('Initializing Intercom with Identity Verification');
+				Intercom({
+					app_id: 'fj9g3mkl',
+					name: user.name,
+					email: user.email,
+					created_at: 1620000000,
+					custom_attributes: user.customAttributes,
+					user_hash: userHash, // Include hash for Identity Verification
+				});
+			} else if (!loading && !userHash) {
+				// Fallback: authenticated user without Identity Verification
+				console.log('Initializing Intercom for authenticated user (no Identity Verification)');
+				Intercom({
+					app_id: 'fj9g3mkl',
+					name: user.name,
+					email: user.email,
+					created_at: 1620000000,
+					custom_attributes: user.customAttributes,
+				});
+			}
+		} else {
+			// Anonymous/unauthenticated user - minimal config
+			console.log('Initializing Intercom for anonymous user');
+			Intercom({
+				app_id: 'fj9g3mkl',
+				// No user-specific data for anonymous users
+			});
+		}
+
+		// For testing: manually show the launcher after a short delay
+		setTimeout(() => {
+			try {
+				show();
+				console.log('Manually showing Intercom launcher');
+			} catch (err) {
+				console.log('Could not manually show launcher:', err.message);
+			}
+		}, 1000);
+		
+	}, [user.isAuthenticated, user.email, userHash, loading, error]);
 
   // if the route changes, scroll our scrollable container back to the top
   useEffect(() => {
@@ -94,9 +161,6 @@ function Layout(props) {
 
   return (
     <>
-      {/* Hubspot Chat */}
-      <Script type="text/javascript" id="hs-script-loader" async defer src="//js-na1.hs-scripts.com/23239214.js"></Script>
-
       {/* Google Tag Manager */}
       <GoogleTagManager gtmId="GTM-NJW8WMX" />
 
