@@ -11,8 +11,7 @@ import PreviewWidget from "./PreviewWidget";
 import CMSWidget from "./CMSWidget";
 import nextConfig from "next.config";
 import { GoogleTagManager } from '@next/third-parties/google'
-import { Intercom, show } from "@intercom/messenger-js-sdk";
-import { useIntercomHash } from "../../hooks/useIntercomHash";
+import { Intercom } from "@intercom/messenger-js-sdk";
 
 
 // set up handle preview
@@ -26,71 +25,12 @@ function Layout(props) {
 
   const router = useRouter();
   
-  // TODO: Replace with actual user data from your authentication system
-  const user = {
-    isAuthenticated: true, // Changed to true for testing - set to false for anonymous
-    email: 'john.doe@example.com',
-    name: 'John Doe',
-    customAttributes: {
-      company: 'Acme Inc',
-      plan: 'Pro',
-    }
-  };
-
-  // Only fetch user hash for authenticated users (when Identity Verification is required)
-  const { userHash, loading, error } = useIntercomHash(user.isAuthenticated ? user.email : null);
-
 	useEffect(() => {
-		console.log('Intercom initialization:', { 
-			isAuthenticated: user.isAuthenticated, 
-			userHash: !!userHash, 
-			loading, 
-			error 
-		});
-
-		if (user.isAuthenticated) {
-			// Authenticated user - use Identity Verification if enabled in Intercom
-			if (userHash && !loading && !error) {
-				console.log('Initializing Intercom with Identity Verification');
-				Intercom({
-					app_id: 'fj9g3mkl',
-					name: user.name,
-					email: user.email,
-					created_at: 1620000000,
-					custom_attributes: user.customAttributes,
-					user_hash: userHash, // Include hash for Identity Verification
-				});
-			} else if (!loading && !userHash) {
-				// Fallback: authenticated user without Identity Verification
-				console.log('Initializing Intercom for authenticated user (no Identity Verification)');
-				Intercom({
-					app_id: 'fj9g3mkl',
-					name: user.name,
-					email: user.email,
-					created_at: 1620000000,
-					custom_attributes: user.customAttributes,
-				});
-			}
-		} else {
-			// Anonymous/unauthenticated user - minimal config
-			console.log('Initializing Intercom for anonymous user');
-			Intercom({
-				app_id: 'fj9g3mkl',
-				// No user-specific data for anonymous users
-			});
-		}
-
-		// For testing: manually show the launcher after a short delay
-		setTimeout(() => {
-			try {
-				show();
-				console.log('Manually showing Intercom launcher');
-			} catch (err) {
-				console.log('Could not manually show launcher:', err.message);
-			}
-		}, 1000);
+    Intercom({
+      app_id: 'fj9g3mkl',
+    });
 		
-	}, [user.isAuthenticated, user.email, userHash, loading, error]);
+	}, []);
 
   // if the route changes, scroll our scrollable container back to the top
   useEffect(() => {
