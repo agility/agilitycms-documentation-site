@@ -1,5 +1,5 @@
 import { getPageTemplate } from "components/agility-pageTemplates";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { handlePreview } from "@agility/nextjs";
 import { useRouter } from "next/router";
 import nProgress from "nprogress";
@@ -10,8 +10,8 @@ import Header from "../common/Header";
 import PreviewWidget from "./PreviewWidget";
 import CMSWidget from "./CMSWidget";
 import nextConfig from "next.config";
-import Script from "next/script";
 import { GoogleTagManager } from '@next/third-parties/google'
+import { Intercom } from "@intercom/messenger-js-sdk";
 
 
 // set up handle preview
@@ -24,6 +24,13 @@ function Layout(props) {
     props;
 
   const router = useRouter();
+  
+	useEffect(() => {
+    Intercom({
+      app_id: 'fj9g3mkl',
+    });
+		
+	}, []);
 
   // if the route changes, scroll our scrollable container back to the top
   useEffect(() => {
@@ -94,9 +101,6 @@ function Layout(props) {
 
   return (
     <>
-      {/* Hubspot Chat */}
-      <Script type="text/javascript" id="hs-script-loader" async defer src="//js-na1.hs-scripts.com/23239214.js"></Script>
-
       {/* Google Tag Manager */}
       <GoogleTagManager gtmId="GTM-NJW8WMX" />
 
