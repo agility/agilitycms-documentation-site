@@ -71,7 +71,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 
 					{/* Render markdown content if no blocks exist and markdown content is available */}
 					{blocks.length === 0 && processedMarkdown ? (
-						<div 
+						<div
 							className="prose prose-lg max-w-none"
 							dangerouslySetInnerHTML={{ __html: processedMarkdown }}
 						/>
