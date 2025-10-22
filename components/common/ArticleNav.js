@@ -17,7 +17,7 @@ export default function ArticleNav({ dynamicPageItem, sitemapNode }) {
   const [negativeFeedbackClicked, setNegativeFeedbackClicked] = useState(false);
   const url = `${nextConfig.basePath}${sitemapNode.path}`;
 
-  const blocks = JSON.parse(dynamicPageItem.fields.content).blocks;
+  const blocks = JSON.parse(dynamicPageItem.fields.content || `{ "blocks": [] }`).blocks;
 
   //find the h2 headings to build an article nav
   const headings = blocks.filter((block, idx) => {
