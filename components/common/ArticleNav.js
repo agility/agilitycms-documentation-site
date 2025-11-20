@@ -15,26 +15,37 @@ export default function ArticleNav({ dynamicPageItem, sitemapNode }) {
   const [negativeFeedbackSubmitted, setNegativeFeedbackSubmitted] =
     useState(false);
   const [negativeFeedbackClicked, setNegativeFeedbackClicked] = useState(false);
+  const [navigation, setNavigation] = useState([]);
   const url = `${nextConfig.basePath}${sitemapNode.path}`;
 
   const blocks = JSON.parse(dynamicPageItem.fields.content || `{ "blocks": [] }`).blocks;
-
-  //find the h2 headings to build an article nav
-  const headings = blocks.filter((block, idx) => {
-    return block.type === "header" && block.data.level == 2;
-  });
+  const markdownContent = dynamicPageItem.fields.markdownContent;
 
   //set up the Article Nav sync for the reader
   useEffect(() => {
     const $articleNav = document.getElementById("ArticleNav");
-
-    //if we don't have an article nav or scroll container, return and don't do anything
-    if (!$articleNav) return;
-
-    const $articleNavHeaders = $articleNav.children;
     const $articleHeaders = document.querySelectorAll(
       "#DynamicArticleDetails h2"
     );
+
+    //if we don't have an article nav or no headers, return and don't do anything
+    if (!$articleNav || $articleHeaders.length === 0) return;
+
+    // Build navigation from actual rendered H2 elements
+    const navItems = [];
+    $articleHeaders.forEach((header) => {
+      if (header.id && header.textContent) {
+        navItems.push({
+          name: header.textContent,
+          href: `#${header.id}`,
+          current: false,
+        });
+      }
+    });
+
+    setNavigation(navItems);
+
+    const $articleNavHeaders = $articleNav.children;
 
     //run on load...
     syncArticleNav({
@@ -53,16 +64,7 @@ export default function ArticleNav({ dynamicPageItem, sitemapNode }) {
     };
 
     return () => (window.onscroll = null);
-  }, [blocks]);
-
-  const navigation = [];
-  headings.map((heading, idx) => {
-    navigation.push({
-      name: heading.data.text,
-      href: `#${heading.id}`,
-      current: false, //property not being used, classes are applied manually using DOM manipulation -- see `syncArticleNav`
-    });
-  });
+  }, [blocks, markdownContent]);
 
   return (
     <div>
