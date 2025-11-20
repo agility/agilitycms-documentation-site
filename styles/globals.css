@@ -13,6 +13,7 @@
 
 .prose h2 {
 	font-weight: 600;
+	scroll-margin-top: 140px; /* Offset for sticky header */
 }
 
 /* @import url("https://fonts.googleapis.com/css?family=Muli:100,200,300,400,600,700,900&display=swap"); */
@@ -61,6 +62,20 @@ code > span.hljs-string {
 
 .prose code {
 	@apply text-base bg-gray-100 px-2 py-1 text-gray-700;
+	font-weight: normal !important;
+}
+
+.prose pre {
+	@apply bg-transparent p-0 my-8;
+	overflow-x: auto;
+}
+
+.prose pre code {
+	@apply bg-lightGray block p-5 text-base;
+	border-radius: 0.375rem;
+	/* Override inline code styling for code blocks */
+	background: #F4F7FA !important;
+	padding: 1.25rem !important;
 }
 
 .prose code:before {
