@@ -71,7 +71,6 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 	const showClassicMode = useMemo(() => !!dynamicPageItem.fields.classicContent, [dynamicPageItem.fields.classicContent])
 	const markdownContent = useMemo(() => dynamicPageItem.fields.markdownContent, [dynamicPageItem.fields.markdownContent])
 
-	console.log("Markdown Content:", markdownContent);
 
 	const blockContent = classicMode && showClassicMode ?
 		dynamicPageItem.fields.classicContent :
