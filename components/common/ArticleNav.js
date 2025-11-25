@@ -18,7 +18,7 @@ export default function ArticleNav({ dynamicPageItem, sitemapNode }) {
   const [navigation, setNavigation] = useState([]);
   const url = `${nextConfig.basePath}${sitemapNode.path}`;
 
-  const blocks = JSON.parse(dynamicPageItem.fields.content || `{ "blocks": [] }`).blocks;
+  const content = dynamicPageItem.fields.content;
   const markdownContent = dynamicPageItem.fields.markdownContent;
 
   //set up the Article Nav sync for the reader
@@ -64,7 +64,7 @@ export default function ArticleNav({ dynamicPageItem, sitemapNode }) {
     };
 
     return () => (window.onscroll = null);
-  }, [blocks, markdownContent]);
+  }, [content, markdownContent]);
 
   return (
     <div>
