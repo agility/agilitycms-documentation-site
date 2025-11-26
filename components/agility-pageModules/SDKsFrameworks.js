@@ -1,6 +1,7 @@
 import React from "react";
 import { getHrefRel, getHrefTarget } from "../../utils/linkUtils";
 import Link from "next/link";
+import { AgilityPic } from "@agility/nextjs";
 
 const SDKsFrameworks = ({ module, customData }) => {
   const { fields } = module;
@@ -23,9 +24,9 @@ const SDKsFrameworks = ({ module, customData }) => {
               key={index}
               className="bg-lightGray p-6 flex justify-center items-center"
             >
-              <img
-                alt={action.title}
-                src={`${action.image}?w=40`}
+              <AgilityPic
+                image={action.image}
+                fallbackWidth={40}
                 className="w-10"
                 aria-hidden="true"
               />
