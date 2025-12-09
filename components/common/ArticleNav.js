@@ -23,47 +23,53 @@ export default function ArticleNav({ dynamicPageItem, sitemapNode }) {
 
   //set up the Article Nav sync for the reader
   useEffect(() => {
-    const $articleNav = document.getElementById("ArticleNav");
-    const $articleHeaders = document.querySelectorAll(
-      "#DynamicArticleDetails h2"
-    );
+    // Use a timeout to allow markdown processing to complete
+    const timer = setTimeout(() => {
+      const $articleNav = document.getElementById("ArticleNav");
+      const $articleHeaders = document.querySelectorAll(
+        "#DynamicArticleDetails h2"
+      );
 
-    //if we don't have an article nav or no headers, return and don't do anything
-    if (!$articleNav || $articleHeaders.length === 0) return;
+      //if we don't have an article nav or no headers, return and don't do anything
+      if (!$articleNav || $articleHeaders.length === 0) return;
 
-    // Build navigation from actual rendered H2 elements
-    const navItems = [];
-    $articleHeaders.forEach((header) => {
-      if (header.id && header.textContent) {
-        navItems.push({
-          name: header.textContent,
-          href: `#${header.id}`,
-          current: false,
-        });
-      }
-    });
+      // Build navigation from actual rendered H2 elements
+      const navItems = [];
+      $articleHeaders.forEach((header) => {
+        if (header.id && header.textContent) {
+          navItems.push({
+            name: header.textContent,
+            href: `#${header.id}`,
+            current: false,
+          });
+        }
+      });
 
-    setNavigation(navItems);
+      setNavigation(navItems);
 
-    const $articleNavHeaders = $articleNav.children;
+      const $articleNavHeaders = $articleNav.children;
 
-    //run on load...
-    syncArticleNav({
-      $articleNav,
-      $articleHeaders,
-      $articleNavHeaders,
-    });
-
-    //run again when we scroll
-    window.onscroll = () => {
+      //run on load...
       syncArticleNav({
         $articleNav,
         $articleHeaders,
         $articleNavHeaders,
       });
-    };
 
-    return () => (window.onscroll = null);
+      //run again when we scroll
+      window.onscroll = () => {
+        syncArticleNav({
+          $articleNav,
+          $articleHeaders,
+          $articleNavHeaders,
+        });
+      };
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      window.onscroll = null;
+    };
   }, [content, markdownContent]);
 
   return (
