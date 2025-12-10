@@ -4,6 +4,7 @@ import axios from "axios";
 import nextConfig from "next.config";
 import { ToggleSwitch } from "components/common/ToggleSwitch";
 import { remark } from 'remark';
+import remarkGfm from 'remark-gfm';
 import remarkRehype from 'remark-rehype';
 import rehypeSlug from 'rehype-slug';
 import rehypeStringify from 'rehype-stringify';
@@ -84,6 +85,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 	useEffect(() => {
 		if (blocks.length === 0 && markdownContent) {
 			remark()
+				.use(remarkGfm)
 				.use(remarkRehype)
 				.use(rehypeSlug)
 				.use(rehypeStringify)

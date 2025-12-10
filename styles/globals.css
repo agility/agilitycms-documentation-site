@@ -171,6 +171,32 @@ code > span.hljs-string {
 .scrollbar-none::-webkit-scrollbar-thumb {
 	background-color: #00000000; /* color of the scroll thumb */
 }
+
+/* Markdown table styles */
+.prose table {
+	@apply w-full border-collapse my-6;
+}
+
+.prose thead {
+	@apply border-b-2 border-gray-300;
+}
+
+.prose th {
+	@apply px-4 py-3 text-left font-semibold bg-gray-50 border border-gray-300;
+}
+
+.prose td {
+	@apply px-4 py-3 border border-gray-300;
+}
+
+.prose tbody tr {
+	@apply border-b border-gray-200;
+}
+
+.prose tbody tr:hover {
+	@apply bg-gray-50;
+}
+
 /* .SearchResult mark {
   @apply bg-indigo-900 text-white
 } */
