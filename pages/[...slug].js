@@ -177,54 +177,148 @@ export async function getStaticProps({
     expandAllContentLinks: true
   })
 
+
   let footerNavigation = [];
 
-  footerNavigation.push({
-    name: mainSiteFooter.fields.column1Title,
-    children: []
-  })
+  // Column 1
+  if (mainSiteFooter.fields.column1Title) {
+    const column = {
+      name: mainSiteFooter.fields.column1Title,
+      children: []
+    };
+    footerNavigation.push(column);
 
-  mainSiteFooter.fields.column1Links.forEach((link) => {
-    footerNavigation[0].children.push({
-      name: link.fields.title,
-      href: link.fields.uRL.href,
-      target: link.fields.uRL?.target
-    })
-  })
+    if (mainSiteFooter.fields.column1Links) {
+      mainSiteFooter.fields.column1Links.forEach((link) => {
+        const linkData = {
+          name: link.fields.title,
+          title: link.fields.title,
+          href: link.fields.uRL?.href || null,
+          target: link.fields.uRL?.target || null,
+        };
+        // Only include header if it exists (not undefined)
+        if (link.fields.header !== undefined) {
+          linkData.header = link.fields.header;
+        }
+        column.children.push(linkData);
+      })
+    }
+  }
 
-  footerNavigation.push({
-    name: mainSiteFooter.fields.column2Title,
-    children: []
-  })
+  // Column 2
+  if (mainSiteFooter.fields.column2Title) {
+    const column = {
+      name: mainSiteFooter.fields.column2Title,
+      children: []
+    };
+    footerNavigation.push(column);
 
-  mainSiteFooter.fields.column2Links.forEach((link) => {
-    footerNavigation[1].children.push({
-      name: link.fields.title,
-      href: link.fields.uRL.href,
-      target: link.fields.uRL?.target
-    })
-  })
+    if (mainSiteFooter.fields.column2Links) {
+      mainSiteFooter.fields.column2Links.forEach((link) => {
+        const linkData = {
+          name: link.fields.title,
+          title: link.fields.title,
+          href: link.fields.uRL?.href || null,
+          target: link.fields.uRL?.target || null,
+        };
+        // Only include header if it exists (not undefined)
+        if (link.fields.header !== undefined) {
+          linkData.header = link.fields.header;
+        }
+        column.children.push(linkData);
+      })
+    }
+  }
 
-  footerNavigation.push({
-    name: mainSiteFooter.fields.column3Title,
-    children: []
-  })
+  // Column 3
+  if (mainSiteFooter.fields.column3Title) {
+    const column = {
+      name: mainSiteFooter.fields.column3Title,
+      children: []
+    };
+    footerNavigation.push(column);
 
-  mainSiteFooter.fields.column3Links.forEach((link) => {
-    footerNavigation[2].children.push({
-      name: link.fields.title,
-      href: link.fields.uRL.href,
-      target: link.fields.uRL?.target
-    })
-  })
+    if (mainSiteFooter.fields.column3Links) {
+      mainSiteFooter.fields.column3Links.forEach((link) => {
+        const linkData = {
+          name: link.fields.title,
+          title: link.fields.title,
+          href: link.fields.uRL?.href || null,
+          target: link.fields.uRL?.target || null,
+        };
+        // Only include header if it exists (not undefined)
+        if (link.fields.header !== undefined) {
+          linkData.header = link.fields.header;
+        }
+        column.children.push(linkData);
+      })
+    }
+  }
 
-  const footerBottomNavigation = mainSiteFooter.fields.bottomLinks.map((link, idx) => {
+  // Column 4
+  if (mainSiteFooter.fields.column4Title) {
+    const column = {
+      name: mainSiteFooter.fields.column4Title,
+      children: []
+    };
+    footerNavigation.push(column);
+
+    if (mainSiteFooter.fields.column4Links) {
+      mainSiteFooter.fields.column4Links.forEach((link) => {
+        const linkData = {
+          name: link.fields.title,
+          title: link.fields.title,
+          href: link.fields.uRL?.href || null,
+          target: link.fields.uRL?.target || null,
+        };
+        // Only include header if it exists (not undefined)
+        if (link.fields.header !== undefined) {
+          linkData.header = link.fields.header;
+        }
+        column.children.push(linkData);
+      })
+    }
+  }
+
+  // Column 5 - check multiple possible field name variations
+  const column5Title = mainSiteFooter.fields.column5Title || mainSiteFooter.fields.Column5Title || "";
+  const column5Links = mainSiteFooter.fields.column5Links || mainSiteFooter.fields.Column5Links;
+
+  if (column5Title || column5Links) {
+    const column = {
+      name: column5Title,
+      children: []
+    };
+    footerNavigation.push(column);
+
+    if (column5Links && Array.isArray(column5Links)) {
+      column5Links.forEach((link) => {
+        if (link && link.fields) {
+          const linkData = {
+            name: link.fields.title,
+            title: link.fields.title,
+            href: link.fields.uRL?.href || null,
+            target: link.fields.uRL?.target || null,
+          };
+          // Only include header if it exists (not undefined)
+          if (link.fields.header !== undefined) {
+            linkData.header = link.fields.header;
+          }
+          column.children.push(linkData);
+        }
+      })
+    }
+  }
+
+  const footerBottomNavigation = mainSiteFooter.fields.bottomLinks ? mainSiteFooter.fields.bottomLinks.map((link, idx) => {
     return {
       name: link.fields.title,
-      href: link.fields.uRL.href,
-      target: link.fields.uRL.target
+      href: link.fields.uRL?.href || null,
+      target: link.fields.uRL?.target || null
     }
-  });
+  }) : [];
+
+  const footerCopyright = mainSiteFooter.fields.copyright || "© Copyright, Agility Inc.";
 
   const additionalPageProps = {
     mainMenuLinks,
@@ -233,7 +327,8 @@ export async function getStaticProps({
     marketingContent,
     preHeader,
     footerNavigation,
-    footerBottomNavigation
+    footerBottomNavigation,
+    footerCopyright
   };
 
 

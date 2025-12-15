@@ -53,7 +53,7 @@ const WithSidebarNavTemplate = (props) => {
       <Footer
         navigation={props.footerNavigation}
         bottomNavigation={props.footerBottomNavigation}
-        pageTemplateName={props.pageTemplateName}
+        copyright={props.footerCopyright}
       />
     </>
   );
