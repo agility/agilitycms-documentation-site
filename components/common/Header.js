@@ -42,7 +42,6 @@ const loginButton = {
 
 const supportButton = {
   name: "Get Support",
-  href: "https://help.agilitycms.com/hc/en-us/requests/new",
   icon: SupportIcon,
 };
 
@@ -53,6 +52,7 @@ export default function Header({
   marketingContent,
   preHeader,
 }) {
+  const [isIntercomLoaded, setIsIntercomLoaded] = useState(false);
   const navigation = mainMenuLinks;
   const apiSDKsButton = {
     name: "APIs & SDKs",
@@ -83,6 +83,34 @@ export default function Header({
     });
   }, []);
 
+  // Check if Intercom is loaded
+  useEffect(() => {
+    const checkIntercom = () => {
+      if (typeof window !== 'undefined' && window.Intercom && typeof window.Intercom === 'function') {
+        setIsIntercomLoaded(true);
+        return true;
+      }
+      return false;
+    };
+
+    // Check immediately
+    if (checkIntercom()) {
+      return;
+    }
+
+    // Poll for Intercom to load (check every 100ms for up to 5 seconds)
+    let attempts = 0;
+    const maxAttempts = 50; // 5 seconds total
+    const interval = setInterval(() => {
+      attempts++;
+      if (checkIntercom() || attempts >= maxAttempts) {
+        clearInterval(interval);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
       {preHeader.showPreHeader === true && (
@@ -102,15 +130,22 @@ export default function Header({
                   <ChevronRightIcon className="w-[20px] h-[20px] mb-0.5 marketing-arrow relative top-[2px]" />
                 </div>
                 <div className="flex text-sm items-center">
-                  {supportButton && (
-                    <Link href={supportButton.href} title={supportButton.name}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="whitespace-nowrap"
+                  {supportButton && isIntercomLoaded && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (typeof window !== 'undefined' && window.Intercom) {
+                          window.Intercom('showNewMessage');
+                        } else {
+                          console.log('Intercom not loaded');
+                        }
+                      }}
+                      title={supportButton.name}
+                      className="whitespace-nowrap cursor-pointer bg-transparent border-none p-0 text-inherit font-inherit hover:underline"
+                      style={{ color: 'inherit', background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer' }}
                     >
                       {supportButton.name}
-
-                    </Link>
+                    </button>
                   )}
                   {loginButton && (
                     <a
