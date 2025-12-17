@@ -15,7 +15,7 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
 	return (
 		<div
 			id="SideNav"
-			className="z-40 flex flex-col w-64 pb-4 font-muli pt-[130px] max-h-screen mt-[-124px] overflow-y-auto scrollbar-none"
+			className="z-40 flex flex-col w-64 pb-4 font-muli pt-[130px] max-h-screen mt-[-124px] overflow-y-auto scrollbar-thin"
 
 
 		>
@@ -37,12 +37,13 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
 								</Link>
 							</div>
 						) : (
-							<Disclosure as="div" key={item.name} className="space-y-1">
+							<Disclosure
+								as="div"
+								key={item.name}
+								className="space-y-1"
+								defaultOpen={item.children.some((subItem) => subItem.current)}
+							>
 								{({ open }) => {
-									item.children.forEach((subItem) => {
-										if (subItem.current) open = true;
-									});
-
 									return (
 										<>
 											<Disclosure.Button
@@ -70,27 +71,24 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
 													{item.name}
 												</span>
 											</Disclosure.Button>
-											{open && (
-												<Disclosure.Panel
-													static
-													className="py-2 space-y-1 bg-lightGray"
-												>
-													{item.children.map((subItem) => {
-														return (
-															<Link key={subItem.name} href={subItem.href} className={classNames(
-																!!subItem.current
-																	? " text-purple"
-																	: " text-darkGray hover:text-purple ",
-																"group w-full flex items-center pl-16 pr-2 py-2 text-sm font-medium bg-lightGray text-gray-600 rounded-md"
-															)}
-															>
-																{subItem.name}
+											<Disclosure.Panel
+												className="py-2 space-y-1 bg-lightGray"
+											>
+												{item.children.map((subItem) => {
+													return (
+														<Link key={subItem.name} href={subItem.href} className={classNames(
+															!!subItem.current
+																? " text-purple"
+																: " text-darkGray hover:text-purple ",
+															"group w-full flex items-center pl-16 pr-2 py-2 text-sm font-medium bg-lightGray text-gray-600 rounded-md"
+														)}
+														>
+															{subItem.name}
 
-															</Link>
-														);
-													})}
-												</Disclosure.Panel>
-											)}
+														</Link>
+													);
+												})}
+											</Disclosure.Panel>
 										</>
 									);
 								}}
