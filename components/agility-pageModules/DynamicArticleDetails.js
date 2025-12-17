@@ -68,6 +68,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 
 	const [classicMode, setClassicMode] = useState(false);
 	const [processedMarkdown, setProcessedMarkdown] = useState('');
+	const [markdownH1Title, setMarkdownH1Title] = useState(null);
 
 	const showClassicMode = useMemo(() => !!dynamicPageItem.fields.classicContent, [dynamicPageItem.fields.classicContent])
 	const markdownContent = useMemo(() => dynamicPageItem.fields.markdownContent, [dynamicPageItem.fields.markdownContent])
@@ -84,21 +85,55 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 	// Process markdown content when there are no blocks and markdown content exists
 	useEffect(() => {
 		if (blocks.length === 0 && markdownContent) {
+			// Check if the first line of markdown is an h1
+			const lines = markdownContent.split('\n');
+			const firstLine = lines[0]?.trim() || '';
+			let h1Text = null;
+			let markdownWithoutH1 = markdownContent;
+
+			// Check if first line is a markdown h1 (starts with # followed by space)
+			if (firstLine.startsWith('# ')) {
+				h1Text = firstLine.substring(2).trim();
+				// Remove the first line (h1) from markdown
+				markdownWithoutH1 = lines.slice(1).join('\n');
+			}
+
 			remark()
 				.use(remarkGfm)
 				.use(remarkRehype)
 				.use(rehypeSlug)
 				.use(rehypeStringify)
-				.process(markdownContent)
+				.process(markdownWithoutH1)
 				.then((processedContent) => {
-					setProcessedMarkdown(processedContent.toString());
+					let htmlContent = processedContent.toString();
+
+					// If we didn't find an h1 in markdown syntax, check the processed HTML
+					// for an h1 tag at the beginning (in case markdown had HTML h1 tag)
+					if (!h1Text) {
+						const h1Match = htmlContent.match(/^<h1[^>]*>(.*?)<\/h1>\s*/i);
+						if (h1Match) {
+							// Extract text content from h1 (strip HTML tags if any)
+							h1Text = h1Match[1].replace(/<[^>]*>/g, '').trim();
+							// Remove the h1 from the HTML
+							htmlContent = htmlContent.replace(/^<h1[^>]*>.*?<\/h1>\s*/i, '');
+						}
+					} else {
+						// If we found an h1 in markdown, also remove it from the processed HTML
+						// in case it wasn't caught by the first line check
+						htmlContent = htmlContent.replace(/^<h1[^>]*>.*?<\/h1>\s*/i, '');
+					}
+
+					setProcessedMarkdown(htmlContent);
+					setMarkdownH1Title(h1Text);
 				})
 				.catch((error) => {
 					console.error('Error processing markdown:', error);
 					setProcessedMarkdown('');
+					setMarkdownH1Title(null);
 				});
 		} else {
 			setProcessedMarkdown('');
+			setMarkdownH1Title(null);
 		}
 	}, [blocks.length, markdownContent]);
 
@@ -122,7 +157,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 					</div>
 					<h1>
 						<span className="mt-16 mb-8 block text-3xl text-center leading-8 text-gray-900 md:text-4xl font-semibold">
-							{dynamicPageItem.fields.title}
+							{markdownH1Title || dynamicPageItem.fields.title}
 						</span>
 					</h1>
 

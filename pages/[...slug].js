@@ -80,10 +80,10 @@ export async function getStaticProps({
     query: READ_SITEMAP_FOR_HEADER, //does not support filtering
   });
 
-  //only get the top and second level links and respsect whether they should be visible on menu
+  //only get the root level links and respect whether they should be visible on menu
   const mainMenuLinks = sitemap
     .filter((node) => {
-      return node.visible.menu && node.path.split("/").length < 4;
+      return node.visible.menu && node.path.split("/").length <= 2;
     })
     .map((node, idx) => {
       let path = node.path;

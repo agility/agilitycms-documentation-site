@@ -2,28 +2,28 @@ import { client } from 'agility-graphql-client';
 import { gql } from "@apollo/client";
 import agility from '@agility/content-fetch'
 
-const getDynamicPageSitemapMapping = ()  => {
-    //get the sitemap from cache
-    const { sitemap } = client.readQuery({
-        query: READ_SITEMAP_FOR_DYNAMIC_URL_RESOLUTION,
-        variables: {},
-    });
-    
-    //build dictionary of dynamic page urls by contentID for url resolution
-    let articleUrls = {};
-    sitemap.forEach((item) => {
-        if (item.contentID && item.contentID > 0) {
-            articleUrls[item.contentID] = item.path;
-        }
-    });
-    return articleUrls;
+const getDynamicPageSitemapMapping = () => {
+  //get the sitemap from cache
+  const { sitemap } = client.readQuery({
+    query: READ_SITEMAP_FOR_DYNAMIC_URL_RESOLUTION,
+    variables: {},
+  });
+
+  //build dictionary of dynamic page urls by contentID for url resolution
+  let articleUrls = {};
+  sitemap.forEach((item) => {
+    if (item.contentID && item.contentID > 0) {
+      articleUrls[item.contentID] = item.path;
+    }
+  });
+  return articleUrls;
 }
 
 const READ_SITEMAP_FOR_DYNAMIC_URL_RESOLUTION = gql`
     query ReadSitemapFlat {
       sitemap {
         path
-        contentID        
+        contentID
       }
     }
 `;
@@ -48,12 +48,12 @@ const READ_FULL_SITEMAP = gql`
         path
         pageID
         isFolder
-        redirect  
+        redirect
         visible {
           menu
           sitemap
         }
-        contentID        
+        contentID
       }
     }
 `;
@@ -70,21 +70,21 @@ const getDynamicPageSitemapMappingREST = async (isPreview) => {
   })
 
   let articleUrls = {};
-    Object.keys(sitemapFlat).forEach((key) => {
-        const item = sitemapFlat[key];
-        if (item.contentID && item.contentID > 0) {
-            articleUrls[item.contentID] = item.path;
-        }
-    });
-    
+  Object.keys(sitemapFlat).forEach((key) => {
+    const item = sitemapFlat[key];
+    if (item.contentID && item.contentID > 0) {
+      articleUrls[item.contentID] = item.path;
+    }
+  });
+
   return articleUrls;
 
 }
 
 export {
-    getDynamicPageSitemapMapping,
-    getDynamicPageSitemapMappingREST,
-    READ_SITEMAP_FOR_DYNAMIC_URL_RESOLUTION,
-    READ_FULL_SITEMAP,
-    READ_SITEMAP_FOR_HEADER
+  getDynamicPageSitemapMapping,
+  getDynamicPageSitemapMappingREST,
+  READ_SITEMAP_FOR_DYNAMIC_URL_RESOLUTION,
+  READ_FULL_SITEMAP,
+  READ_SITEMAP_FOR_HEADER
 }
