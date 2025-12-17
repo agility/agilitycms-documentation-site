@@ -1,3 +1,4 @@
+import { AgilityPic } from "@agility/nextjs";
 import Link from "next/link";
 
 const TextBlocksWithImages = ({ module }) => {
@@ -14,14 +15,13 @@ const TextBlocksWithImages = ({ module }) => {
                 <span className="inline-block w-[4px] h-[4px] rounded-full bg-darkerGray" />
                 <span className="inline-block w-[4px] h-[4px] rounded-full bg-darkerGray" />
               </div>
-              <img
-                alt={fields.image1.label}
-                src={fields.image1.url}
+              <AgilityPic
+                image={fields.image1}
+                fallbackWidth={300}
                 className="pb-2 w-[300px] hidden lg:block"
               />
-              <img
-                alt={fields.image1.label}
-                src={fields.image1.url}
+              <AgilityPic
+                image={fields.image1}
                 className="pb-2 w-full block lg:hidden"
               />
             </div>
@@ -44,16 +44,16 @@ const TextBlocksWithImages = ({ module }) => {
                 <span className="inline-block w-[4px] h-[4px] rounded-full bg-darkerGray" />
                 <span className="inline-block w-[4px] h-[4px] rounded-full bg-darkerGray" />
               </div>
-              <img
-                alt={fields.image2.label}
-                src={fields.image2.url}
+              <AgilityPic
+                image={fields.image2}
+                fallbackWidth={300}
                 className="pb-2 w-[300px] hidden lg:block"
               />
-              <img
-                alt={fields.image2.label}
-                src={fields.image2.url}
+              <AgilityPic
+                image={fields.image2}
                 className="pb-2 w-full block lg:hidden"
               />
+
             </div>
             <div className="text-center md:text-left mt-8 md:mt-0 md:ml-10 w-full flex items-center justify-center">
               <div>

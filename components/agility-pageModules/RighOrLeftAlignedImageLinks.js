@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getHrefRel, getHrefTarget } from "../../utils/linkUtils";
+import { AgilityPic } from "@agility/nextjs";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -46,9 +47,9 @@ const RightOrLeftAlignedImageLinks = ({ module, customData }) => {
                       "rounded-lg inline-flex p-3 ring-4 ring-white"
                     )}
                   >
-                    <img
-                      alt={action.imageAlt}
-                      src={`${action.image}?w=40`}
+                    <AgilityPic
+                      image={action.image}
+                      fallbackWidth={40}
                       className="w-10"
                       aria-hidden="true"
                     />
