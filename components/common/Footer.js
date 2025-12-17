@@ -40,13 +40,15 @@ const Footer = (props) => {
                       <h4 className="font-medium mb-3">{col.name}</h4>
                     )}
                     <ul className="mt-2 flex flex-col text-sm text-gray-100">
-                      {col.children?.map((link, idx2) => {
-                        return (
-                          <li key={`${link.href || link.name}-${idx2}`}>
-                            <RenderLink link={link} adjustLink={adjustLink} />
-                          </li>
-                        );
-                      })}
+                      {col.children
+                        ?.filter((link) => link && (link.href || link.name)) // Filter out invalid links
+                        .map((link, idx2) => {
+                          return (
+                            <li key={`${link.href || link.name || 'link'}-${idx2}`}>
+                              <RenderLink link={link} adjustLink={adjustLink} />
+                            </li>
+                          );
+                        })}
                     </ul>
                   </div>
                 );
@@ -63,11 +65,11 @@ const Footer = (props) => {
 
           <div className="flex flex-wrap justify-center lg:justify-start">
             {bottomNavigation
-              .filter((link) => link.href && typeof link.href === 'string' && link.href.trim()) // Filter out links with null/undefined/empty href
+              .filter((link) => link && link.href && typeof link.href === 'string' && link.href.trim()) // Filter out links with null/undefined/empty href
               .map((link, index, filteredArray) => {
                 const href = adjustLink(link.href);
                 return (
-                  <div key={`${link.href}-${link.name}-${index}`}>
+                  <div key={`${link.href}-${link.name || 'link'}-${index}`}>
                     <a
                       className="text-purple-300 hover:text-white p-1 px-2"
                       href={href}
