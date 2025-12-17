@@ -172,6 +172,29 @@ code > span.hljs-string {
 	background-color: #00000000; /* color of the scroll thumb */
 }
 
+/* Non-obtrusive scrollbar styling */
+.scrollbar-thin {
+	scrollbar-width: thin; /* Firefox */
+	scrollbar-color: rgba(0, 0, 0, 0.2) transparent; /* thumb and track */
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+	width: 6px; /* width of the entire scrollbar */
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+	background: transparent; /* color of the tracking area */
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 0, 0, 0.2); /* color of the scroll thumb */
+	border-radius: 3px; /* roundness of the scroll thumb */
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+	background-color: rgba(0, 0, 0, 0.3); /* color when hovering */
+}
+
 /* Markdown table styles */
 .prose table {
 	@apply w-full border-collapse my-6;
