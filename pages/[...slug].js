@@ -71,6 +71,9 @@ export async function getStaticProps({
     // We throw to make sure this fails at build time as this is never expected to happen
     return {
       notFound: true,
+      // Include revalidate to prevent 404 responses from being cached too long
+      // This ensures Next.js will re-check if the page exists after the revalidate period
+      revalidate: 10,
     };
   }
 
