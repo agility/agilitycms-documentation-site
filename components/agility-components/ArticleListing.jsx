@@ -1,9 +1,23 @@
 import { normalizeListedArticles } from "utils/linkUtils";
 import Link from "next/link";
+import getAgilitySDK from "../../lib/cms/getAgilitySDK";
 
-const ArticleListing = ({ module, customData }) => {
-  const { articles } = customData;
+const ArticleListing = async ({ module, languageCode }) => {
   const { fields } = module;
+
+  // Fetch data (original getCustomInitialProps logic)
+  const agility = await getAgilitySDK();
+  const locale = languageCode || process.env.AGILITY_LOCALES?.split(',')[0] || 'en-us';
+
+  const children = await agility.getContentList({
+    referenceName: fields.listedArticles.referencename,
+    languageCode: locale,
+    sort: "properties.itemOrder",
+    contentLinkDepth: 3,
+  });
+
+  const articles = normalizeListedArticles({ listedArticles: children.items });
+
   return (
     <div className="relative my-20 px-4 sm:px-6 lg:px-8 font-muli">
       <div className="absolute inset-0">
@@ -46,8 +60,5 @@ const ArticleListing = ({ module, customData }) => {
     </div >
   );
 };
-
-// TODO: Data fetching moved to Server Component or parent
-// Original getCustomInitialProps fetched article list from Agility CMS
 
 export default ArticleListing;

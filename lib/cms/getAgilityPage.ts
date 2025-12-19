@@ -11,6 +11,7 @@ export interface PageProps {
 /**
  * Get a page with caching information added.
  * Note: Adapted for single locale site (no locale in params)
+ * Note: Assumes basePath of /docs - removes it from slug before fetching
  */
 export const getAgilityPage = async ({ params }: PageProps) => {
 	const awaitedParams = await params
@@ -18,6 +19,12 @@ export const getAgilityPage = async ({ params }: PageProps) => {
 	const { isPreview: preview } = await getAgilityContext(locale)
 
 	if (!awaitedParams.slug) awaitedParams.slug = [""]
+
+	// Add "docs" prefix to slug for Agility CMS lookup
+	// Next.js strips /docs basePath, but Agility sitemap has paths like /docs/overview
+	// So we need to add it back before fetching from Agility
+	const slugWithBasePath = ["docs", ...awaitedParams.slug]
+
 
 	//check the last element of the slug to see if it has search params encoded (from middleware)
 	let lastSlug = awaitedParams.slug[awaitedParams.slug.length - 1]
@@ -39,12 +46,12 @@ export const getAgilityPage = async ({ params }: PageProps) => {
 		if (awaitedParams.slug.length === 0) awaitedParams.slug = [""]
 	}
 
+
 	//get the page
 	const page = await getAgilityPageProps({
 		params: awaitedParams,
 		preview,
 		locale,
-		getModule,
 		apiOptions: {
 			expandAllContentLinks: false, //override this so that we don't get too much data back in GetPage API calls
 			contentLinkDepth: 2,

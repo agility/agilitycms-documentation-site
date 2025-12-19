@@ -2,10 +2,24 @@ import React from "react";
 import { getHrefRel, getHrefTarget } from "../../utils/linkUtils";
 import Link from "next/link";
 import { AgilityPic } from "@agility/nextjs";
+import { normalizeListedLinks } from "../../utils/linkUtils";
+import getAgilitySDK from "../../lib/cms/getAgilitySDK";
 
-const SDKsFrameworks = ({ module, customData }) => {
+const SDKsFrameworks = async ({ module, languageCode }) => {
   const { fields } = module;
-  const { actions } = customData;
+
+  // Fetch data (original getCustomInitialProps logic)
+  const agility = await getAgilitySDK();
+  const locale = languageCode || process.env.AGILITY_LOCALES?.split(',')[0] || 'en-us';
+
+  const children = await agility.getContentList({
+    referenceName: fields.links.referencename,
+    languageCode: locale,
+    sort: "properties.itemOrder",
+    contentLinkDepth: 3,
+  });
+
+  const actions = normalizeListedLinks({ listedLinks: children.items });
   return (
     <div className="max-w-2xl lg:max-w-5xl mx-auto my-20 text-center px-8 font-muli">
       <h2 className="mb-5 text-3xl font-medium tracking-normal text-darkerGray">
@@ -41,7 +55,5 @@ const SDKsFrameworks = ({ module, customData }) => {
     </div >
   );
 };
-
-// TODO: Data fetching moved to Server Component or parent
 
 export default SDKsFrameworks;

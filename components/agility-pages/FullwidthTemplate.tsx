@@ -1,9 +1,8 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { ContentZone, ContentZoneProps } from '@agility/nextjs';
+import { ContentZone } from '@agility/nextjs';
 import { getModule } from 'components/agility-components';
-import Footer from '../common/Footer';
 
 const FullwidthTemplate = (props) => {
     return (
@@ -15,11 +14,6 @@ const FullwidthTemplate = (props) => {
                     getModule={getModule}
                 />
             </div>
-            <Footer
-                navigation={props.footerNavigation}
-                bottomNavigation={props.footerBottomNavigation}
-                copyright={props.footerCopyright}
-            />
         </>
     );
 };

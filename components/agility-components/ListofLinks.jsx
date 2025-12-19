@@ -1,20 +1,33 @@
 import icons from "../common/Icons";
 import Link from "next/link";
 import { normalizeListedLinks } from "../../utils/linkUtils";
+import getAgilitySDK from "../../lib/cms/getAgilitySDK";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const ListofLinks = ({ module, customData }) => {
+const ListofLinks = async ({ module, languageCode }) => {
   const { fields } = module;
-  const { actions } = customData;
   const darkTheme = fields.darkTheme;
+
+  // Fetch data (original getCustomInitialProps logic)
+  const agility = await getAgilitySDK();
+  const locale = languageCode || process.env.AGILITY_LOCALES?.split(',')[0] || 'en-us';
+
+  const children = await agility.getContentList({
+    referenceName: fields.children.referencename,
+    languageCode: locale,
+    sort: "properties.itemOrder",
+    contentLinkDepth: 3,
+  });
+
+  const actions = normalizeListedLinks({ listedLinks: children.items });
   return (
     <div
       className={`mx-auto px-6 font-muli ${darkTheme === "true"
-          ? `bg-black text-white pt-14 pb-10`
-          : `bg-white text-darkerGray my-20`
+        ? `bg-black text-white pt-14 pb-10`
+        : `bg-white text-darkerGray my-20`
         }`}
     >
       {fields.title && (
@@ -37,8 +50,8 @@ const ListofLinks = ({ module, customData }) => {
             <div
               key={action.title}
               className={`relative group p-6 ${darkTheme === "true"
-                  ? `bg-black hover:bg-darkestGray`
-                  : `bg-offWhite hover:bg-lightGray hover:text-brightPurple`
+                ? `bg-black hover:bg-darkestGray`
+                : `bg-offWhite hover:bg-lightGray hover:text-brightPurple`
                 }  border-transparent border-l-2 hover:border-brightPurple`}
             >
               <div className="flex">
@@ -75,12 +88,5 @@ const ListofLinks = ({ module, customData }) => {
     </div>
   );
 };
-
-// TODO: Data fetching moved to Server Component or parent
-// Original getCustomInitialProps logic:
-// - Fetches children content list from Agility
-// - Normalizes links via normalizeListedLinks()
-// - Returns actions array
-// This should be handled in the page/template level for App Router
 
 export default ListofLinks;

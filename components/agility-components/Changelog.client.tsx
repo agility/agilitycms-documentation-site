@@ -1,8 +1,6 @@
 'use client'
 
 import { DateTime } from 'luxon';
-import { client } from 'agility-graphql-client';
-import { gql } from '@apollo/client';
 import { ChangeLogProp } from 'types/Changelog';
 import { Key, useEffect, useState } from 'react';
 import { FilterBlock } from 'components/common/FilterBlock';
@@ -13,8 +11,13 @@ const getChangeDate = (dateStr: string) => {
     return dt.toFormat('LLLL dd, yyyy');
 };
 
-const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
-    const { changelog: changeLogItems, changelogtags: changeLogTags } = customData;
+interface ChangelogClientProps {
+    module: any;
+    changelog: any[];
+    changelogtags: any[];
+}
+
+const Changelog = ({ module, changelog: changeLogItems, changelogtags: changeLogTags }: ChangelogClientProps): JSX.Element => {
     const [filterOptions, setFilterOptions] = useState([]);
     const [changeLogList, setChangeLogList] = useState([]);
     const [filterSelection, setFilterSelection] = useState<string[]>([]);
@@ -122,8 +125,5 @@ const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
         </>
     );
 };
-
-// TODO: Data fetching moved to Server Component or parent
-// Original getCustomInitialProps fetched changelog data from GraphQL
 
 export default Changelog;

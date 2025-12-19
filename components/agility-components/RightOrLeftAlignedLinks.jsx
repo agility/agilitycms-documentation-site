@@ -24,14 +24,27 @@
 import icons from "../common/Icons";
 import Link from "next/link";
 import { normalizeListedLinks } from "../../utils/linkUtils";
+import getAgilitySDK from "../../lib/cms/getAgilitySDK";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const RightOrLeftAlignedLinks = ({ module, customData }) => {
+const RightOrLeftAlignedLinks = async ({ module, languageCode }) => {
   const { fields } = module;
-  const { actions } = customData;
+
+  // Fetch data (original getCustomInitialProps logic)
+  const agility = await getAgilitySDK();
+  const locale = languageCode || process.env.AGILITY_LOCALES?.split(',')[0] || 'en-us';
+
+  const children = await agility.getContentList({
+    referenceName: fields.children.referencename,
+    languageCode: locale,
+    sort: "properties.itemOrder",
+    contentLinkDepth: 3,
+  });
+
+  const actions = normalizeListedLinks({ listedLinks: children.items });
 
   return (
     <div
@@ -102,7 +115,5 @@ const RightOrLeftAlignedLinks = ({ module, customData }) => {
     </div>
   );
 };
-
-// TODO: Data fetching moved to Server Component or parent
 
 export default RightOrLeftAlignedLinks;

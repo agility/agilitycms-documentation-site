@@ -1,3 +1,4 @@
+import type { ComponentType } from "react";
 import MainTemplate from "./MainTemplate";
 import WithSidebarNavTemplate from "./WithSidebarNavTemplate";
 import FullWidthTemplate from "./FullwidthTemplate";
@@ -11,7 +12,8 @@ const allTemplates = [
   { name: "FullwidthTemplate", template: FullWidthTemplate },
 ];
 
-export const getPageTemplate = (templateName) => {
+export const getPageTemplate = (templateName: string): ComponentType<any> | null => {
+
   if (!templateName) return null;
   const obj = allTemplates.find(
     (m) => m.name.toLowerCase() === templateName.toLowerCase()

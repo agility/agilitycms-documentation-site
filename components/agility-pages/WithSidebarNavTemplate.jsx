@@ -1,10 +1,11 @@
 'use client'
 
 import React, { useEffect, useState } from "react";
-import { ContentZone } from "@agility/nextjs";
+
 import { getModule } from "components/agility-components";
 import Footer from "../common/Footer";
 import ArticleNav from "../common/ArticleNav";
+import { ContentZone } from "components/ContentZone";
 
 const isArticle = (dynamicPageItem) => {
   return (
@@ -14,7 +15,13 @@ const isArticle = (dynamicPageItem) => {
 };
 
 const WithSidebarNavTemplate = (props) => {
+
+  console.log("WithSidebarNavTemplate props:", props);
+
+
   const hasArticle = isArticle(props.dynamicPageItem);
+
+
 
   return (
     <>
@@ -61,11 +68,7 @@ const WithSidebarNavTemplate = (props) => {
           )}
         </div>
       </div>
-      <Footer
-        navigation={props.footerNavigation}
-        bottomNavigation={props.footerBottomNavigation}
-        copyright={props.footerCopyright}
-      />
+
     </>
   );
 };

@@ -12,6 +12,7 @@ import { getHeaderContent } from '../lib/cms-content/getHeaderContent'
 import { getFooterContent } from '../lib/cms-content/getFooterContent'
 import { getMainMenuLinks } from '../lib/cms-content/getMainMenuLinks'
 import { getMarketingContent } from '../lib/cms-content/getMarketingContent'
+import Footer from 'components/common/Footer'
 
 // If loading a variable font, you don't need to specify the font weight
 const mulish = Mulish({
@@ -38,7 +39,7 @@ export default async function RootLayout({
   // Fetch all global data in parallel
   const [headerContent, footerContent, mainMenuLinks, marketingContent] = await Promise.all([
     getHeaderContent({ locale }),
-    getFooterContent({ locale }),
+    getFooterContent(),
     getMainMenuLinks({ locale }),
     getMarketingContent({ locale }),
   ])
@@ -65,6 +66,13 @@ export default async function RootLayout({
                 preHeader={preHeader}
               />
               {children}
+              {footerContent && (
+                <Footer
+                  navigation={footerContent.footerNavigation}
+                  bottomNavigation={footerContent.footerBottomNavigation}
+                  copyright={footerContent.footerCopyright}
+                />
+              )}
             </div>
           </div>
         </ClientFeatures>

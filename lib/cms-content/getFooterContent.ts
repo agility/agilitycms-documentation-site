@@ -1,15 +1,12 @@
 import agility from '@agility/content-fetch';
 
-interface Props {
-  locale: string;
-}
-
 /**
  * Get footer content from main Agility site
  * Note: Accepts locale parameter for future multi-locale support
  */
-export async function getFooterContent({ locale }: Props) {
-  // Get footer from main Agility site
+export async function getFooterContent() {
+
+  // Get footer from main Agility site (DIFFERENT FROM THE ONE IN THE ROOT LAYOUT)
   const api = await agility.getApi({
     guid: process.env.MAIN_AGILITY_SITE_GUID,
     apiKey: process.env.MAIN_AGILITY_SITE_API_KEY,
@@ -17,10 +14,9 @@ export async function getFooterContent({ locale }: Props) {
 
   const mainSiteFooter = await api.getContentItem({
     contentID: 16,
-    languageCode: locale,
+    languageCode: "en-ca",
     expandAllContentLinks: true
   });
-
   if (!mainSiteFooter?.fields) {
     return null;
   }

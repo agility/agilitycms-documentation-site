@@ -9,6 +9,8 @@ import PreviewWidget from "../../components/common/PreviewWidget"
 import CMSWidget from "../../components/common/CMSWidget"
 import LoadingWidget from "../../components/common/LoadingWidget"
 import { getFooterContent } from "../../lib/cms-content/getFooterContent"
+import Footer from "components/common/Footer"
+import WithSidebarNavTemplate from "components/agility-pages/WithSidebarNavTemplate"
 
 export const revalidate = 60
 export const runtime = "nodejs"
@@ -140,9 +142,6 @@ export default async function Page({ params }: PageProps) {
 		notFound();
 	}
 
-	// Fetch footer data (header is in layout)
-	const footerContent = await getFooterContent({ locale });
-
 	// Get the page template
 	const AgilityPageTemplate = getPageTemplate(agilityData.pageTemplateName || "");
 
@@ -156,27 +155,24 @@ export default async function Page({ params }: PageProps) {
 	const pageProps = {
 		...agilityData,
 		isPreview,
-		isDevelopmentMode,
-		footerNavigation: footerContent?.footerNavigation || [],
-		footerBottomNavigation: footerContent?.footerBottomNavigation || [],
-		footerCopyright: footerContent?.footerCopyright,
+		isDevelopmentMode
 	};
 
 	return (
+
+
 		<>
-			{isPreview && <LoadingWidget message="Loading Preview Mode" />}
-			{!isPreview && (
-				<>
-					<AgilityPageTemplate {...pageProps} />
-					<PreviewWidget isPreview={isPreview} isDevelopmentMode={isDevelopmentMode} />
-					<CMSWidget
-						page={page}
-						dynamicPageItem={dynamicPageItem}
-						isPreview={isPreview}
-						isDevelopmentMode={isDevelopmentMode}
-					/>
-				</>
-			)}
+			<AgilityPageTemplate {...pageProps} />
+
+			<PreviewWidget isPreview={isPreview} isDevelopmentMode={isDevelopmentMode} />
+			<CMSWidget
+				page={page}
+				dynamicPageItem={dynamicPageItem}
+				isPreview={isPreview}
+				isDevelopmentMode={isDevelopmentMode}
+			/>
 		</>
+
+
 	);
 }

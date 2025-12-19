@@ -35,6 +35,7 @@ const allModules = [
 ];
 
 export const getModule = (moduleName) => {
+  console.log("getModule moduleName:", moduleName);
   if (!moduleName) return null;
   const obj = allModules.find(
     (m) => m.name.toLowerCase() === moduleName.toLowerCase()

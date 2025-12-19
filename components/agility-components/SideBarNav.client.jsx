@@ -5,16 +5,12 @@ import { Disclosure, Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import Link from "next/link";
 import { ChevronRightIcon, XIcon } from "@heroicons/react/outline";
-import { getDynamicPageSitemapMapping } from "../../utils/sitemapUtils";
-import { client, getContext } from "agility-graphql-client";
-import { gql } from "@apollo/client";
 
 function classNames(...classes) {
 	return classes.filter(Boolean).join(" ");
 }
 
-const SideBarNav = ({ module, dynamicPageItem, customData }) => {
-	const navigation = customData.navigation;
+const SideBarNav = ({ module, dynamicPageItem, navigation }) => {
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
 	const renderNavigation = () => (
@@ -173,13 +169,4 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
 	);
 };
 
-// TODO: Data fetching moved to Server Component or parent
-// Original getCustomInitialProps fetched navigation from GraphQL
-
 export default SideBarNav;
-
-const getSectionBaseUrl = (the_url) => {
-	var the_arr = the_url.split("/");
-	the_arr.pop();
-	return the_arr.join("/");
-};
