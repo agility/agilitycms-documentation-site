@@ -1,6 +1,6 @@
 import Layout from "components/common/Layout";
 import { getAgilityPageProps, getAgilityPaths } from "@agility/nextjs/node";
-import { getModule } from "components/agility-pageModules";
+import { getModule } from "components/agility-components";
 import { client } from "agility-graphql-client";
 import { gql } from "@apollo/client";
 import { global } from "@apollo/client/utilities/globals";

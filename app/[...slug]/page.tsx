@@ -1,7 +1,7 @@
 import { type PageProps, getAgilityPage } from "../../lib/cms/getAgilityPage"
 import { getAgilityContext } from "../../lib/cms/getAgilityContext"
 // import agilitySDK from "@agility/content-fetch" // Temporarily disabled for generateStaticParams
-import { getPageTemplate } from "../../components/agility-pageTemplates"
+import { getPageTemplate } from "../../components/agility-pages"
 
 import type { Metadata, ResolvingMetadata } from "next"
 import { notFound } from "next/navigation"

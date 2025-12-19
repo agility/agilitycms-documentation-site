@@ -2,7 +2,7 @@
 
 import React from "react";
 import { ContentZone } from "@agility/nextjs";
-import { getModule } from "components/agility-pageModules";
+import { getModule } from "components/agility-components";
 import Footer from "../common/Footer";
 
 const MainTemplate = (props) => {

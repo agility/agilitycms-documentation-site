@@ -1,4 +1,4 @@
-import { getPageTemplate } from "components/agility-pageTemplates";
+import { getPageTemplate } from "components/agility-pages";
 import { useEffect } from "react";
 import { handlePreview } from "@agility/nextjs";
 import { useRouter } from "next/router";
@@ -24,13 +24,13 @@ function Layout(props) {
     props;
 
   const router = useRouter();
-  
-	useEffect(() => {
+
+  useEffect(() => {
     Intercom({
       app_id: 'fj9g3mkl',
     });
-		
-	}, []);
+
+  }, []);
 
   // if the route changes, scroll our scrollable container back to the top
   useEffect(() => {

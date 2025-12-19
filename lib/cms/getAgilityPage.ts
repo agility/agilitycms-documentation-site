@@ -1,7 +1,7 @@
 import "server-only";
 import { getAgilityPageProps } from "@agility/nextjs/node";
 import { getAgilityContext } from "./getAgilityContext";
-import { getModule } from "components/agility-pageModules";
+import { getModule } from "components/agility-components";
 
 export interface PageProps {
 	params: Promise<{ slug: string[] }>
