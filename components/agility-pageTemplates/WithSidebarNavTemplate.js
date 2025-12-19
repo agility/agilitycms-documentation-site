@@ -27,6 +27,15 @@ const WithSidebarNavTemplate = (props) => {
           </div>
         </div>
 
+        {/* Mobile sidebar - rendered by SideBarNav component */}
+        <div className="lg:hidden">
+          <ContentZone
+            name="SidebarContentZone"
+            {...props}
+            getModule={getModule}
+          />
+        </div>
+
         <div
           id="ScrollContainer"
           className="flex-grow w-full border-l border-gray-200 lg:flex lg:justify-center"
