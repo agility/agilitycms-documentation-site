@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, useEffect } from "react";
 /* This example requires Tailwind CSS v2.0+ */
 import { XIcon, PencilAltIcon } from '@heroicons/react/outline'

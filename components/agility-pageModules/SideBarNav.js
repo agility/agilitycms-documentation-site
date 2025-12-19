@@ -1,3 +1,5 @@
+'use client'
+
 /* This example requires Tailwind CSS v2.0+ */
 import { Disclosure, Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";

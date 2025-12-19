@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(grep:*)",
+      "Bash(for file in components/agility-pageModules/*.js)",
+      "Bash(do)",
+      "Bash(if ! head -1 \"$file\")",
+      "Bash(then)",
+      "Bash(echo:*)",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(for file in *.js)",
+      "Bash(do head -1 \"$file\")",
+      "Bash(ls:*)",
+      "Bash(curl:*)",
+      "Bash(find:*)"
+    ]
+  }
+}

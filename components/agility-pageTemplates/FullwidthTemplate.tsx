@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useEffect, useState } from 'react';
 import { ContentZone, ContentZoneProps } from '@agility/nextjs';
 import { getModule } from 'components/agility-pageModules';

@@ -1,3 +1,5 @@
+'use client'
+
 import { DateTime } from 'luxon';
 import { client } from 'agility-graphql-client';
 import { gql } from '@apollo/client';

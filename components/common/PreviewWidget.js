@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from "react";
 /* This example requires Tailwind CSS v2.0+ */
 import { SpeakerphoneIcon, XIcon, EyeIcon } from '@heroicons/react/outline'
