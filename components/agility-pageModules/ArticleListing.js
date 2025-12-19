@@ -47,28 +47,7 @@ const ArticleListing = ({ module, customData }) => {
   );
 };
 
-ArticleListing.getCustomInitialProps = async ({
-  agility,
-  channelName,
-  languageCode,
-  item,
-  dynamicPageItem,
-  sitemapNode,
-}) => {
-  const children = await agility.getContentList({
-    referenceName: item.fields.listedArticles.referencename,
-    languageCode,
-    sort: "properties.itemOrder",
-    contentLinkDepth: 3,
-  });
-
-  const articles = normalizeListedArticles({
-    listedArticles: children.items,
-  });
-
-  return {
-    articles,
-  };
-};
+// TODO: Data fetching moved to Server Component or parent
+// Original getCustomInitialProps fetched article list from Agility CMS
 
 export default ArticleListing;

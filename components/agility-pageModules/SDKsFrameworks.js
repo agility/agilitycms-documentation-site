@@ -42,41 +42,6 @@ const SDKsFrameworks = ({ module, customData }) => {
   );
 };
 
+// TODO: Data fetching moved to Server Component or parent
+
 export default SDKsFrameworks;
-
-SDKsFrameworks.getCustomInitialProps = async ({
-  agility,
-  channelName,
-  languageCode,
-  item,
-  dynamicPageItem,
-  sitemapNode,
-}) => {
-  let actions = [];
-
-  if (item.fields.links && item.fields.links.referencename) {
-    const children = await agility.getContentList({
-      referenceName: item.fields.links.referencename,
-      languageCode,
-      sort: "properties.itemOrder",
-      contentLinkDepth: 1,
-    });
-
-    if (children && children.items) {
-      actions = children.items.map((item) => {
-        return {
-          title: item.fields.uRL?.text,
-          href: item.fields.uRL?.href,
-          image: item.fields.image?.url,
-          imageAlt: item.fields.image?.label,
-          target: getHrefTarget(item.fields.uRL?.href),
-          rel: getHrefRel(item.fields.uRL?.href),
-        };
-      });
-    }
-  }
-
-  return {
-    actions,
-  };
-};

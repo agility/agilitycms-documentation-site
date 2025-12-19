@@ -123,44 +123,7 @@ const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
     );
 };
 
-Changelog.getCustomInitialProps = async () => {
-    const { data } = await client.query({
-        query: gql`
-            {
-                changelog(take: 50, sort: "fields.date", direction: "desc") {
-                    contentID
-                    fields {
-                        date
-                        description
-                        changes(take: 50, filter: "fields.internalOnly[ne]true") {
-                            contentID
-                            properties {
-                                itemOrder
-                            }
-                            fields {
-                                tags {
-                                    contentID
-                                    fields {
-                                        title
-                                    }
-                                }
-                                title
-                                description
-                                linkURL
-                            }
-                        }
-                    }
-                }
-                changelogtags(sort: "fields.title") {
-                    contentID
-                    fields {
-                        title
-                    }
-                }
-            }
-        `
-    });
-    return data;
-};
+// TODO: Data fetching moved to Server Component or parent
+// Original getCustomInitialProps fetched changelog data from GraphQL
 
 export default Changelog;

@@ -103,35 +103,6 @@ const RightOrLeftAlignedLinks = ({ module, customData }) => {
   );
 };
 
-RightOrLeftAlignedLinks.getCustomInitialProps = async ({
-  agility,
-  channelName,
-  languageCode,
-  item,
-  dynamicPageItem,
-  sitemapNode,
-}) => {
-  let actions = [];
-
-  if (item.fields.children && item.fields.children.referencename) {
-    const children = await agility.getContentList({
-      referenceName: item.fields.children.referencename,
-      languageCode,
-      sort: "properties.itemOrder",
-      contentLinkDepth: 3,
-    });
-
-    if (children && children.items) {
-      actions = normalizeListedLinks({
-        listedLinks: children.items,
-      });
-    }
-  }
-
-
-  return {
-    actions,
-  };
-};
+// TODO: Data fetching moved to Server Component or parent
 
 export default RightOrLeftAlignedLinks;

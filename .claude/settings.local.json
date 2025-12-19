@@ -14,7 +14,9 @@
       "Bash(do head -1 \"$file\")",
       "Bash(ls:*)",
       "Bash(curl:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(mv:*)",
+      "Bash(wc:*)"
     ]
   }
 }

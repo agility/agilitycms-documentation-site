@@ -76,34 +76,11 @@ const ListofLinks = ({ module, customData }) => {
   );
 };
 
-ListofLinks.getCustomInitialProps = async ({
-  agility,
-  channelName,
-  languageCode,
-  item,
-  dynamicPageItem,
-  sitemapNode,
-}) => {
-  let actions = [];
-
-  if (item.fields.children && item.fields.children.referencename) {
-    const children = await agility.getContentList({
-      referenceName: item.fields.children.referencename,
-      languageCode,
-      sort: "properties.itemOrder",
-      contentLinkDepth: 3,
-    });
-
-    if (children && children.items) {
-      actions = normalizeListedLinks({
-        listedLinks: children.items,
-      });
-    }
-  }
-
-  return {
-    actions,
-  };
-};
+// TODO: Data fetching moved to Server Component or parent
+// Original getCustomInitialProps logic:
+// - Fetches children content list from Agility
+// - Normalizes links via normalizeListedLinks()
+// - Returns actions array
+// This should be handled in the page/template level for App Router
 
 export default ListofLinks;

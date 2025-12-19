@@ -1,5 +1,4 @@
-import getAgilitySDK from "lib/cms/getAgilitySDK"
-
+import getAgilitySDK from "./getAgilitySDK"
 import { SitemapFlatRequestParams } from "@agility/content-fetch/dist/methods/getSitemapFlat"
 
 /**
@@ -8,8 +7,6 @@ import { SitemapFlatRequestParams } from "@agility/content-fetch/dist/methods/ge
  * @returns
  */
 export const getSitemapFlat = async (params: SitemapFlatRequestParams) => {
-
-
 	const agilitySDK = await getAgilitySDK()
 
 	agilitySDK.config.fetchConfig = {
@@ -20,5 +17,4 @@ export const getSitemapFlat = async (params: SitemapFlatRequestParams) => {
 	}
 
 	return await agilitySDK.getSitemapFlat(params)
-
 }

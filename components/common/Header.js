@@ -16,7 +16,7 @@
   }
   ```
 */
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useLayoutEffect, useState } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { SearchIcon } from "@heroicons/react/solid";
 import {
@@ -72,8 +72,12 @@ export default function Header({
     }),
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const scrollContainer = document.getElementById("ScrollContainer");
+    if (!scrollContainer) {
+      console.warn("ScrollContainer not found in Header useLayoutEffect");
+      return;
+    }
     scrollContainer.addEventListener("scroll", function (e) {
       const scroll = this.scrollTop;
       const preheader = document.getElementById("preheader");
