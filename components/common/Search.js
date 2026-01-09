@@ -103,7 +103,7 @@ const Search = () => {
                       }
 
                       if (!description) {
-                        description = item._highlightResult.description.value;
+                        description = item._highlightResult.description?.value;
                       }
 
                       return (
