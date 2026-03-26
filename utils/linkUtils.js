@@ -59,21 +59,35 @@ const normalizeListedArticles = ({ listedArticles }) => {
 
 const getArticleDescription = (article) => {
     let description = article.fields.description ? article.fields.description : null;
-    if (!description) {
-        const firstParagraph = JSON.parse(article.fields.content).blocks.find((block) => block.type === 'paragraph');
-
-        if (firstParagraph) {
-            truncate.setup({
-                stripTags: true,
-                length: 100
-            })
-            description = truncate(firstParagraph.data.text);
-        } else {
+    if (!description && article.fields.markdownContent) {
+        // Markdown article: extract first non-empty, non-heading line
+        const lines = article.fields.markdownContent.split('\n');
+        for (const line of lines) {
+            const trimmed = line.trim();
+            if (trimmed && !trimmed.startsWith('#') && !trimmed.startsWith('>') && !trimmed.startsWith('---') && !trimmed.startsWith('```')) {
+                // Strip markdown formatting
+                const plain = trimmed.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/(\*{1,3}|_{1,3})([^*_]+)\1/g, '$2').replace(/<[^>]*>/g, '');
+                truncate.setup({ stripTags: true, length: 100 });
+                description = truncate(plain);
+                break;
+            }
+        }
+    } else if (!description && article.fields.content) {
+        // Block editor article
+        try {
+            const firstParagraph = JSON.parse(article.fields.content).blocks.find((block) => block.type === 'paragraph');
+            if (firstParagraph) {
+                truncate.setup({
+                    stripTags: true,
+                    length: 100
+                })
+                description = truncate(firstParagraph.data.text);
+            }
+        } catch(e) {
             description = null;
         }
     }
     return description;
-
 }
 
 const getHrefTarget = (href) => {

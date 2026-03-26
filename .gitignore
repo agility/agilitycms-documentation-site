@@ -39,3 +39,7 @@ yarn-error.log*
 
 # sitemap
 sitemap.xml
+
+
+# claude
+.claude/settings.local.json

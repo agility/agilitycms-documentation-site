@@ -42,6 +42,8 @@ const Search = () => {
                         hitsPerPage: 4,
                         highlightPreTag: "<mark>",
                         highlightPostTag: "</mark>",
+                        attributesToSnippet: ["body:30"],
+                        snippetEllipsisText: "…",
                       },
                     },
                   ],
@@ -88,22 +90,14 @@ const Search = () => {
                     {items.map((item) => {
                       let description = null;
                       if (
-                        item._snippetResult?.content &&
-                        item._snippetResult.content.length > 0
+                        item._snippetResult?.body &&
+                        item._snippetResult.body.matchLevel !== "none"
                       ) {
-                        let snippetBlock = item._snippetResult.content.find(
-                          (block) => {
-                            return block.data.text.matchLevel === "full";
-                          }
-                        );
-
-                        if (snippetBlock) {
-                          description = snippetBlock.data.text.value;
-                        }
+                        description = item._snippetResult.body.value;
                       }
 
                       if (!description) {
-                        description = item._highlightResult.description?.value;
+                        description = item._highlightResult?.description?.value;
                       }
 
                       return (

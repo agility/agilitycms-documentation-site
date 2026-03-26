@@ -36,6 +36,7 @@ export default async (req, res) => {
                     fields {
                         title
                         content
+                        markdownContent
                         description
                         section {
                             contentID
