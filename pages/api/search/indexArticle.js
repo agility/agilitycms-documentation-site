@@ -11,13 +11,17 @@ export default async (req, res) => {
   
     const referenceName = req.body.referenceName;
 
-    if(!referenceName || !referenceName.endsWith('articles')) {
+    if(!referenceName || !/^[a-zA-Z_]+articles$/.test(referenceName)) {
         //kickout
         res.status(200).end();
         return;
     }
 
-    const contentID = req.body.contentID;
+    const contentID = parseInt(req.body.contentID, 10);
+    if(isNaN(contentID)) {
+        res.status(400).json({ error: 'Invalid contentID' });
+        return;
+    }
     const state = req.body.state;
 
     if(contentID && state && state === 'Deleted') {
@@ -36,6 +40,7 @@ export default async (req, res) => {
                     fields {
                         title
                         content
+                        markdownContent
                         description
                         section {
                             contentID

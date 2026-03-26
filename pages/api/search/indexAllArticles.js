@@ -27,6 +27,7 @@ export default async (req, res) => {
                     fields {
                       title
                       content
+                      markdownContent
                       description
                       section {
                         fields {
@@ -60,6 +61,12 @@ export default async (req, res) => {
             }
         }
     }
+
+    //configure index settings
+    await index.setSettings({
+        searchableAttributes: ['title', 'headings', 'unordered(body)', 'description'],
+        attributesToSnippet: ['body:30'],
+    });
 
     //save it in Algolia
     await index.saveObjects(objects)
