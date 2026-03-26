@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { ChevronRightIcon } from "@heroicons/react/outline";
 
@@ -12,20 +12,52 @@ const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY
 );
 
+const HITS_PER_PAGE = 10;
+
+const getDescription = (item) => {
+  if (item._snippetResult?.body && item._snippetResult.body.matchLevel !== "none") {
+    return item._snippetResult.body.value;
+  }
+  return item._highlightResult?.description?.value || null;
+};
+
+const SearchResultItem = ({ item, description }) => (
+  <Link href={item.url} className="SearchResult px-5 py-2 block w-full hover:bg-lightGray">
+    <span
+      className="SearchResult__titlee block text-purple text-sm font-bold"
+      dangerouslySetInnerHTML={renderHTML(item._highlightResult.title.value)}
+    ></span>
+    {description && (
+      <span
+        className="SearchResult__description block text-sm mb-2 text-darkestGray"
+        dangerouslySetInnerHTML={renderHTML(description)}
+      ></span>
+    )}
+    <span className="SearchResult__category-section block text-xs text-darkerGray">
+      {item.category} <ChevronRightIcon className="inline w-2" /> {item.section}
+    </span>
+  </Link>
+);
+
 const Search = () => {
-  // (1) Create a React state.
-  const inputRef = React.useRef(null);
-  const [autocompleteState, setAutocompleteState] = React.useState({});
+  const inputRef = useRef(null);
+  const sentinelRef = useRef(null);
+  const [autocompleteState, setAutocompleteState] = useState({});
+  const [extraItems, setExtraItems] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [totalHits, setTotalHits] = useState(0);
+  const queryRef = useRef("");
+
   const autocomplete = React.useMemo(
     () =>
       createAutocomplete({
         onStateChange({ state }) {
-          // (2) Synchronize the Autocomplete state with the React state.
           setAutocompleteState(state);
         },
         getSources() {
           return [
-            // (3) Use an Algolia index source.
             {
               sourceId: "articles",
               getItemInputValue({ item }) {
@@ -39,11 +71,12 @@ const Search = () => {
                       indexName: "doc_site",
                       query,
                       params: {
-                        hitsPerPage: 4,
+                        hitsPerPage: HITS_PER_PAGE,
+                        page: 0,
                         highlightPreTag: "<mark>",
                         highlightPostTag: "</mark>",
                         attributesToSnippet: ["body:30"],
-                        snippetEllipsisText: "…",
+                        snippetEllipsisText: "\u2026",
                       },
                     },
                   ],
@@ -58,6 +91,76 @@ const Search = () => {
       }),
     []
   );
+
+  // Reset pagination and fetch total hit count when query changes
+  const initialItems = autocompleteState.collections?.[0]?.items || [];
+  const currentQuery = autocompleteState.query || "";
+  useEffect(() => {
+    if (currentQuery !== queryRef.current) {
+      queryRef.current = currentQuery;
+      setExtraItems([]);
+      setCurrentPage(0);
+      setHasMore(false);
+      setTotalHits(0);
+    }
+    if (currentQuery && initialItems.length > 0) {
+      setHasMore(initialItems.length >= HITS_PER_PAGE);
+      searchClient
+        .search([{ indexName: "doc_site", query: currentQuery, params: { hitsPerPage: 0 } }])
+        .then((response) => {
+          if (queryRef.current === currentQuery) {
+            setTotalHits(response.results[0].nbHits);
+          }
+        });
+    }
+  }, [currentQuery, initialItems.length]);
+
+  const loadMore = useCallback(async () => {
+    const query = queryRef.current;
+    if (isLoadingMore || !hasMore || !query) return;
+    setIsLoadingMore(true);
+    const nextPage = currentPage + 1;
+    try {
+      const response = await searchClient.search([
+        {
+          indexName: "doc_site",
+          query,
+          params: {
+            hitsPerPage: HITS_PER_PAGE,
+            page: nextPage,
+            highlightPreTag: "<mark>",
+            highlightPostTag: "</mark>",
+            attributesToSnippet: ["body:30"],
+            snippetEllipsisText: "\u2026",
+          },
+        },
+      ]);
+      const result = response.results[0];
+      setExtraItems((prev) => [...prev, ...result.hits]);
+      setCurrentPage(nextPage);
+      setHasMore(nextPage < result.nbPages - 1);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [currentPage, isLoadingMore, hasMore]);
+
+  // IntersectionObserver for infinite scroll
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || !autocompleteState.isOpen || !hasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { rootMargin: "100px" }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [autocompleteState.isOpen, hasMore, loadMore]);
 
   return (
     <div className="aa-Autocomplete" {...autocomplete.getRootProps({})}>
@@ -84,57 +187,42 @@ const Search = () => {
               >
                 {items.length > 0 && (
                   <ul
-                    className="aa-List custom-shadow"
+                    className="aa-List custom-shadow max-h-[70vh] overflow-y-auto"
                     {...autocomplete.getListProps()}
                   >
-                    {items.map((item) => {
-                      let description = null;
-                      if (
-                        item._snippetResult?.body &&
-                        item._snippetResult.body.matchLevel !== "none"
-                      ) {
-                        description = item._snippetResult.body.value;
-                      }
-
-                      if (!description) {
-                        description = item._highlightResult?.description?.value;
-                      }
-
-                      return (
-                        <li
-                          key={item.objectID}
-                          className="aa-Item"
-                          {...autocomplete.getItemProps({
-                            item,
-                            source,
-                          })}
-                        >
-                          <Link href={item.url} className="SearchResult px-5 py-2 block w-full hover:bg-lightGray">
-                            <span
-                              className="SearchResult__titlee block text-purple text-sm font-bold"
-                              dangerouslySetInnerHTML={renderHTML(
-                                item._highlightResult.title.value
-                              )}
-                            ></span>
-
-                            {description && (
-                              <span
-                                className="SearchResult__description block text-sm mb-2 text-darkestGray"
-                                dangerouslySetInnerHTML={renderHTML(
-                                  description
-                                )}
-                              ></span>
-                            )}
-                            <span className="SearchResult__category-section block text-xs text-darkerGray">
-                              {item.category}{" "}
-                              <ChevronRightIcon className="inline w-2" />{" "}
-                              {item.section}
-                            </span>
-
-                          </Link>
-                        </li>
-                      );
-                    })}
+                    {totalHits > 0 && (
+                      <li className="px-5 py-2 text-xs text-darkerGray border-b border-gray-200 sticky top-0 bg-white">
+                        Showing {items.length + extraItems.length} of {totalHits} results
+                      </li>
+                    )}
+                    {items.map((item) => (
+                      <li
+                        key={item.objectID}
+                        className="aa-Item"
+                        {...autocomplete.getItemProps({ item, source })}
+                      >
+                        <SearchResultItem
+                          item={item}
+                          description={getDescription(item)}
+                        />
+                      </li>
+                    ))}
+                    {extraItems.map((item) => (
+                      <li key={item.objectID} className="aa-Item">
+                        <SearchResultItem
+                          item={item}
+                          description={getDescription(item)}
+                        />
+                      </li>
+                    ))}
+                    {hasMore && (
+                      <li
+                        ref={sentinelRef}
+                        className="py-3 text-center text-xs text-gray-400"
+                      >
+                        {isLoadingMore ? "Loading more..." : ""}
+                      </li>
+                    )}
                   </ul>
                 )}
               </div>

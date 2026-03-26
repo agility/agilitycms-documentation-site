@@ -34,7 +34,7 @@ const normalizeArticle = async ({ article, category, url }) => {
             const parsed = JSON.parse(article.fields.content);
             const blocks = parsed.blocks || [];
             headings = getBlockHeadings(blocks);
-            body = blocksToMarkdown(blocks);
+            body = blocksToPlainText(blocks);
         } catch(e) {
             // Invalid JSON in content field — skip body extraction
         }
@@ -87,21 +87,13 @@ const getCategoryOfSection = async ({sectionContentID}) => {
 }
 
 /**
- * Convert HTML inline formatting to markdown equivalents.
- * Strips link URLs, converts <b>/<strong> to **, <i>/<em> to *, removes remaining tags.
+ * Convert HTML inline formatting to plain text.
+ * Strips all tags, keeps only the text content.
  */
-const htmlToMarkdown = (html) => {
+const htmlToPlainText = (html) => {
     if(!html) return '';
     let text = html;
-    // Convert links — keep text, drop URL
-    text = text.replace(/<a[^>]*>([^<]*)<\/a>/g, '$1');
-    // Convert bold
-    text = text.replace(/<b>([^<]*)<\/b>/g, '**$1**');
-    text = text.replace(/<strong>([^<]*)<\/strong>/g, '**$1**');
-    // Convert italic
-    text = text.replace(/<i>([^<]*)<\/i>/g, '*$1*');
-    text = text.replace(/<em>([^<]*)<\/em>/g, '*$1*');
-    // Strip remaining HTML tags
+    // Strip all HTML tags
     text = text.replace(/<[^>]*>/g, '');
     // Decode common entities
     text = text.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
@@ -130,60 +122,55 @@ const getBlockHeadings = (blocks) => {
 }
 
 /**
- * Format list items recursively into markdown
+ * Format list items recursively into plain text
  */
-const formatListItems = (items, ordered, depth = 0) => {
+const formatListItems = (items) => {
     const lines = [];
     if(!items) return '';
-    items.forEach((item, i) => {
-        const indent = '  '.repeat(depth);
-        const bullet = ordered ? `${i + 1}.` : '-';
-        const text = typeof item === 'string' ? htmlToMarkdown(item) : htmlToMarkdown(item.content);
-        if(text) lines.push(`${indent}${bullet} ${text}`);
+    items.forEach((item) => {
+        const text = typeof item === 'string' ? htmlToPlainText(item) : htmlToPlainText(item.content);
+        if(text) lines.push(text);
         if(item.items && item.items.length > 0) {
-            lines.push(formatListItems(item.items, ordered, depth + 1));
+            lines.push(formatListItems(item.items));
         }
     });
     return lines.filter(Boolean).join('\n');
 }
 
 /**
- * Convert EditorJS blocks to readable markdown
+ * Convert EditorJS blocks to plain text for indexing
  */
-const blocksToMarkdown = (blocks) => {
+const blocksToPlainText = (blocks) => {
     const lines = [];
     for(const block of blocks) {
         switch(block.type) {
             case 'paragraph':
-                lines.push(htmlToMarkdown(block.data.text));
+                lines.push(htmlToPlainText(block.data.text));
                 break;
-            case 'header': {
-                const hashes = '#'.repeat(block.data.level || 2);
-                lines.push(`${hashes} ${htmlToMarkdown(block.data.text)}`);
+            case 'header':
+                lines.push(htmlToPlainText(block.data.text));
                 break;
-            }
             case 'list':
-                lines.push(formatListItems(block.data.items, block.data.style === 'ordered'));
+                lines.push(formatListItems(block.data.items));
                 break;
             case 'table':
                 if(block.data.content) {
                     for(const row of block.data.content) {
-                        lines.push(row.map(cell => htmlToMarkdown(cell)).filter(Boolean).join(' | '));
+                        lines.push(row.map(cell => htmlToPlainText(cell)).filter(Boolean).join(' | '));
                     }
                 }
                 break;
             case 'quote':
-                if(block.data.text) lines.push(`> ${htmlToMarkdown(block.data.text)}`);
+                if(block.data.text) lines.push(htmlToPlainText(block.data.text));
                 break;
             case 'warning':
-                if(block.data.title) lines.push(`> **${htmlToMarkdown(block.data.title)}**`);
-                if(block.data.message) lines.push(`> ${htmlToMarkdown(block.data.message)}`);
+                if(block.data.title) lines.push(htmlToPlainText(block.data.title));
+                if(block.data.message) lines.push(htmlToPlainText(block.data.message));
                 break;
             case 'checklist':
                 if(block.data.items) {
                     for(const item of block.data.items) {
-                        const check = item.checked ? '[x]' : '[ ]';
-                        lines.push(`- ${check} ${htmlToMarkdown(item.text)}`);
+                        lines.push(htmlToPlainText(item.text));
                     }
                 }
                 break;
@@ -209,9 +196,8 @@ const getMarkdownHeadings = (markdown) => {
 }
 
 /**
- * Clean source markdown for indexing.
- * Keeps headings, bold, italic, lists, blockquotes.
- * Strips code blocks, image URLs, link URLs, HTML, horizontal rules.
+ * Clean source markdown for indexing into plain text.
+ * Strips all markdown syntax so Algolia snippets display cleanly.
  */
 const cleanMarkdown = (markdown) => {
     let text = markdown;
@@ -223,8 +209,19 @@ const cleanMarkdown = (markdown) => {
     text = text.replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1');
     // Remove link URLs but keep text
     text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+    // Remove bare URLs
+    text = text.replace(/https?:\/\/[^\s)]+/g, '');
     // Remove HTML tags
     text = text.replace(/<[^>]*>/g, '');
+    // Remove heading markers
+    text = text.replace(/^#{1,6}\s+/gm, '');
+    // Remove bold/italic markers
+    text = text.replace(/(\*{1,3}|_{1,3})([^*_]+)\1/g, '$2');
+    // Remove blockquote markers
+    text = text.replace(/^>\s?/gm, '');
+    // Remove list markers
+    text = text.replace(/^[\s]*[-*+]\s+/gm, '');
+    text = text.replace(/^[\s]*\d+\.\s+/gm, '');
     // Remove horizontal rules
     text = text.replace(/^[-*_]{3,}$/gm, '');
     // Collapse excessive blank lines but keep structure
