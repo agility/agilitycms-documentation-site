@@ -11,7 +11,7 @@ export default async (req, res) => {
   
     const referenceName = req.body.referenceName;
 
-    if(!referenceName || !referenceName.endsWith('articles')) {
+    if(!referenceName || !/^[a-zA-Z_]+articles$/.test(referenceName)) {
         //kickout
         res.status(200).end();
         return;

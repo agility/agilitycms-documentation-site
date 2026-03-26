@@ -101,21 +101,13 @@ const htmlToPlainText = (html) => {
 }
 
 /**
- * Strip HTML tags from a string (plain text only, no markdown output)
- */
-const stripHtml = (html) => {
-    if(!html) return '';
-    return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').trim();
-}
-
-/**
  * Extract headings from EditorJS blocks
  */
 const getBlockHeadings = (blocks) => {
     const headings = [];
     blocks.forEach((block) => {
         if(block.type === 'header') {
-            headings.push(stripHtml(block.data.text));
+            headings.push(htmlToPlainText(block.data.text));
         }
     });
     return headings;

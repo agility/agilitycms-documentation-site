@@ -24,7 +24,7 @@ const getDescription = (item) => {
 const SearchResultItem = ({ item, description }) => (
   <Link href={item.url} className="SearchResult px-5 py-2 block w-full hover:bg-lightGray">
     <span
-      className="SearchResult__titlee block text-purple text-sm font-bold"
+      className="SearchResult__title block text-purple text-sm font-bold"
       dangerouslySetInnerHTML={renderHTML(item._highlightResult.title.value)}
     ></span>
     {description && (
@@ -42,10 +42,12 @@ const SearchResultItem = ({ item, description }) => (
 const Search = () => {
   const inputRef = useRef(null);
   const sentinelRef = useRef(null);
+  const listRef = useRef(null);
   const [autocompleteState, setAutocompleteState] = useState({});
   const [extraItems, setExtraItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [hasMore, setHasMore] = useState(false);
+  const hasMoreRef = useRef(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [totalHits, setTotalHits] = useState(0);
   const queryRef = useRef("");
@@ -96,28 +98,35 @@ const Search = () => {
   const initialItems = autocompleteState.collections?.[0]?.items || [];
   const currentQuery = autocompleteState.query || "";
   useEffect(() => {
-    if (currentQuery !== queryRef.current) {
+    const isNewQuery = currentQuery !== queryRef.current;
+    if (isNewQuery) {
       queryRef.current = currentQuery;
       setExtraItems([]);
       setCurrentPage(0);
       setHasMore(false);
+      hasMoreRef.current = false;
       setTotalHits(0);
     }
     if (currentQuery && initialItems.length > 0) {
-      setHasMore(initialItems.length >= HITS_PER_PAGE);
-      searchClient
-        .search([{ indexName: "doc_site", query: currentQuery, params: { hitsPerPage: 0 } }])
-        .then((response) => {
-          if (queryRef.current === currentQuery) {
-            setTotalHits(response.results[0].nbHits);
-          }
-        });
+      const more = initialItems.length >= HITS_PER_PAGE;
+      setHasMore(more);
+      hasMoreRef.current = more;
+      if (isNewQuery) {
+        searchClient
+          .search([{ indexName: "doc_site", query: currentQuery, params: { hitsPerPage: 0 } }])
+          .then((response) => {
+            if (queryRef.current === currentQuery) {
+              setTotalHits(response.results[0].nbHits);
+            }
+          })
+          .catch(() => {});
+      }
     }
   }, [currentQuery, initialItems.length]);
 
   const loadMore = useCallback(async () => {
     const query = queryRef.current;
-    if (isLoadingMore || !hasMore || !query) return;
+    if (isLoadingMore || !hasMoreRef.current || !query) return;
     setIsLoadingMore(true);
     const nextPage = currentPage + 1;
     try {
@@ -138,16 +147,19 @@ const Search = () => {
       const result = response.results[0];
       setExtraItems((prev) => [...prev, ...result.hits]);
       setCurrentPage(nextPage);
-      setHasMore(nextPage < result.nbPages - 1);
+      const more = nextPage < result.nbPages - 1;
+      setHasMore(more);
+      hasMoreRef.current = more;
     } finally {
       setIsLoadingMore(false);
     }
-  }, [currentPage, isLoadingMore, hasMore]);
+  }, [currentPage, isLoadingMore]);
 
   // IntersectionObserver for infinite scroll
   useEffect(() => {
     const sentinel = sentinelRef.current;
-    if (!sentinel || !autocompleteState.isOpen || !hasMore) return;
+    const list = listRef.current;
+    if (!sentinel || !list || !autocompleteState.isOpen || !hasMore) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -155,7 +167,7 @@ const Search = () => {
           loadMore();
         }
       },
-      { rootMargin: "100px" }
+      { root: list, rootMargin: "100px" }
     );
 
     observer.observe(sentinel);
@@ -187,6 +199,7 @@ const Search = () => {
               >
                 {items.length > 0 && (
                   <ul
+                    ref={listRef}
                     className="aa-List custom-shadow max-h-[70vh] overflow-y-auto"
                     {...autocomplete.getListProps()}
                   >
