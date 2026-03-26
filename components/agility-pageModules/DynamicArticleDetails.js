@@ -65,9 +65,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 
 	// get module fields
 	const { fields } = module;
-	console.log("***DynamicArticleDetails -> Article***")
-	console.log(JSON.stringify(dynamicPageItem, null, 2))
-	console.log("***")
+
 	const [classicMode, setClassicMode] = useState(false);
 	const [processedMarkdown, setProcessedMarkdown] = useState('');
 	const [markdownH1Title, setMarkdownH1Title] = useState(null);

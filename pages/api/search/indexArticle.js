@@ -17,7 +17,11 @@ export default async (req, res) => {
         return;
     }
 
-    const contentID = req.body.contentID;
+    const contentID = parseInt(req.body.contentID, 10);
+    if(isNaN(contentID)) {
+        res.status(400).json({ error: 'Invalid contentID' });
+        return;
+    }
     const state = req.body.state;
 
     if(contentID && state && state === 'Deleted') {

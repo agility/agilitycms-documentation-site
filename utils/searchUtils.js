@@ -30,10 +30,14 @@ const normalizeArticle = async ({ article, category, url }) => {
         headings = getMarkdownHeadings(article.fields.markdownContent);
         body = cleanMarkdown(article.fields.markdownContent);
     } else if(article.fields.content) {
-        const parsed = JSON.parse(article.fields.content);
-        const blocks = parsed.blocks || [];
-        headings = getBlockHeadings(blocks);
-        body = blocksToMarkdown(blocks);
+        try {
+            const parsed = JSON.parse(article.fields.content);
+            const blocks = parsed.blocks || [];
+            headings = getBlockHeadings(blocks);
+            body = blocksToMarkdown(blocks);
+        } catch(e) {
+            // Invalid JSON in content field — skip body extraction
+        }
     }
 
     if(body.length > MAX_BODY_LENGTH) {
