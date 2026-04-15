@@ -18,7 +18,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "strictNullChecks": true
   },
   "include": [
     "next-env.d.ts",
@@ -26,7 +32,8 @@
     "**/*.tsx",
     "pages/[...slug].js",
     "pages/index.js",
-    "**/*.js"
+    "**/*.js",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
