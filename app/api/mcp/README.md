@@ -44,7 +44,7 @@ Retrieve the full content of a documentation article by its ID. Use after `searc
 
 **Output:** JSON with full article data:
 - `title`, `url`, `description`, `category`, `section` — Same as search results
-- `body` — Full article body text (up to 5000 characters)
+- `body` — Full article body text
 - `headings` — Array of section headings within the article
 
 ## Configuration
@@ -54,7 +54,7 @@ The handler is configured in `route.ts` with these options:
 ```ts
 {
   basePath: "/api",       // URL path prefix
-  verboseLogs: true,      // Detailed request logging
+  verboseLogs: process.env.NODE_ENV !== "production",
   maxDuration: 60,        // 60-second timeout
   disableSse: true,       // Streamable HTTP only (no SSE transport)
 }

@@ -4,8 +4,8 @@ import { z } from "zod";
 import algoliasearch from "algoliasearch";
 
 const algoliaClient = algoliasearch(
-  process.env.ALGOLIA_APP_ID,
-  process.env.ALGOLIA_ADMIN_API_KEY
+  process.env.ALGOLIA_APP_ID!,
+  process.env.ALGOLIA_ADMIN_API_KEY!
 );
 const index = algoliaClient.initIndex("doc_site");
 
@@ -25,49 +25,63 @@ const handler = createMcpHandler(
         title: "Search documentation",
         readOnlyHint: true,
       },
-      async ({ query }) => {
-        const results = await index.search(query, {
-          hitsPerPage: 10,
-          attributesToSnippet: ["body:50"],
-          snippetEllipsisText: "...",
-          attributesToRetrieve: [
-            "title",
-            "url",
-            "description",
-            "category",
-            "section",
-          ],
-          attributesToHighlight: [],
-        });
+      async ({ query }: { query: string }) => {
+        try {
+          const results = await index.search(query, {
+            hitsPerPage: 10,
+            attributesToSnippet: ["body:50"],
+            snippetEllipsisText: "...",
+            attributesToRetrieve: [
+              "title",
+              "url",
+              "description",
+              "category",
+              "section",
+            ],
+            attributesToHighlight: [],
+          });
 
-        const formattedResults = results.hits.map((hit: any) => ({
-          objectID: hit.objectID,
-          title: hit.title,
-          url: hit.url,
-          description: hit.description || "",
-          category: hit.category || "",
-          section: hit.section || "",
-          snippet: hit._snippetResult?.body?.value || "",
-        }));
+          const formattedResults = results.hits.map((hit: any) => ({
+            objectID: hit.objectID,
+            title: hit.title,
+            url: hit.url,
+            description: hit.description || "",
+            category: hit.category || "",
+            section: hit.section || "",
+            snippet: hit._snippetResult?.body?.value || "",
+          }));
 
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: JSON.stringify(
-                {
-                  query,
-                  totalHits: results.nbHits,
-                  page: results.page,
-                  totalPages: results.nbPages,
-                  results: formattedResults,
-                },
-                null,
-                2
-              ),
-            },
-          ],
-        };
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: JSON.stringify(
+                  {
+                    query,
+                    totalHits: results.nbHits,
+                    page: results.page,
+                    totalPages: results.nbPages,
+                    results: formattedResults,
+                  },
+                  null,
+                  2
+                ),
+              },
+            ],
+          };
+        } catch {
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: JSON.stringify({
+                  error: `Search failed for query '${query}'`,
+                }),
+              },
+            ],
+            isError: true,
+          };
+        }
       }
     );
 
@@ -83,7 +97,7 @@ const handler = createMcpHandler(
         title: "Fetch document",
         readOnlyHint: true,
       },
-      async ({ objectID }) => {
+      async ({ objectID }: { objectID: string }) => {
         try {
           const doc = await index.getObject(objectID, {
             attributesToRetrieve: [
@@ -135,7 +149,7 @@ const handler = createMcpHandler(
   },
   {
     basePath: "/api",
-    verboseLogs: true,
+    verboseLogs: process.env.NODE_ENV !== "production",
     maxDuration: 60,
     disableSse: true,
   }

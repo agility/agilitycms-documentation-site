@@ -13,14 +13,14 @@ const getChangeDate = (dateStr: string) => {
 
 const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
     const { changelog: changeLogItems, changelogtags: changeLogTags } = customData;
-    const [filterOptions, setFilterOptions] = useState([]);
-    const [changeLogList, setChangeLogList] = useState([]);
+    const [filterOptions, setFilterOptions] = useState<{ title: string; id: number }[]>([]);
+    const [changeLogList, setChangeLogList] = useState<any[]>([]);
     const [filterSelection, setFilterSelection] = useState<string[]>([]);
 
     // sets the filter options for the filterblock
     useEffect(() => {
         const tagOptions = changeLogTags.map((tags) => ({ title: tags.fields.title, id: tags.contentID }));
-        const tagList = changeLogItems.reduce((acc, cur) => {
+        const tagList = changeLogItems.reduce((acc: string[], cur) => {
             cur.fields.changes?.forEach((change) => {
                 change.fields.tags?.forEach((tag) => acc.push(tag.fields.title));
             });
