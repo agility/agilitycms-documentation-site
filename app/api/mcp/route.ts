@@ -20,14 +20,23 @@ const handler = createMcpHandler(
           .describe(
             "Search query string. Natural language queries work best."
           ),
+        page: z
+          .number()
+          .int()
+          .min(0)
+          .optional()
+          .describe(
+            "Page number for pagination (0-based). Omit for the first page."
+          ),
       },
       {
         title: "Search documentation",
         readOnlyHint: true,
       },
-      async ({ query }: { query: string }) => {
+      async ({ query, page }: { query: string; page?: number }) => {
         try {
           const results = await index.search(query, {
+            page: page || 0,
             hitsPerPage: 10,
             attributesToSnippet: ["body:50"],
             snippetEllipsisText: "...",
