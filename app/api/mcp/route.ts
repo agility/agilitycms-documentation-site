@@ -9,6 +9,17 @@ const algoliaClient = algoliasearch(
 );
 const index = algoliaClient.initIndex("doc_site");
 
+const BASE_URL = "https://agilitycms.com/docs";
+
+function stripHtml(text: string): string {
+  return text.replace(/<[^>]*>/g, "");
+}
+
+function fullUrl(path: string): string {
+  if (!path || path === "undefined") return "";
+  return `${BASE_URL}${path}`;
+}
+
 const handler = createMcpHandler(
   async (server) => {
     server.tool(
@@ -50,31 +61,39 @@ const handler = createMcpHandler(
             attributesToHighlight: [],
           });
 
-          const formattedResults = results.hits.map((hit: any) => ({
-            objectID: hit.objectID,
-            title: hit.title,
-            url: hit.url,
-            description: hit.description || "",
-            category: hit.category || "",
-            section: hit.section || "",
-            snippet: hit._snippetResult?.body?.value || "",
-          }));
+          const lines: string[] = [
+            `# Search Results: "${query}"`,
+            `Found ${results.nbHits} results (page ${results.page + 1} of ${results.nbPages})`,
+            "",
+          ];
+
+          results.hits.forEach((hit: any, i: number) => {
+            const url = fullUrl(hit.url);
+            const snippet = stripHtml(
+              hit._snippetResult?.body?.value || ""
+            );
+            lines.push(`## ${i + 1}. ${hit.title}`);
+            if (url) lines.push(`**URL:** ${url}`);
+            if (hit.category || hit.section)
+              lines.push(
+                `**Category:** ${hit.category || ""}${hit.section ? ` > ${hit.section}` : ""}`
+              );
+            if (hit.description) lines.push(`> ${hit.description}`);
+            if (snippet) lines.push(`\n${snippet}`);
+            lines.push(`\n*objectID: ${hit.objectID} — use with fetch_doc for full content*`);
+            lines.push("");
+          });
+
+          if (results.nbPages > (results.page + 1)) {
+            lines.push(`---`);
+            lines.push(`*More results available — use page: ${results.page + 1} to see the next page*`);
+          }
 
           return {
             content: [
               {
                 type: "text" as const,
-                text: JSON.stringify(
-                  {
-                    query,
-                    totalHits: results.nbHits,
-                    page: results.page,
-                    totalPages: results.nbPages,
-                    results: formattedResults,
-                  },
-                  null,
-                  2
-                ),
+                text: lines.join("\n"),
               },
             ],
           };
@@ -83,9 +102,7 @@ const handler = createMcpHandler(
             content: [
               {
                 type: "text" as const,
-                text: JSON.stringify({
-                  error: `Search failed for query '${query}'`,
-                }),
+                text: "Error: Search failed for query '" + query + "'",
               },
             ],
             isError: true,
@@ -108,7 +125,7 @@ const handler = createMcpHandler(
       },
       async ({ objectID }: { objectID: string }) => {
         try {
-          const doc = await index.getObject(objectID, {
+          const doc: any = await index.getObject(objectID, {
             attributesToRetrieve: [
               "title",
               "url",
@@ -120,11 +137,29 @@ const handler = createMcpHandler(
             ],
           });
 
+          const url = fullUrl(doc.url);
+          const body = stripHtml(doc.body || "");
+          const lines: string[] = [
+            `# ${doc.title}`,
+          ];
+          if (url) lines.push(`**URL:** ${url}`);
+          if (doc.category || doc.section)
+            lines.push(
+              `**Category:** ${doc.category || ""}${doc.section ? ` > ${doc.section}` : ""}`
+            );
+          if (doc.description) lines.push(`> ${doc.description}`);
+          if (doc.headings?.length) {
+            lines.push("");
+            lines.push("**Sections:** " + doc.headings.join(" | "));
+          }
+          lines.push("");
+          lines.push(body);
+
           return {
             content: [
               {
                 type: "text" as const,
-                text: JSON.stringify(doc, null, 2),
+                text: lines.join("\n"),
               },
             ],
           };
@@ -133,9 +168,7 @@ const handler = createMcpHandler(
             content: [
               {
                 type: "text" as const,
-                text: JSON.stringify({
-                  error: `Document with ID '${objectID}' not found`,
-                }),
+                text: "Error: Document with ID '" + objectID + "' not found",
               },
             ],
             isError: true,
