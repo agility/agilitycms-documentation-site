@@ -17,21 +17,20 @@ Transport: **Streamable HTTP** (SSE disabled for broad client compatibility incl
 
 ### `search_docs`
 
-Search the Agility CMS documentation. Returns matching articles with titles, URLs, descriptions, categories, and content snippets.
+Search the Agility CMS documentation. Returns matching articles formatted as markdown with full URLs, descriptions, categories, and content snippets.
 
 **Input:**
 | Parameter | Type | Description |
 |---|---|---|
 | `query` | `string` (required) | Search query string |
+| `page` | `number` (optional) | Page number for pagination (0-based, default 0) |
 
-**Output:** JSON with `totalHits`, `page`, `totalPages`, and an array of `results`, each containing:
-- `objectID` — Unique article identifier (use with `fetch_doc`)
-- `title` — Article title
-- `url` — Article URL path (relative to site root)
-- `description` — Short article description
-- `category` — Parent category (e.g. "Developers", "Overview")
-- `section` — Parent section (e.g. "APIs", "Quick Start")
-- `snippet` — Body text snippet with search term highlighting
+**Output:** Markdown-formatted results (up to 10 per page), each containing:
+- Title as a heading with full `https://agilitycms.com/docs/...` URL
+- Category and section breadcrumb
+- Description and body snippet (HTML stripped)
+- `objectID` for use with `fetch_doc`
+- Pagination hint when more pages are available
 
 ### `fetch_doc`
 
@@ -42,10 +41,10 @@ Retrieve the full content of a documentation article by its ID. Use after `searc
 |---|---|---|
 | `objectID` | `string` (required) | Article objectID from search results |
 
-**Output:** JSON with full article data:
-- `title`, `url`, `description`, `category`, `section` — Same as search results
-- `body` — Full article body text
-- `headings` — Array of section headings within the article
+**Output:** Markdown-formatted article with:
+- Title, full URL, category, section, and description
+- Section headings outline
+- Full body text (HTML stripped)
 
 ## Configuration
 

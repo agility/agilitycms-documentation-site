@@ -2,6 +2,15 @@
 import { createMcpHandler } from "mcp-handler";
 import { z } from "zod";
 import algoliasearch from "algoliasearch";
+import {
+  initializeTelemetry,
+  trackMcpToolCall,
+  trackAlgoliaCall,
+  trackException,
+} from "../../../lib/telemetry";
+
+// Initialize telemetry on module load (safe to call multiple times)
+initializeTelemetry();
 
 const algoliaClient = algoliasearch(
   process.env.ALGOLIA_APP_ID!,
@@ -45,7 +54,9 @@ const handler = createMcpHandler(
         readOnlyHint: true,
       },
       async ({ query, page }: { query: string; page?: number }) => {
+        const startTime = Date.now();
         try {
+          const algoliaStart = Date.now();
           const results = await index.search(query, {
             page: page || 0,
             hitsPerPage: 10,
@@ -60,6 +71,13 @@ const handler = createMcpHandler(
             ],
             attributesToHighlight: [],
           });
+          trackAlgoliaCall(
+            "search",
+            query,
+            Date.now() - algoliaStart,
+            true,
+            results.nbHits
+          );
 
           const lines: string[] = [
             `# Search Results: "${query}"`,
@@ -89,6 +107,13 @@ const handler = createMcpHandler(
             lines.push(`*More results available — use page: ${results.page + 1} to see the next page*`);
           }
 
+          trackMcpToolCall(
+            "search_docs",
+            { query, page: page || 0 },
+            Date.now() - startTime,
+            true
+          );
+
           return {
             content: [
               {
@@ -97,7 +122,18 @@ const handler = createMcpHandler(
               },
             ],
           };
-        } catch {
+        } catch (err) {
+          const error = err instanceof Error ? err : new Error(String(err));
+          trackAlgoliaCall("search", query, Date.now() - startTime, false, undefined, error);
+          trackMcpToolCall(
+            "search_docs",
+            { query, page: page || 0 },
+            Date.now() - startTime,
+            false,
+            error
+          );
+          trackException(error, { toolName: "search_docs", query });
+
           return {
             content: [
               {
@@ -124,7 +160,9 @@ const handler = createMcpHandler(
         readOnlyHint: true,
       },
       async ({ objectID }: { objectID: string }) => {
+        const startTime = Date.now();
         try {
+          const algoliaStart = Date.now();
           const doc: any = await index.getObject(objectID, {
             attributesToRetrieve: [
               "title",
@@ -136,6 +174,13 @@ const handler = createMcpHandler(
               "headings",
             ],
           });
+          trackAlgoliaCall(
+            "getObject",
+            objectID,
+            Date.now() - algoliaStart,
+            true,
+            1
+          );
 
           const url = fullUrl(doc.url);
           const body = stripHtml(doc.body || "");
@@ -155,6 +200,13 @@ const handler = createMcpHandler(
           lines.push("");
           lines.push(body);
 
+          trackMcpToolCall(
+            "fetch_doc",
+            { objectID },
+            Date.now() - startTime,
+            true
+          );
+
           return {
             content: [
               {
@@ -163,7 +215,18 @@ const handler = createMcpHandler(
               },
             ],
           };
-        } catch {
+        } catch (err) {
+          const error = err instanceof Error ? err : new Error(String(err));
+          trackAlgoliaCall("getObject", objectID, Date.now() - startTime, false, undefined, error);
+          trackMcpToolCall(
+            "fetch_doc",
+            { objectID },
+            Date.now() - startTime,
+            false,
+            error
+          );
+          trackException(error, { toolName: "fetch_doc", objectID });
+
           return {
             content: [
               {
