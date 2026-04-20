@@ -29,6 +29,14 @@ function fullUrl(path: string): string {
   return `${BASE_URL}${path}`;
 }
 
+function toError(err: unknown): Error {
+  if (err instanceof Error) return err;
+  if (typeof err === "object" && err !== null && "message" in err) {
+    return new Error(String((err as any).message));
+  }
+  return new Error(String(err));
+}
+
 const handler = createMcpHandler(
   async (server) => {
     server.tool(
@@ -123,7 +131,7 @@ const handler = createMcpHandler(
             ],
           };
         } catch (err) {
-          const error = err instanceof Error ? err : new Error(String(err));
+          const error = toError(err);
           trackAlgoliaCall("search", query, Date.now() - startTime, false, undefined, error);
           trackMcpToolCall(
             "search_docs",
@@ -216,7 +224,7 @@ const handler = createMcpHandler(
             ],
           };
         } catch (err) {
-          const error = err instanceof Error ? err : new Error(String(err));
+          const error = toError(err);
           trackAlgoliaCall("getObject", objectID, Date.now() - startTime, false, undefined, error);
           trackMcpToolCall(
             "fetch_doc",
@@ -260,4 +268,20 @@ const handler = createMcpHandler(
   }
 );
 
-export { handler as GET, handler as POST, handler as DELETE };
+// Wrap handler to fix Accept header for MCP clients that don't send
+// text/event-stream (e.g. Claude) — mcp-handler returns 406 without it
+function withAcceptHeader(fn: (req: Request) => Promise<Response>) {
+  return (req: Request) => {
+    const accept = req.headers.get("accept") || "";
+    if (!accept.includes("text/event-stream") && !accept.includes("*/*")) {
+      const headers = new Headers(req.headers);
+      headers.set("accept", "application/json, text/event-stream");
+      req = new Request(req, { headers });
+    }
+    return fn(req);
+  };
+}
+
+export const GET = withAcceptHeader(handler);
+export const POST = withAcceptHeader(handler);
+export const DELETE = withAcceptHeader(handler);
