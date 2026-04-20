@@ -23,15 +23,19 @@ export function initializeTelemetry() {
   try {
     appInsights
       .setup(connectionString)
-      .setAutoCollectRequests(false) // We track MCP requests manually
-      .setAutoCollectPerformance(true, false)
+      .setAutoCollectRequests(false)
+      .setAutoCollectPerformance(false, false)
       .setAutoCollectExceptions(true)
-      .setAutoCollectDependencies(false) // We track Algolia calls manually
+      .setAutoCollectDependencies(false)
       .setAutoCollectConsole(true, false)
-      .setUseDiskRetryCaching(true)
+      .setUseDiskRetryCaching(false) // No disk in serverless
       .start();
 
     telemetryClient = appInsights.defaultClient;
+
+    // Reduce buffer time for serverless — flush more aggressively
+    telemetryClient.config.maxBatchSize = 1;
+
     console.log("Application Insights telemetry initialized");
   } catch (error) {
     console.error("Failed to initialize Application Insights:", error);
@@ -39,7 +43,7 @@ export function initializeTelemetry() {
 }
 
 /**
- * Track an MCP tool call as a request + custom event.
+ * Track an MCP tool call as a custom event and flush immediately.
  */
 export function trackMcpToolCall(
   toolName: string,
@@ -61,26 +65,17 @@ export function trackMcpToolCall(
     properties.errorStack = error.stack || "";
   }
 
-  // Track as a request for the Performance blade
-  telemetryClient.trackRequest({
-    name: `MCP Tool: ${toolName}`,
-    url: `/mcp-tool/${toolName}`,
-    duration,
-    resultCode: success ? "200" : "500",
-    success,
-    properties,
-  });
-
-  // Track as a custom event for flexible querying
   telemetryClient.trackEvent({
     name: "MCPToolCall",
     properties,
     measurements: { duration },
   });
+
+  telemetryClient.flush();
 }
 
 /**
- * Track an Algolia search/fetch call as a dependency.
+ * Track an Algolia search/fetch call as a custom event and flush immediately.
  */
 export function trackAlgoliaCall(
   operation: string,
@@ -106,18 +101,17 @@ export function trackAlgoliaCall(
     properties.error = error.message;
   }
 
-  telemetryClient.trackDependency({
-    name: `Algolia: ${operation}`,
-    data: query,
-    duration,
-    success,
-    dependencyTypeName: "Algolia",
+  telemetryClient.trackEvent({
+    name: "AlgoliaCall",
     properties,
+    measurements: { duration },
   });
+
+  telemetryClient.flush();
 }
 
 /**
- * Track an exception.
+ * Track an exception and flush immediately.
  */
 export function trackException(
   exception: Error,
@@ -129,13 +123,6 @@ export function trackException(
     exception,
     properties,
   });
-}
 
-/**
- * Flush all pending telemetry data.
- */
-export function flushTelemetry(): void {
-  if (telemetryClient) {
-    telemetryClient.flush();
-  }
+  telemetryClient.flush();
 }
