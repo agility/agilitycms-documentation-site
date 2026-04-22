@@ -268,20 +268,45 @@ const handler = createMcpHandler(
   }
 );
 
-// Wrap handler to fix Accept header for MCP clients that don't send
-// text/event-stream (e.g. Claude) — mcp-handler returns 406 without it
-function withAcceptHeader(fn: (req: Request) => Promise<Response>) {
-  return (req: Request) => {
+const CORS_HEADERS: Record<string, string> = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-methods": "GET, POST, DELETE, OPTIONS",
+  "access-control-allow-headers":
+    "content-type, accept, authorization, mcp-protocol-version, mcp-session-id",
+  "access-control-expose-headers": "mcp-session-id",
+  "access-control-max-age": "86400",
+};
+
+// Wrap handler to (1) fix Accept header for MCP clients that don't send
+// text/event-stream (e.g. Claude) — mcp-handler requires both
+// application/json AND text/event-stream explicitly listed, and rejects
+// Accept: */* with a 406; and (2) add CORS headers so browser-based MCP
+// clients can connect.
+function withMcpHeaders(fn: (req: Request) => Promise<Response>) {
+  return async (req: Request) => {
     const accept = req.headers.get("accept") || "";
-    if (!accept.includes("text/event-stream") && !accept.includes("*/*")) {
+    const hasJson = accept.includes("application/json");
+    const hasSse = accept.includes("text/event-stream");
+    if (!hasJson || !hasSse) {
       const headers = new Headers(req.headers);
       headers.set("accept", "application/json, text/event-stream");
       req = new Request(req, { headers });
     }
-    return fn(req);
+    const res = await fn(req);
+    const headers = new Headers(res.headers);
+    for (const [k, v] of Object.entries(CORS_HEADERS)) headers.set(k, v);
+    return new Response(res.body, {
+      status: res.status,
+      statusText: res.statusText,
+      headers,
+    });
   };
 }
 
-export const GET = withAcceptHeader(handler);
-export const POST = withAcceptHeader(handler);
-export const DELETE = withAcceptHeader(handler);
+export const GET = withMcpHeaders(handler);
+export const POST = withMcpHeaders(handler);
+export const DELETE = withMcpHeaders(handler);
+
+export function OPTIONS() {
+  return new Response(null, { status: 204, headers: CORS_HEADERS });
+}
