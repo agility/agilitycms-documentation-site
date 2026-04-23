@@ -280,8 +280,10 @@ const CORS_HEADERS: Record<string, string> = {
 // Wrap handler to (1) fix Accept header for MCP clients that don't send
 // text/event-stream (e.g. Claude) — mcp-handler requires both
 // application/json AND text/event-stream explicitly listed, and rejects
-// Accept: */* with a 406; and (2) add CORS headers so browser-based MCP
-// clients can connect.
+// Accept: */* with a 406; (2) unwrap SSE-framed single POST responses
+// back to plain JSON — Anthropic's mcp-proxy returns 502 when forwarding
+// chunked SSE bodies for single replies; and (3) add CORS headers so
+// browser-based MCP clients can connect.
 function withMcpHeaders(fn: (req: Request) => Promise<Response>) {
   return async (req: Request) => {
     const accept = req.headers.get("accept") || "";
@@ -292,9 +294,27 @@ function withMcpHeaders(fn: (req: Request) => Promise<Response>) {
       headers.set("accept", "application/json, text/event-stream");
       req = new Request(req, { headers });
     }
+
     const res = await fn(req);
     const headers = new Headers(res.headers);
     for (const [k, v] of Object.entries(CORS_HEADERS)) headers.set(k, v);
+
+    const contentType = res.headers.get("content-type") || "";
+    if (contentType.includes("text/event-stream")) {
+      const text = await res.text();
+      const match = text.match(/(?:^|\n)data: (.+?)(?:\n|$)/);
+      if (match) {
+        headers.set("content-type", "application/json");
+        headers.delete("transfer-encoding");
+        headers.delete("content-length");
+        return new Response(match[1], {
+          status: res.status,
+          statusText: res.statusText,
+          headers,
+        });
+      }
+    }
+
     return new Response(res.body, {
       status: res.status,
       statusText: res.statusText,
