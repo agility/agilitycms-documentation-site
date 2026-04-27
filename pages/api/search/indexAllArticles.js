@@ -11,8 +11,10 @@ const index = algoliaClient.initIndex("doc_site");
 export default async (req, res) => {
 
     
+    const startedAt = Date.now();
+
     const { data } = await client.query({
-        query: gql`    
+        query: gql`
         {
             doccategories  {
                 contentID
@@ -44,21 +46,28 @@ export default async (req, res) => {
                 }
               }
         }`,
+        // Always read fresh content for indexing — never serve from Apollo cache.
+        fetchPolicy: 'no-cache',
     });
-    
+
     const articleUrls = await getDynamicPageSitemapMappingREST();
 
     let objects = [];
+    const categoryBreakdown = [];
     for(const cat of data.doccategories) {
-        if(cat.fields.articles) {
-            for(const article of cat.fields.articles) {
-                const object = await normalizeArticle({
-                    article,
-                    url: articleUrls[article.contentID],
-                    category: cat
-                });
-                objects.push(object);
-            }
+        const articles = cat.fields.articles || [];
+        categoryBreakdown.push({
+            contentID: cat.contentID,
+            title: cat.fields.title,
+            articleCount: articles.length,
+        });
+        for(const article of articles) {
+            const object = await normalizeArticle({
+                article,
+                url: articleUrls[article.contentID],
+                category: cat
+            });
+            objects.push(object);
         }
     }
 
@@ -68,10 +77,19 @@ export default async (req, res) => {
         attributesToSnippet: ['body:30'],
     });
 
-    //save it in Algolia
-    await index.saveObjects(objects)
+    // Atomic full rebuild: replaceAllObjects copies into a temp index and renames,
+    // so any record not in `objects` (deleted/unpublished/orphaned) is removed.
+    await index.replaceAllObjects(objects, { safe: true });
 
-    res.status(200).json(true);
+    res.status(200).json({
+        ok: true,
+        index: 'doc_site',
+        indexed: objects.length,
+        categories: categoryBreakdown.length,
+        durationMs: Date.now() - startedAt,
+        categoryBreakdown,
+        objectIDs: objects.map(o => o.objectID),
+    });
 };
 
 
