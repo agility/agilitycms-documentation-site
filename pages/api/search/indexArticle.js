@@ -24,60 +24,65 @@ export default async (req, res) => {
     }
     const state = req.body.state;
 
-    if(contentID && state && state === 'Deleted') {
-        await index.deleteObject(contentID);
+    if(contentID && state && (state === 'Deleted' || state === 'Unpublished')) {
+        await index.deleteObject(`${contentID}`);
+        res.status(200).json({ deleted: contentID, state });
         return;
-    } else {
-    
-        const { data } = await client.query({
-            query: gql`    
-            {
-                ${referenceName} (contentID: ${contentID})  {
-                    contentID
-                    properties {
-                        itemOrder
-                    }
-                    fields {
-                        title
-                        content
-                        markdownContent
-                        description
-                        section {
-                            contentID
-                            fields {
-                                title
-                            }
+    }
+
+    const { data } = await client.query({
+        query: gql`
+        {
+            ${referenceName} (contentID: ${contentID})  {
+                contentID
+                properties {
+                    itemOrder
+                }
+                fields {
+                    title
+                    content
+                    markdownContent
+                    description
+                    section {
+                        contentID
+                        fields {
+                            title
                         }
-                        concept {
-                            contentID
-                            fields {
-                                title
-                            }
+                    }
+                    concept {
+                        contentID
+                        fields {
+                            title
                         }
                     }
                 }
-            }`,
-        });
-        
-        const article = data[referenceName][0];
+            }
+        }`,
+    });
 
-        const url = await getDynamicPageURL({
-            contentID: article.contentID,
-            preview: false
-        })
+    const article = data[referenceName] && data[referenceName][0];
 
-        const object = await normalizeArticle({
-            article,
-            url
-        })
-
-        //save it in Algolia
-        await index.saveObject(object)
-
-       
+    // If the article isn't returned by the published API, it's been unpublished/removed.
+    // Strip it from the index so search results stay in sync.
+    if(!article) {
+        await index.deleteObject(`${contentID}`);
+        res.status(200).json({ deleted: contentID, reason: 'not-published' });
+        return;
     }
 
-    res.status(200).json();
+    const url = await getDynamicPageURL({
+        contentID: article.contentID,
+        preview: false
+    })
+
+    const object = await normalizeArticle({
+        article,
+        url
+    })
+
+    await index.saveObject(object)
+
+    res.status(200).json({ saved: contentID });
 };
 
 

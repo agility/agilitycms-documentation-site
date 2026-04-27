@@ -68,10 +68,11 @@ export default async (req, res) => {
         attributesToSnippet: ['body:30'],
     });
 
-    //save it in Algolia
-    await index.saveObjects(objects)
+    // Atomic full rebuild: replaceAllObjects copies into a temp index and renames,
+    // so any record not in `objects` (deleted/unpublished/orphaned) is removed.
+    await index.replaceAllObjects(objects, { safe: true });
 
-    res.status(200).json(true);
+    res.status(200).json({ ok: true, count: objects.length });
 };
 
 
