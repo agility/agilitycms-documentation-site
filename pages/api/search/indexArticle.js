@@ -58,6 +58,9 @@ export default async (req, res) => {
                 }
             }
         }`,
+        // Webhook fires immediately after a publish — bypass Apollo cache so we
+        // never index stale content.
+        fetchPolicy: 'no-cache',
     });
 
     const article = data[referenceName] && data[referenceName][0];
