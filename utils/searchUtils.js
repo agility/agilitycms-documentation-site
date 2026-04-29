@@ -203,6 +203,8 @@ const cleanMarkdown = (markdown) => {
     text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
     // Remove bare URLs
     text = text.replace(/https?:\/\/[^\s)]+/g, '');
+    // Remove <style> and <script> blocks including their contents
+    text = text.replace(/<(style|script)\b[^>]*>[\s\S]*?<\/\1>/gi, '');
     // Remove HTML tags
     text = text.replace(/<[^>]*>/g, '');
     // Remove heading markers
