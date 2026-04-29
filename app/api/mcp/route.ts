@@ -41,12 +41,29 @@ const handler = createMcpHandler(
   async (server) => {
     server.tool(
       "search_docs",
-      "Search the Agility CMS documentation. Returns matching articles with titles, URLs, descriptions, categories, and content snippets. Use the fetch_doc tool to get full article content for detailed analysis.",
+      [
+        "Search the Agility CMS documentation using concise semantic queries.",
+        "Do not use long keyword bundles. For broad, ambiguous, or multi-part questions, call search_docs multiple times with short related queries, each focused on one concept, synonym, or likely documentation phrase. Compare the returned articles and use fetch_doc on the most relevant results for detailed analysis.",
+        "",
+        "Good queries are usually 3 to 8 words or one short question.",
+        "",
+        "Examples:",
+        '- "content staging workflow"',
+        '- "manage content across environments"',
+        '- "deployment environments"',
+        '- "preview content before publishing"',
+        '- "CI/CD content synchronization"',
+        "",
+        "Avoid:",
+        '- "multiple environments devops content operations environments staging production development preview publishing workflow ci cd"',
+        "",
+        "If a search returns no or weak results, retry with shorter semantic alternatives before concluding that no documentation exists.",
+      ].join("\n"),
       {
         query: z
           .string()
           .describe(
-            "Search query string. Natural language queries work best."
+            "A concise semantic search query, usually 3 to 8 words or one short natural-language question. Search one concept at a time. For broad questions, call search_docs multiple times with short related queries instead of sending one long keyword list. Avoid keyword stuffing."
           ),
         page: z
           .number()
@@ -63,6 +80,41 @@ const handler = createMcpHandler(
       },
       async ({ query, page }: { query: string; page?: number }) => {
         const startTime = Date.now();
+
+        // Steer callers away from keyword-stuffed queries before they
+        // burn an Algolia call. Semantic search is recall-poor on long
+        // bundles; multiple short queries return better results.
+        const wordCount = query.trim().split(/\s+/).filter(Boolean).length;
+        const MAX_QUERY_WORDS = 12;
+        if (wordCount > MAX_QUERY_WORDS) {
+          const hint = [
+            `This query is too broad (${wordCount} words). Semantic search works best with short focused queries.`,
+            "",
+            "Retry with multiple shorter searches (3 to 8 words each), each targeting one concept, synonym, or likely documentation phrase. Compare the result sets and call fetch_doc on the most relevant articles.",
+            "",
+            "Example: instead of one keyword bundle, try short queries like:",
+            '- "content staging workflow"',
+            '- "deployment environments"',
+            '- "preview content before publishing"',
+          ].join("\n");
+
+          trackMcpToolCall(
+            "search_docs",
+            { query, page: page || 0, blocked: "query_too_long", wordCount },
+            Date.now() - startTime,
+            true
+          );
+
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: hint,
+              },
+            ],
+          };
+        }
+
         try {
           const algoliaStart = Date.now();
           const results = await index.search(query, {
@@ -252,7 +304,8 @@ const handler = createMcpHandler(
     capabilities: {
       tools: {
         search_docs: {
-          description: "Search Agility CMS documentation",
+          description:
+            "Search Agility CMS documentation using concise semantic queries. Prefer multiple short focused queries over long keyword bundles.",
         },
         fetch_doc: {
           description: "Retrieve full article content by ID",

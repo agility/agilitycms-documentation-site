@@ -3,12 +3,20 @@ import Blocks from "../common/blocks/index";
 import axios from "axios";
 import nextConfig from "next.config";
 import { ToggleSwitch } from "components/common/ToggleSwitch";
-import { remark } from 'remark';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
 import remarkRehype from 'remark-rehype';
+import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
 import rehypeStringify from 'rehype-stringify';
 const hljs = require('highlight.js');
+
+function remarkDisableIndentedCode() {
+	const data = this.data();
+	const list = data.micromarkExtensions || (data.micromarkExtensions = []);
+	list.push({ disable: { null: ['codeIndented'] } });
+}
 
 // Custom component to render markdown with code highlighting
 const MarkdownContent = ({ htmlContent }) => {
@@ -49,6 +57,20 @@ const MarkdownContent = ({ htmlContent }) => {
 			if (pre && pre.tagName === 'PRE') {
 				pre.classList.add('hljs-pre');
 			}
+		});
+
+		// Browsers do not execute <script> tags inserted via innerHTML.
+		// Re-create each script element so embedded JS in CMS markdown actually runs.
+		const inertScripts = containerRef.current.querySelectorAll('script');
+		inertScripts.forEach((oldScript) => {
+			const newScript = document.createElement('script');
+			for (const attr of oldScript.attributes) {
+				newScript.setAttribute(attr.name, attr.value);
+			}
+			if (oldScript.textContent) {
+				newScript.textContent = oldScript.textContent;
+			}
+			oldScript.parentNode.replaceChild(newScript, oldScript);
 		});
 	}, [htmlContent]);
 
@@ -98,11 +120,14 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 				markdownWithoutH1 = lines.slice(1).join('\n');
 			}
 
-			remark()
+			unified()
+				.use(remarkParse)
+				.use(remarkDisableIndentedCode)
 				.use(remarkGfm)
-				.use(remarkRehype)
+				.use(remarkRehype, { allowDangerousHtml: true })
+				.use(rehypeRaw)
 				.use(rehypeSlug)
-				.use(rehypeStringify)
+				.use(rehypeStringify, { allowDangerousHtml: true })
 				.process(markdownWithoutH1)
 				.then((processedContent) => {
 					let htmlContent = processedContent.toString();
@@ -144,8 +169,8 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 			className="xl:flex xl:flex-row justify-center font-muli mb-32"
 		>
 
-			<div className="relative px-8">
-				<div className="text-lg max-w-prose mx-auto">
+			<div className="relative px-8 xl:px-12 w-full">
+				<div className="text-lg max-w-prose lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl mx-auto">
 					<div className="flex justify-end gap-2 mt-5">
 						{showClassicMode &&
 							<ToggleSwitch
