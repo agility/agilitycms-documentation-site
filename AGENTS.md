@@ -83,3 +83,16 @@ Documentation articles have these key fields:
 - `concept` — Related concept (linked content)
 
 Articles are organized under `doccategories`, each with a `title`, `subTitle`, and linked `articles`.
+
+### Categories map to *pairs* of containers
+
+There is **no single Articles container**. Each top-level category (Overview, Developer, Editor, Owners & Admins, Apps, Training Guide, and each SDK/framework under SDKs & Frameworks) has its **own** `*Articles` container (model `DocArticle`) and `*Sections` container (model `DocSection`) — e.g. `DeveloperArticles` + `DeveloperSections`. An article's category is determined by **which container it lives in**; its sidebar placement is determined by its `section_ValueField` (the contentID of a `DocSection`), matched in `SideBarNav.js`.
+
+`DynamicArticleDetails.js` renders `markdownContent` through a `unified`/remark/rehype pipeline **only when `content` has no EditorJS blocks**. Markdown specifics: the leading `# H1` is stripped and used as the page title; GFM and raw HTML (incl. executed `<script>`) are enabled; indented code blocks are disabled (use fenced blocks); images pass through untransformed.
+
+## Gotchas & conventions (read before editing CMS-driven code or content)
+
+- **GraphQL lists default to 50 items.** Container queries (e.g. `developerarticles`) return only the first 50 unless you pass `(take: 250, ...)` (250 is the per-request max). This silently drops content from navs/listings once a category exceeds 50 — it was the cause of an article missing from the sidebar. When adding/auditing a list query (`SideBarNav.js`, `ArticleListing.js`, indexing, etc.), always set an explicit `take`.
+- **Reference names are case-sensitive on write, lowercased on read.** When saving a "User Selectable" linked-content field (e.g. `Section`, `Concept`), the stored container reference name must match the container's exact case (`DeveloperSections`, not `developersections`) or the editor dropdown renders blank. The read/delivery APIs lowercase all reference names, so you can't detect the mismatch by reading the item back — verify in the editor.
+- **Published vs preview** is switched by the `global.IS_PREVIEW` flag in `agility-graphql-client.js`, which picks the `fetch` (published) vs `preview` API and key. Staging content only appears in preview.
+- **Authoring docs content via the Agility MCP**: follow the dedicated skill at `.claude/skills/authoring-agility-docs/SKILL.md` — it has the full category→container map (with IDs), the case rules above, the image-upload workflow, and the preview/edit link templates. Note the MCP **cannot** set workflow state or publish/delete; those are human actions in the Agility UI.

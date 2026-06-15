@@ -210,17 +210,21 @@ SideBarNav.getCustomInitialProps = async ({
 		};
 	}
 
+	// TODO: `take: 250` is the per-request max for the Agility GraphQL API. A category with
+	// more than 250 articles (or 250 sections) will silently drop the overflow from the sidebar.
+	// Add pagination (loop on `skip`/`take` until fewer than `take` rows return) when any
+	// category approaches that limit. Developer is the largest today (~69 articles).
 	const { data } = await client.query({
 		query: gql`
 		{
-			${articlesRefName} (sort: "properties.itemOrder") {
+			${articlesRefName} (take: 250, sort: "properties.itemOrder") {
 				contentID
 				fields {
 					title
 					section_ValueField
 				}
 			},
-			${sectionsRefName} (sort: "properties.itemOrder") {
+			${sectionsRefName} (take: 250, sort: "properties.itemOrder") {
 				contentID
 				fields {
 					title
