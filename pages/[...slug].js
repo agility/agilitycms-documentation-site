@@ -97,13 +97,13 @@ export async function getStaticProps({
           currentNodePath = "/";
         }
       }
+      // Match on the first path segment so a top-level category highlights for any page
+      // beneath it, without substring false-positives (e.g. "/develop" vs "/developers").
+      const firstSegment = (p) => p.split("/")[1] || "";
       return {
         name: node.menuText,
         href: path,
-        current:
-          currentNodePath === path ||
-          (currentNodePath.split("/").length > 2 &&
-            currentNodePath.indexOf(node.path) > -1),
+        current: firstSegment(currentNodePath) === firstSegment(path),
       };
     });
 

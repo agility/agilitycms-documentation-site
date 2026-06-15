@@ -218,7 +218,13 @@ export default function Header({
               >
                 <div className="lg:space-x-8">
                   {navigation.map((item) => (
-                    <Link key={item.name} href={item.href} className="text-gray-900 hover:text-purple font-semibold"
+                    <Link key={item.name} href={item.href}
+                      className={classNames(
+                        item.current
+                          ? "text-purple border-brightPurple"
+                          : "text-gray-900 hover:text-purple border-transparent",
+                        "font-semibold border-b-2 pb-1"
+                      )}
                       aria-current={item.current ? "page" : undefined}
                     >
                       {item.name}
