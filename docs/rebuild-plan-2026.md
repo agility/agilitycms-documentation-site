@@ -13,13 +13,17 @@
 2. **Independent deploys.** Docs content ships daily via ISR + webhooks; marketing ships on campaign timelines. Coupling them makes every docs hotfix a marketing deploy and vice versa.
 3. **The multi-zone pattern is the officially recommended one** for exactly this shape (Next.js Multi-Zones / Vercel Microfrontends). This repo is already a textbook zone child: `basePath: '/docs'` is set, all assets serve under `/docs/_next/*`.
 
-### Is the rewrite "inefficient"? Mostly no — but tune it.
+### Is the rewrite "inefficient"? Somewhat — the fix is cache headers, not re-architecture.
 
-The `/docs/:path*` rewrite on the main site is one edge-level proxy hop on Vercel; latency cost is single-digit ms and responses (including ISR-cached pages and static assets) stream straight from the docs deployment's cache. The real inefficiencies to fix are:
+The main site is on **Netlify**, docs on **Vercel**, so `/docs/*` is a Netlify proxy rewrite (`200` redirect) to the Vercel deployment. Netlify has **no Multi-Zones/Microfrontends product** — the proxy rewrite *is* its primitive (third-party options like Zephyr Cloud target module-federation microfrontends, not path-based zones — wrong tool here). The actual inefficiencies and fixes:
 
-- **Cross-zone navigation is a hard navigation** (full page load between marketing ↔ docs). Unavoidable in multi-zones; mitigate with `<a>` prefetch hints and by keeping the docs shell fast (App Router streaming, minimal JS).
+- **Proxied HTML is not cached at Netlify's edge today.** Netlify only caches proxied responses when the origin sends caching headers, and Vercel's ISR pages deliberately tell downstream CDNs not to cache (`max-age=0, must-revalidate`) so Vercel keeps invalidation control. Result: every `/docs` page view is Netlify edge → Vercel origin. Fix (Phase 0 task): the docs app emits **`Netlify-CDN-Cache-Control: public, s-maxage=60, stale-while-revalidate=86400`** on pages (browsers and Vercel ignore this header; only Netlify's CDN honors it). Docs pages then serve from Netlify's edge and refresh in the background — effectively ISR semantics extended to the fronting CDN. If we ever need instant purge, Netlify supports cache tags (`Netlify-Cache-ID`) + a purge API callable from the same CMS webhook that triggers revalidation; with a 60s TTL we likely don't need it.
+- **Static assets are fine.** `/docs/_next/static/*` is content-hashed and served with `immutable, max-age=31536000`, which Netlify's proxy caches per standard HTTP caching — no change needed.
+- **Cross-zone navigation is a hard navigation** (full page load between marketing ↔ docs). Inherent to any two-app setup; mitigate by keeping the docs shell fast (App Router streaming, minimal JS).
 - **Duplicated design system.** Today the two sites share nothing. Fix: extract the ocean tokens + primitives into a tiny shared package (see §5).
-- **Rewrite config drift.** The rewrite lives in the main site's Vercel project config, not in either repo. Action: move it into the new marketing site's `next.config` `rewrites()` (checked in, reviewable), and evaluate **Vercel Microfrontends** (formalized multi-zones: checked-in `microfrontends.json`, local dev proxy so both apps run together) when the new marketing repo is set up.
+- **Rewrite config drift.** The rewrite lives in Netlify UI config, not in either repo. Action: check it into the new marketing repo's `netlify.toml` (`/docs/* → https://<docs-deployment>/docs/:splat 200`), reviewable like code.
+- **Netlify proxy timeout is 26 seconds** — irrelevant for pages, but it constrains the Phase 5b Ask-AI streaming endpoint if answers stream through the proxy. Verify streamed responses aren't cut off; if they are, serve chat from a route that bypasses the proxy.
+- **If the new marketing site lands on Vercel instead** (it's being built from scratch — hosting is an open choice, §9), adopt **Vercel Microfrontends** (`microfrontends.json`, local dev proxy, no cross-provider hop) and everything above collapses into config.
 
 **Coordination needed with the marketing rebuild (§8) — nothing blocks us starting now.**
 
@@ -98,7 +102,7 @@ Code side:
 ### Phase 5 — Net-new experiences (the world-class layer)
 **5a. Signed-in awareness + live API playground.**
 - Detect an Agility session and greet with the user's instances; on API-reference pages, offer "Run this against *your* instance."
-- Mechanism: reuse the OAuth stack the Agility MCP server already uses (agilitycms.com and app.agilitycms.com are different hosts, so cookie sniffing is out; a real OAuth "Sign in with Agility" popup is clean, and tokens stay client-side/httpOnly on the docs origin).
+- Mechanism: **cookie detection.** app.agilitycms.com sets its auth cookie on the `.agilitycms.com` domain, and the docs site serves under `agilitycms.com/docs` (the Netlify proxy forwards cookies), so a docs route handler can see the session server-side. Two rules: (1) detection happens via a small client-side fetch to an **uncached** API route (`Netlify-CDN-Cache-Control: no-store`) so pages themselves stay cacheable at the edge (§1) and never leak personalized HTML; (2) local dev / direct `*.vercel.app` access won't have the cookie — build a dev fallback. For *executing* API calls as the user, confirm whether the app cookie can authorize management-API calls from the docs origin or whether we exchange it for a scoped token; the MCP server's OAuth popup remains the fallback.
 - Playground v1: interactive fetch/GraphQL explorer on developer articles — pick instance → keys fetched via Management API → editable request → live response, with copy-as-curl/JS. `CodeBlock` model gets an optional `runnable` flag.
 **5b. Ask-AI docs agent.**
 - v1 (ship with redesign): "Search or ask AI" in the ⌘K palette → `/docs/api/chat` route handler → Claude with tool use over the **existing docs MCP tools** (`search_docs`, `fetch_doc`). Streaming answers with citation links. Cheap, grounded, no new infra.
@@ -156,4 +160,5 @@ Docs-specific components (sidebar, TOC, article prose, code panels) stay in this
 3. Handoff open decision 2: keep Inder for headings (400-only, synthesized bold) or pick a heading face with real weights? (Affects Phase 1; default: keep Inder, flag don't substitute.)
 4. Handoff open decision 3: Ask-AI now vs later → recommendation in §3 Phase 5b: ship v1 (MCP-tools-backed) with the redesign.
 5. Handoff open decision 4: how many AI-section articles are publishable (gates content drop).
-6. Playground auth: confirm an OAuth client can be provisioned for the docs origin (same stack as the MCP server's OAuth).
+6. Playground auth: confirm the `.agilitycms.com` auth cookie's flags/scope (httpOnly, SameSite) and whether it can authorize Management-API calls made from/for the docs origin, or whether a token-exchange endpoint is needed (OAuth popup as fallback).
+7. Hosting for the new marketing site: staying on Netlify (keep the tuned proxy + `Netlify-CDN-Cache-Control` approach in §1) or moving to Vercel (adopt Vercel Microfrontends, drop the cross-provider hop)?
