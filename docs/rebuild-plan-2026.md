@@ -154,7 +154,27 @@ Docs-specific components (sidebar, TOC, article prose, code panels) stay in this
 4. **Redirect registry:** one shared list of 301s so marketing's router never shadows a docs path.
 5. **Timeline independence:** docs redesign can ship behind the *current* production rewrite before the new marketing site exists.
 
-## 9. Open items (need Joel / owner input — nothing blocks Phases 0–2)
+## 9. Design inspiration references (agreed 2026-07-15)
+
+**Visual & layout** (screenshot these; measure our build against them):
+- **Stripe** — three-column article layout, scroll-synced TOC, code-right pattern, restrained color.
+- **Tailwind CSS** — typography craft, ⌘K search feel, personality without decoration (closest to the ocean temperament).
+- **Payload CMS** — dark-mode-first excellence; our dark theme should compete here, not just "support dark."
+- **Linear** — editorial tone; the model for the `/docs/changelog` re-skin.
+
+**Signed-in + API playground (Phase 5a)** — blend of:
+- **Stripe** — logged-in users see their (test) keys inline in code samples: the flagship "it knows me" moment.
+- **Supabase** — instance/project picker in docs; snippets rewrite with your URLs/keys (matches our multi-instance reality).
+- **Clerk** — personalized quickstarts as the lighter-touch v1 pattern if the full console lands later.
+
+**AI & machine readability (Phases 4, 5b)**:
+- **Anthropic docs** — copy-page-as-Markdown, `.md` endpoints, `llms.txt`, cited ask-AI (our T7 checklist in production).
+- **Cloudflare docs** — markdown endpoints + llms.txt at scale; URL-scheme precedent.
+- **Supabase AI assistant** — aspirational convergence of assistant + acting on your project.
+
+**Competitor teardown — scheduled before Phase 3 (hub design):** structured, screenshot-based review of **Contentful, Sanity, Storyblok** docs plus **Shopify.dev** (role-based IA benchmark), scoring: time-to-first-success for a new dev, role-based pathing (Editors/Developers/Admins), search & ask-AI quality, and AI/MCP story. Output: comparison report checked into `docs/`.
+
+## 10. Open items (need Joel / owner input — nothing blocks Phases 0–2)
 1. **Missing input docs:** the handoff references `agility-docs-master-build-plan.md` and `agility-docs-copy-and-build-strategy.md` (Part A = all page copy). **Neither is in this repo.** Needed before T3/T4 content drops.
 2. Handoff open decision 1: promote-and-301 `/docs/overview/page-management`? (Blocks part of Phase 4.)
 3. Handoff open decision 2: keep Inder for headings (400-only, synthesized bold) or pick a heading face with real weights? (Affects Phase 1; default: keep Inder, flag don't substitute.)
