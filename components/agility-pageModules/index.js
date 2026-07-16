@@ -11,6 +11,13 @@ import ArticleListing from "./ArticleListing";
 import HeroHeading from "./HeroHeading";
 import SDKsFrameworks from "./SDKsFrameworks";
 import TextBlocksWithImages from "./TextBlocksWithImages";
+import PageHero from "./ocean/PageHero";
+import MediaHero from "./ocean/MediaHero";
+import FeatureCardGroup from "./ocean/FeatureCardGroup";
+import ArticleListSection from "./ocean/ArticleListSection";
+import CodeBlock from "./ocean/CodeBlock";
+import CalloutBlock from "./ocean/CalloutBlock";
+import ThemeAwareImage from "./ocean/ThemeAwareImage";
 
 // All of the Agility Page Module Components that are in use in this site need to be imported into this index file.
 // Place Page Modules in allModules array below, passing in a name and the component.
@@ -32,6 +39,14 @@ const allModules = [
   { name: "SDKsFrameworks", module: SDKsFrameworks },
   { name: "TextBlocksWithImages", module: TextBlocksWithImages },
   { name: "Changelog", module: Changelog },
+  // Ocean redesign components (handoff §4)
+  { name: "PageHero", module: PageHero },
+  { name: "MediaHero", module: MediaHero },
+  { name: "FeatureCardGroup", module: FeatureCardGroup },
+  { name: "ArticleListSection", module: ArticleListSection },
+  { name: "CodeBlock", module: CodeBlock },
+  { name: "CalloutBlock", module: CalloutBlock },
+  { name: "ThemeAwareImage", module: ThemeAwareImage },
 ];
 
 export const getModule = (moduleName) => {

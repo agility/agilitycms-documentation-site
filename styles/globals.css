@@ -11,6 +11,20 @@
 /* Class-based dark mode driven by data-theme on <html> (three-state control) */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+/* Ocean feature-card accents: bar and ink are separate so yellow never sits
+   as text on a light surface (handoff §7 gotcha / mockup per-card ink). */
+.ocean-card-primary { --tcbar: var(--primary); --tcink: var(--primary); }
+.ocean-card-secondary { --tcbar: var(--secondary); --tcink: var(--secondary-dim); }
+.ocean-card-tertiary { --tcbar: var(--tertiary); --tcink: var(--warn); }
+html[data-theme="dark"] .ocean-card-primary { --tcink: var(--primary); }
+html[data-theme="dark"] .ocean-card-secondary { --tcink: var(--secondary); }
+html[data-theme="dark"] .ocean-card-tertiary { --tcink: var(--tertiary); }
+
+/* ThemeAwareImage visibility */
+.ocean-show-dark { display: none; }
+html[data-theme="dark"] .ocean-show-light { display: none; }
+html[data-theme="dark"] .ocean-show-dark { display: block; }
+
 @plugin '@tailwindcss/typography';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/aspect-ratio';

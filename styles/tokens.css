@@ -14,13 +14,18 @@
 	/* Radius — sharp corners are a signature, do not round them */
 	--r-xs: 2px; --r-sm: 2px; --r-md: 2px; --r-lg: 4px; --r-round: 999px;
 
-	/* Type — fonts loaded via next/font (see _app.js) */
+	--space: clamp(20px, 4vw, 40px);
+	--wrap: 1240px;
+}
+
+/* Type — fonts loaded via next/font (see _app.js). These aliases must be
+   declared on the <main> wrapper that carries the next/font variables, NOT
+   at :root: custom properties resolve var() references at the declaring
+   node, and --font-inder etc. don't exist at <html>. */
+main {
 	--font: var(--font-mulish), system-ui, sans-serif;
 	--serif: var(--font-inder), system-ui, sans-serif; /* Inder ships 400 only */
 	--mono: var(--font-fira-mono), ui-monospace, monospace;
-
-	--space: clamp(20px, 4vw, 40px);
-	--wrap: 1240px;
 }
 
 html[data-theme="light"] {
