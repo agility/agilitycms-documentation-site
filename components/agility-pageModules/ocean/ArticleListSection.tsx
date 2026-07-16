@@ -13,14 +13,25 @@ interface ArticleListSectionProps {
 		fields: {
 			sectionHeading: string;
 			sectionIntro?: string;
-			items?: { contentID: number; fields: LinkCardFields }[];
+			// expanded array when expandAllContentLinks is on; {referencename} otherwise
+			items?:
+				| { contentID: number; fields: LinkCardFields }[]
+				| { referencename: string };
 		};
+	};
+	customData?: {
+		items?: { contentID: number; fields: LinkCardFields }[];
 	};
 }
 
 // Section heading + intro + link cards (mockup .sec-title + guide links)
-const ArticleListSection = ({ module: { fields } }: ArticleListSectionProps) => {
-	const items = Array.isArray(fields.items) ? fields.items : [];
+const ArticleListSection = ({
+	module: { fields },
+	customData,
+}: ArticleListSectionProps) => {
+	const items = Array.isArray(fields.items)
+		? fields.items
+		: customData?.items || [];
 
 	return (
 		<section className="px-[var(--space)] py-6" style={{ background: "var(--bg)" }}>
@@ -97,6 +108,29 @@ const ArticleListSection = ({ module: { fields } }: ArticleListSectionProps) => 
 			</div>
 		</section>
 	);
+};
+
+// The page is fetched with expandAllContentLinks: false, so nested lists come
+// back as {referencename} — fetch the child items the same way legacy modules do.
+(ArticleListSection as any).getCustomInitialProps = async ({
+	agility,
+	languageCode,
+	item,
+}: any) => {
+	let items: any[] = [];
+	const referenceName = item?.fields?.items?.referencename;
+
+	if (referenceName) {
+		const children = await agility.getContentList({
+			referenceName,
+			languageCode,
+			sort: "properties.itemOrder",
+			contentLinkDepth: 1,
+		});
+		if (children?.items) items = children.items;
+	}
+
+	return { items };
 };
 
 export default ArticleListSection;

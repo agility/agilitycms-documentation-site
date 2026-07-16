@@ -13,13 +13,13 @@ const ListofLinks = ({ module, customData }) => {
   return (
     <div
       className={`mx-auto px-6 font-muli ${darkTheme === "true"
-          ? `bg-black text-white pt-14 pb-10`
-          : `bg-white text-darkerGray my-20`
+          ? `bg-(--n-900) text-(--n-50) pt-14 pb-10`
+          : `bg-(--bg) text-(--text) my-20`
         }`}
     >
       {fields.title && (
         <h2
-          className={`mb-10 text-center text-3xl font-medium tracking-normal ${darkTheme === "true" ? `text-offWhite` : `text-darkerGray`
+          className={`mb-10 text-center text-3xl font-medium tracking-normal ${darkTheme === "true" ? `text-(--n-50)` : `text-(--text)`
             }`}
         >
           {fields.title}
@@ -37,16 +37,16 @@ const ListofLinks = ({ module, customData }) => {
             <div
               key={action.title}
               className={`relative group p-6 ${darkTheme === "true"
-                  ? `bg-black hover:bg-darkestGray`
-                  : `bg-offWhite hover:bg-lightGray hover:text-brightPurple`
-                }  border-transparent border-l-2 hover:border-brightPurple`}
+                  ? `bg-(--n-900) hover:bg-(--n-800)`
+                  : `bg-(--surface) hover:bg-(--raised)`
+                }  border-transparent border-l-2 hover:border-(--primary)`}
             >
               <div className="flex">
                 <div>
                   {ActionIcon && (
-                    <div className="bg-white p-2 rounded-full mr-4">
+                    <div className="bg-(--n-50) p-2 rounded-full mr-4">
                       <ActionIcon
-                        className="h-6 w-6 text-brightPurple"
+                        className="h-6 w-6 text-(--primary)"
                         aria-hidden="true"
                       />
                     </div>
@@ -54,7 +54,10 @@ const ListofLinks = ({ module, customData }) => {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-bold text-offWhite">
+                  <h3
+                    className={`text-lg font-bold ${darkTheme === "true" ? `text-(--n-50)` : `text-(--text) group-hover:text-(--primary)`
+                      }`}
+                  >
                     <Link href={action.href} className="focus:outline-hidden"
                       target={action.target}
                       rel={action.rel}
@@ -65,7 +68,12 @@ const ListofLinks = ({ module, customData }) => {
 
                     </Link>
                   </h3>
-                  <p className="mt-2 text-darkGray">{action.description}</p>
+                  <p
+                    className={`mt-2 ${darkTheme === "true" ? `text-(--n-300)` : `text-(--text-2)`
+                      }`}
+                  >
+                    {action.description}
+                  </p>
                 </div>
               </div>
             </div>

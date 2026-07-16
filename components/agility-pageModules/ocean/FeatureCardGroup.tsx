@@ -16,8 +16,14 @@ interface FeatureCardGroupProps {
 		fields: {
 			groupHeading?: string;
 			layout?: string;
-			cards?: { contentID: number; fields: FeatureCardFields }[];
+			// expanded array when expandAllContentLinks is on; {referencename} otherwise
+			cards?:
+				| { contentID: number; fields: FeatureCardFields }[]
+				| { referencename: string };
 		};
+	};
+	customData?: {
+		cards?: { contentID: number; fields: FeatureCardFields }[];
 	};
 }
 
@@ -29,8 +35,13 @@ const layoutCols: Record<string, string> = {
 
 // Flagship cards (mockup .tcard). The bar colour and ink colour are separate
 // per-accent CSS classes (globals.css) so yellow never sits as text on light.
-const FeatureCardGroup = ({ module: { fields } }: FeatureCardGroupProps) => {
-	const cards = Array.isArray(fields.cards) ? fields.cards : [];
+const FeatureCardGroup = ({
+	module: { fields },
+	customData,
+}: FeatureCardGroupProps) => {
+	const cards = Array.isArray(fields.cards)
+		? fields.cards
+		: customData?.cards || [];
 	const cols = layoutCols[fields.layout || "three-up"] || layoutCols["three-up"];
 
 	if (cards.length === 0) return null;
@@ -154,6 +165,29 @@ const FeatureCardGroup = ({ module: { fields } }: FeatureCardGroupProps) => {
 			</div>
 		</section>
 	);
+};
+
+// The page is fetched with expandAllContentLinks: false, so nested lists come
+// back as {referencename} — fetch the child items the same way legacy modules do.
+(FeatureCardGroup as any).getCustomInitialProps = async ({
+	agility,
+	languageCode,
+	item,
+}: any) => {
+	let cards: any[] = [];
+	const referenceName = item?.fields?.cards?.referencename;
+
+	if (referenceName) {
+		const children = await agility.getContentList({
+			referenceName,
+			languageCode,
+			sort: "properties.itemOrder",
+			contentLinkDepth: 1,
+		});
+		if (children?.items) cards = children.items;
+	}
+
+	return { cards };
 };
 
 export default FeatureCardGroup;

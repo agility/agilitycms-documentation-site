@@ -43,10 +43,10 @@ const RightOrLeftAlignedLinks = ({ module, customData }) => {
       )}
     >
       <div className="lg:w-2/5 text-center lg:text-left mb-5 lg:mb-0">
-        <h2 className="mb-5 text-3xl font-medium tracking-normal text-darkerGray">
+        <h2 className="mb-5 text-3xl font-medium tracking-normal text-(--text)">
           {fields.title}
         </h2>
-        <p className="text-darkGray font-normal">{fields.subTitle}</p>
+        <p className="text-(--text-2) font-normal">{fields.subTitle}</p>
       </div>
       <div
         className={classNames(
@@ -59,23 +59,23 @@ const RightOrLeftAlignedLinks = ({ module, customData }) => {
           return (
             <div
               key={action.title}
-              className={classNames("relative group bg-white group")}
+              className={classNames("relative group bg-(--surface) group")}
             >
               <div className="flex flex-row">
-                <div className="border-transparent border-l-2 p-6 group-hover:border-brightPurple group-hover:bg-lightGray w-full transition duration-150 ease-in-out">
+                <div className="border-transparent border-l-2 p-6 group-hover:border-(--primary) group-hover:bg-(--raised) w-full transition duration-150 ease-in-out">
                   <div className="flex">
                     <div className="mr-6 mt-1">
                       {ActionIcon && (
                         <span>
                           <ActionIcon
-                            className="h-6 w-6 text-brightPurple"
+                            className="h-6 w-6 text-(--primary)"
                             aria-hidden="true"
                           />
                         </span>
                       )}
                     </div>
                     <div>
-                      <h3 className="text-darkerGray group-hover:text-brightPurple text-lg font-bold">
+                      <h3 className="text-(--text) group-hover:text-(--primary) text-lg font-bold">
                         <Link href={action.href}
                           className="focus:outline-hidden"
                           target={action.target}
@@ -90,7 +90,7 @@ const RightOrLeftAlignedLinks = ({ module, customData }) => {
 
                         </Link>
                       </h3>
-                      <p className="mt-2 text-darkGray">{action.description}</p>
+                      <p className="mt-2 text-(--text-2)">{action.description}</p>
                     </div>
                   </div>
                 </div>
