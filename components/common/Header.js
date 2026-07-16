@@ -133,14 +133,14 @@ export default function Header({
       <Disclosure
         id="Header"
         as="header"
-        className="flex-shrink-0 bg-white shadow z-40 relative font-muli sticky top-0"
+        className="shrink-0 bg-white shadow-sm z-40 relative font-muli sticky top-0"
       >
         {({ open }) => (
           <>
             <div className="mx-auto px-2 sm:px-4  lg:px-8">
               <div className="relative h-[60px] flex justify-between">
                 <div className="relative z-10 px-2 flex lg:px-0">
-                  <div className="flex-shrink-0 flex items-center">
+                  <div className="shrink-0 flex items-center">
                     <Link href="/" title="Agility Docs">
                       <img
                         className="block h-7 md:h-8 w-auto"
@@ -186,7 +186,7 @@ export default function Header({
                   </div>
                   <div className="relative z-10 flex items-center lg:hidden">
                     {/* Mobile menu button */}
-                    <Disclosure.Button className="p-2 inline-flex items-center justify-center text-darkestGray hover:bg-lightGray focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brightPurple">
+                    <Disclosure.Button className="p-2 inline-flex items-center justify-center text-darkestGray hover:bg-lightGray focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-brightPurple">
                       <span className="sr-only">Open menu</span>
                       {open ? (
                         <XIcon className="block h-7 w-7" aria-hidden="true" />

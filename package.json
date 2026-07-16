@@ -61,7 +61,6 @@
     "multiparty": "^4.2.2",
     "next": "16.2.10",
     "next-connect": "^0.10.2",
-    "nightwind": "^1.1.12",
     "node-html-parser": "^4.1.5",
     "nprogress": "^0.2.0",
     "prismjs": "^1.25.0",
@@ -83,16 +82,15 @@
   "devDependencies": {
     "@agility/content-fetch": "^2",
     "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^22",
     "@types/react": "^19",
-    "autoprefixer": "^10.2.5",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "postcss": "^8.2.8",
     "prettier": "^2.5.1",
     "prettier-plugin-tailwind": "^2.2.12",
-    "tailwindcss": "^3.3.3",
-    "tailwindcss-nested-groups": "^1.2.4",
+    "tailwindcss": "^4.3.3",
     "truncate-html": "^1.0.4",
     "typescript": "^5.9.0"
   }

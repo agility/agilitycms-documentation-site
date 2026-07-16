@@ -6,7 +6,7 @@ const Quote = ({ id, text, caption }) => {
   return (
     <div className="bg-blue-50 p-4 mt-8 mb-8">
       <div className="flex">
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <InformationCircleIcon
             className="h-5 w-5 text-blue-400"
             aria-hidden="true"

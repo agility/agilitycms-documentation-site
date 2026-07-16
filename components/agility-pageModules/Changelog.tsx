@@ -55,11 +55,11 @@ const Changelog = ({ module, customData }: ChangeLogProp): React.JSX.Element => 
     return (
         <>
             <div id="SideNav" className="z-40 flex-col order-1 hidden w-64 row-span-2 pt-4 pb-4 lg:flex font-muli">
-                <div className="top-[128px] sticky overflow-y-auto lg:flex lg:flex-shrink-0">
+                <div className="top-[128px] sticky overflow-y-auto lg:flex lg:shrink-0">
                     <FilterBlock filterOptions={filterOptions} setFilterSelection={setFilterSelection} filterSelection={filterSelection} />
                 </div>
             </div>
-            <div id="ScrollContainer" className="flex-grow order-3 w-full pt-20 border-l border-gray-200 lg:flex lg:justify-center">
+            <div id="ScrollContainer" className="grow order-3 w-full pt-20 border-l border-gray-200 lg:flex lg:justify-center">
                 <div className="relative px-4 mb-20 font-muli sm:px-6 lg:px-8">
                     <div className="absolute inset-0">
                         <div className="bg-white h-1/3 sm:h-2/3" />
@@ -70,23 +70,23 @@ const Changelog = ({ module, customData }: ChangeLogProp): React.JSX.Element => 
                                 <section key={item.contentID} className="group">
                                     <header className="flex items-center">
                                         <div className="min-w-[220px] p-4 pr-4 text-right group-hover:text-purple font-semibold text-lg">{getChangeDate(item.fields.date)}</div>
-                                        <h3 className="border-gray border-l-[#C6CFD8] min-h-[65px] ml-[-1px] p-5 pl-9 text-lg font-bold border-l-3 group-hover:border-purple">{item.fields.description}</h3>
+                                        <h3 className="border-gray border-l-[#C6CFD8] min-h-[65px] -ml-px p-5 pl-9 text-lg font-bold border-l-3 group-hover:border-purple">{item.fields.description}</h3>
                                     </header>
 
                                     <div className="border-lightGray">
-                                        <ul className="ml-[220px] border-l-1 border-gray border-l-2 list-inside list-disc">
+                                        <ul className="ml-[220px] border-l border-gray border-l-2 list-inside list-disc">
                                             {item.fields.changes?.map((change) => (
                                                 <li key={change.contentID} className="relative py-3 pl-9 text-darkestGray">
                                                     {change.fields.linkURL ? (
-                                                        <a href={change.fields.linkURL} className="anchor group-scope">
+                                                        <a href={change.fields.linkURL} className="anchor group/scope">
                                                             <div className="w-[220px] left-[-220px] absolute top-0 flex justify-end mt-3 pr-4">
                                                                 {change.fields.tags?.map((tag: any, index: Key) => (
-                                                                    <span key={index} className="group-scope-hover:bg-[#ECE5F6] bg-gray-100 text-[11px] inline-block ml-2 px-3 py-1 group-scope-hover:text-purple text-gray-500 font-bold rounded-full">
+                                                                    <span key={index} className="group-hover/scope:bg-[#ECE5F6] bg-gray-100 text-[11px] inline-block ml-2 px-3 py-1 group-hover/scope:text-purple text-gray-500 font-bold rounded-full">
                                                                         {tag.fields.title}
                                                                     </span>
                                                                 ))}
                                                             </div>
-                                                            <h4 className="inline font-bold group-scope-hover:text-purple">
+                                                            <h4 className="inline font-bold group-hover/scope:text-purple">
                                                                 {change.fields.title}
                                                                 <span className="block pl-6 text-base font-normal">{change.fields.description}</span>
                                                             </h4>

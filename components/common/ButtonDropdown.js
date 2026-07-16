@@ -39,7 +39,7 @@ export default function ButtonDropdown({ name, children, children2 }) {
               >
                 <Menu.Items
                   static
-                  className="origin-top-right absolute right-0 w-56 shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  className="origin-top-right absolute right-0 w-56 shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-hidden"
                 >
                   <div className="py-1">
                     {children.map((item) => (

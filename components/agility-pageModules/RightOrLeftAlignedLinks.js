@@ -77,7 +77,7 @@ const RightOrLeftAlignedLinks = ({ module, customData }) => {
                     <div>
                       <h3 className="text-darkerGray group-hover:text-brightPurple text-lg font-bold">
                         <Link href={action.href}
-                          className="focus:outline-none"
+                          className="focus:outline-hidden"
                           target={action.target}
                           rel={action.rel}
                         >

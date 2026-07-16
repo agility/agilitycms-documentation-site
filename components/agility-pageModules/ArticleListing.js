@@ -32,7 +32,7 @@ const ArticleListing = ({ module, customData }) => {
                 </div>
                 {article.concept && (
                   <div className="mt-6 flex items-center">
-                    <span className="bg-gray-100 text-darkerGray group-hover:text-brightPurple inline-flex items-center px-3 py-0.5 rounded-sm text-sm font-normal">
+                    <span className="bg-gray-100 text-darkerGray group-hover:text-brightPurple inline-flex items-center px-3 py-0.5 rounded-xs text-sm font-normal">
                       {article.concept}
                     </span>
                   </div>

@@ -3,13 +3,84 @@
 */
 
 /* Import tailwind base styles */
-@tailwind base;
+@import 'tailwindcss';
+
+@plugin '@tailwindcss/typography';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/aspect-ratio';
+
+@utility container {
+  @media (width >= --theme(--breakpoint-sm)) {
+    max-width: none;
+  }
+  @media (width >= 1200px) {
+    max-width: 1200px;
+  }
+  @media (width >= 1200px) {
+    max-width: 1200px;
+  }
+  @media (width >= 1200px) {
+    max-width: 1200px;
+  }
+  @media (width >= 1200px) {
+    max-width: 1200px;
+  }
+}
+
+@theme {
+  --border-width-*: initial;
+  --border-width-0: 0;
+  --border-width-2: 2px;
+  --border-width-3: 3px;
+  --border-width-4: 4px;
+  --border-width-6: 6px;
+  --border-width-8: 8px;
+  --default-border-width: 1px;
+
+  --font-*: initial;
+  --font-fontFamily-sans: var(--font-mulish);
+
+  --font-muli: var(--font-mulish), sans-serif;
+  --font-mono:
+    Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+  --width-15_1: 15.1rem;
+
+  --color-transparent: transparent;
+  --color-purple: #4600a8;
+  --color-brightPurple: #6d06ff;
+  --color-lightPurple: #5800d4;
+  --color-offwhite: #f1f5f9;
+  --color-lightGray: #f4f7fa;
+  --color-darkGray: #8d9fb1;
+  --color-darkerGray: #2a3846;
+  --color-darkestGray: #25303d;
+  --color-black: #171b20;
+
+  --grid-template-columns-fullWidth: 256px 1fr;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 /* Import tailwind component styles */
-@tailwind components;
 
 /* Import tailwind utility styles */
-@tailwind utilities;
 
 .prose h2 {
 	font-weight: 600;

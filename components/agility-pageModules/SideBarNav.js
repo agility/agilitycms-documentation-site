@@ -48,13 +48,13 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
 											item.current
 												? "bg-gray-100 text-darkestGray"
 												: "bg-white text-gray-600 hover:text-purple",
-											"group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-none px-8"
+											"group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-hidden px-8"
 										)}
 									>
 										<svg
 											className={classNames(
 												open ? "text-gray-400 rotate-90" : "text-gray-300",
-												"mr-2 flex-shrink-0 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
+												"mr-2 shrink-0 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
 											)}
 											viewBox="0 0 20 20"
 											aria-hidden="true"
@@ -103,7 +103,7 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
 			<button
 				type="button"
 				onClick={() => setMobileMenuOpen(true)}
-				className="lg:hidden fixed left-2 top-[65px] z-40 flex items-center justify-center w-9 h-9 bg-gray-50/60 backdrop-blur-sm rounded-full shadow-md hover:shadow-lg text-gray-500 hover:text-purple focus:outline-none focus:ring-2 focus:ring-purple focus:ring-offset-1 transition-all duration-200"
+				className="lg:hidden fixed left-2 top-[65px] z-40 flex items-center justify-center w-9 h-9 bg-gray-50/60 backdrop-blur-xs rounded-full shadow-md hover:shadow-lg text-gray-500 hover:text-purple focus:outline-hidden focus:ring-2 focus:ring-purple focus:ring-offset-1 transition-all duration-200"
 				aria-label="Open navigation menu"
 			>
 				<ChevronRightIcon className="h-4 w-4" aria-hidden="true" />
@@ -140,7 +140,7 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
 									<span className="text-lg font-semibold text-darkestGray">Navigation</span>
 									<button
 										type="button"
-										className="inline-flex items-center justify-center rounded-md p-2 text-darkGray hover:bg-lightGray hover:text-darkestGray focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple"
+										className="inline-flex items-center justify-center rounded-md p-2 text-darkGray hover:bg-lightGray hover:text-darkestGray focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-purple"
 										onClick={() => setMobileMenuOpen(false)}
 									>
 										<span className="sr-only">Close sidebar</span>
@@ -148,7 +148,7 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
 									</button>
 								</div>
 								<div className="flex-1 overflow-y-auto pt-4 pb-4">
-									<div className="flex flex-col flex-grow">
+									<div className="flex flex-col grow">
 										{renderNavigation()}
 									</div>
 								</div>
@@ -163,7 +163,7 @@ const SideBarNav = ({ module, dynamicPageItem, customData }) => {
 				id="SideNav"
 				className="hidden lg:flex z-40 flex-col w-64 pb-4 font-muli pt-[130px] max-h-screen mt-[-124px] overflow-y-auto scrollbar-thin"
 			>
-				<div className="flex flex-col flex-grow">
+				<div className="flex flex-col grow">
 					{renderNavigation()}
 				</div>
 			</div>

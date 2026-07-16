@@ -39,11 +39,11 @@ const PreviewWiget = ({ isPreview, isDevelopmentMode }) => {
             </span>
             
           </div>
-          <div className="order-2 flex-shrink-0 sm:order-3 sm:ml-2">
+          <div className="order-2 shrink-0 sm:order-3 sm:ml-2">
             <button
               type="button"
               title="Click to exit Preview Mode"
-              className="-mr-1 flex p-2 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-white"
+              className="-mr-1 flex p-2 rounded-md hover:bg-indigo-500 focus:outline-hidden focus:ring-2 focus:ring-white"
               onClick={handleView}
             >
               <span className="sr-only">Close Preview</span>

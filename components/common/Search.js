@@ -181,7 +181,7 @@ const Search = () => {
         {...autocomplete.getFormProps({ inputElement: inputRef.current })}
       >
         <input
-          className="block w-full border-none pt-2 pb-1.5 pl-10 pr-3 text-sm placeholder-darkGray bg-lightGray focus:outline-none focus:text-gray-900 focus:placeholder-gray-400 focus:border-purple focus:ring-1 focus:ring-purple sm:text-sm"
+          className="block w-full border-none pt-2 pb-1.5 pl-10 pr-3 text-sm placeholder-darkGray bg-lightGray focus:outline-hidden focus:text-gray-900 focus:placeholder-gray-400 focus:border-purple focus:ring-1 focus:ring-purple sm:text-sm"
           {...autocomplete.getInputProps({})}
           placeholder="Search docs..."
         />

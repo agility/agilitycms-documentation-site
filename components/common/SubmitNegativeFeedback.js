@@ -109,7 +109,7 @@ export default function SubmitNegativeFeedback({
                     id="submitFeedback"
                     name="message"
                     rows={3}
-                    className={`h-32 mt-5 shadow-sm block w-full focus:outline-none focus:ring-1 focus:ring-purple focus:border-transparent resize-none text-darkestGray sm:text-sm border border-lightGray  ${
+                    className={`h-32 mt-5 shadow-xs block w-full focus:outline-hidden focus:ring-1 focus:ring-purple focus:border-transparent resize-none text-darkestGray sm:text-sm border border-lightGray  ${
                       textCount > 0 ? `bg-white` : `bg-lightGray`
                     }`}
                     maxLength={maxTextLength}
@@ -126,14 +126,14 @@ export default function SubmitNegativeFeedback({
               <div className="sm:flex sm:flex-row-reverse">
                 <button
                   type="button"
-                  className="mt-3 w-full inline-flex justify-center border-2 border-purple shadow-sm px-4 py-2 bg-white text-base font-semibold text-purple sm:ml-3 sm:w-auto sm:text-sm"
+                  className="mt-3 w-full inline-flex justify-center border-2 border-purple shadow-xs px-4 py-2 bg-white text-base font-semibold text-purple sm:ml-3 sm:w-auto sm:text-sm"
                   onClick={() => cancel()}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="mt-3 w-full inline-flex justify-center border-2 border-transparent shadow-sm px-4 py-2 bg-purple text-base font-semibold text-white sm:ml-0 sm:w-auto sm:text-sm"
+                  className="mt-3 w-full inline-flex justify-center border-2 border-transparent shadow-xs px-4 py-2 bg-purple text-base font-semibold text-white sm:ml-0 sm:w-auto sm:text-sm"
                 >
                   Submit
                 </button>

@@ -47,11 +47,11 @@ const CMSWidget = ({ isPreview, isDevelopmentMode, page, dynamicPageItem }) => {
             <div className="mx-auto px-2 sm:px-6 lg:px-8">
             <div className="p-2 rounded-lg bg-indigo-600 shadow-lg sm:p-3">
                 <div className="flex items-center justify-between flex-wrap">
-                <div className="order-2 flex-shrink-0 sm:order-3">
+                <div className="order-2 shrink-0 sm:order-3">
                     <button
                         type="button"
                         title="Toggle Ctrl+Q"
-                        className=" flex p-2 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-white"
+                        className=" flex p-2 rounded-md hover:bg-indigo-500 focus:outline-hidden focus:ring-2 focus:ring-white"
                         onClick={editPage}
                     >
                         <span className="text-white mr-3">Edit Page</span>

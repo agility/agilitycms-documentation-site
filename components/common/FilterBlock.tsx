@@ -15,7 +15,7 @@ export const FilterBlock = ({ filterOptions, setFilterSelection, filterSelection
                 return (
                     <div key={filterOption.id} className="pb-2 group">
                         <input
-                            className="form-checkbox h-5 w-5 text-purple rounded cursor-pointer border-gray-300"
+                            className="form-checkbox h-5 w-5 text-purple rounded-sm cursor-pointer border-gray-300"
                             type="checkbox"
                             value={filterOption.id}
                             id={`${filterOption.id}`}
