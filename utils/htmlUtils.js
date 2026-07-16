@@ -1,4 +1,4 @@
-import { getHrefTarget } from "./linkUtils";
+import { getHrefTarget } from "./hrefUtils";
 import { parse } from "node-html-parser";
 
 const renderHTML = (html, mainSite) => {

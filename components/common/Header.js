@@ -14,7 +14,10 @@
   }
   ```
 */
+"use client";
+
 import React, { Fragment, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { SearchIcon } from "@heroicons/react/solid";
 import {
@@ -54,7 +57,15 @@ export default function Header({
   marketingContent,
   preHeader,
 }) {
-  const navigation = mainMenuLinks;
+  // Active section is computed client-side from the pathname (the server
+  // sends plain {name, href} links). Match on the first path segment so a
+  // top-level category highlights for any page beneath it.
+  const pathname = usePathname() || "/";
+  const firstSegment = (p) => (p || "").split("/")[1] || "";
+  const navigation = (mainMenuLinks || []).map((item) => ({
+    ...item,
+    current: firstSegment(pathname) === firstSegment(item.href),
+  }));
   const apiSDKsButton = {
     name: "APIs & SDKs",
     children: primaryDropdownLinks.map((l) => {
@@ -73,6 +84,7 @@ export default function Header({
 
   useEffect(() => {
     const scrollContainer = document.getElementById("ScrollContainer");
+    if (!scrollContainer) return;
     scrollContainer.addEventListener("scroll", function (e) {
       const scroll = this.scrollTop;
       const preheader = document.getElementById("preheader");

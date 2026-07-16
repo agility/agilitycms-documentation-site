@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useRef } from "react"
 import EditorJS from '@editorjs/editorjs'
 import Embed from '@editorjs/embed'

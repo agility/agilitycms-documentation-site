@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { ContentZone } from "@agility/nextjs";
 import { getModule } from "components/agility-pageModules";
 import Footer from "../common/Footer";
@@ -59,11 +59,7 @@ const WithSidebarNavTemplate = (props) => {
           )}
         </div>
       </div>
-      <Footer
-        navigation={props.footerNavigation}
-        bottomNavigation={props.footerBottomNavigation}
-        copyright={props.footerCopyright}
-      />
+      <Footer />
     </>
   );
 };

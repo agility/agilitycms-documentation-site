@@ -1,63 +1,12 @@
-import { client } from 'agility-graphql-client';
-import { gql } from "@apollo/client";
 import agility from '@agility/content-fetch'
 
-const getDynamicPageSitemapMapping = () => {
-  //get the sitemap from cache
-  const { sitemap } = client.readQuery({
-    query: READ_SITEMAP_FOR_DYNAMIC_URL_RESOLUTION,
-    variables: {},
-  });
-
-  //build dictionary of dynamic page urls by contentID for url resolution
-  let articleUrls = {};
-  sitemap.forEach((item) => {
-    if (item.contentID && item.contentID > 0) {
-      articleUrls[item.contentID] = item.path;
-    }
-  });
-  return articleUrls;
-}
-
-const READ_SITEMAP_FOR_DYNAMIC_URL_RESOLUTION = gql`
-    query ReadSitemapFlat {
-      sitemap {
-        path
-        contentID
-      }
-    }
-`;
-
-const READ_SITEMAP_FOR_HEADER = gql`
-    query ReadSitemapFlat {
-      sitemap {
-        menuText
-        path
-        visible {
-          menu
-        }
-      }
-    }
-`;
-
-const READ_FULL_SITEMAP = gql`
-    query ReadSitemapFlat {
-      sitemap {
-        title
-        name
-        path
-        pageID
-        isFolder
-        redirect
-        visible {
-          menu
-          sitemap
-        }
-        contentID
-      }
-    }
-`;
-
+/**
+ * Dictionary of dynamic-page URLs by contentID, straight from the Agility
+ * REST API (used by the search indexer, which must never read stale data).
+ *
+ * NOTE: page-render code should use lib/cms/getSitemapFlat (cached + tagged)
+ * instead — the old Apollo-cache sitemap trick died with the Pages Router.
+ */
 const getDynamicPageSitemapMappingREST = async (isPreview) => {
   const api = agility.getApi({
     guid: process.env.AGILITY_GUID,
@@ -65,8 +14,8 @@ const getDynamicPageSitemapMappingREST = async (isPreview) => {
     isPreview
   })
   const sitemapFlat = await api.getSitemapFlat({
-    channelName: 'website',
-    languageCode: 'en-us'
+    channelName: process.env.AGILITY_SITEMAP || 'website',
+    languageCode: (process.env.AGILITY_LOCALES || 'en-us').split(',')[0].trim()
   })
 
   let articleUrls = {};
@@ -78,13 +27,8 @@ const getDynamicPageSitemapMappingREST = async (isPreview) => {
   });
 
   return articleUrls;
-
 }
 
 export {
-  getDynamicPageSitemapMapping,
-  getDynamicPageSitemapMappingREST,
-  READ_SITEMAP_FOR_DYNAMIC_URL_RESOLUTION,
-  READ_FULL_SITEMAP,
-  READ_SITEMAP_FOR_HEADER
-}
+  getDynamicPageSitemapMappingREST
+};

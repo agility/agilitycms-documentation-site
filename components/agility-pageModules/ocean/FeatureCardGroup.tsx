@@ -1,5 +1,6 @@
 import React from "react";
 import OceanLink from "./OceanLink";
+import { getContentList } from "lib/cms/getContentList";
 
 interface FeatureCardFields {
 	heading: string;
@@ -22,9 +23,8 @@ interface FeatureCardGroupProps {
 				| { referencename: string };
 		};
 	};
-	customData?: {
-		cards?: { contentID: number; fields: FeatureCardFields }[];
-	};
+	languageCode?: string;
+	isPreview?: boolean;
 }
 
 const layoutCols: Record<string, string> = {
@@ -35,13 +35,14 @@ const layoutCols: Record<string, string> = {
 
 // Flagship cards (mockup .tcard). The bar colour and ink colour are separate
 // per-accent CSS classes (globals.css) so yellow never sits as text on light.
-const FeatureCardGroup = ({
+const FeatureCardGroup = async ({
 	module: { fields },
-	customData,
+	languageCode,
+	isPreview,
 }: FeatureCardGroupProps) => {
 	const cards = Array.isArray(fields.cards)
 		? fields.cards
-		: customData?.cards || [];
+		: await getNestedCards(fields.cards, languageCode, isPreview);
 	const cols = layoutCols[fields.layout || "three-up"] || layoutCols["three-up"];
 
 	if (cards.length === 0) return null;
@@ -168,26 +169,24 @@ const FeatureCardGroup = ({
 };
 
 // The page is fetched with expandAllContentLinks: false, so nested lists come
-// back as {referencename} — fetch the child items the same way legacy modules do.
-(FeatureCardGroup as any).getCustomInitialProps = async ({
-	agility,
-	languageCode,
-	item,
-}: any) => {
-	let cards: any[] = [];
-	const referenceName = item?.fields?.cards?.referencename;
+// back as {referencename} — fetch the child items via the cached data layer.
+const getNestedCards = async (
+	cardsField: { referencename: string } | undefined,
+	languageCode?: string,
+	isPreview?: boolean
+) => {
+	const referenceName = cardsField?.referencename;
+	if (!referenceName || !languageCode) return [];
 
-	if (referenceName) {
-		const children = await agility.getContentList({
-			referenceName,
-			languageCode,
-			sort: "properties.itemOrder",
-			contentLinkDepth: 1,
-		});
-		if (children?.items) cards = children.items;
-	}
-
-	return { cards };
+	const children = await getContentList({
+		referenceName,
+		locale: languageCode,
+		preview: !!isPreview,
+		sort: "properties.itemOrder",
+		contentLinkDepth: 1,
+		take: 50,
+	});
+	return children?.items || [];
 };
 
 export default FeatureCardGroup;

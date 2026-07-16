@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
+import { cacheLife } from "next/cache";
 import { RenderLink } from "./RenderLink";
+import { getFooterData } from "lib/cms-content/getFooterData";
 
 const adjustLink = (url) => {
   if (!url) return "";
@@ -19,10 +21,17 @@ const adjustLink = (url) => {
   return `https://agilitycms.com/${url}`;
 };
 
-const Footer = (props) => {
-  const navigation = props.navigation || [];
-  const bottomNavigation = props.bottomNavigation || [];
-  const copyright = props.copyright || `© Copyright, Agility Inc.`;
+// Server component: fetches its own nav from the main marketing instance
+// (cached — see lib/cms-content/getFooterData), so templates render <Footer/>
+// with no props. UI-level 'use cache' also captures the copyright year (a
+// non-deterministic Date read, which Cache Components requires us to handle).
+const Footer = async () => {
+  "use cache";
+  cacheLife("hours");
+  const { footerNavigation, footerBottomNavigation, footerCopyright } = await getFooterData();
+  const navigation = footerNavigation || [];
+  const bottomNavigation = footerBottomNavigation || [];
+  const copyright = footerCopyright || `© Copyright, Agility Inc.`;
   const year = new Date().getFullYear();
 
   return (

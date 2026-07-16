@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { ChevronRightIcon } from "@heroicons/react/outline";
@@ -7,10 +9,19 @@ import { createAutocomplete } from "@algolia/autocomplete-core";
 import { getAlgoliaResults } from "@algolia/autocomplete-preset-algolia";
 import { renderHTML } from "@agility/nextjs";
 
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID,
-  process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY
-);
+// Lazily create the Algolia client: algoliasearch() shuffles its host list
+// with Math.random() at construction, which Cache Components forbids during
+// prerender/SSR. All call sites run at event time (user typing), never SSR.
+let _searchClient = null;
+const getSearchClient = () => {
+  if (!_searchClient) {
+    _searchClient = algoliasearch(
+      process.env.NEXT_PUBLIC_ALGOLIA_APP_ID,
+      process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY
+    );
+  }
+  return _searchClient;
+};
 
 const HITS_PER_PAGE = 10;
 
@@ -67,7 +78,7 @@ const Search = () => {
               },
               getItems({ query }) {
                 return getAlgoliaResults({
-                  searchClient,
+                  searchClient: getSearchClient(),
                   queries: [
                     {
                       indexName: "doc_site",
@@ -112,7 +123,7 @@ const Search = () => {
       setHasMore(more);
       hasMoreRef.current = more;
       if (isNewQuery) {
-        searchClient
+        getSearchClient()
           .search([{ indexName: "doc_site", query: currentQuery, params: { hitsPerPage: 0 } }])
           .then((response) => {
             if (queryRef.current === currentQuery) {
@@ -130,7 +141,7 @@ const Search = () => {
     setIsLoadingMore(true);
     const nextPage = currentPage + 1;
     try {
-      const response = await searchClient.search([
+      const response = await getSearchClient().search([
         {
           indexName: "doc_site",
           query,

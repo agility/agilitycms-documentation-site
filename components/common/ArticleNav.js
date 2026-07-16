@@ -1,3 +1,5 @@
+"use client";
+
 /* This example requires Tailwind CSS v2.0+ */
 import { useEffect, useState } from "react";
 import axios from "axios";

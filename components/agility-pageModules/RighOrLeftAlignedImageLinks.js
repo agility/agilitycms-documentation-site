@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { getHrefRel, getHrefTarget } from "../../utils/linkUtils";
 import { AgilityPic } from "@agility/nextjs";
+import { getContentList } from "lib/cms/getContentList";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const RightOrLeftAlignedImageLinks = ({ module, customData }) => {
+// Server component: fetches its own child links (was getCustomInitialProps).
+const RightOrLeftAlignedImageLinks = async ({ module, languageCode, isPreview }) => {
   const { fields } = module;
-  const { actions } = customData;
+  const actions = await getImageLinkActions({ fields, languageCode, isPreview });
   return (
     <div
       className={classNames(
@@ -79,22 +81,17 @@ const RightOrLeftAlignedImageLinks = ({ module, customData }) => {
   );
 };
 
-RightOrLeftAlignedImageLinks.getCustomInitialProps = async ({
-  agility,
-  channelName,
-  languageCode,
-  item,
-  dynamicPageItem,
-  sitemapNode,
-}) => {
+const getImageLinkActions = async ({ fields, languageCode, isPreview }) => {
   let actions = [];
 
-  if (item.fields.children && item.fields.children.referencename) {
-    const children = await agility.getContentList({
-      referenceName: item.fields.children.referencename,
-      languageCode,
+  if (fields.children && fields.children.referencename) {
+    const children = await getContentList({
+      referenceName: fields.children.referencename,
+      locale: languageCode,
+      preview: !!isPreview,
       sort: "properties.itemOrder",
       contentLinkDepth: 1,
+      take: 50,
     });
 
     if (children && children.items) {
@@ -111,9 +108,7 @@ RightOrLeftAlignedImageLinks.getCustomInitialProps = async ({
     }
   }
 
-  return {
-    actions,
-  };
+  return actions;
 };
 
 export default RightOrLeftAlignedImageLinks;

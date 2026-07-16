@@ -1,9 +1,11 @@
 import { normalizeListedArticles } from "utils/linkUtils";
 import Link from "next/link";
+import { getContentList } from "lib/cms/getContentList";
 
-const ArticleListing = ({ module, customData }) => {
-  const { articles } = customData;
+// Server component: fetches its own listed articles (was getCustomInitialProps).
+const ArticleListing = async ({ module, languageCode, isPreview }) => {
   const { fields } = module;
+  const articles = await getListedArticles({ fields, languageCode, isPreview });
   return (
     <div className="relative my-20 px-4 sm:px-6 lg:px-8 font-muli">
       <div className="absolute inset-0">
@@ -47,28 +49,23 @@ const ArticleListing = ({ module, customData }) => {
   );
 };
 
-ArticleListing.getCustomInitialProps = async ({
-  agility,
-  channelName,
-  languageCode,
-  item,
-  dynamicPageItem,
-  sitemapNode,
-}) => {
-  const children = await agility.getContentList({
-    referenceName: item.fields.listedArticles.referencename,
-    languageCode,
+const getListedArticles = async ({ fields, languageCode, isPreview }) => {
+  if (!fields.listedArticles?.referencename) return [];
+
+  const children = await getContentList({
+    referenceName: fields.listedArticles.referencename,
+    locale: languageCode,
+    preview: !!isPreview,
     sort: "properties.itemOrder",
     contentLinkDepth: 3,
+    take: 50,
   });
 
-  const articles = normalizeListedArticles({
-    listedArticles: children.items,
+  return await normalizeListedArticles({
+    listedArticles: children.items || [],
+    locale: languageCode,
+    preview: !!isPreview,
   });
-
-  return {
-    articles,
-  };
 };
 
 export default ArticleListing;

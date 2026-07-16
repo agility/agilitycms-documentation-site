@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import {
 	LinkIcon,
@@ -88,7 +90,9 @@ const PreviewBar = ({ isPreview, isDevelopmentMode, page, dynamicPageItem }) => 
 		}
 		const exit = confirm("Would you like to exit Preview Mode?");
 		if (exit === true) {
-			window.location.href = `${nextConfig.basePath}/api/exitPreview?slug=${window.location.pathname}`;
+			// pathname includes the /docs basePath already; slug is basePath-relative
+			const slug = window.location.pathname.replace(nextConfig.basePath, "") || "/";
+			window.location.href = `${nextConfig.basePath}/api/preview/exit?slug=${encodeURIComponent(slug)}`;
 		}
 	};
 

@@ -1,5 +1,6 @@
 import React from "react";
 import OceanLink from "./OceanLink";
+import { getContentList } from "lib/cms/getContentList";
 
 interface LinkCardFields {
 	heading: string;
@@ -19,19 +20,19 @@ interface ArticleListSectionProps {
 				| { referencename: string };
 		};
 	};
-	customData?: {
-		items?: { contentID: number; fields: LinkCardFields }[];
-	};
+	languageCode?: string;
+	isPreview?: boolean;
 }
 
 // Section heading + intro + link cards (mockup .sec-title + guide links)
-const ArticleListSection = ({
+const ArticleListSection = async ({
 	module: { fields },
-	customData,
+	languageCode,
+	isPreview,
 }: ArticleListSectionProps) => {
 	const items = Array.isArray(fields.items)
 		? fields.items
-		: customData?.items || [];
+		: await getNestedItems(fields.items, languageCode, isPreview);
 
 	return (
 		<section className="px-[var(--space)] py-6" style={{ background: "var(--bg)" }}>
@@ -111,26 +112,24 @@ const ArticleListSection = ({
 };
 
 // The page is fetched with expandAllContentLinks: false, so nested lists come
-// back as {referencename} — fetch the child items the same way legacy modules do.
-(ArticleListSection as any).getCustomInitialProps = async ({
-	agility,
-	languageCode,
-	item,
-}: any) => {
-	let items: any[] = [];
-	const referenceName = item?.fields?.items?.referencename;
+// back as {referencename} — fetch the child items via the cached data layer.
+const getNestedItems = async (
+	itemsField: { referencename: string } | undefined,
+	languageCode?: string,
+	isPreview?: boolean
+) => {
+	const referenceName = itemsField?.referencename;
+	if (!referenceName || !languageCode) return [];
 
-	if (referenceName) {
-		const children = await agility.getContentList({
-			referenceName,
-			languageCode,
-			sort: "properties.itemOrder",
-			contentLinkDepth: 1,
-		});
-		if (children?.items) items = children.items;
-	}
-
-	return { items };
+	const children = await getContentList({
+		referenceName,
+		locale: languageCode,
+		preview: !!isPreview,
+		sort: "properties.itemOrder",
+		contentLinkDepth: 1,
+		take: 50,
+	});
+	return children?.items || [];
 };
 
 export default ArticleListSection;

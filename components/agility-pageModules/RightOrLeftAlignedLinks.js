@@ -24,14 +24,16 @@
 import icons from "../common/Icons";
 import Link from "next/link";
 import { normalizeListedLinks } from "../../utils/linkUtils";
+import { getContentList } from "lib/cms/getContentList";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const RightOrLeftAlignedLinks = ({ module, customData }) => {
+// Server component: fetches its own child links (was getCustomInitialProps).
+const RightOrLeftAlignedLinks = async ({ module, languageCode, isPreview }) => {
   const { fields } = module;
-  const { actions } = customData;
+  const actions = await getLinkActions({ fields, languageCode, isPreview });
 
   return (
     <div
@@ -103,35 +105,29 @@ const RightOrLeftAlignedLinks = ({ module, customData }) => {
   );
 };
 
-RightOrLeftAlignedLinks.getCustomInitialProps = async ({
-  agility,
-  channelName,
-  languageCode,
-  item,
-  dynamicPageItem,
-  sitemapNode,
-}) => {
+const getLinkActions = async ({ fields, languageCode, isPreview }) => {
   let actions = [];
 
-  if (item.fields.children && item.fields.children.referencename) {
-    const children = await agility.getContentList({
-      referenceName: item.fields.children.referencename,
-      languageCode,
+  if (fields.children && fields.children.referencename) {
+    const children = await getContentList({
+      referenceName: fields.children.referencename,
+      locale: languageCode,
+      preview: !!isPreview,
       sort: "properties.itemOrder",
       contentLinkDepth: 3,
+      take: 50,
     });
 
     if (children && children.items) {
-      actions = normalizeListedLinks({
+      actions = await normalizeListedLinks({
         listedLinks: children.items,
+        locale: languageCode,
+        preview: !!isPreview,
       });
     }
   }
 
-
-  return {
-    actions,
-  };
+  return actions;
 };
 
 export default RightOrLeftAlignedLinks;

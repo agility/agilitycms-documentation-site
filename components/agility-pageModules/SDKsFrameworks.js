@@ -2,10 +2,12 @@ import React from "react";
 import { getHrefRel, getHrefTarget } from "../../utils/linkUtils";
 import Link from "next/link";
 import { AgilityPic } from "@agility/nextjs";
+import { getContentList } from "lib/cms/getContentList";
 
-const SDKsFrameworks = ({ module, customData }) => {
+// Server component: fetches its own links (was getCustomInitialProps).
+const SDKsFrameworks = async ({ module, languageCode, isPreview }) => {
   const { fields } = module;
-  const { actions } = customData;
+  const actions = await getSDKActions({ fields, languageCode, isPreview });
   return (
     <div className="max-w-2xl lg:max-w-5xl mx-auto my-20 text-center px-8 font-muli">
       <h2 className="mb-5 text-3xl font-medium tracking-normal text-darkerGray">
@@ -44,22 +46,17 @@ const SDKsFrameworks = ({ module, customData }) => {
 
 export default SDKsFrameworks;
 
-SDKsFrameworks.getCustomInitialProps = async ({
-  agility,
-  channelName,
-  languageCode,
-  item,
-  dynamicPageItem,
-  sitemapNode,
-}) => {
+const getSDKActions = async ({ fields, languageCode, isPreview }) => {
   let actions = [];
 
-  if (item.fields.links && item.fields.links.referencename) {
-    const children = await agility.getContentList({
-      referenceName: item.fields.links.referencename,
-      languageCode,
+  if (fields.links && fields.links.referencename) {
+    const children = await getContentList({
+      referenceName: fields.links.referencename,
+      locale: languageCode,
+      preview: !!isPreview,
       sort: "properties.itemOrder",
       contentLinkDepth: 1,
+      take: 50,
     });
 
     if (children && children.items) {
@@ -76,7 +73,5 @@ SDKsFrameworks.getCustomInitialProps = async ({
     }
   }
 
-  return {
-    actions,
-  };
+  return actions;
 };

@@ -1,9 +1,24 @@
 import truncate from 'truncate-html'
-import { getDynamicPageSitemapMapping } from "./sitemapUtils";
+import { getHrefTarget, getHrefRel } from "./hrefUtils";
+import { getSitemapFlat } from "lib/cms/getSitemapFlat";
+import { defaultLocale } from "lib/i18n/config";
 
-const normalizeListedLinks = ({ listedLinks }) => {
+// Dynamic-page URLs by contentID, from the cached flat sitemap (tagged, so
+// the revalidate webhook keeps it fresh). Replaces the old Apollo-cache trick.
+const getArticleUrls = async ({ locale, preview }) => {
+    const sitemap = await getSitemapFlat({ locale: locale || defaultLocale, preview: !!preview });
+    const articleUrls = {};
+    Object.values(sitemap).forEach((node) => {
+        if (node.contentID && node.contentID > 0) {
+            articleUrls[node.contentID] = node.path;
+        }
+    });
+    return articleUrls;
+}
 
-    const articleUrls = getDynamicPageSitemapMapping();
+const normalizeListedLinks = async ({ listedLinks, locale, preview }) => {
+
+    const articleUrls = await getArticleUrls({ locale, preview });
 
     const list = listedLinks
         .filter(item => item.fields.article || item.fields.explicitURL)
@@ -35,8 +50,8 @@ const normalizeListedLinks = ({ listedLinks }) => {
     return list;
 }
 
-const normalizeListedArticles = ({ listedArticles }) => {
-    const articleUrls = getDynamicPageSitemapMapping();
+const normalizeListedArticles = async ({ listedArticles, locale, preview }) => {
+    const articleUrls = await getArticleUrls({ locale, preview });
 
     const list = listedArticles.map((item) => {
         const article = item.fields.article;
@@ -88,21 +103,6 @@ const getArticleDescription = (article) => {
         }
     }
     return description;
-}
-
-const getHrefTarget = (href) => {
-    if (!href) return "_self";
-    if (href && href.indexOf('://') > 0 || href.indexOf("//") === 0) {
-        return '_blank';
-    }
-    return '_self';
-}
-
-const getHrefRel = (href) => {
-    if (getHrefTarget(href) === '_blank') {
-        return 'noopener';
-    }
-    return null;
 }
 
 export {

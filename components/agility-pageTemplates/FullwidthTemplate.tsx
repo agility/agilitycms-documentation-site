@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { ContentZone, ContentZoneProps } from '@agility/nextjs';
 import { getModule } from 'components/agility-pageModules';
 import Footer from '../common/Footer';
@@ -13,11 +13,7 @@ const FullwidthTemplate = (props) => {
                     getModule={getModule}
                 />
             </div>
-            <Footer
-                navigation={props.footerNavigation}
-                bottomNavigation={props.footerBottomNavigation}
-                copyright={props.footerCopyright}
-            />
+            <Footer />
         </>
     );
 };
