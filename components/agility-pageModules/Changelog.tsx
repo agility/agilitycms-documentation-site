@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { client } from 'agility-graphql-client';
 import { gql } from '@apollo/client';
 import { ChangeLogProp } from 'types/Changelog';
-import { Key, useEffect, useState } from 'react';
+import React, { Key, useEffect, useState } from 'react';
 import { FilterBlock } from 'components/common/FilterBlock';
 
 const getChangeDate = (dateStr: string) => {
@@ -11,7 +11,7 @@ const getChangeDate = (dateStr: string) => {
     return dt.toFormat('LLLL dd, yyyy');
 };
 
-const Changelog = ({ module, customData }: ChangeLogProp): JSX.Element => {
+const Changelog = ({ module, customData }: ChangeLogProp): React.JSX.Element => {
     const { changelog: changeLogItems, changelogtags: changeLogTags } = customData;
     const [filterOptions, setFilterOptions] = useState<{ title: string; id: number }[]>([]);
     const [changeLogList, setChangeLogList] = useState<any[]>([]);
