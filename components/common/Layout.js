@@ -7,8 +7,7 @@ import Error from "next/error";
 import HeadSEO from "./HeadSEO";
 import LoadingWidget from "./LoadingWidget";
 import Header from "../common/Header";
-import PreviewWidget from "./PreviewWidget";
-import CMSWidget from "./CMSWidget";
+import PreviewBar from "./PreviewBar";
 import nextConfig from "next.config";
 import { GoogleTagManager } from '@next/third-parties/google'
 import { Intercom } from "@intercom/messenger-js-sdk";
@@ -123,11 +122,7 @@ function Layout(props) {
               preHeader={props.preHeader}
             />
             <AgilityPageTemplate {...props} />
-            <PreviewWidget
-              isPreview={props.isPreview}
-              isDevelopmentMode={props.isDevelopmentMode}
-            />
-            <CMSWidget
+            <PreviewBar
               page={props.page}
               dynamicPageItem={props.dynamicPageItem}
               isPreview={props.isPreview}
