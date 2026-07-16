@@ -130,6 +130,11 @@ Code side:
 | AI articles container pair (`AIArticles` + `AISections`) if AI becomes a real top-nav category | Add | Follows the existing category→container-pair convention exactly; case-sensitive reference names on write |
 | Existing Doc Article/Doc Section models, all article content, all URLs | **Untouched** | Hard constraint |
 
+### Agility MCP server bugs found while executing (file on agility-mcp-server)
+1. **`save_page_model` phantoms** — returns success + pageTemplateID, but the model never appears in `get_page_models` and `save_page` against it fails. Workaround: create page models manually in the UI (we skipped new page models entirely).
+2. **Module ordering is write-only** — `reorder_page_modules` returns success but is a no-op (verified on pages 2 and 58; versionID bumps, order unchanged), and `save_page` ignores the zones array order for modules already on the page (existing keep their old order, new ones append). Workaround used for the hub: save the page with only the modules you want *first*, then save again appending the rest — re-added modules are **cloned to new contentIDs** in array order. Side effect: the original module items (92/101/99/327 on home) become unused once the staging version publishes.
+3. **DropdownList choices get mangled on model save** — label/value pairs shift (`"three-up\nTwo-up"` etc.). Happened on FeatureCard.Accent, FeatureCardGroup.Layout, PageHero.Theme; all re-saved correctly on 2026-07-16. Check CodeBlock/CalloutBlock dropdowns before T4 content drops.
+
 ---
 
 ## 5. Shared design system with the marketing site
