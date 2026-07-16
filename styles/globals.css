@@ -114,12 +114,12 @@ html[data-theme="dark"] .ocean-show-dark { display: block; }
 } */
 
 #marketing-content a {
-	color: #ffc414;
+	color: var(--tertiary);
 	margin-left: 17px;
 }
 
 .marketing-arrow {
-	color: #ffc414;
+	color: var(--tertiary);
 }
 
 #marketing-content {
@@ -127,7 +127,7 @@ html[data-theme="dark"] .ocean-show-dark { display: block; }
 }
 
 .prose a {
-	color: #6d06ff;
+	color: var(--primary);
 }
 
 span.hljs-string {
@@ -179,7 +179,7 @@ code > span.hljs-string {
 
 /* list item css */
 .prose ul > li::before {
-	background-color: #6d06ff;
+	background-color: var(--primary);
 }
 
 .prose ul > li > ul > li::before {
@@ -191,7 +191,7 @@ code > span.hljs-string {
 }
 
 .prose ol > li::before {
-	color: #6d06ff;
+	color: var(--primary);
 }
 
 .prose ol > li > ol > li::before {

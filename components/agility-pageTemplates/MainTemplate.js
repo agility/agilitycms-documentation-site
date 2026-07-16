@@ -5,7 +5,7 @@ import Footer from "../common/Footer";
 
 const MainTemplate = (props) => {
   return (
-    <div id="MainTemplate" className="flex grow bg-white overflow-hidden">
+    <div id="MainTemplate" className="flex grow bg-(--bg) text-(--text) overflow-hidden">
       <div id="ScrollContainer" className="grow overflow-y-auto">
         <div id="ContentContainer">
           <ContentZone

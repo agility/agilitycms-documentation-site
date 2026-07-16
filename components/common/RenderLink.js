@@ -30,12 +30,12 @@ export function RenderLink({ link, adjustLink }) {
         <a
           href={href}
           target={link.target}
-          className="block pb-3 text-purple-300 hover:text-white"
+          className="block pb-3 text-(--n-300) hover:text-(--n-50)"
         >
           {link.name || link.title}
         </a>
       ) : (
-        <span className="block pb-3 text-purple-300">{link.name || link.title}</span>
+        <span className="block pb-3 text-(--n-300)">{link.name || link.title}</span>
       )}
     </>
   );

@@ -16,7 +16,7 @@ const WithSidebarNavTemplate = (props) => {
 
   return (
     <>
-      <div id="WithSidebarNavTemplate" className="flex grow bg-white">
+      <div id="WithSidebarNavTemplate" className="flex grow bg-(--bg) text-(--text)">
         <div>
           <div className="hidden lg:flex lg:shrink-0 overflow-y-auto sticky top-[128px]">
             <ContentZone

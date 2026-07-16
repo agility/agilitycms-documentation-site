@@ -88,7 +88,7 @@ export default function Header({
     <>
       {preHeader.showPreHeader === true && (
         <div
-          className="px-2 sm:px-4 lg:px-8 pt-3 pb-2 bg-purple text-white hidden md:block font-muli"
+          className="px-2 sm:px-4 lg:px-8 pt-3 pb-2 bg-(--n-900) text-(--n-50) hidden md:block font-muli"
           id="preheader"
         >
           <div className="flex justify-between">
@@ -134,7 +134,7 @@ export default function Header({
       <Disclosure
         id="Header"
         as="header"
-        className="shrink-0 bg-white shadow-sm z-40 relative font-muli sticky top-0"
+        className="shrink-0 bg-(--surface) border-b border-(--border) z-40 relative font-muli sticky top-0"
       >
         {({ open }) => (
           <>
@@ -177,9 +177,10 @@ export default function Header({
                       rel="noreferrer"
                       className="py-[9px] px-[19px] font-bold custom-hover"
                       style={{
-                        color: "#FFF",
-                        backgroundColor: "#5800d4",
+                        color: "var(--on-color)",
+                        backgroundColor: "var(--tertiary)",
                         fontSize: ".875rem",
+                        borderRadius: "var(--r-sm)",
                       }}
                     >
                       Try For Free
@@ -187,7 +188,7 @@ export default function Header({
                   </div>
                   <div className="relative z-10 flex items-center lg:hidden">
                     {/* Mobile menu button */}
-                    <Disclosure.Button className="p-2 inline-flex items-center justify-center text-darkestGray hover:bg-lightGray focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-brightPurple">
+                    <Disclosure.Button className="p-2 inline-flex items-center justify-center text-(--text-2) hover:bg-(--raised) focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-(--primary)">
                       <span className="sr-only">Open menu</span>
                       {open ? (
                         <XIcon className="block h-7 w-7" aria-hidden="true" />
@@ -208,7 +209,7 @@ export default function Header({
                     href="https://agilitycms.com/trial/"
                     rel="noreferrer"
                     className="border-2 pt-2 pb-1.5 px-4 font-bold custom-hover"
-                    style={{ color: "#5800d4", borderColor: "#5800d4" }}
+                    style={{ color: "var(--primary)", borderColor: "var(--primary)", borderRadius: "var(--r-sm)" }}
                   >
                     Try For Free
                   </a>
@@ -223,8 +224,8 @@ export default function Header({
                     <Link key={item.name} href={item.href}
                       className={classNames(
                         item.current
-                          ? "text-purple border-brightPurple"
-                          : "text-gray-900 hover:text-purple border-transparent",
+                          ? "text-(--primary) border-(--primary)"
+                          : "text-(--text-2) hover:text-(--primary) border-transparent",
                         "font-semibold border-b-2 pb-1"
                       )}
                       aria-current={item.current ? "page" : undefined}
@@ -279,7 +280,7 @@ export default function Header({
                     href="https://agilitycms.com/trial/"
                     rel="noreferrer"
                     className="border-2 pt-2 pb-1.5 px-4 font-bold custom-hover block md:hidden w-full text-center"
-                    style={{ color: "#5800d4", borderColor: "#5800d4" }}
+                    style={{ color: "var(--primary)", borderColor: "var(--primary)", borderRadius: "var(--r-sm)" }}
                   >
                     Try For Free
                   </a>
@@ -299,8 +300,8 @@ const MenuLink = ({ item }) => {
   return (
     <Link href={item.href} className={classNames(
       item.current
-        ? "bg-lightGray text-darkestGray"
-        : "text-darkestGray hover:bg-lightGray hover:text-gray-900",
+        ? "bg-(--raised) text-(--text)"
+        : "text-(--text-2) hover:bg-(--raised) hover:text-(--text)",
       "block py-2 px-3 text-base font-medium"
     )}
       aria-current={item.current ? "page" : undefined}

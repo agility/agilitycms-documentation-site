@@ -27,9 +27,9 @@ const Footer = (props) => {
 
   return (
     <footer className="">
-      <div className="bg-highlight px-8 pt-14 pb-14 text-white" style={{ backgroundColor: "#4600A8" }}>
+      <div className="px-8 pt-14 pb-14 text-(--n-50)" style={{ backgroundColor: "var(--n-900)" }}>
         <div className="mx-auto max-w-7xl">
-          <div className="border-t border-t-white border-opacity-50"></div>
+          <div className="border-t border-t-(--n-700)"></div>
           <div className="mt-8 gap-2 lg:flex lg:flex-wrap lg:items-start">
             <div className="flex-1 gap-2 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
               {navigation.map((col, idx) => {
@@ -39,7 +39,7 @@ const Footer = (props) => {
                     {col.name && (
                       <h4 className="font-medium mb-3">{col.name}</h4>
                     )}
-                    <ul className="mt-2 flex flex-col text-sm text-gray-100">
+                    <ul className="mt-2 flex flex-col text-sm text-(--n-200)">
                       {col.children
                         ?.filter((link) => link && (link.href || link.name)) // Filter out invalid links
                         .map((link, idx2) => {
@@ -57,9 +57,9 @@ const Footer = (props) => {
           </div>
         </div>
       </div>
-      <div className="bg-highlight-dark p-3 text-white" style={{ backgroundColor: "#380087" }}>
+      <div className="p-3 text-(--n-50)" style={{ backgroundColor: "var(--n-950)" }}>
         <div className="mx-auto max-w-7xl lg:flex lg:flex-row-reverse lg:items-center lg:justify-between text-sm">
-          <div className="text-purple-300 text-center lg:text-left">
+          <div className="text-(--n-400) text-center lg:text-left">
             {copyright} {year}
           </div>
 
@@ -71,14 +71,14 @@ const Footer = (props) => {
                 return (
                   <div key={`${link.href}-${link.name || 'link'}-${index}`}>
                     <a
-                      className="text-purple-300 hover:text-white p-1 px-2"
+                      className="text-(--n-400) hover:text-(--n-50) p-1 px-2"
                       href={href}
                       target={link.target}
                     >
                       {link.name}
                     </a>
                     {index < filteredArray.length - 1 && (
-                      <span className="text-purple-300">|</span>
+                      <span className="text-(--n-400)">|</span>
                     )}
                   </div>
                 );
