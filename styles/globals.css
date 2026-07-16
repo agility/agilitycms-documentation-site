@@ -5,6 +5,12 @@
 /* Import tailwind base styles */
 @import 'tailwindcss';
 
+/* Ocean design tokens (light + dark theme blocks) */
+@import './tokens.css';
+
+/* Class-based dark mode driven by data-theme on <html> (three-state control) */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 @plugin '@tailwindcss/typography';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/aspect-ratio';

@@ -24,6 +24,7 @@ import {
   SupportIcon,
 } from "@heroicons/react/outline";
 import ButtonDropdown from "../common/ButtonDropdown";
+import ThemeControl from "../common/ThemeControl";
 import Link from "next/link";
 import Search from "./Search";
 import { ChevronRightIcon } from "@heroicons/react/solid";
@@ -200,7 +201,8 @@ export default function Header({
                   </div>
                 </div>
 
-                <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
+                <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center lg:gap-4">
+                  <ThemeControl />
                   <a
                     target="_blank"
                     href="https://agilitycms.com/trial/"
