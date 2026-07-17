@@ -11,10 +11,10 @@ const Table = ({ id, withHeadings, content }) => {
     <div className="flex flex-col mt-8 mb-8">
       <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-          <div className="shadow-xs overflow-hidden border-b border-gray-200">
-            <table className="min-w-full divide-y divide-gray-200">
+          <div className="shadow-xs overflow-hidden border-b border-(--border)">
+            <table className="min-w-full divide-y divide-(--border)">
               {withHeadings && (
-                <thead className="bg-gray-50">
+                <thead className="bg-(--raised)">
                   <tr>
                     {headings.map((heading, idx) => {
                       return (
@@ -46,12 +46,12 @@ const Table = ({ id, withHeadings, content }) => {
 
 const Row = ({ row, idx }) => {
   return (
-    <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-lightGray"}>
+    <tr key={idx} className={idx % 2 === 0 ? "bg-(--surface)" : "bg-(--raised)"}>
       {row.map((rowCol, idx2) => {
         return (
           <td
             key={idx2}
-            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+            className="px-6 py-4 whitespace-nowrap text-sm text-(--text)"
           >
             {rowCol}
           </td>

@@ -21,15 +21,15 @@ const RightOrLeftAlignedImageLinks = async ({ module, languageCode, isPreview })
       )}
     >
       <div className="lg:w-2/5 text-center lg:text-left mb-5 lg:mb-0">
-        <h2 className="mb-5 text-3xl font-extrabold text-gray-900">
+        <h2 className="mb-5 text-3xl font-extrabold text-(--text)">
           {fields.title}
         </h2>
-        <p className="text-gray-500">{fields.subTitle}</p>
+        <p className="text-(--muted)">{fields.subTitle}</p>
       </div>
       <div
         className={classNames(
           fields.rightAlignLinks === "true" ? "lg:ml-auto" : "lg:mr-auto",
-          "lg:w-1/2 rounded-lg mb-10 bg-gray-200 overflow-hidden shadow-xl divide-y divide-gray-200 sm:divide-y-0 sm:grid sm:grid-cols-2 sm:gap-px"
+          "lg:w-1/2 rounded-lg mb-10 bg-(--border) overflow-hidden shadow-xl divide-y divide-(--border) sm:divide-y-0 sm:grid sm:grid-cols-2 sm:gap-px"
         )}
       >
         {actions.map((action, actionIdx) => {
@@ -37,16 +37,16 @@ const RightOrLeftAlignedImageLinks = async ({ module, languageCode, isPreview })
             <div
               key={action.title}
               className={classNames(
-                "relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500"
+                "relative group bg-(--surface) p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-(--primary)"
               )}
             >
               <div className="flex flex-row items-center">
                 <div className="mr-6">
                   <span
                     className={classNames(
-                      "bg-white",
+                      "bg-(--surface)",
                       "text-white",
-                      "rounded-lg inline-flex p-3 ring-4 ring-white"
+                      "rounded-lg inline-flex p-3"
                     )}
                   >
                     <AgilityPic

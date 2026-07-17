@@ -107,6 +107,23 @@ html[data-theme="dark"] .ocean-show-dark { display: block; }
 	scroll-margin-top: 140px; /* Offset for sticky header */
 }
 
+/* Article prose on ocean tokens — the typography plugin's gray defaults are
+   unreadable in dark mode. */
+.prose {
+	color: var(--text-2);
+}
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6,
+.prose strong, .prose thead th {
+	color: var(--text);
+}
+.prose blockquote {
+	color: var(--text-2);
+	border-left-color: var(--border-strong);
+}
+.prose hr {
+	border-color: var(--border);
+}
+
 /* @import url("https://fonts.googleapis.com/css?family=Muli:100,200,300,400,600,700,900&display=swap"); */
 
 /* * {
@@ -131,7 +148,37 @@ html[data-theme="dark"] .ocean-show-dark { display: block; }
 }
 
 span.hljs-string {
-	color: #7556e8;
+	color: var(--tok-str);
+}
+
+/* lightfair (styles/lightfair.css) is a light-only hljs theme; remap its
+   core token colors onto ocean tokens in dark mode so code stays readable
+   on --code-bg. */
+html[data-theme="dark"] .hljs {
+	color: var(--text);
+	background: transparent;
+}
+html[data-theme="dark"] .hljs-keyword,
+html[data-theme="dark"] .hljs-selector-tag,
+html[data-theme="dark"] .hljs-built_in {
+	color: var(--secondary);
+}
+html[data-theme="dark"] .hljs-string,
+html[data-theme="dark"] .hljs-attr {
+	color: var(--tok-str);
+}
+html[data-theme="dark"] .hljs-comment,
+html[data-theme="dark"] .hljs-quote {
+	color: var(--muted);
+}
+html[data-theme="dark"] .hljs-title,
+html[data-theme="dark"] .hljs-name,
+html[data-theme="dark"] .hljs-function {
+	color: var(--primary-bright);
+}
+html[data-theme="dark"] .hljs-number,
+html[data-theme="dark"] .hljs-literal {
+	color: var(--warn);
 }
 
 /* code css */
@@ -152,7 +199,9 @@ code > span.hljs-string {
 }
 
 .prose code {
-	@apply text-base bg-gray-100 px-2 py-1 text-gray-700;
+	@apply text-base px-2 py-1;
+	background: var(--raised);
+	color: var(--text);
 	font-weight: normal !important;
 }
 
@@ -162,10 +211,12 @@ code > span.hljs-string {
 }
 
 .prose pre code {
-	@apply bg-lightGray block p-5 text-base;
-	border-radius: 0.375rem;
+	@apply block p-5 text-base;
+	border-radius: var(--r-md);
 	/* Override inline code styling for code blocks */
-	background: #F4F7FA !important;
+	background: var(--code-bg) !important;
+	color: var(--text);
+	box-shadow: var(--elev-1);
 	padding: 1.25rem !important;
 }
 
@@ -183,11 +234,11 @@ code > span.hljs-string {
 }
 
 .prose ul > li > ul > li::before {
-	background-color: #6b7280;
+	background-color: var(--muted);
 }
 
 .prose ul > li > ol > li::before {
-	color: #6b7280;
+	color: var(--muted);
 }
 
 .prose ol > li::before {
@@ -195,11 +246,11 @@ code > span.hljs-string {
 }
 
 .prose ol > li > ol > li::before {
-	color: #6b7280;
+	color: var(--muted);
 }
 
 .prose ol > li > ul > li::before {
-	background-color: #6b7280;
+	background-color: var(--muted);
 }
 
 .custom-shadow {
@@ -248,7 +299,7 @@ code > span.hljs-string {
 
 .scrollbar-none {
 	scrollbar-width: none; /* "auto" or "thin" */
-	scrollbar-color: #fff white; /* scroll thumb and track */
+	scrollbar-color: var(--surface) var(--surface); /* scroll thumb and track */
 }
 
 .scrollbar-none::-webkit-scrollbar {
@@ -292,23 +343,26 @@ code > span.hljs-string {
 }
 
 .prose thead {
-	@apply border-b-2 border-gray-300;
+	border-bottom: 2px solid var(--border-strong);
 }
 
 .prose th {
-	@apply px-4 py-3 text-left font-semibold bg-gray-50 border border-gray-300;
+	@apply px-4 py-3 text-left font-semibold;
+	background: var(--raised);
+	border: 1px solid var(--border-strong);
 }
 
 .prose td {
-	@apply px-4 py-3 border border-gray-300;
+	@apply px-4 py-3;
+	border: 1px solid var(--border);
 }
 
 .prose tbody tr {
-	@apply border-b border-gray-200;
+	border-bottom: 1px solid var(--border);
 }
 
 .prose tbody tr:hover {
-	@apply bg-gray-50;
+	background: var(--raised);
 }
 
 /* .SearchResult mark {

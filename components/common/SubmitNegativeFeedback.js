@@ -86,11 +86,11 @@ export default function SubmitNegativeFeedback({
           >
             <form
               onSubmit={submit}
-              className="inline-block align-bottom bg-white px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full sm:p-6"
+              className="inline-block align-bottom bg-(--surface) px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full sm:p-6"
             >
               <div>
                 <div className="flex items-center">
-                  <div className="bg-lightGray p-3 rounded-full">
+                  <div className="bg-(--raised) p-3 rounded-full">
                     <SpeakerphoneIcon
                       className="h-6 w-6 text-brightPurple"
                       aria-hidden="true"
@@ -98,7 +98,7 @@ export default function SubmitNegativeFeedback({
                   </div>
                   <Dialog.Title
                     as="h3"
-                    className="text-2xl leading-6 font-medium text-darkestGray ml-3"
+                    className="text-2xl leading-6 font-medium text-(--text) ml-3"
                   >
                     Submit Feedback
                   </Dialog.Title>
@@ -109,8 +109,8 @@ export default function SubmitNegativeFeedback({
                     id="submitFeedback"
                     name="message"
                     rows={3}
-                    className={`h-32 mt-5 shadow-xs block w-full focus:outline-hidden focus:ring-1 focus:ring-purple focus:border-transparent resize-none text-darkestGray sm:text-sm border border-lightGray  ${
-                      textCount > 0 ? `bg-white` : `bg-lightGray`
+                    className={`h-32 mt-5 shadow-xs block w-full focus:outline-hidden focus:ring-1 focus:ring-(--primary) focus:border-transparent resize-none text-(--text) sm:text-sm border border-(--border)  ${
+                      textCount > 0 ? `bg-(--surface)` : `bg-(--raised)`
                     }`}
                     maxLength={maxTextLength}
                     value={text}
@@ -118,7 +118,7 @@ export default function SubmitNegativeFeedback({
                     required
                     placeholder="Enter your feedback here..."
                   />
-                  <div className="mt-3 text-sm text-gray-400">
+                  <div className="mt-3 text-sm text-(--muted)">
                     {textCount}/{maxTextLength}
                   </div>
                 </div>
@@ -126,14 +126,14 @@ export default function SubmitNegativeFeedback({
               <div className="sm:flex sm:flex-row-reverse">
                 <button
                   type="button"
-                  className="mt-3 w-full inline-flex justify-center border-2 border-purple shadow-xs px-4 py-2 bg-white text-base font-semibold text-purple sm:ml-3 sm:w-auto sm:text-sm"
+                  className="mt-3 w-full inline-flex justify-center border-2 border-(--primary) shadow-xs px-4 py-2 bg-(--surface) text-base font-semibold text-(--primary) sm:ml-3 sm:w-auto sm:text-sm"
                   onClick={() => cancel()}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="mt-3 w-full inline-flex justify-center border-2 border-transparent shadow-xs px-4 py-2 bg-purple text-base font-semibold text-white sm:ml-0 sm:w-auto sm:text-sm"
+                  className="mt-3 w-full inline-flex justify-center border-2 border-transparent shadow-xs px-4 py-2 bg-(--primary) text-base font-semibold text-white sm:ml-0 sm:w-auto sm:text-sm"
                 >
                   Submit
                 </button>

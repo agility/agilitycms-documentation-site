@@ -16,13 +16,13 @@ export default function ButtonDropdown({ name, children, children2 }) {
       {({ open }) => (
         <>
           <div
-            className={`bg-lightGray pt-2 pb-1.5 px-2 border-b-2 border-transparent ${open ? `border-purple` : ``
+            className={`bg-(--raised) pt-2 pb-1.5 px-2 border-b-2 border-transparent ${open ? `border-(--primary)` : ``
               }`}
           >
-            <Menu.Button className="flex justify-between w-52 text-darkestGray">
+            <Menu.Button className="flex justify-between w-52 text-(--text)">
               <p className="font-semibold">{name}</p>
               <ChevronDownIcon
-                className="-mr-1 ml-2 h-5 w-5 text-purple"
+                className="-mr-1 ml-2 h-5 w-5 text-(--primary)"
                 aria-hidden="true"
               />
             </Menu.Button>
@@ -41,7 +41,7 @@ export default function ButtonDropdown({ name, children, children2 }) {
               >
                 <Menu.Items
                   static
-                  className="origin-top-right absolute right-0 w-56 shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-hidden"
+                  className="origin-top-right absolute right-0 w-56 shadow-lg bg-(--surface) ring-1 ring-(--border) focus:outline-hidden"
                 >
                   <div className="py-1">
                     {children.map((item) => (
@@ -70,7 +70,7 @@ const MenuLink = (props) => {
   let { href, children, ...rest } = props;
   return (
     <Link href={href} rel="noreferrer"
-      className="text-darkerGray font-semibold block px-4 py-2 text-sm hover:text-purple"
+      className="text-(--text-2) font-semibold block px-4 py-2 text-sm hover:text-(--primary)"
       {...rest}
     >
       {children}

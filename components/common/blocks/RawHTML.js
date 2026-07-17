@@ -3,7 +3,7 @@ import { renderHTML } from "@agility/nextjs";
 const RawHTML = ({ id, html }) => {
   return (
     <div
-      className="mt-8 mb-8 text-darkestGray"
+      className="mt-8 mb-8 text-(--text-2)"
       dangerouslySetInnerHTML={renderHTML(html)}
     />
   );

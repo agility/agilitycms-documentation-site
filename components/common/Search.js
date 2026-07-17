@@ -33,18 +33,18 @@ const getDescription = (item) => {
 };
 
 const SearchResultItem = ({ item, description }) => (
-  <Link href={item.url} className="SearchResult px-5 py-2 block w-full hover:bg-lightGray">
+  <Link href={item.url} className="SearchResult px-5 py-2 block w-full hover:bg-(--raised)">
     <span
-      className="SearchResult__title block text-purple text-sm font-bold"
+      className="SearchResult__title block text-(--primary) text-sm font-bold"
       dangerouslySetInnerHTML={renderHTML(item._highlightResult.title.value)}
     ></span>
     {description && (
       <span
-        className="SearchResult__description block text-sm mb-2 text-darkestGray"
+        className="SearchResult__description block text-sm mb-2 text-(--text-2)"
         dangerouslySetInnerHTML={renderHTML(description)}
       ></span>
     )}
-    <span className="SearchResult__category-section block text-xs text-darkerGray">
+    <span className="SearchResult__category-section block text-xs text-(--muted)">
       {item.category} <ChevronRightIcon className="inline w-2" /> {item.section}
     </span>
   </Link>
@@ -192,7 +192,7 @@ const Search = () => {
         {...autocomplete.getFormProps({ inputElement: inputRef.current })}
       >
         <input
-          className="block w-full border-none pt-2 pb-1.5 pl-10 pr-3 text-sm placeholder-darkGray bg-lightGray focus:outline-hidden focus:text-gray-900 focus:placeholder-gray-400 focus:border-purple focus:ring-1 focus:ring-purple sm:text-sm"
+          className="block w-full border border-(--border) pt-2 pb-1.5 pl-10 pr-3 text-sm placeholder-(--muted) bg-(--raised) text-(--text) focus:outline-hidden focus:border-(--primary) focus:ring-1 focus:ring-(--primary) sm:text-sm"
           {...autocomplete.getInputProps({})}
           placeholder="Search docs..."
         />
@@ -206,7 +206,7 @@ const Search = () => {
             return (
               <div
                 key={`source-${index}`}
-                className="aa-Source absolute bg-white z-50 border border-gray-300 w-full"
+                className="aa-Source absolute bg-(--surface) text-(--text) z-50 border border-(--border) w-full"
               >
                 {items.length > 0 && (
                   <ul

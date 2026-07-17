@@ -58,34 +58,34 @@ const ChangelogClient = ({ changelog: changeLogItems, changelogtags: changeLogTa
                     <FilterBlock filterOptions={filterOptions} setFilterSelection={setFilterSelection} filterSelection={filterSelection} />
                 </div>
             </div>
-            <div id="ScrollContainer" className="grow order-3 w-full pt-20 border-l border-gray-200 lg:flex lg:justify-center">
+            <div id="ScrollContainer" className="grow order-3 w-full pt-20 border-l border-(--border) lg:flex lg:justify-center">
                 <div className="relative px-4 mb-20 font-muli sm:px-6 lg:px-8">
                     <div className="absolute inset-0">
-                        <div className="bg-white h-1/3 sm:h-2/3" />
+                        <div className="bg-(--surface) h-1/3 sm:h-2/3" />
                     </div>
                     <div className="relative mx-auto max-w-7xl">
                         <div>
                             {changeLogList.map((item) => (
                                 <section key={item.contentID} className="group">
                                     <header className="flex items-center">
-                                        <div className="min-w-[220px] p-4 pr-4 text-right group-hover:text-purple font-semibold text-lg">{getChangeDate(item.fields.date)}</div>
-                                        <h3 className="border-gray border-l-[#C6CFD8] min-h-[65px] -ml-px p-5 pl-9 text-lg font-bold border-l-3 group-hover:border-purple">{item.fields.description}</h3>
+                                        <div className="min-w-[220px] p-4 pr-4 text-right group-hover:text-(--primary) font-semibold text-lg">{getChangeDate(item.fields.date)}</div>
+                                        <h3 className="border-gray border-l-(--border-strong) min-h-[65px] -ml-px p-5 pl-9 text-lg font-bold border-l-3 group-hover:border-(--primary)">{item.fields.description}</h3>
                                     </header>
 
-                                    <div className="border-lightGray">
+                                    <div className="border-(--border)">
                                         <ul className="ml-[220px] border-l border-gray border-l-2 list-inside list-disc">
                                             {item.fields.changes?.map((change) => (
-                                                <li key={change.contentID} className="relative py-3 pl-9 text-darkestGray">
+                                                <li key={change.contentID} className="relative py-3 pl-9 text-(--text)">
                                                     {change.fields.linkURL ? (
                                                         <a href={change.fields.linkURL} className="anchor group/scope">
                                                             <div className="w-[220px] left-[-220px] absolute top-0 flex justify-end mt-3 pr-4">
                                                                 {change.fields.tags?.map((tag: any, index: Key) => (
-                                                                    <span key={index} className="group-hover/scope:bg-[#ECE5F6] bg-gray-100 text-[11px] inline-block ml-2 px-3 py-1 group-hover/scope:text-purple text-gray-500 font-bold rounded-full">
+                                                                    <span key={index} className="group-hover/scope:bg-(--raised) bg-(--raised) text-[11px] inline-block ml-2 px-3 py-1 group-hover/scope:text-(--primary) text-(--muted) font-bold rounded-full">
                                                                         {tag.fields.title}
                                                                     </span>
                                                                 ))}
                                                             </div>
-                                                            <h4 className="inline font-bold group-hover/scope:text-purple">
+                                                            <h4 className="inline font-bold group-hover/scope:text-(--primary)">
                                                                 {change.fields.title}
                                                                 <span className="block pl-6 text-base font-normal">{change.fields.description}</span>
                                                             </h4>
@@ -94,13 +94,13 @@ const ChangelogClient = ({ changelog: changeLogItems, changelogtags: changeLogTa
                                                         <>
                                                             <div className="w-[200px] left-[-200px] absolute top-0 flex justify-end mt-3 pr-4">
                                                                 {change.fields.tags?.map((tag: any, index: Key) => (
-                                                                    <span key={index} className="bg-gray-100 text-[11px] inline-block ml-2 px-3 py-1 text-gray-500 font-bold rounded-full">
+                                                                    <span key={index} className="bg-(--raised) text-[11px] inline-block ml-2 px-3 py-1 text-(--muted) font-bold rounded-full">
                                                                         {tag.fields.title}
                                                                     </span>
                                                                 ))}
                                                             </div>
 
-                                                            <h4 className="inline font-bold hover:text-darkGray">
+                                                            <h4 className="inline font-bold hover:text-(--text)">
                                                                 {change.fields.title}
                                                                 <span className="block pl-6 text-base font-normal">{change.fields.description}</span>
                                                             </h4>

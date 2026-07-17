@@ -12,18 +12,18 @@ export const FilterBlock = ({ filterOptions, setFilterSelection, filterSelection
     };
     return (
         <div className="p-5 text-lg">
-            <h4 className="pb-3 text-darkerGray">Filter</h4>
+            <h4 className="pb-3 text-(--text-2)">Filter</h4>
             {filterOptions.map((filterOption: { title: string; id: number }) => {
                 return (
                     <div key={filterOption.id} className="pb-2 group">
                         <input
-                            className="form-checkbox h-5 w-5 text-purple rounded-sm cursor-pointer border-gray-300"
+                            className="form-checkbox h-5 w-5 text-(--primary) rounded-sm cursor-pointer border-(--border-strong)"
                             type="checkbox"
                             value={filterOption.id}
                             id={`${filterOption.id}`}
                             onChange={(e) => handleChange(e)}
                         />
-                        <label className="group-hover:text-purple inline-block text-base cursor-pointer text-darkGray ml-3" htmlFor={`${filterOption.id}`}>
+                        <label className="group-hover:text-(--primary) inline-block text-base cursor-pointer text-(--text-2) ml-3" htmlFor={`${filterOption.id}`}>
                             {filterOption.title}
                         </label>
                     </div>

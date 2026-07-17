@@ -15,7 +15,7 @@ const SideBarNavClient = ({ navigation }) => {
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
 	const renderNavigation = () => (
-		<nav className="flex-1 space-y-1 bg-white" aria-label="Sidebar">
+		<nav className="flex-1 space-y-1 bg-(--bg)" aria-label="Sidebar">
 			{navigation.map((item) =>
 				!item.children ? (
 					<div key={item.name} className="px-8">
@@ -23,8 +23,8 @@ const SideBarNavClient = ({ navigation }) => {
 							onClick={() => setMobileMenuOpen(false)}
 							className={classNames(
 								item.current
-									? "text-darkestGray"
-									: "bg-white text-darkGray hover:text-purple",
+									? "text-(--text) font-semibold"
+									: "text-(--text-2) hover:text-(--primary)",
 								"group w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md"
 							)}
 						>
@@ -45,15 +45,15 @@ const SideBarNavClient = ({ navigation }) => {
 									<Disclosure.Button
 										className={classNames(
 											item.current
-												? "bg-gray-100 text-darkestGray"
-												: "bg-white text-gray-600 hover:text-purple",
+												? "bg-(--raised) text-(--text)"
+												: "text-(--text-2) hover:text-(--primary)",
 											"group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-hidden px-8"
 										)}
 									>
 										<svg
 											className={classNames(
-												open ? "text-gray-400 rotate-90" : "text-gray-300",
-												"mr-2 shrink-0 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
+												open ? "text-(--muted) rotate-90" : "text-(--faint)",
+												"mr-2 shrink-0 h-5 w-5 transform group-hover:text-(--muted) transition-colors ease-in-out duration-150"
 											)}
 											viewBox="0 0 20 20"
 											aria-hidden="true"
@@ -61,14 +61,14 @@ const SideBarNavClient = ({ navigation }) => {
 											<path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
 										</svg>
 										<span
-											className={`${open ? `text-darkestGray` : `text-darkGray`
-												} hover:text-purple`}
+											className={`${open ? `text-(--text)` : `text-(--text-2)`
+												} hover:text-(--primary)`}
 										>
 											{item.name}
 										</span>
 									</Disclosure.Button>
 									<Disclosure.Panel
-										className="py-2 space-y-1 bg-lightGray"
+										className="py-2 space-y-1 bg-(--surface)"
 									>
 										{item.children.map((subItem) => {
 											return (
@@ -76,9 +76,9 @@ const SideBarNavClient = ({ navigation }) => {
 													onClick={() => setMobileMenuOpen(false)}
 													className={classNames(
 														!!subItem.current
-															? " text-purple"
-															: " text-darkGray hover:text-purple ",
-														"group w-full flex items-center pl-16 pr-2 py-2 text-sm font-medium bg-lightGray text-gray-600 rounded-md"
+															? " text-(--primary)"
+															: " text-(--text-2) hover:text-(--primary) ",
+														"group w-full flex items-center pl-16 pr-2 py-2 text-sm font-medium rounded-md"
 													)}
 												>
 													{subItem.name}
@@ -102,7 +102,7 @@ const SideBarNavClient = ({ navigation }) => {
 			<button
 				type="button"
 				onClick={() => setMobileMenuOpen(true)}
-				className="lg:hidden fixed left-2 top-[65px] z-40 flex items-center justify-center w-9 h-9 bg-gray-50/60 backdrop-blur-xs rounded-full shadow-md hover:shadow-lg text-gray-500 hover:text-purple focus:outline-hidden focus:ring-2 focus:ring-purple focus:ring-offset-1 transition-all duration-200"
+				className="lg:hidden fixed left-2 top-[65px] z-40 flex items-center justify-center w-9 h-9 bg-(--surface) rounded-full shadow-md hover:shadow-lg text-(--muted) hover:text-(--primary) focus:outline-hidden focus:ring-2 focus:ring-(--primary) focus:ring-offset-1 transition-all duration-200"
 				aria-label="Open navigation menu"
 			>
 				<ChevronRightIcon className="h-4 w-4" aria-hidden="true" />
@@ -133,13 +133,13 @@ const SideBarNavClient = ({ navigation }) => {
 							leaveFrom="translate-x-0"
 							leaveTo="-translate-x-full"
 						>
-							<div className="relative flex flex-col w-72 max-w-[85vw] bg-white shadow-2xl pointer-events-auto h-full">
+							<div className="relative flex flex-col w-72 max-w-[85vw] bg-(--surface) text-(--text) shadow-2xl pointer-events-auto h-full">
 								{/* Close button inside the panel */}
-								<div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-									<span className="text-lg font-semibold text-darkestGray">Navigation</span>
+								<div className="flex items-center justify-between px-4 py-3 border-b border-(--border)">
+									<span className="text-lg font-semibold text-(--text)">Navigation</span>
 									<button
 										type="button"
-										className="inline-flex items-center justify-center rounded-md p-2 text-darkGray hover:bg-lightGray hover:text-darkestGray focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-purple"
+										className="inline-flex items-center justify-center rounded-md p-2 text-(--text-2) hover:bg-(--raised) hover:text-(--text) focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-(--primary)"
 										onClick={() => setMobileMenuOpen(false)}
 									>
 										<span className="sr-only">Close sidebar</span>

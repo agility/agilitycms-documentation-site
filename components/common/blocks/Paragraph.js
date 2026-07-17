@@ -8,7 +8,7 @@ const Paragraph = ({ id, text }) => {
     <p
       key={id}
       dangerouslySetInnerHTML={renderHTML(text)}
-      className="text-darkestGray"
+      className="text-(--text-2)"
     />
   );
 };

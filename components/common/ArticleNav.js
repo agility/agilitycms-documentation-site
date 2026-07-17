@@ -84,8 +84,8 @@ export default function ArticleNav({ dynamicPageItem, sitemapNode }) {
             href={item.href}
             className={classNames(
               item.current
-                ? "bg-lightGray text-darkestGray"
-                : "text-darkGray hover:text-purple",
+                ? "bg-(--raised) text-(--text)"
+                : "text-(--text-2) hover:text-(--primary)",
               "flex items-center px-3 py-2 text-sm font-medium"
             )}
             aria-current={item.current ? "page" : undefined}
@@ -97,12 +97,12 @@ export default function ArticleNav({ dynamicPageItem, sitemapNode }) {
       <hr className="mt-5 mb-5" />
       {!positiveFeedbackSubmitted && !negativeFeedbackSubmitted && (
         <div>
-          <div className="text-center text-darkGray">
+          <div className="text-center text-(--text-2)">
             Was this article helpful?
           </div>
           <div className="flex flex-row mt-2 justify-center space-x-4">
             <button
-              className="text-gray-600 hover:text-brightPurple bg-lightGray p-3 rounded-full"
+              className="text-(--text-2) hover:text-(--primary) bg-(--raised) p-3 rounded-full"
               title="😊 Yes, helpful!"
               onClick={() =>
                 sendPositiveFeedback({
@@ -115,7 +115,7 @@ export default function ArticleNav({ dynamicPageItem, sitemapNode }) {
               <ThumbUpIcon className="w-6 h-6" />
             </button>
             <button
-              className="text-gray-600 hover:text-brightPurple bg-lightGray p-3 rounded-full"
+              className="text-(--text-2) hover:text-(--primary) bg-(--raised) p-3 rounded-full"
               title="Submit Feedback"
               onClick={() => setNegativeFeedbackClicked(true)}
             >
@@ -126,7 +126,7 @@ export default function ArticleNav({ dynamicPageItem, sitemapNode }) {
       )}
       {(positiveFeedbackSubmitted || negativeFeedbackSubmitted) && (
         <div>
-          <div className="text-center text-gray-600">
+          <div className="text-center text-(--text-2)">
             Thank you for your feedback!
           </div>
         </div>

@@ -183,7 +183,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 						}
 					</div>
 					<h1>
-						<span className="mt-16 mb-8 block text-3xl text-center leading-8 text-gray-900 md:text-4xl font-semibold">
+						<span className="mt-16 mb-8 block text-3xl text-center leading-8 text-(--text) md:text-4xl font-semibold">
 							{markdownH1Title || dynamicPageItem.fields.title}
 						</span>
 					</h1>

@@ -35,7 +35,7 @@ const RenderOrderedList = ({ items }) => {
           <li key={idx}>
             <span
               dangerouslySetInnerHTML={renderHTML(item.content)}
-              className="text-darkestGray"
+              className="text-(--text-2)"
             ></span>
             <RenderOrderedList items={item.items} />
           </li>

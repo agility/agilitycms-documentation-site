@@ -10,10 +10,10 @@ const SDKsFrameworks = async ({ module, languageCode, isPreview }) => {
   const actions = await getSDKActions({ fields, languageCode, isPreview });
   return (
     <div className="max-w-2xl lg:max-w-5xl mx-auto my-20 text-center px-8 font-muli">
-      <h2 className="mb-5 text-3xl font-medium tracking-normal text-darkerGray">
+      <h2 className="mb-5 text-3xl font-medium tracking-normal text-(--text-2)">
         {fields.title}
       </h2>
-      <p className="text-darkGray font-normal mb-12">{fields.subtitle}</p>
+      <p className="text-(--text-2) font-normal mb-12">{fields.subtitle}</p>
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
         {actions.map((action, index) => (
           <Link
@@ -24,7 +24,7 @@ const SDKsFrameworks = async ({ module, languageCode, isPreview }) => {
             title={action.title} className="custom-hover">
             <div
               key={index}
-              className="bg-lightGray p-6 flex justify-center items-center"
+              className="bg-(--raised) p-6 flex justify-center items-center"
             >
               <AgilityPic
                 image={action.image}
@@ -32,7 +32,7 @@ const SDKsFrameworks = async ({ module, languageCode, isPreview }) => {
                 className="w-10"
                 aria-hidden="true"
               />
-              <h3 className="ml-8 text-lg font-semibold text-darkerGray">
+              <h3 className="ml-8 text-lg font-semibold text-(--text-2)">
                 {action.title}
               </h3>
             </div>
