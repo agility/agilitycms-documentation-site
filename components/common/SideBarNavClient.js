@@ -1,7 +1,9 @@
 "use client";
 
-/* Sidebar navigation UI (client): Radix Collapsible tree + mobile Sheet.
-   Data comes from the SideBarNav server component (agility-pageModules). */
+/* Sidebar navigation UI (client), mockup `.sidebar` style: mono uppercase
+   group eyebrows (collapsible — categories are large), quiet links, and a
+   primary-tinted current state. Data comes from the SideBarNav server
+   component (agility-pageModules). */
 import { useState } from "react";
 import Link from "next/link";
 import * as Collapsible from "@radix-ui/react-collapsible";
@@ -12,42 +14,39 @@ function classNames(...classes) {
 	return classes.filter(Boolean).join(" ");
 }
 
-// One collapsible section of the tree. `LinkWrap` lets the mobile Sheet close
-// on navigation while the desktop tree renders plain links.
+const itemClass = (current) =>
+	classNames(
+		current
+			? "bg-[color-mix(in_srgb,var(--primary)_12%,transparent)] font-bold text-(--primary)"
+			: "font-medium text-(--text-2) hover:bg-(--raised) hover:text-(--text)",
+		"block rounded-(--r-sm) px-3 py-1.5 text-[.9rem]"
+	);
+
+// One collapsible group. `LinkWrap` lets the mobile Sheet close on
+// navigation while the desktop tree renders plain links.
 const NavSection = ({ item, LinkWrap }) => {
 	const [open, setOpen] = useState(item.children.some((subItem) => subItem.current));
 
 	return (
-		<Collapsible.Root open={open} onOpenChange={setOpen} className="space-y-1">
-			<Collapsible.Trigger
-				className={classNames(
-					item.current ? "bg-(--raised) text-(--text)" : "text-(--text-2) hover:text-(--primary)",
-					"group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-hidden px-8"
-				)}
-			>
-				<svg
+		<Collapsible.Root open={open} onOpenChange={setOpen}>
+			<Collapsible.Trigger className="group mb-1 mt-5 flex w-full items-center gap-2 text-left font-mono text-[.66rem] uppercase tracking-[.14em] text-(--faint) hover:text-(--muted) focus:outline-hidden">
+				<span className="whitespace-nowrap">{item.name}</span>
+				<span aria-hidden="true" className="h-px flex-1 bg-(--border)" />
+				<ChevronRightIcon
 					className={classNames(
-						open ? "text-(--muted) rotate-90" : "text-(--faint)",
-						"mr-2 shrink-0 h-5 w-5 transform group-hover:text-(--muted) transition-colors ease-in-out duration-150"
+						open ? "rotate-90" : "",
+						"h-3 w-3 shrink-0 transition-transform duration-150"
 					)}
-					viewBox="0 0 20 20"
 					aria-hidden="true"
-				>
-					<path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
-				</svg>
-				<span className={`${open ? `text-(--text)` : `text-(--text-2)`} hover:text-(--primary)`}>
-					{item.name}
-				</span>
+				/>
 			</Collapsible.Trigger>
-			<Collapsible.Content className="py-2 space-y-1 bg-(--surface)">
+			<Collapsible.Content className="space-y-0.5">
 				{item.children.map((subItem) => (
 					<LinkWrap key={subItem.name}>
 						<Link
 							href={subItem.href}
-							className={classNames(
-								subItem.current ? " text-(--primary)" : " text-(--text-2) hover:text-(--primary) ",
-								"group w-full flex items-center pl-16 pr-2 py-2 text-sm font-medium rounded-md"
-							)}
+							className={itemClass(!!subItem.current)}
+							aria-current={subItem.current ? "page" : undefined}
 						>
 							{subItem.name}
 						</Link>
@@ -59,24 +58,18 @@ const NavSection = ({ item, LinkWrap }) => {
 };
 
 const NavTree = ({ navigation, LinkWrap }) => (
-	<nav className="flex-1 space-y-1" aria-label="Sidebar">
+	<nav className="flex-1" aria-label="Sidebar">
 		{navigation.map((item) =>
 			!item.children ? (
-				<div key={item.name} className="px-8">
-					<LinkWrap>
-						<Link
-							href={item.href}
-							className={classNames(
-								item.current
-									? "text-(--text) font-semibold"
-									: "text-(--text-2) hover:text-(--primary)",
-								"group w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md"
-							)}
-						>
-							{item.name}
-						</Link>
-					</LinkWrap>
-				</div>
+				<LinkWrap key={item.name}>
+					<Link
+						href={item.href}
+						className={itemClass(!!item.current)}
+						aria-current={item.current ? "page" : undefined}
+					>
+						{item.name}
+					</Link>
+				</LinkWrap>
 			) : (
 				<NavSection key={item.name} item={item} LinkWrap={LinkWrap} />
 			)
@@ -100,21 +93,19 @@ const SideBarNavClient = ({ navigation }) => {
 						<ChevronRightIcon className="h-4 w-4" aria-hidden="true" />
 					</SheetTrigger>
 					<SheetContent side="left" title="Navigation">
-						<div className="pt-4 pb-4">
+						<div className="px-4 pt-4 pb-8">
 							<NavTree navigation={navigation} LinkWrap={CloseWrap} />
 						</div>
 					</SheetContent>
 				</Sheet>
 			</div>
 
-			{/* Desktop sidebar */}
+			{/* Desktop sidebar (mockup .sidebar: sticky under the 60px topbar) */}
 			<div
 				id="SideNav"
-				className="hidden lg:flex z-30 flex-col w-64 pb-10 font-muli pt-8 h-[calc(100vh-60px)] overflow-y-auto scrollbar-thin"
+				className="hidden lg:block sticky top-[60px] h-[calc(100vh-60px)] overflow-y-auto scrollbar-thin font-muli pt-8 pb-10 pr-2"
 			>
-				<div className="flex flex-col grow">
-					<NavTree navigation={navigation} LinkWrap={PlainWrap} />
-				</div>
+				<NavTree navigation={navigation} LinkWrap={PlainWrap} />
 			</div>
 		</>
 	);

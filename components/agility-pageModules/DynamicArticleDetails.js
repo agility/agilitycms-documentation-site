@@ -161,14 +161,13 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 	}, [blocks.length, markdownContent]);
 
 
-	return (
-		<div
-			id="DynamicArticleDetails"
-			className="xl:flex xl:flex-row justify-center font-muli mb-32"
-		>
+	const sectionTitle = dynamicPageItem.fields.section?.fields?.title;
+	const lede = dynamicPageItem.fields.description;
 
-			<div className="relative px-8 xl:px-12 w-full">
-				<div className="text-lg max-w-prose lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl mx-auto">
+	return (
+		<div id="DynamicArticleDetails" className="font-muli mb-24">
+			<div className="w-full">
+				<div className="text-lg max-w-[75ch] mx-auto xl:mx-0">
 					<div className="flex justify-end gap-2 mt-5">
 						{showClassicMode &&
 							<ToggleSwitch
@@ -178,11 +177,22 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 							/>
 						}
 					</div>
-					<h1>
-						<span className="mt-16 mb-8 block text-3xl text-center leading-8 text-(--text) md:text-4xl font-semibold">
-							{markdownH1Title || dynamicPageItem.fields.title}
-						</span>
+					{/* Ocean article header (mockup): eyebrow, left title, lede */}
+					{sectionTitle && (
+						<p className="mt-10 mb-3 font-mono text-[.72rem] uppercase tracking-[.24em] text-(--muted)">
+							{sectionTitle}
+						</p>
+					)}
+					<h1
+						className={`${sectionTitle ? "mt-0" : "mt-10"} mb-4 text-3xl md:text-4xl font-semibold leading-[1.1] tracking-tight text-(--text) text-balance`}
+					>
+						{markdownH1Title || dynamicPageItem.fields.title}
 					</h1>
+					{lede && (
+						<p className="mb-10 max-w-[62ch] text-[1.08rem] leading-relaxed text-(--text-2)">
+							{lede}
+						</p>
+					)}
 
 					{/* Render markdown content if no blocks exist and markdown content is available */}
 					{blocks.length === 0 && processedMarkdown ? (

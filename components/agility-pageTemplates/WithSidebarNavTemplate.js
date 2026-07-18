@@ -3,6 +3,7 @@ import { ContentZone } from "@agility/nextjs";
 import { getModule } from "components/agility-pageModules";
 import Footer from "../common/Footer";
 import ArticleNav from "../common/ArticleNav";
+import ArticlePrevNext from "../common/ArticlePrevNext";
 
 const isArticle = (dynamicPageItem) => {
   return (
@@ -11,45 +12,44 @@ const isArticle = (dynamicPageItem) => {
   );
 };
 
+// Ocean docs shell (mockup .shell): sidebar / measured content / TOC rail on
+// a single max-width grid — whitespace separates the columns, not borders.
 const WithSidebarNavTemplate = (props) => {
   const hasArticle = isArticle(props.dynamicPageItem);
 
   return (
     <>
-      <div id="WithSidebarNavTemplate" className="flex grow bg-(--bg) text-(--text)">
-        <div>
-          <div className="hidden lg:flex lg:shrink-0 sticky top-[60px] self-start">
+      <div id="WithSidebarNavTemplate" className="grow bg-(--bg) text-(--text)">
+        <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-x-11 px-4 lg:grid-cols-[248px_minmax(0,1fr)] lg:px-6 xl:grid-cols-[248px_minmax(0,1fr)_220px]">
+          <div>
             <ContentZone
               name="SidebarContentZone"
               {...props}
               getModule={getModule}
             />
           </div>
-        </div>
 
-        {/* Mobile sidebar - rendered by SideBarNav component */}
-        <div className="lg:hidden">
-          <ContentZone
-            name="SidebarContentZone"
-            {...props}
-            getModule={getModule}
-          />
-        </div>
-
-        <div
-          id="ScrollContainer"
-          className="grow w-full border-l border-(--border) lg:flex lg:justify-center"
-        >
-          <div id="ContentContainer">
-            <ContentZone
-              name="MainContentZone"
-              {...props}
-              getModule={getModule}
-            />
+          <div id="ScrollContainer" className="min-w-0 pb-20 pt-2 lg:pt-4">
+            <div id="ContentContainer">
+              <ContentZone
+                name="MainContentZone"
+                {...props}
+                getModule={getModule}
+              />
+            </div>
+            {hasArticle && (
+              <ArticlePrevNext
+                dynamicPageItem={props.dynamicPageItem}
+                sitemapNode={props.sitemapNode}
+                languageCode={props.languageCode}
+                isPreview={props.isPreview}
+              />
+            )}
           </div>
+
           {hasArticle && (
-            <div className="mb-60">
-              <div className="hidden xl:block sticky top-[60px] w-60 flex-none pt-12">
+            <div className="hidden xl:block">
+              <div className="sticky top-[60px] pt-12">
                 <ArticleNav
                   dynamicPageItem={props.dynamicPageItem}
                   sitemapNode={props.sitemapNode}

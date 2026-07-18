@@ -74,26 +74,28 @@ export default function ArticleNav({ dynamicPageItem, sitemapNode }) {
   }, [content, markdownContent]);
 
   return (
-    <div>
-      <div className="font-medium mb-4 text-md">In this Article:</div>
-      <nav id="ArticleNav" className="space-y-1" aria-label="Article Nav">
+    <div className="font-muli text-[.8rem]">
+      <div className="mb-3 font-mono text-[.66rem] uppercase tracking-[.14em] text-(--faint)">
+        On this page
+      </div>
+      <nav id="ArticleNav" aria-label="Article Nav">
         {navigation.map((item) => (
           <a
             key={item.name}
             href={item.href}
             className={classNames(
               item.current
-                ? "bg-(--raised) text-(--text)"
-                : "text-(--text-2) hover:text-(--primary)",
-              "flex items-center px-3 py-2 text-sm font-medium"
+                ? "border-(--primary) text-(--primary)"
+                : "border-(--border) text-(--muted) hover:border-(--border-strong) hover:text-(--text)",
+              "block border-l-2 py-1.5 pl-3 font-medium"
             )}
             aria-current={item.current ? "page" : undefined}
           >
-            <span className="truncate">{item.name}</span>
+            <span className="block truncate">{item.name}</span>
           </a>
         ))}
       </nav>
-      <hr className="mt-5 mb-5" />
+      <div className="mt-8 border-t border-(--border) pt-6" />
       {!positiveFeedbackSubmitted && !negativeFeedbackSubmitted && (
         <div>
           <div className="text-center text-(--text-2)">
@@ -166,9 +168,11 @@ const syncArticleNav = ({ $articleNavHeaders, $articleHeaders }) => {
   //update the classes on the Article Nav List
   for (const obj of $articleNavHeaders) {
     if (`#${$activeHeader?.id}` === obj.getAttribute("href")) {
-      obj.classList.add("bg-(--raised)", "text-(--text)");
+      obj.classList.add("border-(--primary)", "text-(--primary)");
+      obj.classList.remove("border-(--border)", "text-(--muted)");
     } else {
-      obj.classList.remove("bg-(--raised)", "text-(--text)");
+      obj.classList.remove("border-(--primary)", "text-(--primary)");
+      obj.classList.add("border-(--border)", "text-(--muted)");
     }
   }
 };
