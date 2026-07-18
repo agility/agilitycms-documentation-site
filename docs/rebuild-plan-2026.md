@@ -94,7 +94,7 @@ Code side:
 - Generic zone renderer (App Router version of the module registry) — loops zones, renders registered components; no per-page layout code.
 - One typed React component per model, ocean-styled, both themes.
 - Port the article renderer: EditorJS blocks + the `unified`/remark/rehype Markdown path with its exact current semantics (H1→title strip, GFM, raw HTML incl. scripts, fenced-only code, images untransformed) so no article regresses.
-- Re-skin chrome: topbar (with docs sub-brand + theme control), sidebar nav (grouped, mono eyebrows), right-rail TOC with scroll-spy, prev/next, feedback footer — all per mockup.
+- Re-skin chrome: topbar (with docs sub-brand + theme control), sidebar nav (grouped, mono eyebrows), right-rail TOC with scroll-spy, prev/next, feedback footer — all per mockup. **Done 2026-07-18:** lean 60px topbar + code-defined docs footer (Stripe/Vercel pattern; cross-instance chrome dependency eliminated), mockup .shell article grid, eyebrow-grouped sidebar, .toc rail with scroll-spy, article header (section eyebrow + left title + description lede), ArticlePrevNext section pagination. UI primitives: shadcn-style Radix in components/ui; @headlessui/react removed.
 - **Done when:** a test `Docs Landing Page` composed in Web Studio renders correctly in both themes.
 
 ### Phase 3 — T3–T5: Hub, flagship pages, section reorder (mostly content)
