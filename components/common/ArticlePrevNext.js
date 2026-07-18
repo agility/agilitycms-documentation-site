@@ -10,7 +10,7 @@ import { getSitemapFlat } from "lib/cms/getSitemapFlat";
   everything else. Server component; renders nothing at section boundaries'
   missing side, or entirely when siblings can't be resolved.
 */
-const ArticlePrevNext = async ({ dynamicPageItem, sitemapNode, languageCode, isPreview }) => {
+const getSiblings = async ({ dynamicPageItem, sitemapNode, languageCode, isPreview }) => {
 	try {
 		const referenceName = dynamicPageItem?.properties?.referenceName;
 		const sectionID = dynamicPageItem?.fields?.section?.contentID;
@@ -50,23 +50,31 @@ const ArticlePrevNext = async ({ dynamicPageItem, sitemapNode, languageCode, isP
 		const index = siblings.findIndex((item) => item.href === sitemapNode.path);
 		if (index === -1) return null;
 
-		const prev = index > 0 ? siblings[index - 1] : null;
-		const next = index < siblings.length - 1 ? siblings[index + 1] : null;
-		if (!prev && !next) return null;
-
-		return (
-			<nav
-				aria-label="Article pagination"
-				className="mx-auto mt-14 grid max-w-[75ch] grid-cols-1 gap-3 font-muli sm:grid-cols-2"
-			>
-				{prev ? <PagerCard item={prev} rel="prev" /> : <span className="hidden sm:block" />}
-				{next && <PagerCard item={next} rel="next" />}
-			</nav>
-		);
+		return {
+			prev: index > 0 ? siblings[index - 1] : null,
+			next: index < siblings.length - 1 ? siblings[index + 1] : null,
+		};
 	} catch (error) {
+		// Data-layer failures must never take down the article page.
 		console.error("ArticlePrevNext: could not resolve siblings", error);
 		return null;
 	}
+};
+
+const ArticlePrevNext = async (props) => {
+	const siblings = await getSiblings(props);
+	if (!siblings || (!siblings.prev && !siblings.next)) return null;
+	const { prev, next } = siblings;
+
+	return (
+		<nav
+			aria-label="Article pagination"
+			className="mx-auto mt-14 grid max-w-[75ch] grid-cols-1 gap-3 font-muli sm:grid-cols-2"
+		>
+			{prev ? <PagerCard item={prev} rel="prev" /> : <span className="hidden sm:block" />}
+			{next && <PagerCard item={next} rel="next" />}
+		</nav>
+	);
 };
 
 const PagerCard = ({ item, rel }) => {
