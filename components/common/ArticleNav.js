@@ -167,9 +167,9 @@ const syncArticleNav = ({ $articleNavHeaders, $articleHeaders }) => {
   //update the classes on the Article Nav List
   for (const obj of $articleNavHeaders) {
     if (`#${$activeHeader?.id}` === obj.getAttribute("href")) {
-      obj.classList.add("bg-lightGray", "text-darkestGray");
+      obj.classList.add("bg-(--raised)", "text-(--text)");
     } else {
-      obj.classList.remove("bg-lightGray", "text-darkestGray");
+      obj.classList.remove("bg-(--raised)", "text-(--text)");
     }
   }
 };

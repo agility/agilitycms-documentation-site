@@ -1,6 +1,5 @@
 import "styles/lightfair.css";
 import "styles/globals.css";
-import "styles/nprogress.css";
 
 import React from "react";
 import { Metadata } from "next";

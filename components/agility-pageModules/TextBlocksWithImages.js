@@ -11,9 +11,9 @@ const TextBlocksWithImages = ({ module }) => {
           <Link href={fields.link1.href} className="font-bold grid md:grid-cols-2 relative md:-left-20">
             <div className="bg-(--surface) px-3 rounded-lg custom-shadow">
               <div className="flex space-x-[3px] py-2">
-                <span className="inline-block w-[4px] h-[4px] rounded-full bg-darkerGray" />
-                <span className="inline-block w-[4px] h-[4px] rounded-full bg-darkerGray" />
-                <span className="inline-block w-[4px] h-[4px] rounded-full bg-darkerGray" />
+                <span className="inline-block w-[4px] h-[4px] rounded-full bg-(--muted)" />
+                <span className="inline-block w-[4px] h-[4px] rounded-full bg-(--muted)" />
+                <span className="inline-block w-[4px] h-[4px] rounded-full bg-(--muted)" />
               </div>
               <AgilityPic
                 image={fields.image1}
@@ -40,9 +40,9 @@ const TextBlocksWithImages = ({ module }) => {
           <Link href={fields.link2.href} className="font-bold grid md:grid-cols-2 relative md:-left-20">
             <div className="bg-(--surface) px-3 rounded-lg custom-shadow">
               <div className="flex space-x-[3px] py-2">
-                <span className="inline-block w-[4px] h-[4px] rounded-full bg-darkerGray" />
-                <span className="inline-block w-[4px] h-[4px] rounded-full bg-darkerGray" />
-                <span className="inline-block w-[4px] h-[4px] rounded-full bg-darkerGray" />
+                <span className="inline-block w-[4px] h-[4px] rounded-full bg-(--muted)" />
+                <span className="inline-block w-[4px] h-[4px] rounded-full bg-(--muted)" />
+                <span className="inline-block w-[4px] h-[4px] rounded-full bg-(--muted)" />
               </div>
               <AgilityPic
                 image={fields.image2}

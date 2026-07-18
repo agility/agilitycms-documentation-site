@@ -67,14 +67,8 @@ html[data-theme="dark"] .ocean-show-dark { display: block; }
   --width-15_1: 15.1rem;
 
   --color-transparent: transparent;
-  --color-purple: #4600a8;
-  --color-brightPurple: #6d06ff;
-  --color-lightPurple: #5800d4;
-  --color-offwhite: #f1f5f9;
-  --color-lightGray: #f4f7fa;
-  --color-darkGray: #8d9fb1;
-  --color-darkerGray: #2a3846;
-  --color-darkestGray: #25303d;
+  /* Legacy purple/gray palette removed — components use the ocean semantic
+     tokens from tokens.css. Warm near-black kept for dialog scrims. */
   --color-black: #171b20;
 
   --grid-template-columns-fullWidth: 256px 1fr;

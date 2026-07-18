@@ -65,7 +65,8 @@ export default function SubmitNegativeFeedback({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            {/* bg-opacity-* is gone in Tailwind v4 — the slash-opacity form is required */}
+            <Dialog.Overlay className="fixed inset-0 bg-black/50 transition-opacity" />
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}
@@ -92,7 +93,7 @@ export default function SubmitNegativeFeedback({
                 <div className="flex items-center">
                   <div className="bg-(--raised) p-3 rounded-full">
                     <SpeakerphoneIcon
-                      className="h-6 w-6 text-brightPurple"
+                      className="h-6 w-6 text-(--primary)"
                       aria-hidden="true"
                     />
                   </div>

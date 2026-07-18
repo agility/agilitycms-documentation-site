@@ -215,7 +215,7 @@ const Search = () => {
                     {...autocomplete.getListProps()}
                   >
                     {totalHits > 0 && (
-                      <li className="px-5 py-2 text-xs text-darkerGray border-b border-gray-200 sticky top-0 bg-white">
+                      <li className="px-5 py-2 text-xs text-(--muted) border-b border-(--border) sticky top-0 bg-(--surface)">
                         Showing {items.length + extraItems.length} of {totalHits} results
                       </li>
                     )}
@@ -242,7 +242,7 @@ const Search = () => {
                     {hasMore && (
                       <li
                         ref={sentinelRef}
-                        className="py-3 text-center text-xs text-gray-400"
+                        className="py-3 text-center text-xs text-(--faint)"
                       >
                         {isLoadingMore ? "Loading more..." : ""}
                       </li>

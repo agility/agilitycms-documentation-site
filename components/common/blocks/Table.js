@@ -21,8 +21,7 @@ const Table = ({ id, withHeadings, content }) => {
                         <th
                           key={idx}
                           scope="col"
-                          className="px-6 py-3 text-left text-sm text-brightPurple font-semibold uppercase tracking-wider"
-                          style={{ backgroundColor: "#D7E2ED" }}
+                          className="px-6 py-3 text-left text-sm text-(--text) bg-(--raised) font-semibold uppercase tracking-wider"
                         >
                           {heading}
                         </th>

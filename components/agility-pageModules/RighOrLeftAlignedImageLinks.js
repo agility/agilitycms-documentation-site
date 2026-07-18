@@ -45,7 +45,6 @@ const RightOrLeftAlignedImageLinks = async ({ module, languageCode, isPreview })
                   <span
                     className={classNames(
                       "bg-(--surface)",
-                      "text-white",
                       "rounded-lg inline-flex p-3"
                     )}
                   >

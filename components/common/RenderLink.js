@@ -12,7 +12,7 @@ export function RenderLink({ link, adjustLink }) {
           <a
             href={href}
             target={link.target}
-            className="hover:text-white"
+            className="hover:text-(--n-50)"
           >
             {link.name || link.title}
           </a>

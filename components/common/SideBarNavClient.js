@@ -120,7 +120,8 @@ const SideBarNavClient = ({ navigation }) => {
 						leaveFrom="opacity-100"
 						leaveTo="opacity-0"
 					>
-						<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
+						{/* bg-opacity-* is gone in Tailwind v4 — the slash-opacity form is required */}
+						<Dialog.Overlay className="fixed inset-0 bg-black/50" />
 					</Transition.Child>
 
 					<div className="fixed inset-0 flex pointer-events-none">
