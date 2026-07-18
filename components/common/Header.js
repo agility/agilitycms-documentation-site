@@ -49,9 +49,9 @@ export default function Header({
 			className="sticky top-0 z-40 shrink-0 border-b border-(--border) font-muli backdrop-blur-[10px]"
 			style={{ background: "color-mix(in srgb, var(--bg) 82%, transparent)" }}
 		>
-			<div className="mx-auto flex h-[60px] max-w-[1400px] items-center gap-3 px-4 lg:px-6">
-				{/* Mobile menu */}
-				<div className="lg:hidden">
+			<div className="mx-auto flex h-[60px] max-w-[1400px] items-center gap-1.5 px-4 lg:px-5 min-[1340px]:gap-3 min-[1340px]:px-6">
+				{/* Mobile/compact menu (inline nav needs >=xl to fit) */}
+				<div className="xl:hidden">
 					<MobileMenu
 						navigation={navigation}
 						primaryDropdownLinks={primaryDropdownLinks}
@@ -68,7 +68,7 @@ export default function Header({
 				</Link>
 
 				{/* Section nav (mockup .topnav) */}
-				<nav className="ml-2 hidden items-center gap-1 lg:flex" aria-label="Global">
+				<nav className="hidden items-center gap-0.5 xl:flex min-[1340px]:ml-2 min-[1340px]:gap-1" aria-label="Global">
 					{navigation.map((item) => (
 						<Link
 							key={item.name}
@@ -77,7 +77,7 @@ export default function Header({
 								item.current
 									? "text-(--primary)"
 									: "text-(--text-2) hover:bg-(--raised) hover:text-(--text)",
-								"whitespace-nowrap rounded-(--r-sm) px-3 py-1.5 text-[.9rem] font-semibold"
+								"whitespace-nowrap rounded-(--r-sm) px-2.5 py-1.5 text-[.9rem] font-semibold min-[1340px]:px-3"
 							)}
 							aria-current={item.current ? "page" : undefined}
 						>
@@ -93,7 +93,7 @@ export default function Header({
 				<div className="flex-1" />
 
 				{/* Compact search */}
-				<div className="hidden w-full min-w-[190px] max-w-[280px] md:block">
+				<div className="hidden w-full min-w-[100px] max-w-[280px] shrink md:block">
 					<label htmlFor="search" className="sr-only">
 						Search
 					</label>
@@ -113,7 +113,7 @@ export default function Header({
 					href={SIGN_IN.href}
 					target="_blank"
 					rel="noreferrer"
-					className="hidden whitespace-nowrap rounded-(--r-sm) px-3 py-1.5 text-[.9rem] font-semibold text-(--text-2) hover:bg-(--raised) hover:text-(--text) xl:block"
+					className="hidden whitespace-nowrap rounded-(--r-sm) px-3 py-1.5 text-[.9rem] font-semibold text-(--text-2) hover:bg-(--raised) hover:text-(--text) min-[1440px]:block"
 				>
 					{SIGN_IN.name}
 				</a>
@@ -121,7 +121,7 @@ export default function Header({
 					href={TRY_FREE.href}
 					target="_blank"
 					rel="noreferrer"
-					className="hidden whitespace-nowrap rounded-(--r-sm) px-3.5 py-1.5 text-[.875rem] font-bold custom-hover sm:block"
+					className="hidden whitespace-nowrap rounded-(--r-sm) px-3 py-1.5 text-[.875rem] font-bold custom-hover sm:block min-[1340px]:px-3.5"
 					style={{ color: "var(--on-color)", backgroundColor: "var(--tertiary)" }}
 				>
 					{TRY_FREE.name}
@@ -133,7 +133,7 @@ export default function Header({
 
 const ApiSdkDropdown = ({ primaryDropdownLinks, secondaryDropdownLinks }) => (
 	<DropdownMenu>
-		<DropdownMenuTrigger className="flex items-center gap-1 whitespace-nowrap rounded-(--r-sm) px-3 py-1.5 text-[.9rem] font-semibold text-(--text-2) hover:bg-(--raised) hover:text-(--text) focus:outline-hidden data-[state=open]:bg-(--raised) data-[state=open]:text-(--text)">
+		<DropdownMenuTrigger className="flex items-center gap-1 whitespace-nowrap rounded-(--r-sm) px-2.5 py-1.5 min-[1340px]:px-3 text-[.9rem] font-semibold text-(--text-2) hover:bg-(--raised) hover:text-(--text) focus:outline-hidden data-[state=open]:bg-(--raised) data-[state=open]:text-(--text)">
 			APIs &amp; SDKs
 			<ChevronDownIcon className="h-4 w-4 text-(--primary)" aria-hidden="true" />
 		</DropdownMenuTrigger>
