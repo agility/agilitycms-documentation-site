@@ -158,6 +158,7 @@ Docs-specific components (sidebar, TOC, article prose, code panels) stay in this
 ## 7. Cutover checklist (merge `rebuild/ocean` → `main`)
 - All §6 checks green on a full production build.
 - Algolia re-index from the new build; ⌘K works.
+- Known follow-up (non-blocking): `@headlessui/react` v1 causes a dev-visible hydration id mismatch (`headlessui-disclosure-button-undefined`) in the sidebar Disclosure tree — upgrade headlessui (v1.7+ uses React `useId`) in its own PR; v2 has breaking API changes (`Dialog.Overlay` etc.).
 - Vercel preview URL soak-tested behind the main-site rewrite (staging path).
 - Sentry upgraded and reporting.
 - Old Pages Router routes deleted; bundle diff reviewed.
