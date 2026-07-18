@@ -8,7 +8,8 @@ import { defaultLocale, getLocaleFromPathname } from "lib/i18n/config";
  *  1. Agility preview entry:  ?agilitypreviewkey=...  -> /api/preview
  *  2. Agility preview exit:   ?AgilityPreview=0       -> /api/preview/exit
  *  3. Dynamic-content deep link: ?ContentID=n         -> /api/dynamic-redirect
- *  4. Locale routing: unprefixed paths REWRITE to /{defaultLocale}/... so the
+ *  4. Clean markdown (T7):     /{article-path}.md     -> /api/article-md
+ *  5. Locale routing: unprefixed paths REWRITE to /{defaultLocale}/... so the
  *     default locale serves clean URLs while routing into app/[locale].
  *
  * NOTE: request.nextUrl.pathname excludes the /docs basePath; rewrites built
@@ -44,7 +45,18 @@ export function proxy(request: NextRequest) {
 		return NextResponse.rewrite(url);
 	}
 
-	// 4. Locale routing — rewrite unprefixed paths into /[locale].
+	// 4. Clean-markdown endpoint (T7): /{article-path}.md -> /api/article-md/...
+	//    Must run before the static-file check below — .md paths contain a dot.
+	//    The article path travels in the URL path, not a query param: query
+	//    strings added during a middleware rewrite don't reliably survive
+	//    under basePath.
+	if (pathname.endsWith(".md") && !pathname.startsWith("/api/")) {
+		const url = nextUrl.clone();
+		url.pathname = `/api/article-md${pathname.slice(0, -3)}`;
+		return NextResponse.rewrite(url);
+	}
+
+	// 5. Locale routing — rewrite unprefixed paths into /[locale].
 	const isStaticFile = pathname.includes(".") || pathname.startsWith("/_next");
 	const isApi = pathname.startsWith("/api/");
 	const hasLocalePrefix = getLocaleFromPathname(pathname) !== null;

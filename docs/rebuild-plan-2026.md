@@ -106,7 +106,7 @@ Code side:
 ### Phase 4 — T6 + T7: Routing, redirects, machine readability
 - Flagship routes as Agility pages (they're content, not hardcoded routes).
 - 301s server-side in `next.config` `redirects()` — the `/docs/overview/page-management` → `/docs/page-management` promotion is **open decision #1**; internal-link audit so nothing points into a redirect.
-- `llms.txt` at `/docs/llms.txt`; per-article clean-markdown endpoint (`/docs/<article-path>.md` or `?format=md` — decide in PR); the MCP server's `fetch_doc` should share this serializer.
+- `llms.txt` at `/docs/llms.txt`; per-article clean-markdown endpoint (`/docs/<article-path>.md` or `?format=md` — decide in PR); the MCP server's `fetch_doc` should share this serializer. **Done 2026-07-17:** `.md` suffix chosen (proxy rewrite → `app/api/article-md/[...slug]`, serializer in `lib/cms-content/articleMarkdown.ts`); `app/llms.txt/route.ts` builds from the cached published sitemap (flagships appear on publish). Still open: point the MCP `fetch_doc` at the shared serializer instead of Algolia-stripped HTML.
 - Prompt-shaped titles/meta on flagship pages ("MCP server", "AI agent", "visual page builder", "page orchestration", "headless CMS").
 
 ### Phase 5 — Net-new experiences (the world-class layer)

@@ -27,6 +27,7 @@ app/
     [...slug]/not-found.tsx      # 404 (ocean-styled)
   api/…                          # route handlers (see below)
   sitemap.xml/route.ts           # sitemap.xml (all locales)
+  llms.txt/route.ts              # AI-agent index of the docs (T7), from the cached sitemap
   custom-fields/block-editor/    # EditorJS custom field (iframe'd by the CMS)
 proxy.ts                         # Next 16 proxy (renamed middleware)
 ```
@@ -37,7 +38,8 @@ proxy.ts                         # Next 16 proxy (renamed middleware)
 1. `?agilitypreviewkey=` → redirect to `/api/preview` (enter draft mode)
 2. `?AgilityPreview=0` → redirect to `/api/preview/exit`
 3. `?ContentID=n` → rewrite to `/api/dynamic-redirect` (CMS deep links)
-4. No locale prefix + not static/api → **rewrite** to `/{defaultLocale}{path}`
+4. `/{article-path}.md` → rewrite to `/api/article-md/{article-path}` (clean markdown, T7). The path travels **in the URL path, not a query param** — query strings added during a middleware rewrite don't reliably survive under basePath.
+5. No locale prefix + not static/api → **rewrite** to `/{defaultLocale}{path}`
 
 > ⚠️ **Matcher gotcha:** the negative-lookahead matcher pattern does **not** match the bare basePath root `/` — it must be listed explicitly (`matcher: ["/", "/((?!api|_next/…).*)"]`) or the home page silently skips the locale rewrite and 404s. `request.nextUrl.pathname` excludes the `/docs` basePath; rewrites built by cloning `nextUrl` keep the basePath automatically.
 
@@ -113,7 +115,9 @@ Normalization in [utils/searchUtils.js](utils/searchUtils.js) (EditorJS + Markdo
 
 ## API Routes (all under `/docs/api/…`)
 
-`revalidate` (webhook) · `preview` + `preview/exit` (draft mode) · `dynamic-redirect` (ContentID deep links) · `generatePreviewKey` · `mcp` (knowledgebase MCP server: `search_docs`, `fetch_doc`) · `search/*` (Algolia) · `feedback/sendPositive|sendNegative` (forwards to `ENDPOINT_SEND_*_FEEDBACK_URL`) · `image/fetchByUrl|uploadByFile` + `link/search` (block-editor tools) · `robots` (crawling allowed only behind the Netlify proxy — `cdn-loop` header check).
+`revalidate` (webhook) · `preview` + `preview/exit` (draft mode) · `dynamic-redirect` (ContentID deep links) · `generatePreviewKey` · `mcp` (knowledgebase MCP server: `search_docs`, `fetch_doc`) · `article-md/[...slug]` (clean markdown per article — reached via the proxy `.md` rewrite; serializer in [lib/cms-content/articleMarkdown.ts](lib/cms-content/articleMarkdown.ts), shared candidate for the MCP `fetch_doc`) · `search/*` (Algolia) · `feedback/sendPositive|sendNegative` (forwards to `ENDPOINT_SEND_*_FEEDBACK_URL`) · `image/fetchByUrl|uploadByFile` + `link/search` (block-editor tools) · `robots` (crawling allowed only behind the Netlify proxy — `cdn-loop` header check).
+
+**Machine readability (T7)**: `/docs/llms.txt` indexes flagship pages, section landings, and every article (as `.md` links) from the cached published sitemap — flagship entries appear automatically once those pages publish. Any article URL + `.md` returns clean markdown (`markdownContent` served nearly verbatim; EditorJS blocks converted).
 
 ## Environment Variables
 
