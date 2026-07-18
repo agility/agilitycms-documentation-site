@@ -54,7 +54,6 @@ All Agility reads go through cached primitives. Each takes explicit `{ locale, p
 | `getContentList.ts` | container list | `agility-content-{refname.toLowerCase()}-{locale}` |
 | (page fetch inside getAgilityPage) | page by ID | `agility-page-{pageID}-{locale}` |
 | `gql.ts` | Agility GraphQL API (fetch-based; Apollo is gone from the render path) | `agility-graphql-{locale}` (coarse) |
-| `getMainSiteContent.ts` | cross-instance items from the OLD marketing instance | `main-site-content-{contentID}` (time-based only) |
 | `getAgilitySDK.ts` | SDK factory; `getAgilitySDK_NonReact({isPreview})` for non-request contexts | — |
 | `getAgilityContext.ts` | `{locale, isPreview, isDevelopmentMode}` from draftMode + env | — |
 | `isDevMode.ts` | dev detection; `FORCE_PUBLISHED=1` makes local dev behave like production | — |
@@ -84,7 +83,9 @@ The catch-all page fetches `getAgilityPage`, resolves the **page template** by n
 
 **Modules are async server components that fetch their own data** (the Pages-Router `getCustomInitialProps` pattern is dead). A module receives `{ module, languageCode, isPreview, sitemapNode, dynamicPageItem, page }` from ContentZone; child lists are fetched via `getContentList` using `module.fields.<field>.referencename` (the page is fetched with `expandAllContentLinks: false`, so linked lists arrive as `{referencename}`). Interactive UI is split into client components: `SideBarNav` (server data) → `SideBarNavClient`; `Changelog` → `ChangelogClient`; `DynamicArticleDetails` and `CodeBlock` are `"use client"`.
 
-**Chrome**: `app/[locale]/layout.tsx` renders `Header` (client; active nav computed from `usePathname`) with data from `getHeaderData`. Templates render `<Footer/>` — a `'use cache'` server component that fetches its own data. ⚠️ The footer nav + preheader banner come from the **old marketing instance** (`MAIN_AGILITY_SITE_GUID`, contentIDs 16 and 22, en-ca) — when the new marketing instance launches these die; replace with the agreed JSON nav contract (rebuild plan §8).
+**Chrome** (redesigned 2026-07-18, Stripe/Vercel docs pattern — same brand tokens as marketing, leaner functional chrome): `app/[locale]/layout.tsx` renders `Header` (client; one 60px sticky blurred row per the mockup `.topbar`: logo, section nav from the sitemap, APIs & SDKs dropdown from the `header` container, compact search, theme control, Sign in / Try Free). Templates render `<Footer/>` — a lean, **fully code-defined** docs footer (links live in the component). There is **no cross-instance dependency**: the marketing preheader banner and marketing footer were dropped with the redesign, so the new marketing instance launch does not affect docs chrome.
+
+**UI primitives**: shadcn-style Radix components in [components/ui/](components/ui/) (`dropdown-menu`, `sheet`, `dialog`) styled with ocean tokens + `tw-animate-css`; `cn()` in [lib/utils.ts](lib/utils.ts). `@headlessui/react` is fully removed — build new interactive UI on these primitives.
 
 ## Content Model (instance `67bc73e6-u`)
 
@@ -127,7 +128,6 @@ Normalization in [utils/searchUtils.js](utils/searchUtils.js) (EditorJS + Markdo
 | `AGILITY_SITEMAP` | Channel name (default `website`) |
 | `AGILITY_SECURITY_KEY` | Preview key validation |
 | `NEXT_PUBLIC_AGILITY_GUID` | PreviewBar edit links |
-| `MAIN_AGILITY_SITE_GUID` / `MAIN_AGILITY_SITE_API_KEY` | OLD marketing instance (footer/preheader) |
 | `AGILITY_FETCH_CACHE_DURATION` / `AGILITY_PATH_REVALIDATE_DURATION` | Cache TTL backstops ([lib/cms/cacheConfig.ts](lib/cms/cacheConfig.ts)) |
 | `BUILD_HOOK_URL` | Full-rebuild hook for redirect-only changes |
 | `FORCE_PUBLISHED` | `1` = dev behaves like production (published content) |

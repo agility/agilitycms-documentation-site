@@ -1,8 +1,9 @@
-/* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useRef, useState } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+"use client";
+
+import { useRef, useState } from "react";
 import { SpeakerphoneIcon } from "@heroicons/react/outline";
 import nextConfig from "next.config";
+import { Dialog, DialogContent, DialogTitle } from "components/ui/dialog";
 
 export default function SubmitNegativeFeedback({
   url,
@@ -47,101 +48,61 @@ export default function SubmitNegativeFeedback({
   };
 
   return (
-    <Transition.Root show={open} as={Fragment}>
-      <Dialog
-        as="div"
-        className="fixed z-50 inset-0 overflow-y-auto"
-        initialFocus={textareaRef}
-        onClose={cancel}
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && cancel()}>
+      <DialogContent
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+          textareaRef.current?.focus();
+        }}
       >
-        <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            {/* bg-opacity-* is gone in Tailwind v4 — the slash-opacity form is required */}
-            <Dialog.Overlay className="fixed inset-0 bg-black/50 transition-opacity" />
-          </Transition.Child>
-
-          {/* This element is to trick the browser into centering the modal contents. */}
-          <span
-            className="hidden sm:inline-block sm:align-middle sm:h-screen"
-            aria-hidden="true"
-          >
-            &#8203;
-          </span>
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            enterTo="opacity-100 translate-y-0 sm:scale-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-            leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-          >
-            <form
-              onSubmit={submit}
-              className="inline-block align-bottom bg-(--surface) px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full sm:p-6"
+        <form onSubmit={submit}>
+          <div className="flex items-center">
+            <div className="bg-(--raised) p-3 rounded-full">
+              <SpeakerphoneIcon
+                className="h-6 w-6 text-(--primary)"
+                aria-hidden="true"
+              />
+            </div>
+            <DialogTitle className="text-2xl leading-6 font-medium text-(--text) ml-3">
+              Submit Feedback
+            </DialogTitle>
+          </div>
+          <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
+            <textarea
+              ref={textareaRef}
+              id="submitFeedback"
+              name="message"
+              rows={3}
+              className={`h-32 mt-5 shadow-xs block w-full focus:outline-hidden focus:ring-1 focus:ring-(--primary) resize-none text-(--text) sm:text-sm border border-(--border)  ${
+                textCount > 0 ? `bg-(--surface)` : `bg-(--raised)`
+              }`}
+              maxLength={maxTextLength}
+              value={text}
+              onChange={updateText}
+              required
+              placeholder="Enter your feedback here..."
+            />
+            <div className="mt-3 text-sm text-(--muted)">
+              {textCount}/{maxTextLength}
+            </div>
+          </div>
+          <div className="sm:flex sm:flex-row-reverse">
+            <button
+              type="button"
+              className="mt-3 w-full inline-flex justify-center border-2 border-(--primary) shadow-xs px-4 py-2 bg-(--surface) text-base font-semibold text-(--primary) sm:ml-3 sm:w-auto sm:text-sm"
+              onClick={() => cancel()}
             >
-              <div>
-                <div className="flex items-center">
-                  <div className="bg-(--raised) p-3 rounded-full">
-                    <SpeakerphoneIcon
-                      className="h-6 w-6 text-(--primary)"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <Dialog.Title
-                    as="h3"
-                    className="text-2xl leading-6 font-medium text-(--text) ml-3"
-                  >
-                    Submit Feedback
-                  </Dialog.Title>
-                </div>
-                <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                  <textarea
-                    ref={textareaRef}
-                    id="submitFeedback"
-                    name="message"
-                    rows={3}
-                    className={`h-32 mt-5 shadow-xs block w-full focus:outline-hidden focus:ring-1 focus:ring-(--primary) focus:border-transparent resize-none text-(--text) sm:text-sm border border-(--border)  ${
-                      textCount > 0 ? `bg-(--surface)` : `bg-(--raised)`
-                    }`}
-                    maxLength={maxTextLength}
-                    value={text}
-                    onChange={updateText}
-                    required
-                    placeholder="Enter your feedback here..."
-                  />
-                  <div className="mt-3 text-sm text-(--muted)">
-                    {textCount}/{maxTextLength}
-                  </div>
-                </div>
-              </div>
-              <div className="sm:flex sm:flex-row-reverse">
-                <button
-                  type="button"
-                  className="mt-3 w-full inline-flex justify-center border-2 border-(--primary) shadow-xs px-4 py-2 bg-(--surface) text-base font-semibold text-(--primary) sm:ml-3 sm:w-auto sm:text-sm"
-                  onClick={() => cancel()}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="mt-3 w-full inline-flex justify-center border-2 border-transparent shadow-xs px-4 py-2 bg-(--primary) text-base font-semibold text-white sm:ml-0 sm:w-auto sm:text-sm"
-                >
-                  Submit
-                </button>
-              </div>
-            </form>
-          </Transition.Child>
-        </div>
-      </Dialog>
-    </Transition.Root>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="mt-3 w-full inline-flex justify-center border-2 border-transparent shadow-xs px-4 py-2 bg-(--primary) text-base font-semibold text-white sm:ml-0 sm:w-auto sm:text-sm"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

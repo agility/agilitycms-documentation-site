@@ -8,6 +8,9 @@
 /* Ocean design tokens (light + dark theme blocks) */
 @import './tokens.css';
 
+/* Enter/exit animations for the shadcn-style ui/ primitives (Radix data-state) */
+@import 'tw-animate-css';
+
 /* Class-based dark mode driven by data-theme on <html> (three-state control) */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
@@ -98,7 +101,7 @@ html[data-theme="dark"] .ocean-show-dark { display: block; }
 
 .prose h2 {
 	font-weight: 600;
-	scroll-margin-top: 140px; /* Offset for sticky header */
+	scroll-margin-top: 80px; /* Offset for the 60px sticky topbar */
 }
 
 /* Article prose on ocean tokens — the typography plugin's gray defaults are

@@ -38,8 +38,6 @@ export default async function LocaleLayout({
 					mainMenuLinks={headerData.mainMenuLinks}
 					primaryDropdownLinks={headerData.primaryDropdownLinks}
 					secondaryDropdownLinks={headerData.secondaryDropdownLinks}
-					marketingContent={headerData.marketingContent}
-					preHeader={headerData.preHeader}
 				/>
 				{children}
 			</div>

@@ -18,7 +18,7 @@ const WithSidebarNavTemplate = (props) => {
     <>
       <div id="WithSidebarNavTemplate" className="flex grow bg-(--bg) text-(--text)">
         <div>
-          <div className="hidden lg:flex lg:shrink-0 overflow-y-auto sticky top-[128px]">
+          <div className="hidden lg:flex lg:shrink-0 sticky top-[60px] self-start">
             <ContentZone
               name="SidebarContentZone"
               {...props}
@@ -49,7 +49,7 @@ const WithSidebarNavTemplate = (props) => {
           </div>
           {hasArticle && (
             <div className="mb-60">
-              <div className="hidden xl:block sticky top-[200px] w-60 flex-none pt-4">
+              <div className="hidden xl:block sticky top-[60px] w-60 flex-none pt-12">
                 <ArticleNav
                   dynamicPageItem={props.dynamicPageItem}
                   sitemapNode={props.sitemapNode}

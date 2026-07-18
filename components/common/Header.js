@@ -1,327 +1,228 @@
-/*
-  This example requires Tailwind CSS v2.0+
-
-  This example requires some changes to your config:
-
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
 "use client";
 
-import React, { Fragment, useEffect, useState } from "react";
+/*
+  Ocean docs topbar (mockup `.topbar`): ONE lean 60px sticky row — logo,
+  section nav inline, search, theme control, quiet CTAs. Follows the
+  Stripe/Vercel docs pattern: same brand tokens as marketing, but a
+  functional, denser chrome — no marketing banner, no mega-menu.
+*/
+import React from "react";
 import { usePathname } from "next/navigation";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { SearchIcon } from "@heroicons/react/solid";
-import {
-  LoginIcon,
-  MenuIcon,
-  XIcon,
-  SupportIcon,
-} from "@heroicons/react/outline";
-import ButtonDropdown from "../common/ButtonDropdown";
-import ThemeControl from "../common/ThemeControl";
 import Link from "next/link";
+import { SearchIcon, ChevronDownIcon } from "@heroicons/react/solid";
+import { MenuIcon } from "@heroicons/react/outline";
+import ThemeControl from "../common/ThemeControl";
 import Search from "./Search";
-import { ChevronRightIcon } from "@heroicons/react/solid";
-
-import { renderHTML } from "../../utils/htmlUtils";
+import {
+	DropdownMenu,
+	DropdownMenuTrigger,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+} from "components/ui/dropdown-menu";
+import { Sheet, SheetTrigger, SheetContent, SheetClose } from "components/ui/sheet";
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
+	return classes.filter(Boolean).join(" ");
 }
 
-const loginButton = {
-  name: "Sign In",
-  href: "https://manager.agilitycms.com/",
-  icon: LoginIcon,
-};
-
-const supportButton = {
-  name: "Get Support",
-  href: "https://help.agilitycms.com/hc/en-us/requests/new",
-  icon: SupportIcon,
-};
+const SIGN_IN = { name: "Sign in", href: "https://manager.agilitycms.com/" };
+const TRY_FREE = { name: "Try Free", href: "https://agilitycms.com/trial/" };
 
 export default function Header({
-  mainMenuLinks,
-  primaryDropdownLinks,
-  secondaryDropdownLinks,
-  marketingContent,
-  preHeader,
+	mainMenuLinks,
+	primaryDropdownLinks,
+	secondaryDropdownLinks,
 }) {
-  // Active section is computed client-side from the pathname (the server
-  // sends plain {name, href} links). Match on the first path segment so a
-  // top-level category highlights for any page beneath it.
-  const pathname = usePathname() || "/";
-  const firstSegment = (p) => (p || "").split("/")[1] || "";
-  const navigation = (mainMenuLinks || []).map((item) => ({
-    ...item,
-    current: firstSegment(pathname) === firstSegment(item.href),
-  }));
-  const apiSDKsButton = {
-    name: "APIs & SDKs",
-    children: primaryDropdownLinks.map((l) => {
-      return {
-        name: l.text,
-        href: l.href,
-      };
-    }),
-    children2: secondaryDropdownLinks.map((l) => {
-      return {
-        name: l.text,
-        href: l.href,
-      };
-    }),
-  };
+	// Active section from the first path segment, so a top-level category
+	// highlights for any page beneath it.
+	const pathname = usePathname() || "/";
+	const firstSegment = (p) => (p || "").split("/")[1] || "";
+	const navigation = (mainMenuLinks || []).map((item) => ({
+		...item,
+		current: firstSegment(pathname) === firstSegment(item.href),
+	}));
 
-  useEffect(() => {
-    const scrollContainer = document.getElementById("ScrollContainer");
-    if (!scrollContainer) return;
-    scrollContainer.addEventListener("scroll", function (e) {
-      const scroll = this.scrollTop;
-      const preheader = document.getElementById("preheader");
-      if (!preheader) return;
-      if (scroll === 0) {
-        preheader.classList.add("md:block");
-      } else {
-        preheader.classList.remove("md:block");
-      }
-    });
-  }, []);
+	return (
+		<header
+			id="Header"
+			className="sticky top-0 z-40 shrink-0 border-b border-(--border) font-muli backdrop-blur-[10px]"
+			style={{ background: "color-mix(in srgb, var(--bg) 82%, transparent)" }}
+		>
+			<div className="mx-auto flex h-[60px] max-w-[1400px] items-center gap-3 px-4 lg:px-6">
+				{/* Mobile menu */}
+				<div className="lg:hidden">
+					<MobileMenu
+						navigation={navigation}
+						primaryDropdownLinks={primaryDropdownLinks}
+						secondaryDropdownLinks={secondaryDropdownLinks}
+					/>
+				</div>
 
-  return (
-    <>
-      {preHeader.showPreHeader === true && (
-        <div
-          className="px-2 sm:px-4 lg:px-8 pt-3 pb-2 bg-(--n-900) text-(--n-50) hidden md:block font-muli"
-          id="preheader"
-        >
-          <div className="flex justify-between">
-            {marketingContent && (
-              <>
-                <div className="flex items-center">
-                  <div
-                    id="marketing-content"
-                    style={{ fontSize: ".875rem", fontWeight: "400" }}
-                    dangerouslySetInnerHTML={renderHTML(marketingContent, true)}
-                  />
-                  <ChevronRightIcon className="w-[20px] h-[20px] mb-0.5 marketing-arrow relative top-[2px]" />
-                </div>
-                <div className="flex text-sm items-center">
-                  {supportButton && (
-                    <Link href={supportButton.href} title={supportButton.name}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="whitespace-nowrap"
-                    >
-                      {supportButton.name}
+				<Link href="/" title="Agility Docs" className="flex shrink-0 items-center">
+					<img
+						className="block h-7 w-auto"
+						src="/docs/assets/agility-docs-logo.svg"
+						alt="Agility CMS documentation"
+					/>
+				</Link>
 
-                    </Link>
-                  )}
-                  {loginButton && (
-                    <a
-                      href={loginButton.href}
-                      className="ml-8 whitespace-nowrap"
-                      target="_blank"
-                      rel="noreferrer"
-                      title={loginButton.name}
+				{/* Section nav (mockup .topnav) */}
+				<nav className="ml-2 hidden items-center gap-1 lg:flex" aria-label="Global">
+					{navigation.map((item) => (
+						<Link
+							key={item.name}
+							href={item.href}
+							className={classNames(
+								item.current
+									? "text-(--primary)"
+									: "text-(--text-2) hover:bg-(--raised) hover:text-(--text)",
+								"whitespace-nowrap rounded-(--r-sm) px-3 py-1.5 text-[.9rem] font-semibold"
+							)}
+							aria-current={item.current ? "page" : undefined}
+						>
+							{item.name}
+						</Link>
+					))}
+					<ApiSdkDropdown
+						primaryDropdownLinks={primaryDropdownLinks}
+						secondaryDropdownLinks={secondaryDropdownLinks}
+					/>
+				</nav>
 
-                    >
-                      {loginButton.name}
-                    </a>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-      <Disclosure
-        id="Header"
-        as="header"
-        className="shrink-0 bg-(--surface) border-b border-(--border) z-40 relative font-muli sticky top-0"
-      >
-        {({ open }) => (
-          <>
-            <div className="mx-auto px-2 sm:px-4  lg:px-8">
-              <div className="relative h-[60px] flex justify-between">
-                <div className="relative z-10 px-2 flex lg:px-0">
-                  <div className="shrink-0 flex items-center">
-                    <Link href="/" title="Agility Docs">
-                      <img
-                        className="block h-7 md:h-8 w-auto"
-                        src="/docs/assets/agility-docs-logo.svg"
-                        alt="The logo of Agility Docs site on agilitycms.com"
-                      />
+				<div className="flex-1" />
 
-                    </Link>
-                  </div>
-                </div>
-                <div className="relative z-0 flex-1 px-2 hidden lg:flex items-center justify-center sm:absolute sm:inset-0">
-                  <div className="w-full max-w-xs lg:max-w-xl">
-                    <label htmlFor="search" className="sr-only">
-                      Search
-                    </label>
-                    <div className="relative">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
-                        <SearchIcon
-                          className="h-5 w-5 text-(--faint)"
-                          aria-hidden="true"
-                        />
-                      </div>
-                      <Search />
-                    </div>
-                  </div>
-                </div>
+				{/* Compact search */}
+				<div className="hidden w-full min-w-[190px] max-w-[280px] md:block">
+					<label htmlFor="search" className="sr-only">
+						Search
+					</label>
+					<div className="relative">
+						<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+							<SearchIcon className="h-4 w-4 text-(--faint)" aria-hidden="true" />
+						</div>
+						<Search />
+					</div>
+				</div>
 
-                <div className="flex items-center">
-                  <div className="hidden sm:block lg:hidden mr-[32px] sm:relative sm:z-10">
-                    <a
-                      target="_blank"
-                      href="https://agilitycms.com/trial/"
-                      rel="noreferrer"
-                      className="py-[9px] px-[19px] font-bold custom-hover"
-                      style={{
-                        color: "var(--on-color)",
-                        backgroundColor: "var(--tertiary)",
-                        fontSize: ".875rem",
-                        borderRadius: "var(--r-sm)",
-                      }}
-                    >
-                      Try For Free
-                    </a>
-                  </div>
-                  <div className="relative z-10 flex items-center lg:hidden">
-                    {/* Mobile menu button */}
-                    <Disclosure.Button className="p-2 inline-flex items-center justify-center text-(--text-2) hover:bg-(--raised) focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-(--primary)">
-                      <span className="sr-only">Open menu</span>
-                      {open ? (
-                        <XIcon className="block h-7 w-7" aria-hidden="true" />
-                      ) : (
-                        <MenuIcon
-                          className="block h-7 w-7"
-                          aria-hidden="true"
-                        />
-                      )}
-                    </Disclosure.Button>
-                  </div>
-                </div>
+				<div className="hidden sm:block">
+					<ThemeControl />
+				</div>
 
-                <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center lg:gap-4">
-                  <ThemeControl />
-                  <a
-                    target="_blank"
-                    href="https://agilitycms.com/trial/"
-                    rel="noreferrer"
-                    className="border-2 pt-2 pb-1.5 px-4 font-bold custom-hover"
-                    style={{ color: "var(--primary)", borderColor: "var(--primary)", borderRadius: "var(--r-sm)" }}
-                  >
-                    Try For Free
-                  </a>
-                </div>
-              </div>
-              <nav
-                className="hidden lg:py-2 lg:flex items-center mb-2"
-                aria-label="Global"
-              >
-                <div className="lg:space-x-8">
-                  {navigation.map((item) => (
-                    <Link key={item.name} href={item.href}
-                      className={classNames(
-                        item.current
-                          ? "text-(--primary) border-(--primary)"
-                          : "text-(--text-2) hover:text-(--primary) border-transparent",
-                        "font-semibold border-b-2 pb-1"
-                      )}
-                      aria-current={item.current ? "page" : undefined}
-                    >
-                      {item.name}
-
-                    </Link>
-                  ))}
-                </div>
-                <div className="ml-auto">
-                  <ButtonDropdown {...apiSDKsButton} />
-                </div>
-              </nav>
-            </div>
-
-            <Disclosure.Panel
-              as="nav"
-              className="lg:hidden"
-              aria-label="Global"
-            >
-              <div className="pt-2 pb-3 px-2 space-y-1">
-                <div className="w-full px-2 py-3">
-                  <label htmlFor="search" className="sr-only">
-                    Search
-                  </label>
-                  <div className="relative">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
-                      <SearchIcon
-                        className="h-5 w-5 text-(--faint)"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <Search />
-                  </div>
-                </div>
-                <div>
-                  {navigation.map((item) => (
-                    <Disclosure.Button
-                      key={item.href}
-                      className="w-full text-left"
-                    >
-                      <MenuLink item={item} />
-                    </Disclosure.Button>
-                  ))}
-                </div>
-                <div
-                  className="px-3"
-                  style={{ marginTop: "24px", marginBottom: "24px" }}
-                >
-                  <a
-                    target="_blank"
-                    href="https://agilitycms.com/trial/"
-                    rel="noreferrer"
-                    className="border-2 pt-2 pb-1.5 px-4 font-bold custom-hover block md:hidden w-full text-center"
-                    style={{ color: "var(--primary)", borderColor: "var(--primary)", borderRadius: "var(--r-sm)" }}
-                  >
-                    Try For Free
-                  </a>
-                  {/* <hr className="py-2 shadow-none" /> */}
-                </div>
-              </div>
-            </Disclosure.Panel>
-          </>
-        )}
-      </Disclosure >
-    </>
-  );
+				<a
+					href={SIGN_IN.href}
+					target="_blank"
+					rel="noreferrer"
+					className="hidden whitespace-nowrap rounded-(--r-sm) px-3 py-1.5 text-[.9rem] font-semibold text-(--text-2) hover:bg-(--raised) hover:text-(--text) xl:block"
+				>
+					{SIGN_IN.name}
+				</a>
+				<a
+					href={TRY_FREE.href}
+					target="_blank"
+					rel="noreferrer"
+					className="hidden whitespace-nowrap rounded-(--r-sm) px-3.5 py-1.5 text-[.875rem] font-bold custom-hover sm:block"
+					style={{ color: "var(--on-color)", backgroundColor: "var(--tertiary)" }}
+				>
+					{TRY_FREE.name}
+				</a>
+			</div>
+		</header>
+	);
 }
 
-const MenuLink = ({ item }) => {
-  // let { href, children, ...rest } = props;
-  return (
-    <Link href={item.href} className={classNames(
-      item.current
-        ? "bg-(--raised) text-(--text)"
-        : "text-(--text-2) hover:bg-(--raised) hover:text-(--text)",
-      "block py-2 px-3 text-base font-medium"
-    )}
-      aria-current={item.current ? "page" : undefined}
-    // {...rest}
-    >
-      {item.name}
+const ApiSdkDropdown = ({ primaryDropdownLinks, secondaryDropdownLinks }) => (
+	<DropdownMenu>
+		<DropdownMenuTrigger className="flex items-center gap-1 whitespace-nowrap rounded-(--r-sm) px-3 py-1.5 text-[.9rem] font-semibold text-(--text-2) hover:bg-(--raised) hover:text-(--text) focus:outline-hidden data-[state=open]:bg-(--raised) data-[state=open]:text-(--text)">
+			APIs &amp; SDKs
+			<ChevronDownIcon className="h-4 w-4 text-(--primary)" aria-hidden="true" />
+		</DropdownMenuTrigger>
+		<DropdownMenuContent align="start">
+			{(primaryDropdownLinks || []).map((l) => (
+				<DropdownMenuItem key={l.href} asChild>
+					<Link href={l.href}>{l.text}</Link>
+				</DropdownMenuItem>
+			))}
+			{secondaryDropdownLinks?.length > 0 && <DropdownMenuSeparator />}
+			{(secondaryDropdownLinks || []).map((l) => (
+				<DropdownMenuItem key={l.href} asChild>
+					<Link href={l.href}>{l.text}</Link>
+				</DropdownMenuItem>
+			))}
+		</DropdownMenuContent>
+	</DropdownMenu>
+);
 
-    </Link>
-  );
-};
+const MobileMenu = ({ navigation, primaryDropdownLinks, secondaryDropdownLinks }) => (
+	<Sheet>
+		<SheetTrigger className="inline-flex items-center justify-center rounded-(--r-sm) p-2 text-(--text-2) hover:bg-(--raised) focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-(--primary)">
+			<span className="sr-only">Open menu</span>
+			<MenuIcon className="block h-6 w-6" aria-hidden="true" />
+		</SheetTrigger>
+		<SheetContent side="left" title="Menu">
+			<div className="px-4 py-4">
+				<div className="relative mb-4">
+					<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+						<SearchIcon className="h-4 w-4 text-(--faint)" aria-hidden="true" />
+					</div>
+					<Search />
+				</div>
+				<nav aria-label="Global">
+					{navigation.map((item) => (
+						<SheetClose asChild key={item.href}>
+							<Link
+								href={item.href}
+								className={classNames(
+									item.current
+										? "bg-(--raised) text-(--text)"
+										: "text-(--text-2) hover:bg-(--raised) hover:text-(--text)",
+									"block rounded-(--r-sm) px-3 py-2 text-base font-semibold"
+								)}
+								aria-current={item.current ? "page" : undefined}
+							>
+								{item.name}
+							</Link>
+						</SheetClose>
+					))}
+				</nav>
+				<div className="mt-4 border-t border-(--border) pt-4">
+					<div className="px-3 pb-2 font-mono text-[.66rem] uppercase tracking-[.14em] text-(--faint)">
+						APIs &amp; SDKs
+					</div>
+					{[...(primaryDropdownLinks || []), ...(secondaryDropdownLinks || [])].map((l) => (
+						<SheetClose asChild key={l.href}>
+							<Link
+								href={l.href}
+								className="block rounded-(--r-sm) px-3 py-2 text-sm font-medium text-(--text-2) hover:bg-(--raised) hover:text-(--text)"
+							>
+								{l.text}
+							</Link>
+						</SheetClose>
+					))}
+				</div>
+				<div className="mt-6 flex items-center justify-between gap-3 px-3">
+					<ThemeControl />
+					<a
+						href={SIGN_IN.href}
+						target="_blank"
+						rel="noreferrer"
+						className="text-sm font-semibold text-(--text-2) hover:text-(--primary)"
+					>
+						{SIGN_IN.name}
+					</a>
+				</div>
+				<div className="mt-4 px-3">
+					<a
+						href={TRY_FREE.href}
+						target="_blank"
+						rel="noreferrer"
+						className="block rounded-(--r-sm) py-2 text-center text-[.9rem] font-bold"
+						style={{ color: "var(--on-color)", backgroundColor: "var(--tertiary)" }}
+					>
+						{TRY_FREE.name}
+					</a>
+				</div>
+			</div>
+		</SheetContent>
+	</Sheet>
+);
