@@ -80,7 +80,7 @@ export default async function Page({ params }: PageProps) {
 			<div
 				data-agility-page={agilityData.page?.pageID}
 				data-agility-dynamic-content={agilityData.sitemapNode?.contentID || undefined}
-				className="flex flex-col grow overflow-hidden"
+				className="flex flex-col grow"
 			>
 				{AgilityPageTemplate ? (
 					<AgilityPageTemplate {...agilityData} />

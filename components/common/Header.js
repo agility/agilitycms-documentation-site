@@ -88,6 +88,7 @@ export default function Header({
     scrollContainer.addEventListener("scroll", function (e) {
       const scroll = this.scrollTop;
       const preheader = document.getElementById("preheader");
+      if (!preheader) return;
       if (scroll === 0) {
         preheader.classList.add("md:block");
       } else {

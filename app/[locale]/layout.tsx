@@ -30,10 +30,10 @@ export default async function LocaleLayout({
 	const headerData = await getHeaderData({ locale, preview: isPreview });
 
 	return (
-		<div id="SiteWrapper" className="h-full font-muli">
+		<div id="SiteWrapper" className="min-h-full font-muli">
 			<GoogleTagManager gtmId="GTM-NJW8WMX" />
 			<ClientInit />
-			<div id="Site" className="flex flex-col h-full">
+			<div id="Site" className="flex flex-col min-h-full">
 				<Header
 					mainMenuLinks={headerData.mainMenuLinks}
 					primaryDropdownLinks={headerData.primaryDropdownLinks}

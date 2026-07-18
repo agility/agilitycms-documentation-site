@@ -55,7 +55,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 			<body className="h-full">
 				<main
 					className={classNames(
-						"h-full",
+						// min-h (not h): the window scrolls, so the chain must be able
+						// to GROW past the viewport or sticky chrome stops at ~100vh
+						// and content gets clipped (the iPad no-scroll bug).
+						"min-h-full",
 						mulish.variable,
 						inder.variable,
 						firaMono.variable
