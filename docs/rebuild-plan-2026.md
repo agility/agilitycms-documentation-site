@@ -100,7 +100,7 @@ Code side:
 ### Phase 3 — T3–T5: Hub, flagship pages, section reorder (mostly content)
 - T3 Hub: new H1, three flagship FeatureCards (Web Studio / Page Management / MCP with primary/secondary/tertiary accents + AA ink pattern from the mockup), keep role cards + getting-help.
 - T4 Flagship pages `/docs/web-studio`, `/docs/page-management`, `/docs/ai` — one commit each; MediaHero where captures exist. **Blocked on copy doc — see §9.**
-- T5 Section reorders (Overview / Editors / Developers per handoff).
+- T5 Section reorders (Overview / Editors / Developers per handoff). **Done 2026-07-17 (staging):** Overview (page 5) got the "What makes Agility different" three-up FeatureCardGroup (+ dropped the junk `NewTestModel`); Editors (4) leads with a two-up Web Studio/Page Management band + an "AI-assisted authoring" ArticleListSection; Developers (3) got a positive hero rewrite (item 211, replacing the defensive lead — meta description updated to match), a two-up Page Management/Web Studio band, and a "Build with AI and the MCP server" cluster. Same two-step save workaround as the hub → legacy modules re-cloned; **newly unused originals for post-publish cleanup: 120/123/343/348 (overview), 207/210/314/321/357 (editors), 361/364/368/384/654/372/717 (developers)**. New nested containers: `Overview-WhatMakesAgilityDifBCF555`, `Editors-LeadFeatureCards`, `Editors-AIAuthoringLinks`, `Developers-LeadFeatureCards`, `DevelopersAIMCPLinks` (cards/links: items 1538–1552).
 - AI-section article content is out of scope for code; build the shell so articles drop in.
 
 ### Phase 4 — T6 + T7: Routing, redirects, machine readability

@@ -97,7 +97,7 @@ The catch-all page fetches `getAgilityPage`, resolves the **page template** by n
 
 Content models: `FeatureCard` (id 44: Heading, Body, LinkText, LinkURL, Icon, Accent primary/secondary/tertiary, Badge), `LinkCard` (45: Heading, Body, LinkURL, Category). Component models: `PageHero` (46), `MediaHero` (47), `FeatureCardGroup` (48, nested Cards→FeatureCard), `ArticleListSection` (49, nested Items→LinkCard), `CodeBlock` (50), `CalloutBlock` (51, Style note/control/caution), `ThemeAwareImage` (52). React components in [components/agility-pageModules/ocean/](components/agility-pageModules/ocean/).
 
-Nested-list containers so far: `HomeFeatureCardGroup-Cards`, `HomeRoleLinkCards`, `WebStudioPageLinks`, `PageManagementPageLinks`, `AIPageLinks`. Redesigned pages (staging only until the redesign ships): home hub (pageID 2), `/web-studio` (59), `/page-management` (60), `/ai` (61), test page `ocean-test` (58). **Do not publish these pages until the redesign branch is deployed** — production code must know the ocean components first.
+Nested-list containers so far: `HomeFeatureCardGroup-Cards`, `HomeRoleLinkCards`, `WebStudioPageLinks`, `PageManagementPageLinks`, `AIPageLinks`, and (T5, 2026-07-17) `Overview-WhatMakesAgilityDifBCF555`, `Editors-LeadFeatureCards`, `Editors-AIAuthoringLinks`, `Developers-LeadFeatureCards`, `DevelopersAIMCPLinks`. Redesigned pages (staging only until the redesign ships): home hub (pageID 2), `/web-studio` (59), `/page-management` (60), `/ai` (61), the section landings `/overview` (5), `/editors` (4), `/developers` (3), and test page `ocean-test` (58). **Do not publish these pages until the redesign branch is deployed** — production code must know the ocean components first.
 
 ### Other containers
 
