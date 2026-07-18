@@ -89,8 +89,6 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 	const { fields } = module;
 
 	const [classicMode, setClassicMode] = useState(false);
-	const [processedMarkdown, setProcessedMarkdown] = useState('');
-	const [markdownH1Title, setMarkdownH1Title] = useState(null);
 
 	const showClassicMode = useMemo(() => !!dynamicPageItem.fields.classicContent, [dynamicPageItem.fields.classicContent])
 	const markdownContent = useMemo(() => dynamicPageItem.fields.markdownContent, [dynamicPageItem.fields.markdownContent])
@@ -104,8 +102,10 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 
 	const blocks = blockObj?.blocks || [];
 
-	// Process markdown content when there are no blocks and markdown content exists
-	useEffect(() => {
+	// Process markdown content when there are no blocks and markdown content exists.
+	// Must run synchronously during render (not in an effect) so the article body
+	// is present in the server-rendered HTML for crawlers and AI agents.
+	const { processedMarkdown, markdownH1Title } = useMemo(() => {
 		if (blocks.length === 0 && markdownContent) {
 			// Check if the first line of markdown is an h1
 			const lines = markdownContent.split('\n');
@@ -120,46 +120,43 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }) => {
 				markdownWithoutH1 = lines.slice(1).join('\n');
 			}
 
-			unified()
-				.use(remarkParse)
-				.use(remarkDisableIndentedCode)
-				.use(remarkGfm)
-				.use(remarkRehype, { allowDangerousHtml: true })
-				.use(rehypeRaw)
-				.use(rehypeSlug)
-				.use(rehypeStringify, { allowDangerousHtml: true })
-				.process(markdownWithoutH1)
-				.then((processedContent) => {
-					let htmlContent = processedContent.toString();
+			try {
+				const processedContent = unified()
+					.use(remarkParse)
+					.use(remarkDisableIndentedCode)
+					.use(remarkGfm)
+					.use(remarkRehype, { allowDangerousHtml: true })
+					.use(rehypeRaw)
+					.use(rehypeSlug)
+					.use(rehypeStringify, { allowDangerousHtml: true })
+					.processSync(markdownWithoutH1);
 
-					// If we didn't find an h1 in markdown syntax, check the processed HTML
-					// for an h1 tag at the beginning (in case markdown had HTML h1 tag)
-					if (!h1Text) {
-						const h1Match = htmlContent.match(/^<h1[^>]*>(.*?)<\/h1>\s*/i);
-						if (h1Match) {
-							// Extract text content from h1 (strip HTML tags if any)
-							h1Text = h1Match[1].replace(/<[^>]*>/g, '').trim();
-							// Remove the h1 from the HTML
-							htmlContent = htmlContent.replace(/^<h1[^>]*>.*?<\/h1>\s*/i, '');
-						}
-					} else {
-						// If we found an h1 in markdown, also remove it from the processed HTML
-						// in case it wasn't caught by the first line check
+				let htmlContent = processedContent.toString();
+
+				// If we didn't find an h1 in markdown syntax, check the processed HTML
+				// for an h1 tag at the beginning (in case markdown had HTML h1 tag)
+				if (!h1Text) {
+					const h1Match = htmlContent.match(/^<h1[^>]*>(.*?)<\/h1>\s*/i);
+					if (h1Match) {
+						// Extract text content from h1 (strip HTML tags if any)
+						h1Text = h1Match[1].replace(/<[^>]*>/g, '').trim();
+						// Remove the h1 from the HTML
 						htmlContent = htmlContent.replace(/^<h1[^>]*>.*?<\/h1>\s*/i, '');
 					}
+				} else {
+					// If we found an h1 in markdown, also remove it from the processed HTML
+					// in case it wasn't caught by the first line check
+					htmlContent = htmlContent.replace(/^<h1[^>]*>.*?<\/h1>\s*/i, '');
+				}
 
-					setProcessedMarkdown(htmlContent);
-					setMarkdownH1Title(h1Text);
-				})
-				.catch((error) => {
-					console.error('Error processing markdown:', error);
-					setProcessedMarkdown('');
-					setMarkdownH1Title(null);
-				});
-		} else {
-			setProcessedMarkdown('');
-			setMarkdownH1Title(null);
+				return { processedMarkdown: htmlContent, markdownH1Title: h1Text };
+			} catch (error) {
+				console.error('Error processing markdown:', error);
+				return { processedMarkdown: '', markdownH1Title: null };
+			}
 		}
+
+		return { processedMarkdown: '', markdownH1Title: null };
 	}, [blocks.length, markdownContent]);
 
 
