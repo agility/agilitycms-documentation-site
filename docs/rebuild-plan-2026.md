@@ -54,7 +54,7 @@ Either site must be hostable on **Vercel, Netlify, or any combination** without 
 | Rendering | ISR (Pages Router) | ISR via App Router (`revalidate` + on-demand `revalidatePath` from CMS webhooks) |
 | Errors/analytics | Sentry 6 (ancient), App Insights | Sentry latest; keep App Insights only if still consumed |
 
-**Drops:** `nightwind` (replaced by real token-based theming), `react-html-parser`, `fuzzy-search`, `next-connect`, `axios` (fetch), Apollo. **Keep:** the EditorJS render path (hundreds of articles still have `content` blocks) and the EditorJS **custom-field editor** under `pages/custom-fields` — that's a CMS-hosted tool, not site UI; migrate it last and mechanically.
+**Drops:** `nightwind` (replaced by real token-based theming), `react-html-parser`, `fuzzy-search`, `next-connect`, `axios` (fetch), Apollo. **Keep:** the EditorJS render path (hundreds of articles still have `content` blocks; rendering is plain React in `components/common/blocks`, no EditorJS packages). **Removed 2026-07-18:** the EditorJS custom-field editor + its image/link API routes — the block editor now ships as a separate Agility App, so all `@editorjs/*` packages, `@agility/content-management`, `image-size`, and `fuzzy-search` are gone from this repo.
 
 ### Migration strategy: rebuild-in-place on one branch
 
@@ -160,7 +160,7 @@ Docs-specific components (sidebar, TOC, article prose, code panels) stay in this
 - Algolia re-index from the new build; ⌘K works.
 - Known follow-up (non-blocking): `@headlessui/react` v1 causes a dev-visible hydration id mismatch (`headlessui-disclosure-button-undefined`) in the sidebar Disclosure tree — upgrade headlessui (v1.7+ uses React `useId`) in its own PR; v2 has breaking API changes (`Dialog.Overlay` etc.).
 - Vercel preview URL soak-tested behind the main-site rewrite (staging path).
-- Sentry upgraded and reporting.
+- Error reporting decision: Sentry 6 was REMOVED 2026-07-18 (dead config, never worked with App Router, 30+ vulns). Re-add @sentry/nextjs latest at cutover if error reporting is wanted, or rely on App Insights + Vercel logs.
 - Old Pages Router routes deleted; bundle diff reviewed.
 
 ## 8. Coordination with the marketing-site rebuild

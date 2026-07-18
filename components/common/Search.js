@@ -66,6 +66,9 @@ const Search = () => {
   const autocomplete = React.useMemo(
     () =>
       createAutocomplete({
+        // Stable id — the default auto-increment counter differs between the
+        // server and client render and causes a hydration mismatch.
+        id: "docs-search",
         onStateChange({ state }) {
           setAutocompleteState(state);
         },

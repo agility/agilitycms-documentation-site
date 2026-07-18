@@ -1,5 +1,5 @@
-import { client } from 'agility-graphql-client';
-import { gql } from "@apollo/client";
+import { gqlFresh } from "lib/cms/gql";
+import { defaultLocale } from "lib/i18n/config";
 import { getArticleDescription } from './linkUtils';
 
 const MAX_BODY_LENGTH = 5000;
@@ -61,8 +61,9 @@ const normalizeArticle = async ({ article, category, url }) => {
 }
 
 const getCategoryOfSection = async ({sectionContentID}) => {
-    const { data } = await client.query({
-        query: gql`
+    const data = await gqlFresh({
+        locale: defaultLocale,
+        query: `
         {
             doccategories  {
                 contentID

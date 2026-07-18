@@ -2,7 +2,6 @@
 
 /* This example requires Tailwind CSS v2.0+ */
 import { useEffect, useState } from "react";
-import axios from "axios";
 import nextConfig from "next.config";
 import { ThumbUpIcon, ThumbDownIcon } from "@heroicons/react/outline";
 import SubmitNegativeFeedback from "../common/SubmitNegativeFeedback";
@@ -176,9 +175,10 @@ const syncArticleNav = ({ $articleNavHeaders, $articleHeaders }) => {
 
 const sendPositiveFeedback = ({ url, title, setPositiveFeedbackSubmitted }) => {
   //fire and forget
-  axios.post(`${nextConfig.basePath}/api/feedback/sendPositive`, {
-    url,
-    title,
+  fetch(`${nextConfig.basePath}/api/feedback/sendPositive`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url, title }),
   });
 
   setPositiveFeedbackSubmitted(true);

@@ -12,10 +12,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: yarn
-      - run: yarn install --frozen-lockfile
-      - run: yarn lint
-  # typecheck and build jobs land with the Phase 0 toolchain upgrade:
-  # - typecheck: `tsc --noEmit` once tsconfig is strict and sources are typed
-  # - build: `next build` (requires AGILITY_* / ALGOLIA_* repo secrets — see HOSTING.md)
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+  # build/typecheck runs on every Vercel PR deploy (full `next build`).
+  # A CI build job would need AGILITY_* / ALGOLIA_* repo secrets — see HOSTING.md.

@@ -2,7 +2,6 @@
 import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { SpeakerphoneIcon } from "@heroicons/react/outline";
-import axios from "axios";
 import nextConfig from "next.config";
 
 export default function SubmitNegativeFeedback({
@@ -31,10 +30,10 @@ export default function SubmitNegativeFeedback({
     if (!text || text.length === 0) return;
 
     //post it... fire and forget
-    axios.post(`${nextConfig.basePath}/api/feedback/sendNegative`, {
-      url,
-      title,
-      text,
+    fetch(`${nextConfig.basePath}/api/feedback/sendNegative`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url, title, text }),
     });
 
     //don't wait for a response, just close it...

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import algoliasearch from "algoliasearch";
-import { client } from "agility-graphql-client";
-import { gql } from "@apollo/client";
+import { gqlFresh } from "lib/cms/gql";
+import { defaultLocale } from "lib/i18n/config";
 import { getDynamicPageURL } from "@agility/nextjs/node";
 import { normalizeArticle } from "utils/searchUtils";
 
@@ -35,8 +35,9 @@ export async function POST(req: NextRequest) {
 		return NextResponse.json({ deleted: contentID, state });
 	}
 
-	const { data } = await client.query({
-		query: gql`
+	const data = await gqlFresh({
+		locale: defaultLocale,
+		query: `
         {
             ${referenceName} (contentID: ${contentID})  {
                 contentID
@@ -63,9 +64,6 @@ export async function POST(req: NextRequest) {
                 }
             }
         }`,
-		// Webhook fires immediately after a publish — bypass Apollo cache so we
-		// never index stale content.
-		fetchPolicy: "no-cache",
 	});
 
 	const article = data[referenceName] && data[referenceName][0];

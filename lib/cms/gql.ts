@@ -21,6 +21,14 @@ export const gql = async <T = any>(params: Params): Promise<T> => {
 	return cachedGql<T>(params);
 };
 
+/**
+ * Uncached published query — for the search-index routes, which fire from a
+ * publish webhook and must never read a cached result.
+ */
+export const gqlFresh = async <T = any>({ query, locale }: { query: string; locale: string }): Promise<T> => {
+	return fetchGql<T>({ query, locale, preview: false });
+};
+
 const cachedGql = async <T>(params: Params): Promise<T> => {
 	"use cache";
 	cacheTag(`agility-graphql-${params.locale}`);

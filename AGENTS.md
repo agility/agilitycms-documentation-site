@@ -13,7 +13,7 @@ Source code for the [Agility CMS Documentation Site](https://agilitycms.com/docs
 - **Ocean design tokens** in [styles/tokens.css](styles/tokens.css) (light + dark theme blocks, source of truth: `docs/plan-handoff.md` §3). Components must use semantic tokens (`--primary`, `--surface`, `--text`…), never hardcoded hex. Dark mode = `data-theme` on `<html>`, three-state control in [components/common/ThemeControl.js](components/common/ThemeControl.js).
 - **Fonts**: Mulish / Inder (400 only) / Fira Mono via `next/font` in [app/layout.tsx](app/layout.tsx). The CSS variables sit on the `<main>` wrapper because tokens.css resolves its font aliases at the `main` selector (custom properties resolve `var()` refs at the declaring node).
 - **Search**: Algolia, index `doc_site`. **MCP server**: `/docs/api/mcp` ([app/api/mcp/README.md](app/api/mcp/README.md)).
-- Package manager: **yarn** (v1). Lint: ESLint 9 flat config ([eslint.config.mjs](eslint.config.mjs)), `yarn lint`.
+- Package manager: **npm** (package-lock.json; `.npmrc` sets `legacy-peer-deps` — the tree has peer conflicts strict `npm ci` would reject). Lint: ESLint 9 flat config ([eslint.config.mjs](eslint.config.mjs)), `npm run lint`.
 
 ## Routing
 
@@ -28,7 +28,6 @@ app/
   api/…                          # route handlers (see below)
   sitemap.xml/route.ts           # sitemap.xml (all locales)
   llms.txt/route.ts              # AI-agent index of the docs (T7), from the cached sitemap
-  custom-fields/block-editor/    # EditorJS custom field (iframe'd by the CMS)
 proxy.ts                         # Next 16 proxy (renamed middleware)
 ```
 
@@ -75,7 +74,7 @@ The tag strings in the webhook **must stay in lockstep with lib/cms** — they a
 
 ## Preview / Draft Mode
 
-- **Local dev serves staging (preview) content** (`isDevMode()`), so editors' unpublished work is visible at `yarn dev`. `FORCE_PUBLISHED=1 yarn dev` tests the published experience.
+- **Local dev serves staging (preview) content** (`isDevMode()`), so editors' unpublished work is visible at `npm run dev`. `FORCE_PUBLISHED=1 npm run dev` tests the published experience.
 - Production preview = Next `draftMode()` cookie, entered through `?agilitypreviewkey=` → proxy → `/api/preview` (validates via `validatePreview`), exited via `/api/preview/exit`. `draftMode()` is prerender-safe: it reads disabled during static generation.
 - The floating **PreviewBar** ([components/common/PreviewBar.js](components/common/PreviewBar.js), main-site design) shows in preview/dev; Ctrl/Cmd+Q toggles it anywhere. "Edit in CMS" deep-links via `NEXT_PUBLIC_AGILITY_GUID`.
 
@@ -83,7 +82,7 @@ The tag strings in the webhook **must stay in lockstep with lib/cms** — they a
 
 The catch-all page fetches `getAgilityPage`, resolves the **page template** by name ([components/agility-pageTemplates/index.js](components/agility-pageTemplates/index.js): MainTemplate / WithSidebarNavTemplate / FullwidthTemplate), which renders `<ContentZone getModule={getModule}>` over `page.zones`. Modules are registered in [components/agility-pageModules/index.js](components/agility-pageModules/index.js).
 
-**Modules are async server components that fetch their own data** (the Pages-Router `getCustomInitialProps` pattern is dead). A module receives `{ module, languageCode, isPreview, sitemapNode, dynamicPageItem, page }` from ContentZone; child lists are fetched via `getContentList` using `module.fields.<field>.referencename` (the page is fetched with `expandAllContentLinks: false`, so linked lists arrive as `{referencename}`). Interactive UI is split into client components: `SideBarNav` (server data) → `SideBarNavClient`; `Changelog` → `ChangelogClient`; `DynamicArticleDetails`, `CodeBlock`, `BlockEditor` are `"use client"`.
+**Modules are async server components that fetch their own data** (the Pages-Router `getCustomInitialProps` pattern is dead). A module receives `{ module, languageCode, isPreview, sitemapNode, dynamicPageItem, page }` from ContentZone; child lists are fetched via `getContentList` using `module.fields.<field>.referencename` (the page is fetched with `expandAllContentLinks: false`, so linked lists arrive as `{referencename}`). Interactive UI is split into client components: `SideBarNav` (server data) → `SideBarNavClient`; `Changelog` → `ChangelogClient`; `DynamicArticleDetails` and `CodeBlock` are `"use client"`.
 
 **Chrome**: `app/[locale]/layout.tsx` renders `Header` (client; active nav computed from `usePathname`) with data from `getHeaderData`. Templates render `<Footer/>` — a `'use cache'` server component that fetches its own data. ⚠️ The footer nav + preheader banner come from the **old marketing instance** (`MAIN_AGILITY_SITE_GUID`, contentIDs 16 and 22, en-ca) — when the new marketing instance launches these die; replace with the agreed JSON nav contract (rebuild plan §8).
 
@@ -115,7 +114,7 @@ Normalization in [utils/searchUtils.js](utils/searchUtils.js) (EditorJS + Markdo
 
 ## API Routes (all under `/docs/api/…`)
 
-`revalidate` (webhook) · `preview` + `preview/exit` (draft mode) · `dynamic-redirect` (ContentID deep links) · `generatePreviewKey` · `mcp` (knowledgebase MCP server: `search_docs`, `fetch_doc`) · `article-md/[...slug]` (clean markdown per article — reached via the proxy `.md` rewrite; serializer in [lib/cms-content/articleMarkdown.ts](lib/cms-content/articleMarkdown.ts), shared candidate for the MCP `fetch_doc`) · `search/*` (Algolia) · `feedback/sendPositive|sendNegative` (forwards to `ENDPOINT_SEND_*_FEEDBACK_URL`) · `image/fetchByUrl|uploadByFile` + `link/search` (block-editor tools) · `robots` (crawling allowed only behind the Netlify proxy — `cdn-loop` header check).
+`revalidate` (webhook) · `preview` + `preview/exit` (draft mode) · `dynamic-redirect` (ContentID deep links) · `generatePreviewKey` · `mcp` (knowledgebase MCP server: `search_docs`, `fetch_doc`) · `article-md/[...slug]` (clean markdown per article — reached via the proxy `.md` rewrite; serializer in [lib/cms-content/articleMarkdown.ts](lib/cms-content/articleMarkdown.ts), shared candidate for the MCP `fetch_doc`) · `search/*` (Algolia; GraphQL reads go through `gqlFresh` — uncached) · `feedback/sendPositive|sendNegative` (forwards to `ENDPOINT_SEND_*_FEEDBACK_URL`) · `robots` (crawling allowed only behind the Netlify proxy — `cdn-loop` header check).
 
 **Machine readability (T7)**: `/docs/llms.txt` indexes flagship pages, section landings, and every article (as `.md` links) from the cached published sitemap — flagship entries appear automatically once those pages publish. Any article URL + `.md` returns clean markdown (`markdownContent` served nearly verbatim; EditorJS blocks converted).
 

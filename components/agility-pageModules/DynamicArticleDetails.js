@@ -2,7 +2,6 @@
 
 import React, { useMemo, useState, useEffect } from "react";
 import Blocks from "../common/blocks/index";
-import axios from "axios";
 import nextConfig from "next.config";
 import { ToggleSwitch } from "components/common/ToggleSwitch";
 import { unified } from 'unified';

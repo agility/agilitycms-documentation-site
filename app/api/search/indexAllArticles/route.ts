@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import algoliasearch from "algoliasearch";
-import { client } from "agility-graphql-client";
-import { gql } from "@apollo/client";
+import { gqlFresh } from "lib/cms/gql";
+import { defaultLocale } from "lib/i18n/config";
 import { getDynamicPageSitemapMappingREST } from "utils/sitemapUtils";
 import { normalizeArticle } from "utils/searchUtils";
 
 /**
  * Bulk re-index every published doc article into Algolia (index `doc_site`).
- * Uses the Apollo GraphQL client with no-cache — indexing must never read
+ * Uses an uncached GraphQL fetch — indexing must never read
  * stale content. Triggered manually or from CI, not from page renders.
  */
 export async function POST(req: NextRequest) {
@@ -27,8 +27,9 @@ const indexAll = async () => {
 
 	const startedAt = Date.now();
 
-	const { data } = await client.query({
-		query: gql`
+	const data = await gqlFresh({
+		locale: defaultLocale,
+		query: `
 			{
 				doccategories {
 					contentID
@@ -61,8 +62,6 @@ const indexAll = async () => {
 				}
 			}
 		`,
-		// Always read fresh content for indexing — never serve from Apollo cache.
-		fetchPolicy: "no-cache",
 	});
 
 	const articleUrls = await getDynamicPageSitemapMappingREST();
