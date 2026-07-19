@@ -13,7 +13,7 @@ const FullwidthTemplate = (props) => {
                     getModule={getModule}
                 />
             </div>
-            <Footer />
+            <Footer languageCode={props.languageCode} isPreview={props.isPreview} />
         </>
     );
 };

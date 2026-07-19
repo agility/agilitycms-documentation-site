@@ -63,7 +63,7 @@ const WithSidebarNavTemplate = (props) => {
           )}
         </div>
       </div>
-      <Footer />
+      <Footer languageCode={props.languageCode} isPreview={props.isPreview} />
     </>
   );
 };
