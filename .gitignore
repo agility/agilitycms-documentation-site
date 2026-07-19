@@ -43,3 +43,7 @@ sitemap.xml
 
 # claude
 .claude/settings.local.json
+
+# local scratch
+/screenshots/
+tsconfig.tsbuildinfo

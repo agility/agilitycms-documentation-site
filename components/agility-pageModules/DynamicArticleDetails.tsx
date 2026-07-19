@@ -1,0 +1,219 @@
+"use client";
+
+import React, { useMemo, useState, useEffect } from "react";
+import Blocks from "../common/blocks/index";
+import nextConfig from "next.config";
+import { ToggleSwitch } from "components/common/ToggleSwitch";
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkGfm from 'remark-gfm';
+import remarkRehype from 'remark-rehype';
+import rehypeRaw from 'rehype-raw';
+import rehypeSlug from 'rehype-slug';
+import rehypeStringify from 'rehype-stringify';
+const hljs = require('highlight.js');
+
+function remarkDisableIndentedCode(this: any) {
+	const data = this.data();
+	const list = data.micromarkExtensions || (data.micromarkExtensions = []);
+	list.push({ disable: { null: ['codeIndented'] } });
+}
+
+// Custom component to render markdown with code highlighting
+const MarkdownContent = ({ htmlContent }: { htmlContent: string }) => {
+	const containerRef = React.useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (!containerRef.current) return;
+
+		// Find all code blocks and apply syntax highlighting
+		const codeBlocks = containerRef.current.querySelectorAll('pre code');
+		codeBlocks.forEach((codeBlock) => {
+			// Get language from class name (e.g., "language-javascript")
+			const languageClass = Array.from(codeBlock.classList).find(cls => cls.startsWith('language-'));
+			const language = languageClass ? languageClass.replace('language-', '') : '';
+
+			// Apply highlight.js syntax highlighting
+			if (language && hljs.getLanguage(language)) {
+				try {
+					const highlighted = hljs.highlight(codeBlock.textContent, { language });
+					codeBlock.innerHTML = highlighted.value;
+					codeBlock.classList.add('hljs');
+				} catch (err) {
+					console.error('Error highlighting code:', err);
+				}
+			} else {
+				// Auto-detect language if not specified
+				try {
+					const highlighted = hljs.highlightAuto(codeBlock.textContent);
+					codeBlock.innerHTML = highlighted.value;
+					codeBlock.classList.add('hljs');
+				} catch (err) {
+					console.error('Error auto-detecting code language:', err);
+				}
+			}
+
+			// Add appropriate styling classes to parent pre element
+			const pre = codeBlock.parentElement;
+			if (pre && pre.tagName === 'PRE') {
+				pre.classList.add('hljs-pre');
+			}
+		});
+
+		// Browsers do not execute <script> tags inserted via innerHTML.
+		// Re-create each script element so embedded JS in CMS markdown actually runs.
+		const inertScripts = containerRef.current.querySelectorAll('script');
+		inertScripts.forEach((oldScript) => {
+			const newScript = document.createElement('script');
+			for (const attr of Array.from(oldScript.attributes)) {
+				newScript.setAttribute(attr.name, attr.value);
+			}
+			if (oldScript.textContent) {
+				newScript.textContent = oldScript.textContent;
+			}
+			oldScript.parentNode!.replaceChild(newScript, oldScript);
+		});
+	}, [htmlContent]);
+
+	return (
+		<div
+			ref={containerRef}
+			className="prose prose-lg max-w-none"
+			dangerouslySetInnerHTML={{ __html: htmlContent }}
+		/>
+	);
+};
+
+interface DynamicArticleDetailsProps {
+	module: {
+		fields: any;
+	};
+	// DocArticle content item — fields include title, description, content,
+	// classicContent, markdownContent, section (loose CMS shape)
+	dynamicPageItem: any;
+	sitemapNode?: any;
+}
+
+const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }: DynamicArticleDetailsProps) => {
+
+	// get module fields
+	const { fields } = module;
+
+	const [classicMode, setClassicMode] = useState(false);
+
+	const showClassicMode = useMemo(() => !!dynamicPageItem.fields.classicContent, [dynamicPageItem.fields.classicContent])
+	const markdownContent = useMemo(() => dynamicPageItem.fields.markdownContent, [dynamicPageItem.fields.markdownContent])
+
+
+	const blockContent = classicMode && showClassicMode ?
+		dynamicPageItem.fields.classicContent :
+		dynamicPageItem.fields.content
+
+	const blockObj = JSON.parse(blockContent || `{ "blocks": [] }`);
+
+	const blocks = blockObj?.blocks || [];
+
+	// Process markdown content when there are no blocks and markdown content exists.
+	// Must run synchronously during render (not in an effect) so the article body
+	// is present in the server-rendered HTML for crawlers and AI agents.
+	const { processedMarkdown, markdownH1Title } = useMemo(() => {
+		if (blocks.length === 0 && markdownContent) {
+			// Check if the first line of markdown is an h1
+			const lines = markdownContent.split('\n');
+			const firstLine = lines[0]?.trim() || '';
+			let h1Text: string | null = null;
+			let markdownWithoutH1 = markdownContent;
+
+			// Check if first line is a markdown h1 (starts with # followed by space)
+			if (firstLine.startsWith('# ')) {
+				h1Text = firstLine.substring(2).trim();
+				// Remove the first line (h1) from markdown
+				markdownWithoutH1 = lines.slice(1).join('\n');
+			}
+
+			try {
+				const processedContent = unified()
+					.use(remarkParse)
+					.use(remarkDisableIndentedCode)
+					.use(remarkGfm)
+					.use(remarkRehype, { allowDangerousHtml: true })
+					.use(rehypeRaw)
+					.use(rehypeSlug)
+					.use(rehypeStringify, { allowDangerousHtml: true })
+					.processSync(markdownWithoutH1);
+
+				let htmlContent = processedContent.toString();
+
+				// If we didn't find an h1 in markdown syntax, check the processed HTML
+				// for an h1 tag at the beginning (in case markdown had HTML h1 tag)
+				if (!h1Text) {
+					const h1Match = htmlContent.match(/^<h1[^>]*>(.*?)<\/h1>\s*/i);
+					if (h1Match) {
+						// Extract text content from h1 (strip HTML tags if any)
+						h1Text = h1Match[1].replace(/<[^>]*>/g, '').trim();
+						// Remove the h1 from the HTML
+						htmlContent = htmlContent.replace(/^<h1[^>]*>.*?<\/h1>\s*/i, '');
+					}
+				} else {
+					// If we found an h1 in markdown, also remove it from the processed HTML
+					// in case it wasn't caught by the first line check
+					htmlContent = htmlContent.replace(/^<h1[^>]*>.*?<\/h1>\s*/i, '');
+				}
+
+				return { processedMarkdown: htmlContent, markdownH1Title: h1Text };
+			} catch (error) {
+				console.error('Error processing markdown:', error);
+				return { processedMarkdown: '', markdownH1Title: null };
+			}
+		}
+
+		return { processedMarkdown: '', markdownH1Title: null };
+	}, [blocks.length, markdownContent]);
+
+
+	const sectionTitle = dynamicPageItem.fields.section?.fields?.title;
+	const lede = dynamicPageItem.fields.description;
+
+	return (
+		<div id="DynamicArticleDetails" className="font-muli mb-24">
+			<div className="w-full">
+				<div className="text-lg max-w-[75ch] mx-auto xl:mx-0">
+					<div className="flex justify-end gap-2 mt-5">
+						{showClassicMode &&
+							<ToggleSwitch
+								label="Classic UI Version"
+								checked={classicMode}
+								setChecked={(checked) => setClassicMode(checked)}
+							/>
+						}
+					</div>
+					{/* Ocean article header (mockup): eyebrow, left title, lede */}
+					{sectionTitle && (
+						<p className="mt-10 mb-3 font-mono text-[.72rem] uppercase tracking-[.24em] text-(--muted)">
+							{sectionTitle}
+						</p>
+					)}
+					<h1
+						className={`${sectionTitle ? "mt-0" : "mt-10"} mb-4 text-3xl md:text-4xl font-semibold leading-[1.1] tracking-tight text-(--text) text-balance`}
+					>
+						{markdownH1Title || dynamicPageItem.fields.title}
+					</h1>
+					{lede && (
+						<p className="mb-10 max-w-[62ch] text-[1.08rem] leading-relaxed text-(--text-2)">
+							{lede}
+						</p>
+					)}
+
+					{/* Render markdown content if no blocks exist and markdown content is available */}
+					{blocks.length === 0 && processedMarkdown ? (
+						<MarkdownContent htmlContent={processedMarkdown} />
+					) : (
+						<Blocks blocks={blocks} />
+					)}
+				</div>
+			</div>
+		</div>
+	);
+};
+
+export default DynamicArticleDetails;
