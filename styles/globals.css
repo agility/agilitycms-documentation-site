@@ -370,6 +370,16 @@ code > span.hljs-string {
 	background: var(--raised);
 }
 
+/* The forms plugin gives bare <input>s a border + focus ring; the modal
+   input is chromeless — the dialog header itself is the field. */
+.search-modal input,
+.search-modal input:focus {
+	border: none;
+	box-shadow: none;
+	outline: none;
+	padding: 0;
+}
+
 /* Search-modal match highlighting — never the browser's default yellow. */
 .search-modal mark {
 	background: color-mix(in srgb, var(--primary) 25%, transparent);

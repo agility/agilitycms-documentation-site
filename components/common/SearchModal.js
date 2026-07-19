@@ -182,25 +182,44 @@ const SearchPanel = ({ close }) => {
 		router.push(url.replace(/^https?:\/\/[^/]+/, "").replace(/^\/docs/, "") || "/");
 	};
 
-	const onKeyDown = (e) => {
+	// Arrow keys move real DOM focus (like Tab), not just the highlight —
+	// the button's onFocus keeps activeIndex in sync for both.
+	const focusItem = (idx) => {
+		listRef.current?.querySelector(`[data-index="${idx}"] button`)?.focus();
+	};
+
+	const onInputKeyDown = (e) => {
 		if (e.key === "ArrowDown") {
 			e.preventDefault();
-			setActiveIndex((i) => Math.min(i + 1, items.length - 1));
-		} else if (e.key === "ArrowUp") {
-			e.preventDefault();
-			setActiveIndex((i) => Math.max(i - 1, 0));
+			focusItem(0);
 		} else if (e.key === "Enter") {
 			e.preventDefault();
 			go(items[activeIndex]?.url);
 		}
 	};
 
-	// Keep the active row visible while arrowing.
-	useEffect(() => {
-		listRef.current
-			?.querySelector(`[data-index="${activeIndex}"]`)
-			?.scrollIntoView({ block: "nearest" });
-	}, [activeIndex]);
+	const onListKeyDown = (e) => {
+		if (e.key === "ArrowDown") {
+			e.preventDefault();
+			focusItem(Math.min(activeIndex + 1, items.length - 1));
+		} else if (e.key === "ArrowUp") {
+			e.preventDefault();
+			if (activeIndex <= 0) {
+				inputRef.current?.focus();
+			} else {
+				focusItem(activeIndex - 1);
+			}
+		} else if (e.key === "Backspace") {
+			e.preventDefault();
+			setQuery((q) => q.slice(0, -1));
+			inputRef.current?.focus();
+		} else if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey) {
+			// Typing while a result is focused resumes the search.
+			e.preventDefault();
+			setQuery((q) => q + e.key);
+			inputRef.current?.focus();
+		}
+	};
 
 	return (
 		<DialogContent
@@ -219,10 +238,11 @@ const SearchPanel = ({ close }) => {
 					ref={inputRef}
 					value={query}
 					onChange={(e) => setQuery(e.target.value)}
-					onKeyDown={onKeyDown}
+					onKeyDown={onInputKeyDown}
+					onFocus={() => setActiveIndex(0)}
 					placeholder="Search the docs..."
 					aria-label="Search the docs"
-					className="w-full border-0 bg-transparent p-0 text-[1.05rem] text-(--text) placeholder-(--muted) focus:outline-hidden focus:ring-0"
+					className="w-full bg-transparent text-[1.05rem] text-(--text) placeholder-(--muted)"
 				/>
 				{query && totalHits > 0 && (
 					<span className="flex-none whitespace-nowrap font-mono text-[.68rem] text-(--faint)">
@@ -233,7 +253,11 @@ const SearchPanel = ({ close }) => {
 
 			{/* Results */}
 			{mode === "search" && (
-				<div ref={listRef} className="max-h-[55vh] overflow-y-auto overscroll-contain">
+				<div
+					ref={listRef}
+					onKeyDown={onListKeyDown}
+					className="max-h-[55vh] overflow-y-auto overscroll-contain"
+				>
 					{!query && (
 						<div className="px-4 pb-1 pt-3 font-mono text-[.66rem] uppercase tracking-[.14em] text-(--faint)">
 							Start here
@@ -251,7 +275,8 @@ const SearchPanel = ({ close }) => {
 									type="button"
 									onClick={() => go(item.url)}
 									onMouseMove={() => setActiveIndex(idx)}
-									className={`block w-full rounded-(--r-sm) px-3 py-2.5 text-left ${
+									onFocus={() => setActiveIndex(idx)}
+									className={`block w-full rounded-(--r-sm) px-3 py-2.5 text-left focus:outline-hidden ${
 										idx === activeIndex ? "bg-(--raised)" : ""
 									}`}
 								>
