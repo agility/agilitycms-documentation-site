@@ -27,11 +27,10 @@ export async function GET(request: NextRequest) {
 
 	(await draftMode()).enable();
 
-	// Keep a marker query string — Netlify preserves the incoming QS by default.
 	// Unlike middleware, request.nextUrl in a route handler does NOT re-add the
 	// basePath when serialized — prepend it or the redirect lands outside /docs.
 	const url = request.nextUrl.clone();
 	url.pathname = `${nextConfig.basePath || ""}${previewUrl}`;
-	url.search = "?preview=1";
+	url.search = "";
 	return Response.redirect(url, 307);
 }

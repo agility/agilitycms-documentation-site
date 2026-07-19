@@ -42,6 +42,8 @@ proxy.ts                         # Next 16 proxy (renamed middleware)
 
 > ⚠️ **Matcher gotcha:** the negative-lookahead matcher pattern does **not** match the bare basePath root `/` — it must be listed explicitly (`matcher: ["/", "/((?!api|_next/…).*)"]`) or the home page silently skips the locale rewrite and 404s. `request.nextUrl.pathname` excludes the `/docs` basePath; rewrites built by cloning `nextUrl` keep the basePath automatically.
 
+> ⚠️ **Route-handler redirect gotcha:** the "basePath comes back automatically" rule above holds **only in middleware**. In a route handler (`app/api/*/route.ts`), a redirect built from `request.nextUrl.clone()` does **not** re-add the basePath — the preview enter/exit and ContentID redirects must prepend `nextConfig.basePath` themselves or they land outside `/docs` and 404.
+
 ## Data Layer (`lib/cms/`)
 
 All Agility reads go through cached primitives. Each takes explicit `{ locale, preview }`; **published requests are cached** under `'use cache'` + `cacheTag` + `cacheLife("days")`, **preview requests bypass the cache** entirely.

@@ -11,6 +11,6 @@ export async function GET(request: NextRequest) {
 	// serialized (middleware does) — prepend it or we redirect outside /docs.
 	const url = request.nextUrl.clone();
 	url.pathname = `${nextConfig.basePath || ""}${slug}`;
-	url.search = "?preview=0";
+	url.search = "";
 	return Response.redirect(url, 307);
 }
