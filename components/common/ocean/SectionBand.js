@@ -10,24 +10,30 @@ import icons from "../Icons";
 */
 
 export const SectionBand = ({ heading, intro, children }) => (
-	<section className="my-14 font-muli">
-		{heading && (
-			<h2
-				className="m-0 mb-2"
-				style={{
-					fontFamily: "var(--serif)",
-					fontSize: "clamp(1.4rem,2.6vw,1.85rem)",
-					letterSpacing: "-.02em",
-					color: "var(--text)",
-				}}
-			>
-				{heading}
-			</h2>
-		)}
-		{intro && (
-			<p className="m-0 mb-5 max-w-[68ch] leading-relaxed text-(--text-2)">{intro}</p>
-		)}
-		{children}
+	// Self-wraps like the ocean-band modules: page padding + centered --wrap
+	// column on containerless templates (MainTemplate); inside the sidebar
+	// shell the #WithSidebarNavTemplate .ocean-band override strips the
+	// horizontal padding so bands stay flush with the shell column.
+	<section className="ocean-band my-14 px-[var(--space)] font-muli">
+		<div className="mx-auto max-w-[var(--wrap)]">
+			{heading && (
+				<h2
+					className="m-0 mb-2"
+					style={{
+						fontFamily: "var(--serif)",
+						fontSize: "clamp(1.4rem,2.6vw,1.85rem)",
+						letterSpacing: "-.02em",
+						color: "var(--text)",
+					}}
+				>
+					{heading}
+				</h2>
+			)}
+			{intro && (
+				<p className="m-0 mb-5 max-w-[68ch] leading-relaxed text-(--text-2)">{intro}</p>
+			)}
+			{children}
+		</div>
 	</section>
 );
 

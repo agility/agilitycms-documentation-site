@@ -3,10 +3,13 @@ import { ContentZone } from "@agility/nextjs";
 import { getModule } from "components/agility-pageModules";
 import Footer from "../common/Footer";
 
+// Containerless — modules self-wrap (ocean-band px + centered --wrap column).
+// No nested overflow scroller: the page scrolls naturally (the inner-scroll
+// pattern broke scrolling entirely on iPad — see WithSidebarNavTemplate).
 const MainTemplate = (props) => {
   return (
-    <div id="MainTemplate" className="flex grow bg-(--bg) text-(--text) overflow-hidden">
-      <div id="ScrollContainer" className="grow overflow-y-auto">
+    <>
+      <div id="MainTemplate" className="grow bg-(--bg) text-(--text)">
         <div id="ContentContainer">
           <ContentZone
             name="MainContentZone"
@@ -14,9 +17,9 @@ const MainTemplate = (props) => {
             getModule={getModule}
           />
         </div>
-        <Footer />
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 
