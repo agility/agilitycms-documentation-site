@@ -1,6 +1,7 @@
 import { draftMode } from "next/headers";
 import { NextRequest } from "next/server";
 import { getDynamicPageURL } from "@agility/nextjs/node";
+import nextConfig from "next.config";
 
 /**
  * Resolve a ?ContentID=n deep link (from the Agility UI) to the dynamic
@@ -21,8 +22,10 @@ export async function GET(request: NextRequest) {
 		return new Response("No dynamic page found for that ContentID", { status: 404 });
 	}
 
+	// request.nextUrl in a route handler does not re-add the basePath when
+	// serialized (middleware does) — prepend it or we redirect outside /docs.
 	const url = request.nextUrl.clone();
-	url.pathname = redirectUrl;
+	url.pathname = `${nextConfig.basePath || ""}${redirectUrl}`;
 	url.search = "";
 	return Response.redirect(url, 307);
 }

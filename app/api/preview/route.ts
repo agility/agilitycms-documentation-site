@@ -1,6 +1,7 @@
 import { draftMode } from "next/headers";
 import { NextRequest } from "next/server";
 import { validatePreview, getDynamicPageURL } from "@agility/nextjs/node";
+import nextConfig from "next.config";
 
 /**
  * Enter preview (draft) mode. Agility's preview deep-links hit this route via
@@ -27,8 +28,10 @@ export async function GET(request: NextRequest) {
 	(await draftMode()).enable();
 
 	// Keep a marker query string — Netlify preserves the incoming QS by default.
+	// Unlike middleware, request.nextUrl in a route handler does NOT re-add the
+	// basePath when serialized — prepend it or the redirect lands outside /docs.
 	const url = request.nextUrl.clone();
-	url.pathname = previewUrl;
+	url.pathname = `${nextConfig.basePath || ""}${previewUrl}`;
 	url.search = "?preview=1";
 	return Response.redirect(url, 307);
 }
