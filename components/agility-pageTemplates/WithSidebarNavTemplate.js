@@ -20,7 +20,11 @@ const WithSidebarNavTemplate = (props) => {
   return (
     <>
       <div id="WithSidebarNavTemplate" className="grow bg-(--bg) text-(--text)">
-        <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-x-11 px-4 lg:grid-cols-[248px_minmax(0,1fr)] lg:px-6 xl:grid-cols-[248px_minmax(0,1fr)_220px]">
+        <div
+          className={`mx-auto grid max-w-[1400px] grid-cols-1 gap-x-11 px-4 lg:grid-cols-[248px_minmax(0,1fr)] lg:px-6 ${
+            hasArticle ? "xl:grid-cols-[248px_minmax(0,1fr)_220px]" : ""
+          }`}
+        >
           <div>
             <ContentZone
               name="SidebarContentZone"

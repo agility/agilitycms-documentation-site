@@ -9,10 +9,10 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { SearchIcon, ChevronDownIcon } from "@heroicons/react/solid";
+import { ChevronDownIcon } from "@heroicons/react/solid";
 import { MenuIcon } from "@heroicons/react/outline";
 import ThemeControl from "../common/ThemeControl";
-import Search from "./Search";
+import { SearchButton } from "./SearchModal";
 import {
 	DropdownMenu,
 	DropdownMenuTrigger,
@@ -92,17 +92,9 @@ export default function Header({
 
 				<div className="flex-1" />
 
-				{/* Compact search */}
+				{/* Search opens the ⌘K modal */}
 				<div className="hidden w-full min-w-[100px] max-w-[280px] shrink md:block">
-					<label htmlFor="search" className="sr-only">
-						Search
-					</label>
-					<div className="relative">
-						<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-							<SearchIcon className="h-4 w-4 text-(--faint)" aria-hidden="true" />
-						</div>
-						<Search />
-					</div>
+					<SearchButton variant="topbar" />
 				</div>
 
 				<div className="hidden sm:block">
@@ -161,11 +153,8 @@ const MobileMenu = ({ navigation, primaryDropdownLinks, secondaryDropdownLinks }
 		</SheetTrigger>
 		<SheetContent side="left" title="Menu">
 			<div className="px-4 py-4">
-				<div className="relative mb-4">
-					<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-						<SearchIcon className="h-4 w-4 text-(--faint)" aria-hidden="true" />
-					</div>
-					<Search />
+				<div className="mb-4">
+					<SearchButton variant="sheet" />
 				</div>
 				<nav aria-label="Global">
 					{navigation.map((item) => (

@@ -1,82 +1,18 @@
-import Link from "next/link";
 import { getHrefRel, getHrefTarget } from "../../utils/linkUtils";
-import { AgilityPic } from "@agility/nextjs";
 import { getContentList } from "lib/cms/getContentList";
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+import { SectionBand, LinkCardGrid } from "../common/ocean/SectionBand";
 
 // Server component: fetches its own child links (was getCustomInitialProps).
+// Legacy split layout retired — heading + intro above an image-tile card
+// grid, through the shared ocean SectionBand.
 const RightOrLeftAlignedImageLinks = async ({ module, languageCode, isPreview }) => {
   const { fields } = module;
   const actions = await getImageLinkActions({ fields, languageCode, isPreview });
+
   return (
-    <div
-      className={classNames(
-        fields.rightAlignLinks === "true"
-          ? "lg:flex-row"
-          : "lg:flex-row-reverse",
-        "flex flex-col max-w-2xl lg:max-w-5xl mx-auto my-20 font-muli"
-      )}
-    >
-      <div className="lg:w-2/5 text-center lg:text-left mb-5 lg:mb-0">
-        <h2 className="mb-5 text-3xl font-extrabold text-(--text)">
-          {fields.title}
-        </h2>
-        <p className="text-(--muted)">{fields.subTitle}</p>
-      </div>
-      <div
-        className={classNames(
-          fields.rightAlignLinks === "true" ? "lg:ml-auto" : "lg:mr-auto",
-          "lg:w-1/2 rounded-lg mb-10 bg-(--border) overflow-hidden shadow-xl divide-y divide-(--border) sm:divide-y-0 sm:grid sm:grid-cols-2 sm:gap-px"
-        )}
-      >
-        {actions.map((action, actionIdx) => {
-          return (
-            <div
-              key={action.title}
-              className={classNames(
-                "relative group bg-(--surface) p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-(--primary)"
-              )}
-            >
-              <div className="flex flex-row items-center">
-                <div className="mr-6">
-                  <span
-                    className={classNames(
-                      "bg-(--surface)",
-                      "rounded-lg inline-flex p-3"
-                    )}
-                  >
-                    <AgilityPic
-                      image={action.image}
-                      fallbackWidth={40}
-                      className="w-10"
-                      aria-hidden="true"
-                    />
-                  </span>
-                </div>
-
-                <div className="">
-                  <h3 className="text-lg font-medium">
-                    <Link
-                      href={action.href}
-                      target={action.target}
-                      rel={action.rel}
-                      className="focus:outline-hidden">
-                      {/* Extend touch target to entire panel */}
-                      <span className="absolute inset-0" aria-hidden="true" />
-                      {action.title}
-
-                    </Link>
-                  </h3>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+    <SectionBand heading={fields.title} intro={fields.subTitle}>
+      <LinkCardGrid items={actions} />
+    </SectionBand>
   );
 };
 
@@ -98,8 +34,7 @@ const getImageLinkActions = async ({ fields, languageCode, isPreview }) => {
         return {
           title: item.fields.uRL?.text,
           href: item.fields.uRL?.href,
-          image: item.fields.image?.url,
-          imageAlt: item.fields.image?.label,
+          imageUrl: item.fields.image?.url,
           target: getHrefTarget(item.fields.uRL?.href),
           rel: getHrefRel(item.fields.uRL?.href),
         };

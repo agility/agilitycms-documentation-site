@@ -29,7 +29,7 @@ const CalloutBlock = ({ module: { fields } }: CalloutBlockProps) => {
 	const mark = styleMark[fields.style || "note"] || "i";
 
 	return (
-		<section className="px-[var(--space)] py-3" style={{ background: "var(--bg)" }}>
+		<section className="ocean-band px-[var(--space)] py-3" style={{ background: "var(--bg)" }}>
 			<div
 				className="max-w-[var(--wrap)] mx-auto flex gap-3 px-4 py-3.5"
 				style={{

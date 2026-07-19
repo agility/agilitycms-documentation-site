@@ -16,7 +16,7 @@ interface PageHeroProps {
 const PageHero = ({ module: { fields } }: PageHeroProps) => {
 	return (
 		<section
-			className="px-[var(--space)] pt-10 pb-2"
+			className="ocean-band px-[var(--space)] pt-10 pb-2"
 			style={{ background: "var(--bg)", color: "var(--text)" }}
 		>
 			<div className="max-w-[var(--wrap)] mx-auto">

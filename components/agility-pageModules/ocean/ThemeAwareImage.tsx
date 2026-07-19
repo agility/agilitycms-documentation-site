@@ -18,7 +18,7 @@ const ThemeAwareImage = ({ module: { fields } }: ThemeAwareImageProps) => {
 	const hasDark = !!fields.darkAsset?.url;
 
 	return (
-		<section className="px-[var(--space)] py-3" style={{ background: "var(--bg)" }}>
+		<section className="ocean-band px-[var(--space)] py-3" style={{ background: "var(--bg)" }}>
 			<figure className="max-w-[var(--wrap)] mx-auto m-0">
 				{/* eslint-disable-next-line @next/next/no-img-element */}
 				<img

@@ -17,7 +17,7 @@ interface MediaHeroProps {
 const MediaHero = ({ module: { fields } }: MediaHeroProps) => {
 	return (
 		<section
-			className="px-[var(--space)] pt-10 pb-8"
+			className="ocean-band px-[var(--space)] pt-10 pb-8"
 			style={{ background: "var(--bg)", color: "var(--text)" }}
 		>
 			<div className="max-w-[var(--wrap)] mx-auto">

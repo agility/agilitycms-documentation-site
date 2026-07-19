@@ -43,7 +43,7 @@ const CodeBlock = ({ module: { fields } }: CodeBlockProps) => {
 	};
 
 	return (
-		<section className="px-[var(--space)] py-3" style={{ background: "var(--bg)" }}>
+		<section className="ocean-band px-[var(--space)] py-3" style={{ background: "var(--bg)" }}>
 			<div
 				className="max-w-[var(--wrap)] mx-auto overflow-hidden"
 				style={{

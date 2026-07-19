@@ -254,6 +254,14 @@ code > span.hljs-string {
 	box-shadow: var(--elev-1);
 }
 
+/* Ocean modules self-wrap with px-[--space] for full-width templates (hub,
+   flagships). Inside the sidebar shell the grid column provides the page
+   padding, so the band inset would misalign them with the legacy bands. */
+#WithSidebarNavTemplate .ocean-band {
+	padding-left: 0;
+	padding-right: 0;
+}
+
 /* Footer */
 .socials li a img {
 	filter: brightness(0) invert(1);
@@ -362,6 +370,10 @@ code > span.hljs-string {
 	background: var(--raised);
 }
 
-/* .SearchResult mark {
-  @apply bg-indigo-900 text-white
-} */
+/* Search-modal match highlighting — never the browser's default yellow. */
+.search-modal mark {
+	background: color-mix(in srgb, var(--primary) 25%, transparent);
+	color: inherit;
+	border-radius: 2px;
+	padding: 0 1px;
+}

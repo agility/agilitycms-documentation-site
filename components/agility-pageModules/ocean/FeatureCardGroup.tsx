@@ -48,7 +48,7 @@ const FeatureCardGroup = async ({
 	if (cards.length === 0) return null;
 
 	return (
-		<section className="px-[var(--space)] py-4" style={{ background: "var(--bg)" }}>
+		<section className="ocean-band px-[var(--space)] py-4" style={{ background: "var(--bg)" }}>
 			<div className="max-w-[var(--wrap)] mx-auto">
 				{fields.groupHeading && (
 					<h2

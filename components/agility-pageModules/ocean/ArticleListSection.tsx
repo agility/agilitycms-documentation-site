@@ -35,7 +35,7 @@ const ArticleListSection = async ({
 		: await getNestedItems(fields.items, languageCode, isPreview);
 
 	return (
-		<section className="px-[var(--space)] py-6" style={{ background: "var(--bg)" }}>
+		<section className="ocean-band px-[var(--space)] py-6" style={{ background: "var(--bg)" }}>
 			<div className="max-w-[var(--wrap)] mx-auto">
 				<h2
 					className="m-0 mb-2"

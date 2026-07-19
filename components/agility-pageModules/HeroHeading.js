@@ -6,12 +6,13 @@ export default function HeroHeading({ module }) {
 
   return (
     <div className="bg-(--bg) text-(--text) font-muli order-2 border-b border-(--border)">
-      <div className="relative mx-auto py-10 px-4 sm:px-6 lg:px-8">
+      {/* Flush with the shell column — the template provides page padding. */}
+      <div className="relative pt-8 pb-10">
         {fields.image && fields.image.url && (
-          <AgilityPic image={fields.image} className="mx-auto mb-8" fallbackWidth={100} />
+          <AgilityPic image={fields.image} className="mb-8" fallbackWidth={100} />
         )}
         <h1
-          className="sm:text-center md:text-left m-0"
+          className="m-0"
           style={{
             fontFamily: "var(--serif)",
             fontSize: "clamp(1.9rem,4vw,2.8rem)",
@@ -25,7 +26,7 @@ export default function HeroHeading({ module }) {
         </h1>
         {fields.subTitle && (
           <p
-            className="sm:text-center md:text-left mt-4 max-w-[62ch] text-xl m-0"
+            className="mt-4 max-w-[62ch] text-xl m-0"
             style={{ color: "var(--text-2)", lineHeight: 1.55 }}
           >
             {fields.subTitle}
