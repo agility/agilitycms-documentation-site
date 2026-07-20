@@ -117,7 +117,7 @@ Normalization in [utils/searchUtils.js](utils/searchUtils.js) (EditorJS + Markdo
 
 ## API Routes (all under `/docs/api/…`)
 
-`revalidate` (webhook) · `preview` + `preview/exit` (draft mode) · `dynamic-redirect` (ContentID deep links) · `generatePreviewKey` · `mcp` (knowledgebase MCP server: `search_docs`, `fetch_doc`) · `article-md/[...slug]` (clean markdown per article — reached via the proxy `.md` rewrite; serializer in [lib/cms-content/articleMarkdown.ts](lib/cms-content/articleMarkdown.ts), shared candidate for the MCP `fetch_doc`) · `search/*` (Algolia; GraphQL reads go through `gqlFresh` — uncached) · `feedback/sendPositive|sendNegative` (forwards to `ENDPOINT_SEND_*_FEEDBACK_URL`) · `robots` (crawling allowed only behind the Netlify proxy — `cdn-loop` header check).
+`revalidate` (webhook) · `preview` + `preview/exit` (draft mode) · `dynamic-redirect` (ContentID deep links) · `generatePreviewKey` · `mcp` (knowledgebase MCP server: `search_docs`, `fetch_doc`) · `article-md/[...slug]` (clean markdown per article — reached via the proxy `.md` rewrite; serializer in [lib/cms-content/articleMarkdown.ts](lib/cms-content/articleMarkdown.ts), shared candidate for the MCP `fetch_doc`) · `search/*` (Algolia; GraphQL reads go through `gqlFresh` — uncached) · `robots` (crawling allowed only behind the Netlify proxy — `cdn-loop` header check).
 
 **Machine readability (T7)**: `/docs/llms.txt` indexes flagship pages, section landings, and every article (as `.md` links) from the cached published sitemap — flagship entries appear automatically once those pages publish. Any article URL + `.md` returns clean markdown (`markdownContent` served nearly verbatim; EditorJS blocks converted).
 
@@ -135,7 +135,6 @@ Normalization in [utils/searchUtils.js](utils/searchUtils.js) (EditorJS + Markdo
 | `FORCE_PUBLISHED` | `1` = dev behaves like production (published content) |
 | `ALGOLIA_APP_ID` / `ALGOLIA_ADMIN_API_KEY` / `NEXT_PUBLIC_ALGOLIA_APP_ID` / `NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY` | Search |
 | `AZURE_APP_INSIGHTS_CONNECTION_STRING` | MCP telemetry (never initialized during build — see gotchas) |
-| `ENDPOINT_SEND_POSITIVE_FEEDBACK_URL` / `ENDPOINT_SEND_NEGATIVE_FEEDBACK_URL` | Article feedback forwarding |
 | `ROBOTS_NO_INDEX` | Force noindex meta |
 
 ## Running Locally
