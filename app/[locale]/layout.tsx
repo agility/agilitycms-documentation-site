@@ -1,4 +1,5 @@
 import React from "react";
+import Script from "next/script";
 import { GoogleTagManager } from "@next/third-parties/google";
 
 import { getAgilityContext } from "lib/cms/getAgilityContext";
@@ -41,6 +42,17 @@ export default async function LocaleLayout({
 				/>
 				{children}
 			</div>
+
+			{/* Agility Web Studio SDK — in-context editing. Loaded ONLY in
+			    preview/dev (isPreview = draft mode OR local dev), never on the
+			    public production site. Pairs with the data-agility-* attributes
+			    on the page wrapper and CMS modules. */}
+			{isPreview && (
+				<Script
+					src="https://unpkg.com/@agility/web-studio-sdk@latest/dist/index.js"
+					strategy="afterInteractive"
+				/>
+			)}
 		</div>
 	);
 }

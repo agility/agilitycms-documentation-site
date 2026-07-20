@@ -4,6 +4,7 @@ import { SectionBand, LinkCardGrid } from "../common/ocean/SectionBand";
 
 interface ListofLinksProps {
   module: {
+    contentID?: number;
     fields: {
       title: string;
       subTitle?: string;
@@ -23,7 +24,7 @@ const ListofLinks = async ({ module, languageCode, isPreview }: ListofLinksProps
   const actions = await getListedLinkActions({ fields, languageCode, isPreview });
 
   return (
-    <SectionBand heading={fields.title}>
+    <SectionBand heading={fields.title} contentID={module.contentID} headingField="title">
       <LinkCardGrid items={actions} />
     </SectionBand>
   );

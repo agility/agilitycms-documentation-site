@@ -14,6 +14,7 @@ interface FeatureCardFields {
 
 interface FeatureCardGroupProps {
 	module: {
+		contentID?: number;
 		fields: {
 			groupHeading?: string;
 			layout?: string;
@@ -36,7 +37,7 @@ const layoutCols: Record<string, string> = {
 // Flagship cards (mockup .tcard). The bar colour and ink colour are separate
 // per-accent CSS classes (globals.css) so yellow never sits as text on light.
 const FeatureCardGroup = async ({
-	module: { fields },
+	module: { fields, contentID },
 	languageCode,
 	isPreview,
 }: FeatureCardGroupProps) => {
@@ -48,7 +49,7 @@ const FeatureCardGroup = async ({
 	if (cards.length === 0) return null;
 
 	return (
-		<section className="ocean-band px-[var(--space)] py-4" style={{ background: "var(--bg)" }}>
+		<section className="ocean-band px-[var(--space)] py-4" style={{ background: "var(--bg)" }} data-agility-component={contentID}>
 			<div className="max-w-[var(--wrap)] mx-auto">
 				{fields.groupHeading && (
 					<h2
@@ -59,6 +60,7 @@ const FeatureCardGroup = async ({
 							letterSpacing: "-.02em",
 							color: "var(--text)",
 						}}
+						data-agility-field="groupHeading"
 					>
 						{fields.groupHeading}
 					</h2>

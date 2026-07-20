@@ -174,8 +174,17 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }: Dynamic
 	const sectionTitle = dynamicPageItem.fields.section?.fields?.title;
 	const lede = dynamicPageItem.fields.description;
 
+	// The body renders from one of two fields — tell Web Studio which one is
+	// live so clicking the article body opens the right editor field.
+	const bodyField =
+		blocks.length === 0 && processedMarkdown ? "markdownContent" : "content";
+
 	return (
-		<div id="DynamicArticleDetails" className="font-muli mb-24">
+		<div
+			id="DynamicArticleDetails"
+			className="font-muli mb-24"
+			data-agility-component={dynamicPageItem.contentID}
+		>
 			<div className="w-full">
 				<div className="text-lg max-w-[75ch] mx-auto xl:mx-0">
 					<div className="flex justify-end gap-2 mt-5">
@@ -195,21 +204,29 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }: Dynamic
 					)}
 					<h1
 						className={`${sectionTitle ? "mt-0" : "mt-10"} mb-4 text-3xl md:text-4xl font-semibold leading-[1.1] tracking-tight text-(--text) text-balance`}
+						// Only the CMS `title` field is editable in place — when the
+						// heading comes from a markdown H1 it lives in the body field.
+						data-agility-field={markdownH1Title ? undefined : "title"}
 					>
 						{markdownH1Title || dynamicPageItem.fields.title}
 					</h1>
 					{lede && (
-						<p className="mb-10 max-w-[62ch] text-[1.08rem] leading-relaxed text-(--text-2)">
+						<p
+							className="mb-10 max-w-[62ch] text-[1.08rem] leading-relaxed text-(--text-2)"
+							data-agility-field="description"
+						>
 							{lede}
 						</p>
 					)}
 
 					{/* Render markdown content if no blocks exist and markdown content is available */}
-					{blocks.length === 0 && processedMarkdown ? (
-						<MarkdownContent htmlContent={processedMarkdown} />
-					) : (
-						<Blocks blocks={blocks} />
-					)}
+					<div data-agility-field={bodyField}>
+						{blocks.length === 0 && processedMarkdown ? (
+							<MarkdownContent htmlContent={processedMarkdown} />
+						) : (
+							<Blocks blocks={blocks} />
+						)}
+					</div>
 				</div>
 			</div>
 		</div>

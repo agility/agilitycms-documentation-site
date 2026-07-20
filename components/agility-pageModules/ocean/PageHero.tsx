@@ -2,6 +2,7 @@ import React from "react";
 
 interface PageHeroProps {
 	module: {
+		contentID?: number;
 		fields: {
 			heading: string;
 			introText?: string;
@@ -13,11 +14,12 @@ interface PageHeroProps {
 }
 
 // Ocean hero — eyebrow, balanced H1, lede (mockup: .eyebrow / h1 / .lede)
-const PageHero = ({ module: { fields } }: PageHeroProps) => {
+const PageHero = ({ module: { fields, contentID } }: PageHeroProps) => {
 	return (
 		<section
 			className="ocean-band px-[var(--space)] pt-10 pb-2"
 			style={{ background: "var(--bg)", color: "var(--text)" }}
+			data-agility-component={contentID}
 		>
 			<div className="max-w-[var(--wrap)] mx-auto">
 				{fields.eyebrow && (
@@ -29,6 +31,7 @@ const PageHero = ({ module: { fields } }: PageHeroProps) => {
 							letterSpacing: ".24em",
 							color: "var(--muted)",
 						}}
+						data-agility-field="eyebrow"
 					>
 						{fields.eyebrow}
 					</p>
@@ -43,6 +46,7 @@ const PageHero = ({ module: { fields } }: PageHeroProps) => {
 						textWrap: "balance",
 						color: "var(--text)",
 					}}
+					data-agility-field="heading"
 				>
 					{fields.heading}
 				</h1>
@@ -54,6 +58,7 @@ const PageHero = ({ module: { fields } }: PageHeroProps) => {
 							fontSize: "clamp(1rem,1.6vw,1.16rem)",
 							lineHeight: 1.55,
 						}}
+						data-agility-field="introText"
 					>
 						{fields.introText}
 					</p>
@@ -65,6 +70,7 @@ const PageHero = ({ module: { fields } }: PageHeroProps) => {
 						alt={fields.media.label || ""}
 						className="max-w-full mb-8"
 						style={{ borderRadius: "var(--r-md)", boxShadow: "var(--elev-2)" }}
+						data-agility-field="media"
 					/>
 				)}
 			</div>

@@ -2,6 +2,7 @@ import React from "react";
 
 interface MediaHeroProps {
 	module: {
+		contentID?: number;
 		fields: {
 			heading: string;
 			introText?: string;
@@ -14,11 +15,12 @@ interface MediaHeroProps {
 
 // Hero with a demo capture. Captures go stale when the UI changes — note the
 // dependent UI in the PR when adding one (handoff gotcha).
-const MediaHero = ({ module: { fields } }: MediaHeroProps) => {
+const MediaHero = ({ module: { fields, contentID } }: MediaHeroProps) => {
 	return (
 		<section
 			className="ocean-band px-[var(--space)] pt-10 pb-8"
 			style={{ background: "var(--bg)", color: "var(--text)" }}
+			data-agility-component={contentID}
 		>
 			<div className="max-w-[var(--wrap)] mx-auto">
 				<h1
@@ -30,6 +32,7 @@ const MediaHero = ({ module: { fields } }: MediaHeroProps) => {
 						lineHeight: 1.04,
 						textWrap: "balance",
 					}}
+					data-agility-field="heading"
 				>
 					{fields.heading}
 				</h1>
@@ -41,6 +44,7 @@ const MediaHero = ({ module: { fields } }: MediaHeroProps) => {
 							fontSize: "clamp(1rem,1.6vw,1.16rem)",
 							lineHeight: 1.55,
 						}}
+						data-agility-field="introText"
 					>
 						{fields.introText}
 					</p>
@@ -54,6 +58,7 @@ const MediaHero = ({ module: { fields } }: MediaHeroProps) => {
 							playsInline
 							className="w-full"
 							style={{ borderRadius: "var(--r-md)", boxShadow: "var(--elev-3)" }}
+							data-agility-field="mediaAsset"
 						/>
 						{fields.caption && (
 							<figcaption
@@ -63,6 +68,7 @@ const MediaHero = ({ module: { fields } }: MediaHeroProps) => {
 									fontSize: ".74rem",
 									color: "var(--muted)",
 								}}
+								data-agility-field="caption"
 							>
 								{fields.caption}
 							</figcaption>

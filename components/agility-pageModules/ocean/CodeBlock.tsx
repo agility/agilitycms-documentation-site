@@ -5,6 +5,7 @@ const hljs = require("highlight.js");
 
 interface CodeBlockProps {
 	module: {
+		contentID?: number;
 		fields: {
 			language: string;
 			code: string;
@@ -16,7 +17,7 @@ interface CodeBlockProps {
 
 // Ocean code panel (mockup .code): traffic-light dots, filename, copy button.
 // Highlighting is a client-side enhancement; the code text itself is SSR'd.
-const CodeBlock = ({ module: { fields } }: CodeBlockProps) => {
+const CodeBlock = ({ module: { fields, contentID } }: CodeBlockProps) => {
 	const codeRef = useRef<HTMLElement>(null);
 	const [copied, setCopied] = useState(false);
 	const showCopy = fields.showCopy === true || fields.showCopy === "true";
@@ -43,7 +44,7 @@ const CodeBlock = ({ module: { fields } }: CodeBlockProps) => {
 	};
 
 	return (
-		<section className="ocean-band px-[var(--space)] py-3" style={{ background: "var(--bg)" }}>
+		<section className="ocean-band px-[var(--space)] py-3" style={{ background: "var(--bg)" }} data-agility-component={contentID}>
 			<div
 				className="max-w-[var(--wrap)] mx-auto overflow-hidden"
 				style={{
@@ -94,6 +95,7 @@ const CodeBlock = ({ module: { fields } }: CodeBlockProps) => {
 							color: "var(--text)",
 							lineHeight: 1.75,
 						}}
+						data-agility-field="code"
 					>
 						{fields.code}
 					</code>

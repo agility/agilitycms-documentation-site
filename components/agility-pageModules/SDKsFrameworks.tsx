@@ -4,6 +4,7 @@ import { SectionBand, LinkCardGrid } from "../common/ocean/SectionBand";
 
 interface SDKsFrameworksProps {
   module: {
+    contentID?: number;
     fields: {
       title: string;
       subtitle?: string;
@@ -23,7 +24,7 @@ const SDKsFrameworks = async ({ module, languageCode, isPreview }: SDKsFramework
   const actions = await getSDKActions({ fields, languageCode, isPreview });
 
   return (
-    <SectionBand heading={fields.title} intro={fields.subtitle}>
+    <SectionBand heading={fields.title} intro={fields.subtitle} contentID={module.contentID} headingField="title" introField="subtitle">
       <LinkCardGrid items={actions} columns={3} />
     </SectionBand>
   );

@@ -11,6 +11,7 @@ interface LinkCardFields {
 
 interface ArticleListSectionProps {
 	module: {
+		contentID?: number;
 		fields: {
 			sectionHeading: string;
 			sectionIntro?: string;
@@ -26,7 +27,7 @@ interface ArticleListSectionProps {
 
 // Section heading + intro + link cards (mockup .sec-title + guide links)
 const ArticleListSection = async ({
-	module: { fields },
+	module: { fields, contentID },
 	languageCode,
 	isPreview,
 }: ArticleListSectionProps) => {
@@ -35,7 +36,7 @@ const ArticleListSection = async ({
 		: await getNestedItems(fields.items, languageCode, isPreview);
 
 	return (
-		<section className="ocean-band px-[var(--space)] py-6" style={{ background: "var(--bg)" }}>
+		<section className="ocean-band px-[var(--space)] py-6" style={{ background: "var(--bg)" }} data-agility-component={contentID}>
 			<div className="max-w-[var(--wrap)] mx-auto">
 				<h2
 					className="m-0 mb-2"
@@ -45,6 +46,7 @@ const ArticleListSection = async ({
 						letterSpacing: "-.02em",
 						color: "var(--text)",
 					}}
+					data-agility-field="sectionHeading"
 				>
 					{fields.sectionHeading}
 				</h2>
@@ -52,6 +54,7 @@ const ArticleListSection = async ({
 					<p
 						className="m-0 mb-5 max-w-[68ch]"
 						style={{ color: "var(--text-2)", lineHeight: 1.6 }}
+						data-agility-field="sectionIntro"
 					>
 						{fields.sectionIntro}
 					</p>

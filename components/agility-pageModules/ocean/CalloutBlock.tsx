@@ -2,6 +2,7 @@ import React from "react";
 
 interface CalloutBlockProps {
 	module: {
+		contentID?: number;
 		fields: {
 			heading?: string;
 			body: string;
@@ -24,12 +25,12 @@ const styleMark: Record<string, string> = {
 };
 
 // Ocean callout (mockup .alert)
-const CalloutBlock = ({ module: { fields } }: CalloutBlockProps) => {
+const CalloutBlock = ({ module: { fields, contentID } }: CalloutBlockProps) => {
 	const token = styleToken[fields.style || "note"] || "--info";
 	const mark = styleMark[fields.style || "note"] || "i";
 
 	return (
-		<section className="ocean-band px-[var(--space)] py-3" style={{ background: "var(--bg)" }}>
+		<section className="ocean-band px-[var(--space)] py-3" style={{ background: "var(--bg)" }} data-agility-component={contentID}>
 			<div
 				className="max-w-[var(--wrap)] mx-auto flex gap-3 px-4 py-3.5"
 				style={{
@@ -49,9 +50,9 @@ const CalloutBlock = ({ module: { fields } }: CalloutBlockProps) => {
 				>
 					{mark}
 				</span>
-				<p className="m-0" style={{ fontSize: ".92rem", color: "var(--text-2)" }}>
+				<p className="m-0" style={{ fontSize: ".92rem", color: "var(--text-2)" }} data-agility-field="body">
 					{fields.heading && (
-						<b className="font-extrabold" style={{ color: "var(--text)" }}>
+						<b className="font-extrabold" style={{ color: "var(--text)" }} data-agility-field="heading">
 							{fields.heading}{" "}
 						</b>
 					)}

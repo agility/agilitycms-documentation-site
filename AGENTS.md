@@ -79,6 +79,12 @@ The tag strings in the webhook **must stay in lockstep with lib/cms** — they a
 - Production preview = Next `draftMode()` cookie, entered through `?agilitypreviewkey=` → proxy → `/api/preview` (validates via `validatePreview`), exited via `/api/preview/exit`. `draftMode()` is prerender-safe: it reads disabled during static generation.
 - The floating **PreviewBar** ([components/common/PreviewBar.js](components/common/PreviewBar.js), main-site design) shows in preview/dev; Ctrl/Cmd+Q toggles it anywhere. "Edit in CMS" deep-links via `NEXT_PUBLIC_AGILITY_GUID`.
 
+### Web Studio (in-context editing)
+
+Following demosite2025's pattern. Two halves that must stay in sync:
+1. **The SDK** — [app/[locale]/layout.tsx](app/[locale]/layout.tsx) loads `@agility/web-studio-sdk` via `next/script` (`afterInteractive`) **only when `isPreview`** (draft mode or local dev), never on the public production site. The `frame-ancestors 'self' https://app.agilitycms.com` CSP in [next.config.js](next.config.js) lets Web Studio iframe the site.
+2. **`data-agility-*` DOM tags** — the SDK maps DOM elements to CMS records through these: `data-agility-page`/`data-agility-dynamic-content` on the page wrapper ([app/[locale]/[...slug]/page.tsx](app/[locale]/[...slug]/page.tsx)); `data-agility-component={module.contentID}` on a module's outermost element; `data-agility-field="<fieldName>"` on the element rendering each editable field (exact CMS field name). Tagged: the article ([DynamicArticleDetails](components/agility-pageModules/DynamicArticleDetails.tsx): title/description/content|markdownContent), `HeroHeading`, the shared `SectionBand` (heading/intro — threaded from the 5 landing modules via `contentID`/`headingField`/`introField` props), and the ocean modules. Only a module's own fields are tagged, not nested-list child items (separate content records).
+
 ## Rendering Model
 
 The catch-all page fetches `getAgilityPage`, resolves the **page template** by name ([components/agility-pageTemplates/index.js](components/agility-pageTemplates/index.js): MainTemplate / WithSidebarNavTemplate / FullwidthTemplate), which renders `<ContentZone getModule={getModule}>` over `page.zones`. Modules are registered in [components/agility-pageModules/index.js](components/agility-pageModules/index.js).

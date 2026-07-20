@@ -4,6 +4,7 @@ import { SectionBand, LinkCardGrid } from "../common/ocean/SectionBand";
 
 interface ArticleListingProps {
   module: {
+    contentID?: number;
     fields: {
       title: string;
       // {referencename} — the listed articles are fetched via the data layer
@@ -29,7 +30,7 @@ const ArticleListing = async ({ module, languageCode, isPreview }: ArticleListin
   }));
 
   return (
-    <SectionBand heading={fields.title}>
+    <SectionBand heading={fields.title} contentID={module.contentID} headingField="title">
       <LinkCardGrid items={items} columns={3} />
     </SectionBand>
   );

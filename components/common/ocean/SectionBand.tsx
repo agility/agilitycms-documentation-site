@@ -13,14 +13,29 @@ interface SectionBandProps {
 	heading?: string;
 	intro?: string;
 	children?: React.ReactNode;
+	// Agility Web Studio in-context editing: the module content item's ID plus
+	// the field names behind the heading/intro, so editors can click them.
+	contentID?: number;
+	headingField?: string;
+	introField?: string;
 }
 
-export const SectionBand = ({ heading, intro, children }: SectionBandProps) => (
+export const SectionBand = ({
+	heading,
+	intro,
+	children,
+	contentID,
+	headingField,
+	introField,
+}: SectionBandProps) => (
 	// Self-wraps like the ocean-band modules: page padding + centered --wrap
 	// column on containerless templates (MainTemplate); inside the sidebar
 	// shell the #WithSidebarNavTemplate .ocean-band override strips the
 	// horizontal padding so bands stay flush with the shell column.
-	<section className="ocean-band my-14 px-[var(--space)] font-muli">
+	<section
+		className="ocean-band my-14 px-[var(--space)] font-muli"
+		data-agility-component={contentID}
+	>
 		<div className="mx-auto max-w-[var(--wrap)]">
 			{heading && (
 				<h2
@@ -31,12 +46,18 @@ export const SectionBand = ({ heading, intro, children }: SectionBandProps) => (
 						letterSpacing: "-.02em",
 						color: "var(--text)",
 					}}
+					data-agility-field={headingField}
 				>
 					{heading}
 				</h2>
 			)}
 			{intro && (
-				<p className="m-0 mb-5 max-w-[68ch] leading-relaxed text-(--text-2)">{intro}</p>
+				<p
+					className="m-0 mb-5 max-w-[68ch] leading-relaxed text-(--text-2)"
+					data-agility-field={introField}
+				>
+					{intro}
+				</p>
 			)}
 			{children}
 		</div>

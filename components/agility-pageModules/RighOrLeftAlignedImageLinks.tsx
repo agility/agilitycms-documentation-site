@@ -4,6 +4,7 @@ import { SectionBand, LinkCardGrid } from "../common/ocean/SectionBand";
 
 interface RightOrLeftAlignedImageLinksProps {
   module: {
+    contentID?: number;
     fields: {
       title: string;
       subTitle?: string;
@@ -23,7 +24,7 @@ const RightOrLeftAlignedImageLinks = async ({ module, languageCode, isPreview }:
   const actions = await getImageLinkActions({ fields, languageCode, isPreview });
 
   return (
-    <SectionBand heading={fields.title} intro={fields.subTitle}>
+    <SectionBand heading={fields.title} intro={fields.subTitle} contentID={module.contentID} headingField="title" introField="subTitle">
       <LinkCardGrid items={actions} />
     </SectionBand>
   );
