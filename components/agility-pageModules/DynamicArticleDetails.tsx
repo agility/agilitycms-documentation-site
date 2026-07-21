@@ -186,7 +186,9 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }: Dynamic
 			data-agility-component={dynamicPageItem.contentID}
 		>
 			<div className="w-full">
-				<div className="text-lg max-w-[75ch] mx-auto xl:mx-0">
+				{/* Prose fills the content column (bounded by the 1400px grid) for a
+				    fuller reading experience — no fixed 75ch cap, no dead gutter. */}
+				<div className="text-lg">
 					<div className="flex justify-end gap-2 mt-5">
 						{showClassicMode &&
 							<ToggleSwitch
@@ -203,7 +205,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }: Dynamic
 						</p>
 					)}
 					<h1
-						className={`${sectionTitle ? "mt-0" : "mt-10"} mb-4 text-3xl md:text-4xl font-semibold leading-[1.1] tracking-tight text-(--text) text-balance`}
+						className={`${sectionTitle ? "mt-0" : "mt-10"} mb-4 font-(family-name:--serif) text-3xl md:text-4xl font-semibold leading-[1.1] tracking-tight text-(--text) text-balance`}
 						// Only the CMS `title` field is editable in place — when the
 						// heading comes from a markdown H1 it lives in the body field.
 						data-agility-field={markdownH1Title ? undefined : "title"}
@@ -212,7 +214,7 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }: Dynamic
 					</h1>
 					{lede && (
 						<p
-							className="mb-10 max-w-[62ch] text-[1.08rem] leading-relaxed text-(--text-2)"
+							className="mb-10 max-w-[75ch] text-[1.08rem] leading-relaxed text-(--text-2)"
 							data-agility-field="description"
 						>
 							{lede}

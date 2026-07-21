@@ -18,13 +18,15 @@
 	--wrap: 1240px;
 }
 
-/* Type — fonts loaded via next/font (see _app.js). These aliases must be
-   declared on the <main> wrapper that carries the next/font variables, NOT
+/* Type — fonts loaded via next/font (see app/layout.tsx). These aliases must
+   be declared on the <main> wrapper that carries the next/font variables, NOT
    at :root: custom properties resolve var() references at the declaring
-   node, and --font-inder etc. don't exist at <html>. */
+   node, and --font-cabin etc. don't exist at <html>. Fonts match the
+   marketing rebuild: Cabin body, Jost headings (--serif is the legacy name),
+   Fira Mono for labels/code. */
 main {
-	--font: var(--font-mulish), system-ui, sans-serif;
-	--serif: var(--font-inder), system-ui, sans-serif; /* Inder ships 400 only */
+	--font: var(--font-cabin), system-ui, sans-serif;
+	--serif: var(--font-jost), system-ui, sans-serif;
 	--mono: var(--font-fira-mono), ui-monospace, monospace;
 }
 

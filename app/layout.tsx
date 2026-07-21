@@ -3,22 +3,26 @@ import "styles/globals.css";
 
 import React from "react";
 import { Metadata } from "next";
-import { Mulish, Inder, Fira_Mono } from "next/font/google";
+import { Cabin, Jost, Fira_Mono } from "next/font/google";
 import classNames from "classnames";
 
-const mulish = Mulish({
+// Fonts match the marketing rebuild (Ocean design system): Cabin body, Jost
+// headings, Fira Mono for labels/code. Cabin carries prose italics (<em>).
+const cabin = Cabin({
 	subsets: ["latin"],
-	display: "auto",
-	variable: "--font-mulish",
+	weight: ["400", "500", "600", "700"],
+	style: ["normal", "italic"],
+	display: "swap",
+	variable: "--font-cabin",
 });
 
-// Ocean heading face — Inder ships a 400 weight only (handoff gotcha:
-// bolder headings are browser-synthesized; that matches the mockup).
-const inder = Inder({
+// Ocean heading face — Jost has real weights, so headings use 500 by default
+// (600 for emphasis). Retires the old Inder "400-only, never bold" gotcha.
+const jost = Jost({
 	subsets: ["latin"],
-	weight: "400",
+	weight: ["400", "500", "600", "700"],
 	display: "swap",
-	variable: "--font-inder",
+	variable: "--font-jost",
 });
 
 const firaMono = Fira_Mono({
@@ -59,8 +63,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 						// to GROW past the viewport or sticky chrome stops at ~100vh
 						// and content gets clipped (the iPad no-scroll bug).
 						"min-h-full",
-						mulish.variable,
-						inder.variable,
+						cabin.variable,
+						jost.variable,
 						firaMono.variable
 					)}
 				>

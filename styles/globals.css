@@ -61,9 +61,11 @@ html[data-theme="dark"] .ocean-show-dark { display: block; }
   --default-border-width: 1px;
 
   --font-*: initial;
-  --font-fontFamily-sans: var(--font-mulish);
+  --font-fontFamily-sans: var(--font-cabin);
 
-  --font-muli: var(--font-mulish), sans-serif;
+  /* `font-muli` utility name kept to avoid churn across ~15 components; it now
+     resolves to Cabin (body font of the marketing rebuild). */
+  --font-muli: var(--font-cabin), sans-serif;
   --font-mono:
     Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 
@@ -112,6 +114,11 @@ html[data-theme="dark"] .ocean-show-dark { display: block; }
 .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6,
 .prose strong, .prose thead th {
 	color: var(--text);
+}
+/* Headings in Jost (--serif) to match the marketing rebuild; body stays Cabin. */
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+	font-family: var(--serif);
+	letter-spacing: -0.02em;
 }
 .prose blockquote {
 	color: var(--text-2);
