@@ -1,7 +1,8 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { NextRequest } from "next/server";
 import agilitySDK from "@agility/content-fetch";
-import { defaultLocale } from "lib/i18n/config";
+import { defaultLocale, localizeUrl } from "lib/i18n/config";
+import { submitToIndexNow } from "lib/indexnow/submitToIndexNow";
 
 interface IRevalidateRequest {
 	state: string;
@@ -80,6 +81,8 @@ export async function POST(req: NextRequest) {
 				if (sitemapNode) {
 					revalidatePath(`/${languageCode}${sitemapNode.path}`);
 					revalidateSitemapTags(); // dynamic item publish can change the sitemap
+						// Notify IndexNow-participating search engines that this URL changed.
+						await submitToIndexNow(localizeUrl(sitemapNode.path, languageCode));
 					console.info("revalidate: path", sitemapNode.path);
 				}
 			} else {
@@ -98,6 +101,8 @@ export async function POST(req: NextRequest) {
 				);
 				if (sitemapNode) {
 					revalidatePath(`/${languageCode}${sitemapNode.path}`);
+					// Notify IndexNow-participating search engines that this URL changed.
+					await submitToIndexNow(localizeUrl(sitemapNode.path, languageCode));
 					console.info("revalidate: path", sitemapNode.path);
 				}
 			}

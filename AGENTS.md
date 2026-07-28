@@ -138,6 +138,7 @@ Normalization in [utils/searchUtils.js](utils/searchUtils.js) (EditorJS + Markdo
 | `NEXT_PUBLIC_AGILITY_GUID` | PreviewBar edit links |
 | `AGILITY_FETCH_CACHE_DURATION` / `AGILITY_PATH_REVALIDATE_DURATION` | Cache TTL backstops ([lib/cms/cacheConfig.ts](lib/cms/cacheConfig.ts)) |
 | `BUILD_HOOK_URL` | Full-rebuild hook for redirect-only changes |
+| `INDEXNOW_KEY` | IndexNow submission key. Served at `/docs/{key}.txt` ([proxy.ts](proxy.ts)) for ownership verification; the publish webhook pings IndexNow on content/page publish ([lib/indexnow/submitToIndexNow.ts](lib/indexnow/submitToIndexNow.ts)). Submits only from production — set `INDEXNOW_ALLOW_NON_PROD=true` to test elsewhere |
 | `FORCE_PUBLISHED` | `1` = dev behaves like production (published content) |
 | `ALGOLIA_APP_ID` / `ALGOLIA_ADMIN_API_KEY` / `NEXT_PUBLIC_ALGOLIA_APP_ID` / `NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY` | Search |
 | `AZURE_APP_INSIGHTS_CONNECTION_STRING` | MCP telemetry (never initialized during build — see gotchas) |

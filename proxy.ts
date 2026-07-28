@@ -19,6 +19,21 @@ export function proxy(request: NextRequest) {
 	const { nextUrl } = request;
 	const pathname = nextUrl.pathname;
 
+	// 0. IndexNow key verification file. Served at /docs/{key}.txt (pathname
+	//    excludes the basePath) so search engines can verify ownership before
+	//    accepting URL submissions from submitToIndexNow. Non-root key location →
+	//    authorizes exactly the /docs URL space we submit. Must run first.
+	const indexNowKey = process.env.INDEXNOW_KEY;
+	if (indexNowKey && pathname === `/${indexNowKey}.txt`) {
+		return new NextResponse(indexNowKey, {
+			status: 200,
+			headers: {
+				"Content-Type": "text/plain; charset=utf-8",
+				"Cache-Control": "public, max-age=86400",
+			},
+		});
+	}
+
 	// 1. Preview entry — Agility appends agilitypreviewkey to the preview URL.
 	const previewKey = nextUrl.searchParams.get("agilitypreviewkey");
 	if (previewKey) {
