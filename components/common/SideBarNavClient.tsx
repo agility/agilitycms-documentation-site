@@ -31,13 +31,16 @@ const NavSection = ({ item, LinkWrap }: { item: any; LinkWrap: LinkWrapComponent
 
 	return (
 		<Collapsible.Root open={open} onOpenChange={setOpen}>
-			<Collapsible.Trigger className="group mb-1 mt-5 flex w-full items-center gap-2 text-left font-mono text-[.66rem] uppercase tracking-[.14em] text-(--faint) hover:text-(--muted) focus:outline-hidden">
+			<Collapsible.Trigger className="group mb-1 mt-5 flex w-full items-center gap-2 text-left font-mono text-[.66rem] uppercase tracking-[.14em] text-(--faint) transition-colors hover:text-(--text) focus:outline-hidden">
 				<span className="whitespace-nowrap">{item.name}</span>
-				<span aria-hidden="true" className="h-px flex-1 bg-(--border)" />
+				<span
+					aria-hidden="true"
+					className="h-px flex-1 bg-(--border) transition-colors group-hover:bg-(--border-strong)"
+				/>
 				<ChevronRightIcon
 					className={classNames(
 						open ? "rotate-90" : "",
-						"h-3 w-3 shrink-0 transition-transform duration-150"
+						"h-3 w-3 shrink-0 text-(--faint) transition-all duration-150 group-hover:translate-x-0.5 group-hover:text-(--primary)"
 					)}
 					aria-hidden="true"
 				/>
