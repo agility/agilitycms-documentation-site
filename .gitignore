@@ -37,8 +37,10 @@ yarn-error.log*
 .env
 .env.local
 
-# sitemap
-sitemap.xml
+# sitemap — legacy generated file at repo root only. Anchored with a leading
+# slash so it does NOT match the app/sitemap.xml/ route directory (the bare
+# pattern did, which kept the route handler out of git entirely).
+/sitemap.xml
 
 
 # claude
