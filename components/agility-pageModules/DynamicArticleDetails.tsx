@@ -78,7 +78,7 @@ const MarkdownContent = ({ htmlContent }: { htmlContent: string }) => {
 	return (
 		<div
 			ref={containerRef}
-			className="prose prose-lg max-w-none"
+			className="prose max-w-none"
 			dangerouslySetInnerHTML={{ __html: htmlContent }}
 		/>
 	);

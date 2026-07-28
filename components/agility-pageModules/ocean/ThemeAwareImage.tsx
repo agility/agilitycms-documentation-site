@@ -12,7 +12,7 @@ interface ThemeAwareImageProps {
 }
 
 // Screenshot/diagram that swaps with the theme. The .ocean-show-light /
-// .ocean-show-dark visibility rules live in globals.css (driven by data-theme).
+// .ocean-show-dark visibility rules live in globals.css (driven by the .dark class).
 // If no dark asset exists, the light asset is shown in both themes.
 const ThemeAwareImage = ({ module: { fields } }: ThemeAwareImageProps) => {
 	const hasDark = !!fields.darkAsset?.url;

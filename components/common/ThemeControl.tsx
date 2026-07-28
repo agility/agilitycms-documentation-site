@@ -17,20 +17,23 @@ const resolve = (mode: string) =>
 
 const apply = (mode: string) => {
 	const resolved = resolve(mode);
-	document.documentElement.setAttribute("data-theme", resolved);
+	document.documentElement.classList.toggle("dark", resolved === "dark");
 	document.documentElement.style.colorScheme = resolved;
 };
 
-// Three-state theme control (light / dark / system) per the ocean handoff.
-// The no-flash script in _document.js applies the persisted mode before paint;
-// this control only reads/writes it after hydration.
+// Three-state theme control (light / dark / system). Dark is the default (to
+// match the marketing site), and the choice persists under the namespaced
+// `aglty-theme` key — the SAME key the marketing site reads, so a visitor's
+// preference carries across the agilitycms.com / agilitycms.com/docs boundary.
+// The no-flash script in app/layout.tsx applies the persisted mode before
+// paint; this control only reads/writes it after hydration.
 const ThemeControl = () => {
 	const [mode, setMode] = useState<string | null>(null);
 
 	useEffect(() => {
-		let stored = "system";
+		let stored = "dark";
 		try {
-			stored = localStorage.getItem("theme") || "system";
+			stored = localStorage.getItem("aglty-theme") || "dark";
 		} catch (e) {}
 		setMode(stored);
 	}, []);
@@ -46,7 +49,7 @@ const ThemeControl = () => {
 	const select = (key: string) => {
 		setMode(key);
 		try {
-			localStorage.setItem("theme", key);
+			localStorage.setItem("aglty-theme", key);
 		} catch (e) {}
 		apply(key);
 	};

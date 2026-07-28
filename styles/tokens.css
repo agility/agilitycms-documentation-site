@@ -21,16 +21,21 @@
 /* Type — fonts loaded via next/font (see app/layout.tsx). These aliases must
    be declared on the <main> wrapper that carries the next/font variables, NOT
    at :root: custom properties resolve var() references at the declaring
-   node, and --font-cabin etc. don't exist at <html>. Fonts match the
-   marketing rebuild: Cabin body, Jost headings (--serif is the legacy name),
-   Fira Mono for labels/code. */
+   node, and --font-mulish doesn't exist at <html>. Fonts match the marketing
+   site (2026-07-23): a single Mulish powers body AND headings, so --font and
+   --serif (the legacy heading alias) resolve to the same family. Fira Mono for
+   labels/code. */
 main {
-	--font: var(--font-cabin), system-ui, sans-serif;
-	--serif: var(--font-jost), system-ui, sans-serif;
+	--font: var(--font-mulish), system-ui, sans-serif;
+	--serif: var(--font-mulish), system-ui, sans-serif;
 	--mono: var(--font-fira-mono), ui-monospace, monospace;
 }
 
-html[data-theme="light"] {
+/* LIGHT is the base (:root). DARK overrides live in `html.dark` below — the
+   `.dark` class is toggled on <html> by the pre-paint script + ThemeControl,
+   matching the marketing site's technique (namespaced `aglty-theme` key so the
+   preference is shared across the agilitycms.com / agilitycms.com/docs origin). */
+:root {
 	--primary: #0F7885; --primary-bright: #159AAA; --primary-dim: #0B5C66;
 	--secondary: #3A6FD0; --secondary-bright: #6A96E8; --secondary-dim: #2A57B0;
 	--ok: #1A6E36; --warn: #836400; --err: #C0362F; --info: #2F62C9;
@@ -45,7 +50,7 @@ html[data-theme="light"] {
 	--code-bg: #FBF9F3; --tok-str: #9A6B00;
 }
 
-html[data-theme="dark"] {
+html.dark {
 	--primary: #3EB4C2; --primary-bright: #5FC8D4; --primary-dim: #2E97A4;
 	--secondary: #83A9F4; --secondary-bright: #A6C1F8; --secondary-dim: #5E90F0;
 	--ok: #79C06B; --warn: #F2C23E; --err: #F26A6E; --info: #79BBF0;
@@ -57,7 +62,9 @@ html[data-theme="dark"] {
 	--elev-1: inset 0 0 0 1px rgba(255, 255, 255, .06);
 	--elev-2: 0 10px 28px -14px rgba(0, 0, 0, .75), inset 0 0 0 1px rgba(255, 255, 255, .05);
 	--elev-3: 0 24px 60px -20px rgba(0, 0, 0, .8), inset 0 0 0 1px rgba(255, 255, 255, .06);
-	--code-bg: #171614; --tok-str: #FFD75E;
+	/* Darker well (n-950) so code blocks read as inset against --bg (#181716),
+	   with the elev-1 inset hairline for definition. */
+	--code-bg: #0E0D0C; --tok-str: #FFD75E;
 }
 
 /* Focus ring pattern (handoff §3, non-negotiable) */

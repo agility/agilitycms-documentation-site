@@ -11,22 +11,23 @@
 /* Enter/exit animations for the shadcn-style ui/ primitives (Radix data-state) */
 @import 'tw-animate-css';
 
-/* Class-based dark mode driven by data-theme on <html> (three-state control) */
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+/* Class-based dark mode driven by the `.dark` class on <html> (matches the
+   marketing site). Toggled pre-paint + by the three-state ThemeControl. */
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* Ocean feature-card accents: bar and ink are separate so yellow never sits
    as text on a light surface (handoff §7 gotcha / mockup per-card ink). */
 .ocean-card-primary { --tcbar: var(--primary); --tcink: var(--primary); }
 .ocean-card-secondary { --tcbar: var(--secondary); --tcink: var(--secondary-dim); }
 .ocean-card-tertiary { --tcbar: var(--tertiary); --tcink: var(--warn); }
-html[data-theme="dark"] .ocean-card-primary { --tcink: var(--primary); }
-html[data-theme="dark"] .ocean-card-secondary { --tcink: var(--secondary); }
-html[data-theme="dark"] .ocean-card-tertiary { --tcink: var(--tertiary); }
+html.dark .ocean-card-primary { --tcink: var(--primary); }
+html.dark .ocean-card-secondary { --tcink: var(--secondary); }
+html.dark .ocean-card-tertiary { --tcink: var(--tertiary); }
 
 /* ThemeAwareImage visibility */
 .ocean-show-dark { display: none; }
-html[data-theme="dark"] .ocean-show-light { display: none; }
-html[data-theme="dark"] .ocean-show-dark { display: block; }
+html.dark .ocean-show-light { display: none; }
+html.dark .ocean-show-dark { display: block; }
 
 @plugin '@tailwindcss/typography';
 @plugin '@tailwindcss/forms';
@@ -61,11 +62,11 @@ html[data-theme="dark"] .ocean-show-dark { display: block; }
   --default-border-width: 1px;
 
   --font-*: initial;
-  --font-fontFamily-sans: var(--font-cabin);
+  --font-fontFamily-sans: var(--font-mulish);
 
   /* `font-muli` utility name kept to avoid churn across ~15 components; it now
-     resolves to Cabin (body font of the marketing rebuild). */
-  --font-muli: var(--font-cabin), sans-serif;
+     resolves to Mulish (the marketing site's single body+heading font). */
+  --font-muli: var(--font-mulish), sans-serif;
   --font-mono:
     Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 
@@ -101,8 +102,35 @@ html[data-theme="dark"] .ocean-show-dark { display: block; }
 
 /* Import tailwind utility styles */
 
+/* Hover shimmer on the primary CTA — a diagonal light sweep. Ported verbatim
+   from the marketing site so the header's Try Free button behaves identically.
+   Animation (not transition) so the sweep only plays on hover-IN. */
+.btn-shimmer {
+	position: relative;
+	overflow: hidden;
+}
+.btn-shimmer::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		115deg,
+		transparent 35%,
+		color-mix(in oklch, white 45%, transparent) 50%,
+		transparent 65%
+	);
+	transform: translateX(-120%);
+	pointer-events: none;
+}
+.btn-shimmer:hover::after {
+	animation: btn-shimmer-sweep 0.7s ease;
+}
+@keyframes btn-shimmer-sweep {
+	from { transform: translateX(-120%); }
+	to { transform: translateX(120%); }
+}
+
 .prose h2 {
-	font-weight: 600;
 	scroll-margin-top: 80px; /* Offset for the 60px sticky topbar */
 }
 
@@ -115,10 +143,14 @@ html[data-theme="dark"] .ocean-show-dark { display: block; }
 .prose strong, .prose thead th {
 	color: var(--text);
 }
-/* Headings in Jost (--serif) to match the marketing rebuild; body stays Cabin. */
+/* Headings in Mulish (--serif now resolves to Mulish, same as body), weight 700
+   with tight tracking + balanced wrapping — matches the marketing site's
+   heading treatment (Mulish is lighter than Jost was, so 700 keeps contrast). */
 .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
 	font-family: var(--serif);
+	font-weight: 700;
 	letter-spacing: -0.02em;
+	text-wrap: balance;
 }
 .prose blockquote {
 	color: var(--text-2);
@@ -158,30 +190,30 @@ span.hljs-string {
 /* lightfair (styles/lightfair.css) is a light-only hljs theme; remap its
    core token colors onto ocean tokens in dark mode so code stays readable
    on --code-bg. */
-html[data-theme="dark"] .hljs {
+html.dark .hljs {
 	color: var(--text);
 	background: transparent;
 }
-html[data-theme="dark"] .hljs-keyword,
-html[data-theme="dark"] .hljs-selector-tag,
-html[data-theme="dark"] .hljs-built_in {
+html.dark .hljs-keyword,
+html.dark .hljs-selector-tag,
+html.dark .hljs-built_in {
 	color: var(--secondary);
 }
-html[data-theme="dark"] .hljs-string,
-html[data-theme="dark"] .hljs-attr {
+html.dark .hljs-string,
+html.dark .hljs-attr {
 	color: var(--tok-str);
 }
-html[data-theme="dark"] .hljs-comment,
-html[data-theme="dark"] .hljs-quote {
+html.dark .hljs-comment,
+html.dark .hljs-quote {
 	color: var(--muted);
 }
-html[data-theme="dark"] .hljs-title,
-html[data-theme="dark"] .hljs-name,
-html[data-theme="dark"] .hljs-function {
+html.dark .hljs-title,
+html.dark .hljs-name,
+html.dark .hljs-function {
 	color: var(--primary-bright);
 }
-html[data-theme="dark"] .hljs-number,
-html[data-theme="dark"] .hljs-literal {
+html.dark .hljs-number,
+html.dark .hljs-literal {
 	color: var(--warn);
 }
 

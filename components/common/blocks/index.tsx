@@ -69,7 +69,7 @@ const Blocks = ({ blocks, proseSize }: { blocks: any[]; proseSize?: string }) =>
     }
   })
 
-  let proseClass = "prose prose-lg"
+  let proseClass = "prose"
   switch (proseSize) {
     case "sm":
       proseClass = "prose prose-sm"

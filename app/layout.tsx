@@ -3,26 +3,18 @@ import "styles/globals.css";
 
 import React from "react";
 import { Metadata } from "next";
-import { Cabin, Jost, Fira_Mono } from "next/font/google";
+import { Mulish, Fira_Mono } from "next/font/google";
 import classNames from "classnames";
 
-// Fonts match the marketing rebuild (Ocean design system): Cabin body, Jost
-// headings, Fira Mono for labels/code. Cabin carries prose italics (<em>).
-const cabin = Cabin({
+// Fonts match the marketing site (Ocean design system, 2026-07-23): a single
+// Mulish variable font powers BOTH body and headings — no per-weight loading,
+// the variable axis covers 400–800 (headings render at 700). Fira Mono stays
+// for labels/code.
+const mulish = Mulish({
 	subsets: ["latin"],
-	weight: ["400", "500", "600", "700"],
 	style: ["normal", "italic"],
 	display: "swap",
-	variable: "--font-cabin",
-});
-
-// Ocean heading face — Jost has real weights, so headings use 500 by default
-// (600 for emphasis). Retires the old Inder "400-only, never bold" gotcha.
-const jost = Jost({
-	subsets: ["latin"],
-	weight: ["400", "500", "600", "700"],
-	display: "swap",
-	variable: "--font-jost",
+	variable: "--font-mulish",
 });
 
 const firaMono = Fira_Mono({
@@ -46,13 +38,19 @@ export const metadata: Metadata = {
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
-		<html className="h-full" lang="en-US" data-theme="light" suppressHydrationWarning>
+		<html className="h-full dark" lang="en-US" suppressHydrationWarning>
 			<head>
-				{/* Apply the persisted theme before first paint so there is no flash
-				    of the wrong theme on reload. */}
+				{/* Theme bootstrap — matches the marketing site's technique so the
+				    preference is shared across the agilitycms.com / .../docs origin:
+				    dark is the default (the `dark` class ships on <html>), and the
+				    persisted choice lives under the namespaced `aglty-theme` key (never
+				    a generic `theme` key — other apps on the origin clobber that one).
+				    A `?theme=light|dark|system` query persists a choice (deep-link
+				    parity with the marketing site). Runs pre-paint so there is no flash
+				    of the wrong theme. The visible ThemeControl writes the same key. */}
 				<script
 					dangerouslySetInnerHTML={{
-						__html: `(function(){try{var m=localStorage.getItem('theme')||'system';var d=m==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;document.documentElement.setAttribute('data-theme',d);document.documentElement.style.colorScheme=d;}catch(e){document.documentElement.setAttribute('data-theme','light');}})();`,
+						__html: `(function(){try{var q=new URLSearchParams(location.search).get('theme');if(q==='light'||q==='dark'||q==='system'){localStorage.setItem('aglty-theme',q);}var m=localStorage.getItem('aglty-theme')||'dark';var d=m==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;var el=document.documentElement;el.classList.toggle('dark',d==='dark');el.style.colorScheme=d;}catch(e){}})();`,
 					}}
 				/>
 			</head>
@@ -63,8 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 						// to GROW past the viewport or sticky chrome stops at ~100vh
 						// and content gets clipped (the iPad no-scroll bug).
 						"min-h-full",
-						cabin.variable,
-						jost.variable,
+						mulish.variable,
 						firaMono.variable
 					)}
 				>
