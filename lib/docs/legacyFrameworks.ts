@@ -45,14 +45,9 @@ export const LEGACY_ENTRIES: LegacyEntry[] = [
 			"These guides date from 2021 and reference Gatsby Cloud, a service that has since shut down.",
 		successor: { text: "See the current framework guides", href: "/developers" },
 	},
-	{
-		// All 10 SvelteKit articles are unpublished, and 8 of them are empty or a
-		// stub — the nav entry pointed at a section with no live content. Restore
-		// to the nav once Phase 2 lands (finish + publish the articles).
-		path: "/sveltekit",
-		name: "SvelteKit",
-		status: "hidden",
-	},
+	// SvelteKit was `hidden` here while its articles were unwritten; Phase 2
+	// landed 2026-07-29 (all 10 articles authored + published), so it's back in
+	// the nav. See docs/content-refresh-plan-2026.md §5 Phase 2.
 ];
 
 // Lower-cased + de-trailing-slashed. Case folding is deliberate: docs section
