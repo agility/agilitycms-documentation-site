@@ -80,9 +80,16 @@ export default function ArticleNav({ dynamicPageItem }: ArticleNavProps) {
         On this page
       </div>
       <nav id="ArticleNav" aria-label="Article Nav">
-        {navigation.map((item) => (
+        {/* Key on the anchor + index, never the heading text: articles legitimately
+            repeat an H2 (e.g. two "Features" sections), which collided on `name`.
+            The id is normally unique (EditorJS block id, or github-slugger's
+            deduped slug for markdown), but raw HTML in markdown can hand-author a
+            duplicate id — rehype-slug only fills in missing ones — so the index
+            keeps the key unique either way. Safe as a key here: the list is
+            rebuilt wholesale from DOM order, never reordered or spliced. */}
+        {navigation.map((item, idx) => (
           <a
-            key={item.name}
+            key={`${item.href}-${idx}`}
             href={item.href}
             className={classNames(
               item.current
