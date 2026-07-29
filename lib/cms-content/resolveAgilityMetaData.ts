@@ -16,7 +16,7 @@ const createSharingImage = (text: string) => {
 		"co_white",
 		`l_text:muli_96_center:${encodeURIComponent(text).replaceAll("%2C", "%E2%80%9A")}`,
 	].join(",");
-	return `https://res.cloudinary.com/agility-cms/image/upload/${imageTransformations}/${textTransformations}/docs/agility-og-docs.png`;
+	return `https://res.cloudinary.com/agility-cms/image/upload/${imageTransformations}/${textTransformations}/docs/agility-og-docs-dark.png`;
 };
 
 /**
