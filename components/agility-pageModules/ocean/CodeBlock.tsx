@@ -85,10 +85,12 @@ const CodeBlock = ({ module: { fields, contentID } }: CodeBlockProps) => {
 						</button>
 					)}
 				</div>
-				<pre className="m-0 p-4 overflow-x-auto">
+				{/* Padding on the <code>, not the scrolling <pre>, so the horizontal
+				    scrollbar sits flush to the panel edges. */}
+				<pre className="m-0 overflow-x-auto">
 					<code
 						ref={codeRef}
-						className={`language-${fields.language}`}
+						className={`language-${fields.language} block p-4`}
 						style={{
 							fontFamily: "var(--mono)",
 							fontSize: ".82rem",

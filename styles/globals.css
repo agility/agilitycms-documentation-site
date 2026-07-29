@@ -264,14 +264,26 @@ code > span.hljs-string {
 	font-weight: normal !important;
 }
 
-/* The <pre> is the code panel — bg + border + radius live here so the frame
-   stays put while long lines scroll horizontally inside it. */
+/* The highlight.js theme (lightfair) gives the .hljs <code> its own
+   overflow-x + padding + background. Strip those: the panel (bg/scroll/padding)
+   is managed by the container, and a self-scrolling padded <code> nests a
+   second scroller whose scrollbar is inset from the panel edges. */
+.hljs {
+	overflow: visible;
+	padding: 0;
+	background: transparent;
+}
+
+/* The <pre> is the code panel — bg + border + radius + horizontal scroll. It
+   carries NO padding: a padded overflow container makes WebKit inset the
+   scrollbar (gaps on all sides). Padding lives on the inner <code> instead, so
+   the scrollbar sits flush to the panel's bottom/right edges. */
 .prose pre {
 	@apply my-8 overflow-x-auto;
 	background: var(--code-bg);
 	border: 1px solid var(--border-strong);
 	border-radius: var(--r-md);
-	padding: 1.25rem;
+	padding: 0;
 }
 
 .prose pre code {
@@ -279,7 +291,7 @@ code > span.hljs-string {
 	/* Override inline-code styling: the panel is on <pre>, code is bare. */
 	background: transparent !important;
 	color: var(--text);
-	padding: 0 !important;
+	padding: 1.25rem !important;
 	font-weight: normal !important;
 }
 
