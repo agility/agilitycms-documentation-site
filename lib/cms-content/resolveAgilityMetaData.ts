@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { AgilityPageData } from "lib/cms/getAgilityPage";
+import { isNoIndexPath } from "lib/docs/legacyFrameworks";
 
 const SITE_URL = "https://agilitycms.com";
 
@@ -35,8 +36,16 @@ export const resolveAgilityMetaData = (agilityData: AgilityPageData): Metadata =
 	if (dynamicPageItem?.fields?.description) description = dynamicPageItem.fields.description;
 	if (dynamicPageItem?.seo?.metaDescription) description = dynamicPageItem.seo.metaDescription;
 
-	const noIndex =
-		!!process.env.ROBOTS_NO_INDEX || dynamicPageItem?.seo?.sitemapVisible === false;
+	// Archived framework docs are kept reachable (no 404 for existing deep links)
+	// but must not be indexed — see lib/docs/legacyFrameworks.ts.
+	//
+	// NB: do NOT reintroduce `dynamicPageItem.seo.sitemapVisible === false` here.
+	// On a DocArticle that flag is false by default (it concerns sitemap/menu
+	// placement of dynamic items, not robots), so honouring it emitted
+	// `noindex` on EVERY article — deindexing the whole knowledgebase while
+	// sitemap.xml still advertised all ~306 URLs. Regression from the App Router
+	// migration (7839777), fixed 2026-07-28.
+	const noIndex = !!process.env.ROBOTS_NO_INDEX || isNoIndexPath(sitemapNode.path);
 
 	const path = sitemapNode.path === "/home" ? "" : sitemapNode.path;
 	const canonical = `${SITE_URL}/docs${path}`;

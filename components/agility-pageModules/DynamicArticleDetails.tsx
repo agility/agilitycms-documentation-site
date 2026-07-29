@@ -4,6 +4,8 @@ import React, { useMemo, useState, useEffect } from "react";
 import Blocks from "../common/blocks/index";
 import nextConfig from "next.config";
 import { ToggleSwitch } from "components/common/ToggleSwitch";
+import LegacyNotice from "components/common/LegacyNotice";
+import { getArchivedEntry } from "lib/docs/legacyFrameworks";
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
@@ -174,6 +176,10 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }: Dynamic
 	const sectionTitle = dynamicPageItem.fields.section?.fields?.title;
 	const lede = dynamicPageItem.fields.description;
 
+	// Archived frameworks (e.g. Gatsby) get a Legacy banner above the body so a
+	// reader who lands from a search result knows the guide is unmaintained.
+	const archived = getArchivedEntry(sitemapNode?.path || "");
+
 	// The body renders from one of two fields — tell Web Studio which one is
 	// live so clicking the article body opens the right editor field.
 	const bodyField =
@@ -220,6 +226,8 @@ const DynamicArticleDetails = ({ module, dynamicPageItem, sitemapNode }: Dynamic
 							{lede}
 						</p>
 					)}
+
+					{archived && <LegacyNotice entry={archived} />}
 
 					{/* Render markdown content if no blocks exist and markdown content is available */}
 					<div data-agility-field={bodyField}>

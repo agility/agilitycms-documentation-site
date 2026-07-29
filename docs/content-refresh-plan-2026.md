@@ -18,7 +18,7 @@ Do a **complete audit** of every framework, SDK, and API doc, get it all current
 
 Each framework/SDK is a **pair of containers** sharing the `DocArticle` / `DocSection` models: `<Name>Articles` + `<Name>Sections`. Category = which container an article lives in; sidebar placement = its `Section_ValueField`. Full map is in the [authoring skill](../.claude/skills/authoring-agility-docs/SKILL.md). The "APIs & SDKs" nav dropdown is driven by the **`Header_Link`** nested list on the `header` container — **nav membership and article existence are independent**, which is exactly how drift creeps in (see SvelteKit below).
 
-Key gotchas that bite this work: list calls default to 50 / cap at 250 (always pass `take: 250`); the MCP **cannot publish, unpublish, set workflow state, or delete** — those are manual Agility-UI steps; reference-name case matters on write.
+Key gotchas that bite this work: list calls default to 50 / cap at 250 (always pass `take: 250`); `save_content_items` always writes to **Staging** (`state` is ignored on save), though the MCP **can** publish via `publish_content` — treat that as outward-facing and confirm first (§8); reference-name case matters on write.
 
 ---
 
@@ -62,25 +62,29 @@ Key gotchas that bite this work: list calls default to 50 / cap at 250 (always p
 
 ## 4. The deprecation / archive convention (build once, reuse)
 
-Establish a reusable "Legacy" mechanism so dead frameworks don't rot in place or mislead readers:
+A reusable "Legacy" mechanism so dead frameworks don't rot in place or mislead readers. **Implemented — one registry entry in [lib/docs/legacyFrameworks.ts](../lib/docs/legacyFrameworks.ts) does all four:**
 
-- **Legacy banner** — a `CalloutBlock` (`Style: caution`) at the top of each archived article: *"This framework is no longer actively maintained. It may reference outdated tooling."* Prepend to the article body.
-- **`noindex`** — archived pages must return `noindex` (the site already supports `ROBOTS_NO_INDEX` and per-article meta via the metadata resolver). Wire a per-container or per-article signal.
-- **Remove from nav** — delete the framework's `Header_Link` item from the "APIs & SDKs" dropdown.
-- **Keep URLs alive** — no redirects/deletes, so external deep links don't 404.
+- **Legacy banner** — `LegacyNotice` (ocean `caution` styling) above the article body on every page under the archived path.
+- **`noindex`** — archived paths only (see the §8 warning about what *not* to use as a robots signal).
+- **Removed from nav** — filtered in `groupNavLinks`, so desktop **and** mobile update together. No CMS deletion required.
+- **URLs stay alive** — no redirects/deletes, so external deep links don't 404.
+
+To archive a framework: add `{ path, name, status: "archived", reason, successor }`. To hide one that isn't ready (SvelteKit): `status: "hidden"`.
 
 ---
 
 ## 5. Phased execution
 
-### Phase 0 — Deprecation convention *(prerequisite, ~1 day)*
-Build the Legacy banner + `noindex` signal + document the nav-removal step. Blocks the Gatsby archive.
+### Phase 0 — Deprecation convention ✅ **DONE 2026-07-28**
+Implemented as a **code registry** rather than per-article CMS edits: [lib/docs/legacyFrameworks.ts](../lib/docs/legacyFrameworks.ts) is the single source of truth. One entry simultaneously drives the Legacy banner ([LegacyNotice.tsx](../components/common/LegacyNotice.tsx), rendered by `DynamicArticleDetails`), `noindex` ([resolveAgilityMetaData.ts](../lib/cms-content/resolveAgilityMetaData.ts)), and removal from **both** nav surfaces ([Header.tsx](../components/common/Header.tsx) `groupNavLinks`). URLs stay live.
 
-### Phase 1 — Fast wins *(days)*
-1. **Archive Gatsby** (7 articles) via §4; priority on the two dead-Gatsby-Cloud pages. Remove `Header_Link` for Gatsby.
-2. **Drop SvelteKit from nav** — remove its `Header_Link` until the section is real (articles stay in staging).
-3. **Publish ready .NET** — the 7 staged .NET Management SDK articles + starter set are complete; publish (manual UI step). Coordinate with Phase 3.
-4. **Add Blazor nav** — new `Header_Link` for **Blazor** pointing at the .NET Blazor content. *(Decision: Blazor lives inside .NET docs but gets its own framework-nav entry.)*
+*Why code over CMS banners:* consistent copy, applies to new articles in the section automatically, no per-article publish, and un-archiving is a one-line revert. The CMS stays the source of truth for article *content*; this file records only lifecycle.
+
+### Phase 1 — Fast wins
+1. ✅ **Archive Gatsby** — all 7 articles + the `/gatsby` landing now show the Legacy banner and return `noindex`; Gatsby is filtered from the nav. *(Verified in-browser.)*
+2. ✅ **Drop SvelteKit from nav** — registry entry `status: "hidden"`; articles untouched in staging. Remove the entry when Phase 2 ships.
+3. ⏳ **Publish ready .NET** — the 7 staged .NET Management SDK articles. **Now doable via MCP `publish_content`** (see §8) but needs human sign-off; coordinate with Phase 3.
+4. ✅ **Add Blazor nav** — `Header_Link` **1595** created (Staging) → `~/dotnet/blazor-starter`, `Icon: blazor`. Renders under **Frameworks** with its brand mark. ⏳ **Needs publishing** to appear in production.
 
 ### Phase 2 — Finish SvelteKit → re-add to nav
 Author the 8 missing/stub articles (sections exist: *Introduction* 1187, *How it works* 1205, *Deployment* 1210):
@@ -129,7 +133,13 @@ Traffic data should drive tiering (§2) and the Next.js refresh ranking (Phase 4
 
 **Remaining:** set the PostHog key in prod, then allow a few weeks of collection before the Nuxt/Eleventy archive-vs-refresh call. Algolia's historical search queries can inform it immediately.
 
-## 8. Decision log
+## 8. Findings from execution (2026-07-28)
+
+**🔴 Production was serving `noindex` on every doc article.** Found while wiring Phase 0's archive `noindex`. `resolveAgilityMetaData` treated `dynamicPageItem.seo.sitemapVisible === false` as a robots directive, but that flag is **`false` by default on every `DocArticle`** — it concerns sitemap/menu placement of dynamic items, not indexing. Net effect: `sitemap.xml` advertised ~306 URLs while each article told Google not to index it. Regression from the App Router migration (`7839777`, 2026-07-16); **fixed** — articles are indexable again, and only registry-archived paths are `noindex`. This undercut the whole SEO/AI-discoverability effort (sitemap, IndexNow, llms.txt), so it likely outweighs any single content task here. *Worth requesting re-crawl in Search Console once the rebuild ships.*
+
+**🟢 The Agility MCP can publish after all.** `publish_content`, `unpublish_content`, `manage_content_workflow`, `publish_page`/`unpublish_page`, and `delete_content_item` all exist. AGENTS.md and the authoring skill both claimed otherwise — corrected. `save_content_items` still always writes to **Staging** (`state` is ignored). Publishing is outward-facing: confirm with a human first.
+
+## 9. Decision log
 
 | Date | Decision |
 |---|---|

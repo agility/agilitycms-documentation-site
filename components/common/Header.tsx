@@ -19,6 +19,7 @@ import {
 	resolveNavIcon,
 	type NavCategory,
 } from "./navIcons";
+import { isNavHidden } from "lib/docs/legacyFrameworks";
 import { Sheet, SheetTrigger, SheetContent, SheetClose } from "components/ui/sheet";
 
 function classNames(...classes: string[]) {
@@ -203,14 +204,23 @@ MegaLink.displayName = "MegaLink";
  * Group the header's dropdown links into the three ordered categories, dropping
  * empties. Shared by the desktop mega panel and the mobile menu so both stay in
  * lockstep. Secondary links are the API column, so they default to "APIs".
+ *
+ * Archived/unready frameworks are filtered out here (lib/docs/legacyFrameworks)
+ * so a single registry entry removes them from BOTH nav surfaces at once.
  */
 const groupNavLinks = (
 	primaryDropdownLinks?: DropdownLink[],
 	secondaryDropdownLinks?: DropdownLink[]
 ): { key: NavCategory; links: DropdownLink[] }[] => {
 	const grouped: Record<NavCategory, DropdownLink[]> = { APIs: [], SDKs: [], Frameworks: [] };
-	for (const l of primaryDropdownLinks || []) grouped[classifyNav(l.text)].push(l);
-	for (const l of secondaryDropdownLinks || []) grouped.APIs.push(l);
+	for (const l of primaryDropdownLinks || []) {
+		if (isNavHidden(l.href)) continue;
+		grouped[classifyNav(l.text)].push(l);
+	}
+	for (const l of secondaryDropdownLinks || []) {
+		if (isNavHidden(l.href)) continue;
+		grouped.APIs.push(l);
+	}
 	return (["APIs", "SDKs", "Frameworks"] as NavCategory[])
 		.map((key) => ({ key, links: grouped[key] }))
 		.filter((c) => c.links.length > 0);
