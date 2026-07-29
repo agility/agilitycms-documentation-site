@@ -28,7 +28,7 @@
 main {
 	--font: var(--font-mulish), system-ui, sans-serif;
 	--serif: var(--font-mulish), system-ui, sans-serif;
-	--mono: var(--font-fira-mono), ui-monospace, monospace;
+	--mono: var(--font-fira-code), ui-monospace, monospace;
 	/* Apply the body font here so the whole subtree inherits Mulish. The
 	   `font-muli` Tailwind utility does NOT resolve (its @theme var references
 	   --font-mulish, which only exists on this element, so Tailwind never emits
@@ -70,7 +70,9 @@ html.dark {
 	--elev-3: 0 24px 60px -20px rgba(0, 0, 0, .8), inset 0 0 0 1px rgba(255, 255, 255, .06);
 	/* Darker well (n-950) so code blocks read as inset against --bg (#181716),
 	   with the elev-1 inset hairline for definition. */
-	--code-bg: #0E0D0C; --tok-str: #FFD75E;
+	/* Near-black code well so panels read as clearly distinct against the warm
+	   --bg (#181716), paired with a --border-strong frame. */
+	--code-bg: #050504; --tok-str: #FFD75E;
 }
 
 /* Focus ring pattern (handoff §3, non-negotiable) */

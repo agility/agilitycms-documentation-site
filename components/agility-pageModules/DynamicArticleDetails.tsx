@@ -45,9 +45,16 @@ const MarkdownContent = ({ htmlContent }: { htmlContent: string }) => {
 					console.error('Error highlighting code:', err);
 				}
 			} else {
-				// Auto-detect language if not specified
+				// Auto-detect, but constrained to the languages our docs actually
+				// use. Unbounded highlightAuto often misfires — e.g. it classified
+				// JSON as a language where every string is a "comment", rendering
+				// whole blocks in muted italic. The subset keeps detection sane.
 				try {
-					const highlighted = hljs.highlightAuto(codeBlock.textContent);
+					const highlighted = hljs.highlightAuto(codeBlock.textContent, [
+						"json", "javascript", "typescript", "bash", "shell",
+						"xml", "html", "css", "scss", "graphql", "yaml",
+						"python", "csharp", "go", "php", "sql",
+					]);
 					codeBlock.innerHTML = highlighted.value;
 					codeBlock.classList.add('hljs');
 				} catch (err) {

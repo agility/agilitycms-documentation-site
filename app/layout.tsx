@@ -3,13 +3,13 @@ import "styles/globals.css";
 
 import React from "react";
 import { Metadata } from "next";
-import { Mulish, Fira_Mono } from "next/font/google";
+import { Mulish, Fira_Code } from "next/font/google";
 import classNames from "classnames";
 
 // Fonts match the marketing site (Ocean design system, 2026-07-23): a single
 // Mulish variable font powers BOTH body and headings — no per-weight loading,
-// the variable axis covers 400–800 (headings render at 700). Fira Mono stays
-// for labels/code.
+// the variable axis covers 400–800 (headings render at 700). Fira Code powers
+// code blocks and mono labels (its coding ligatures make snippets read better).
 const mulish = Mulish({
 	subsets: ["latin"],
 	style: ["normal", "italic"],
@@ -17,11 +17,11 @@ const mulish = Mulish({
 	variable: "--font-mulish",
 });
 
-const firaMono = Fira_Mono({
+const firaCode = Fira_Code({
 	subsets: ["latin"],
-	weight: ["400", "500", "700"],
+	weight: ["400", "500", "600"],
 	display: "swap",
-	variable: "--font-fira-mono",
+	variable: "--font-fira-code",
 });
 
 export const metadata: Metadata = {
@@ -62,7 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 						// and content gets clipped (the iPad no-scroll bug).
 						"min-h-full",
 						mulish.variable,
-						firaMono.variable
+						firaCode.variable
 					)}
 				>
 					{children}

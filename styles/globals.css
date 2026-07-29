@@ -187,34 +187,57 @@ span.hljs-string {
 	color: var(--tok-str);
 }
 
-/* lightfair (styles/lightfair.css) is a light-only hljs theme; remap its
-   core token colors onto ocean tokens in dark mode so code stays readable
-   on --code-bg. */
+/* lightfair (styles/lightfair.css) is a light-only hljs theme; in dark mode
+   remap its token colours onto the ocean palette so code is legible and
+   cohesive on --code-bg. Base text is --text; accents use semantic tokens. */
 html.dark .hljs {
 	color: var(--text);
 	background: transparent;
 }
-html.dark .hljs-keyword,
-html.dark .hljs-selector-tag,
-html.dark .hljs-built_in {
-	color: var(--secondary);
-}
-html.dark .hljs-string,
-html.dark .hljs-attr {
-	color: var(--tok-str);
-}
 html.dark .hljs-comment,
 html.dark .hljs-quote {
 	color: var(--muted);
+	font-style: italic;
+}
+html.dark .hljs-keyword,
+html.dark .hljs-selector-tag,
+html.dark .hljs-literal,
+html.dark .hljs-built_in,
+html.dark .hljs-type {
+	color: var(--secondary-bright);
+}
+html.dark .hljs-string,
+html.dark .hljs-regexp,
+html.dark .hljs-meta-string,
+html.dark .hljs-addition {
+	color: var(--tok-str);
+}
+html.dark .hljs-number,
+html.dark .hljs-symbol,
+html.dark .hljs-bullet {
+	color: var(--warn);
 }
 html.dark .hljs-title,
 html.dark .hljs-name,
-html.dark .hljs-function {
+html.dark .hljs-function,
+html.dark .hljs-section,
+html.dark .hljs-selector-id,
+html.dark .hljs-selector-class,
+html.dark .hljs-attr,
+html.dark .hljs-attribute {
 	color: var(--primary-bright);
 }
-html.dark .hljs-number,
-html.dark .hljs-literal {
-	color: var(--warn);
+html.dark .hljs-variable,
+html.dark .hljs-template-variable,
+html.dark .hljs-link {
+	color: var(--s-purple);
+}
+html.dark .hljs-tag,
+html.dark .hljs-meta {
+	color: var(--faint);
+}
+html.dark .hljs-deletion {
+	color: var(--err);
 }
 
 /* code css */
@@ -241,19 +264,36 @@ code > span.hljs-string {
 	font-weight: normal !important;
 }
 
+/* The <pre> is the code panel — bg + border + radius live here so the frame
+   stays put while long lines scroll horizontally inside it. */
 .prose pre {
-	@apply bg-transparent p-0 my-8;
-	overflow-x: auto;
+	@apply my-8 overflow-x-auto;
+	background: var(--code-bg);
+	border: 1px solid var(--border-strong);
+	border-radius: var(--r-md);
+	padding: 1.25rem;
 }
 
 .prose pre code {
-	@apply block p-5 text-base;
-	border-radius: var(--r-md);
-	/* Override inline code styling for code blocks */
-	background: var(--code-bg) !important;
+	@apply block;
+	/* Override inline-code styling: the panel is on <pre>, code is bare. */
+	background: transparent !important;
 	color: var(--text);
-	box-shadow: var(--elev-1);
-	padding: 1.25rem !important;
+	padding: 0 !important;
+	font-weight: normal !important;
+}
+
+/* Code typography — Fira Code, a little smaller than body text, with the
+   font's coding ligatures on. Applies to both render paths: react-highlight
+   (.hljs) and prose fenced blocks (<pre>), plus the SSR state before JS
+   highlighting adds the .hljs class. */
+.hljs,
+.prose pre,
+.prose pre code {
+	font-family: var(--mono);
+	font-size: 0.8125rem;
+	line-height: 1.7;
+	font-variant-ligatures: contextual;
 }
 
 .prose code:before {
