@@ -6,6 +6,7 @@ import nextConfig from "next.config";
 import { ToggleSwitch } from "components/common/ToggleSwitch";
 import LegacyNotice from "components/common/LegacyNotice";
 import { getArchivedEntry } from "lib/docs/legacyFrameworks";
+import { enhanceCodeTabs } from "components/common/codeTabs";
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
@@ -68,6 +69,10 @@ const MarkdownContent = ({ htmlContent }: { htmlContent: string }) => {
 				pre.classList.add('hljs-pre');
 			}
 		});
+
+		// Upgrade `.code-tabs` blocks to real tabs — after highlighting, so the
+		// panels are already syntax-coloured when they're shown/hidden.
+		enhanceCodeTabs(containerRef.current);
 
 		// Browsers do not execute <script> tags inserted via innerHTML.
 		// Re-create each script element so embedded JS in CMS markdown actually runs.

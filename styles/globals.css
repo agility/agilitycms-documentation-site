@@ -295,6 +295,60 @@ code > span.hljs-string {
 	font-weight: normal !important;
 }
 
+/* Code tabs (components/common/codeTabs.ts) — one framed panel with a tab bar,
+   used for multi-language SDK snippets. The WRAPPER owns the frame here, so the
+   `pre` panels inside drop their own border/radius/margin. Before the client
+   enhancer runs (or if it skips a malformed group) the snippets simply stack —
+   each still framed by the `.prose pre` rule above, which is a fine fallback. */
+.prose .code-tabs[data-code-tabs-ready="true"] {
+	@apply my-8 overflow-hidden;
+	background: var(--code-bg);
+	border: 1px solid var(--border-strong);
+	border-radius: var(--r-md);
+}
+
+.code-tabs__bar {
+	display: flex;
+	flex-wrap: wrap;
+	background: var(--surface);
+	border-bottom: 1px solid var(--border-strong);
+}
+
+.code-tabs__tab {
+	font-family: var(--mono);
+	font-size: 0.72rem;
+	padding: 0.5rem 0.9rem;
+	color: var(--muted);
+	background: transparent;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	cursor: pointer;
+	transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.code-tabs__tab:hover {
+	color: var(--text);
+	background: var(--raised);
+}
+
+.code-tabs__tab[data-active="true"] {
+	color: var(--primary);
+	border-bottom-color: var(--primary);
+	background: var(--code-bg);
+}
+
+/* Panels sit inside the wrapper's frame — no second border, radius or margin. */
+.prose .code-tabs[data-code-tabs-ready="true"] > pre {
+	@apply my-0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+}
+
+.code-tabs__panel[hidden] {
+	display: none;
+}
+
 /* Code typography — Fira Code, a little smaller than body text, with the
    font's coding ligatures on. Applies to both render paths: react-highlight
    (.hljs) and prose fenced blocks (<pre>), plus the SSR state before JS
