@@ -16,6 +16,8 @@ import { ChevronRightIcon } from "@heroicons/react/outline";
 import algoliasearch from "algoliasearch/lite";
 import { renderHTML } from "@agility/nextjs";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "components/ui/dialog";
+import { track } from "lib/analytics/posthog";
+import { sendAlgoliaClick } from "lib/analytics/algoliaInsights";
 
 // Lazily create the Algolia client: algoliasearch() shuffles its host list
 // with Math.random() at construction, which Cache Components forbids during
@@ -39,6 +41,9 @@ const SEARCH_PARAMS = {
 	highlightPostTag: "</mark>",
 	attributesToSnippet: ["body:26"],
 	snippetEllipsisText: "…",
+	// Returns a queryID with each response so result clicks can be attributed
+	// in Algolia's click analytics (see lib/analytics/algoliaInsights.ts).
+	clickAnalytics: true,
 };
 
 // Shown before the user types — the front doors of the docs.
@@ -74,20 +79,37 @@ export const SearchButton = ({ variant = "topbar" }: { variant?: "topbar" | "she
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger
-				className={
-					variant === "topbar"
-						? "flex w-full items-center gap-2 rounded-(--r-sm) border border-(--border-strong) bg-(--surface) px-3 py-2 text-[.82rem] text-(--muted) hover:border-(--primary) focus:outline-hidden"
-						: "flex w-full items-center gap-2 rounded-(--r-sm) border border-(--border-strong) bg-(--surface) px-3 py-2.5 text-sm text-(--muted) focus:outline-hidden"
-				}
-				aria-label="Search docs"
-			>
-				<SearchIcon className="h-4 w-4 text-(--faint)" aria-hidden="true" />
-				<span className="truncate">Search docs...</span>
-				<kbd className="ml-auto rounded-(--r-xs) border border-(--border) bg-(--raised) px-1.5 py-px font-mono text-[.68rem] text-(--muted)">
-					{isMac ? "⌘K" : "Ctrl K"}
-				</kbd>
-			</DialogTrigger>
+			{variant === "topbar" ? (
+				// Collapsed to just the icon; expands to the full field on hover or
+				// keyboard focus. The relative w-9 wrapper reserves only the icon's
+				// footprint, and the trigger expands as an absolute overlay (grows
+				// leftward, right-anchored) so the expansion never reflows the header.
+				<div className="relative h-9 w-9 shrink-0">
+					<DialogTrigger
+						aria-label="Search docs"
+						className="group/search absolute right-0 top-0 z-10 flex h-9 w-9 items-center gap-2 overflow-hidden rounded-(--r-sm) border border-(--border-strong) bg-(--surface) px-2.5 text-[.82rem] text-(--muted) transition-[width,padding,border-color] duration-200 ease-out hover:w-48 hover:border-(--primary) hover:px-3 focus-visible:w-48 focus-visible:border-(--primary) focus:outline-hidden"
+					>
+						<SearchIcon className="h-4 w-4 shrink-0 text-(--faint)" aria-hidden="true" />
+						<span className="min-w-0 flex-1 truncate whitespace-nowrap text-left opacity-0 transition-opacity duration-150 group-hover/search:opacity-100 group-focus-visible/search:opacity-100">
+							Search docs...
+						</span>
+						<kbd className="shrink-0 rounded-(--r-xs) border border-(--border) bg-(--raised) px-1.5 py-px font-mono text-[.68rem] text-(--muted) opacity-0 transition-opacity duration-150 group-hover/search:opacity-100 group-focus-visible/search:opacity-100">
+							{isMac ? "⌘K" : "Ctrl K"}
+						</kbd>
+					</DialogTrigger>
+				</div>
+			) : (
+				<DialogTrigger
+					className="flex w-full items-center gap-2 rounded-(--r-sm) border border-(--border-strong) bg-(--surface) px-3 py-2.5 text-sm text-(--muted) focus:outline-hidden"
+					aria-label="Search docs"
+				>
+					<SearchIcon className="h-4 w-4 text-(--faint)" aria-hidden="true" />
+					<span className="truncate">Search docs...</span>
+					<kbd className="ml-auto rounded-(--r-xs) border border-(--border) bg-(--raised) px-1.5 py-px font-mono text-[.68rem] text-(--muted)">
+						{isMac ? "⌘K" : "Ctrl K"}
+					</kbd>
+				</DialogTrigger>
+			)}
 			{open && <SearchPanel close={() => setOpen(false)} />}
 		</Dialog>
 	);
@@ -132,11 +154,16 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 				]);
 				if (queryRef.current !== query) return;
 				const result = response.results[0];
-				setHits(result.hits);
+				// Stamp each hit with the queryID so a later click can be attributed
+				// to the search that surfaced it (Algolia click analytics).
+				setHits(result.hits.map((h: any) => ({ ...h, __queryID: result.queryID })));
 				setTotalHits(result.nbHits);
 				setPage(0);
 				setHasMore(result.nbPages > 1);
 				setActiveIndex(0);
+				if (query.trim().length >= 2) {
+					track("docs_search", { query, results: result.nbHits });
+				}
 			} catch (e) {
 				// network hiccup — keep the previous results on screen
 			}
@@ -153,7 +180,10 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 		]);
 		if (queryRef.current !== q) return;
 		const result = response.results[0];
-		setHits((prev) => [...prev, ...result.hits]);
+		setHits((prev) => [
+			...prev,
+			...result.hits.map((h: any) => ({ ...h, __queryID: result.queryID })),
+		]);
 		setPage(nextPage);
 		setHasMore(nextPage < result.nbPages - 1);
 	}, [page, hasMore]);
@@ -182,6 +212,30 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 		router.push(url.replace(/^https?:\/\/[^/]+/, "").replace(/^\/docs/, "") || "/");
 	};
 
+	// Fire analytics for the chosen item, then navigate. Position is the
+	// 1-based rank in the accumulated result list (matches Algolia's absolute
+	// position across pages).
+	const onSelect = (item: any, idx: number) => {
+		if (item?.hit) {
+			track("docs_search_result_click", {
+				query: queryRef.current,
+				object_id: item.hit.objectID,
+				position: idx + 1,
+				url: item.hit.url,
+				category: item.hit.category,
+				section: item.hit.section,
+			});
+			sendAlgoliaClick({
+				objectID: item.hit.objectID,
+				position: idx + 1,
+				queryID: item.hit.__queryID,
+			});
+		} else if (item?.quick) {
+			track("docs_quicklink_click", { title: item.quick.title, url: item.quick.url });
+		}
+		go(item.url);
+	};
+
 	// Arrow keys move real DOM focus (like Tab), not just the highlight —
 	// the button's onFocus keeps activeIndex in sync for both.
 	const focusItem = (idx: number) => {
@@ -194,7 +248,7 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 			focusItem(0);
 		} else if (e.key === "Enter") {
 			e.preventDefault();
-			go(items[activeIndex]?.url);
+			onSelect(items[activeIndex], activeIndex);
 		}
 	};
 
@@ -273,7 +327,7 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 							<li key={item.hit?.objectID || item.quick?.url} data-index={idx}>
 								<button
 									type="button"
-									onClick={() => go(item.url)}
+									onClick={() => onSelect(item, idx)}
 									onMouseMove={() => setActiveIndex(idx)}
 									onFocus={() => setActiveIndex(idx)}
 									className={`block w-full rounded-(--r-sm) px-3 py-2.5 text-left focus:outline-hidden ${
