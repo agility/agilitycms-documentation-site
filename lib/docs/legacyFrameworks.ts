@@ -55,12 +55,19 @@ export const LEGACY_ENTRIES: LegacyEntry[] = [
 	},
 ];
 
-const normalize = (p: string) => (p || "").replace(/\/+$/, "") || "/";
+// Lower-cased + de-trailing-slashed. Case folding is deliberate: docs section
+// paths are NOT all lowercase (the .NET section is `/dotNet`), and a
+// case-sensitive prefix match would silently fail to archive such a section —
+// no banner, no noindex, still in the nav, with nothing to indicate it broke.
+const normalize = (p: string) => (p || "").toLowerCase().replace(/\/+$/, "") || "/";
 
 /** Match a path (e.g. "/gatsby/using-the-gatsby-blog-starter") to its entry. */
 const matchEntry = (path: string): LegacyEntry | undefined => {
 	const p = normalize(path);
-	return LEGACY_ENTRIES.find((e) => p === e.path || p.startsWith(`${e.path}/`));
+	return LEGACY_ENTRIES.find((e) => {
+		const ep = normalize(e.path);
+		return p === ep || p.startsWith(`${ep}/`);
+	});
 };
 
 /** The archived entry for a path, if it should show the Legacy banner. */
@@ -79,6 +86,7 @@ export const isNoIndexPath = (path: string): boolean => !!getArchivedEntry(path)
 export const isNavHidden = (href: string): boolean => {
 	if (!href || /^https?:\/\//i.test(href)) return false;
 	// Nav hrefs from the CMS may carry the /docs basePath; the registry doesn't.
-	const path = normalize(href.replace(/^\/docs/, ""));
+	// Strip case-insensitively — CMS hrefs use the "~/" site-root form too.
+	const path = href.replace(/^~/, "").replace(/^\/docs(?=\/|$)/i, "");
 	return !!matchEntry(path);
 };
