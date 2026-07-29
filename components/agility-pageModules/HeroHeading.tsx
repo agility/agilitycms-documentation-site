@@ -23,7 +23,16 @@ export default function HeroHeading({ module }: HeroHeadingProps) {
       {/* Flush with the shell column — the template provides page padding. */}
       <div className="relative pt-8 pb-10">
         {fields.image && fields.image.url && (
-          <AgilityPic image={fields.image} className="mb-8" fallbackWidth={100} data-agility-field="image" />
+          // Framework/SDK logos vary wildly in aspect (square shield → wide
+          // wordmark). Normalize on HEIGHT so every hero reads consistently: a
+          // fixed height, width auto (capped), object-contain. fallbackWidth is
+          // generous so raster wordmarks stay crisp at 2× the display width.
+          <AgilityPic
+            image={fields.image}
+            className="mb-8 h-12 w-auto max-w-70 object-contain sm:h-14"
+            fallbackWidth={560}
+            data-agility-field="image"
+          />
         )}
         <h1
           className="m-0"
