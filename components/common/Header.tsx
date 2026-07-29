@@ -149,47 +149,71 @@ export default function Header({
 
 type DropdownLink = { text: string; href: string; icon?: string };
 
+type MegaLinkProps = {
+	link: DropdownLink;
+	cat: NavCategory;
+	active: boolean;
+	onNavigate?: () => void;
+} & Omit<React.ComponentPropsWithoutRef<"a">, "href" | "className">;
+
 // One mega-panel link row: brand/category icon box + label. The icon comes from
 // the CMS (the Link item's `Icon` slug); resolveNavIcon falls back to inferring
 // it from the text, then to a category default. Hover lifts both to the brand
 // colour; the current page keeps a persistent tinted highlight.
-const MegaLink = ({
-	link,
-	cat,
-	active,
-	onNavigate,
-}: {
-	link: DropdownLink;
-	cat: NavCategory;
-	active: boolean;
-	onNavigate: () => void;
-}) => {
-	const Icon = resolveNavIcon({ icon: link.icon, text: link.text, category: cat });
-	return (
-		<Link
-			href={link.href}
-			onClick={onNavigate}
-			aria-current={active ? "page" : undefined}
-			className={classNames(
-				"group/mega flex items-center gap-2.5 rounded-(--r-sm) px-2 py-1.5 text-sm font-medium transition-colors",
-				active
-					? "bg-(--raised) text-(--primary)"
-					: "text-(--text-2) hover:bg-(--raised) hover:text-(--primary)"
-			)}
-		>
-			<span
+//
+// forwardRef so it can be the `asChild` target of Radix's SheetClose in the
+// mobile menu (which needs the ref to wire up close-on-navigate).
+const MegaLink = React.forwardRef<HTMLAnchorElement, MegaLinkProps>(
+	({ link, cat, active, onNavigate, ...props }, ref) => {
+		const Icon = resolveNavIcon({ icon: link.icon, text: link.text, category: cat });
+		return (
+			<Link
+				ref={ref}
+				href={link.href}
+				aria-current={active ? "page" : undefined}
 				className={classNames(
-					"grid size-7 shrink-0 place-items-center rounded-(--r-sm) border transition-colors",
+					"group/mega flex items-center gap-2.5 rounded-(--r-sm) px-2 py-1.5 text-sm font-medium transition-colors",
 					active
-						? "border-(--primary) bg-(--primary) text-(--on-color)"
-						: "border-(--border) bg-(--raised) text-(--primary) group-hover/mega:border-(--primary)"
+						? "bg-(--raised) text-(--primary)"
+						: "text-(--text-2) hover:bg-(--raised) hover:text-(--primary)"
 				)}
+				onClick={onNavigate}
+				// Spread last: SheetClose (asChild) injects its own onClick to close
+				// the sheet, which must win over onNavigate in the mobile menu.
+				{...props}
 			>
-				<Icon className="h-4 w-4" />
-			</span>
-			{link.text}
-		</Link>
-	);
+				<span
+					className={classNames(
+						"grid size-7 shrink-0 place-items-center rounded-(--r-sm) border transition-colors",
+						active
+							? "border-(--primary) bg-(--primary) text-(--on-color)"
+							: "border-(--border) bg-(--raised) text-(--primary) group-hover/mega:border-(--primary)"
+					)}
+				>
+					<Icon className="h-4 w-4" />
+				</span>
+				{link.text}
+			</Link>
+		);
+	}
+);
+MegaLink.displayName = "MegaLink";
+
+/**
+ * Group the header's dropdown links into the three ordered categories, dropping
+ * empties. Shared by the desktop mega panel and the mobile menu so both stay in
+ * lockstep. Secondary links are the API column, so they default to "APIs".
+ */
+const groupNavLinks = (
+	primaryDropdownLinks?: DropdownLink[],
+	secondaryDropdownLinks?: DropdownLink[]
+): { key: NavCategory; links: DropdownLink[] }[] => {
+	const grouped: Record<NavCategory, DropdownLink[]> = { APIs: [], SDKs: [], Frameworks: [] };
+	for (const l of primaryDropdownLinks || []) grouped[classifyNav(l.text)].push(l);
+	for (const l of secondaryDropdownLinks || []) grouped.APIs.push(l);
+	return (["APIs", "SDKs", "Frameworks"] as NavCategory[])
+		.map((key) => ({ key, links: grouped[key] }))
+		.filter((c) => c.links.length > 0);
 };
 
 /**
@@ -222,19 +246,7 @@ const ApiSdkDropdown = ({
 		closeTimer.current = setTimeout(() => setOpen(false), 120);
 	};
 
-	// Group all links into the three ordered categories; secondary links are the
-	// API column, so they default to "APIs".
-	const grouped: Record<NavCategory, DropdownLink[]> = {
-		APIs: [],
-		SDKs: [],
-		Frameworks: [],
-	};
-	for (const l of primaryDropdownLinks || []) grouped[classifyNav(l.text)].push(l);
-	for (const l of secondaryDropdownLinks || []) grouped.APIs.push(l);
-
-	const columns = (["APIs", "SDKs", "Frameworks"] as NavCategory[])
-		.map((key) => ({ key, links: grouped[key] }))
-		.filter((c) => c.links.length > 0);
+	const columns = groupNavLinks(primaryDropdownLinks, secondaryDropdownLinks);
 
 	const isActive = (href: string) => href !== "#" && pathname.startsWith(href);
 
@@ -304,13 +316,20 @@ const MobileMenu = ({
 	navigation: any[];
 	primaryDropdownLinks?: any[];
 	secondaryDropdownLinks?: any[];
-}) => (
+}) => {
+	const pathname = usePathname() || "/";
+	const isActive = (href: string) => href !== "#" && pathname.startsWith(href);
+	const columns = groupNavLinks(primaryDropdownLinks, secondaryDropdownLinks);
+
+	return (
 	<Sheet>
 		<SheetTrigger className="inline-flex items-center justify-center rounded-(--r-sm) p-2 text-(--text-2) hover:bg-(--raised) focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-(--primary)">
 			<span className="sr-only">Open menu</span>
 			<MenuIcon className="block h-6 w-6" aria-hidden="true" />
 		</SheetTrigger>
-		<SheetContent side="left" title="Menu">
+		{/* Opens from the right so the panel emerges from under the trigger,
+		    which sits at the right end of the bar. */}
+		<SheetContent side="right" title="Menu">
 			<div className="px-4 py-4">
 				<div className="mb-4">
 					<SearchButton variant="sheet" />
@@ -333,19 +352,24 @@ const MobileMenu = ({
 						</SheetClose>
 					))}
 				</nav>
-				<div className="mt-4 border-t border-(--border) pt-4">
-					<div className="px-3 pb-2 font-mono text-[.66rem] uppercase tracking-[.14em] text-(--faint)">
-						APIs &amp; SDKs
-					</div>
-					{[...(primaryDropdownLinks || []), ...(secondaryDropdownLinks || [])].map((l) => (
-						<SheetClose asChild key={l.href}>
-							<Link
-								href={l.href}
-								className="block rounded-(--r-sm) px-3 py-2 text-sm font-medium text-(--text-2) hover:bg-(--raised) hover:text-(--text)"
-							>
-								{l.text}
-							</Link>
-						</SheetClose>
+				{/* APIs & SDKs — same grouped, icon-led treatment as the desktop mega
+				    panel (shared groupNavLinks + MegaLink), stacked for narrow widths. */}
+				<div className="mt-4 space-y-4 border-t border-(--border) pt-4">
+					{columns.map((col) => (
+						<div key={col.key}>
+							<div className="px-3 pb-1.5 font-mono text-[.66rem] uppercase tracking-[.14em] text-(--faint)">
+								{col.key}
+							</div>
+							<ul className="m-0 grid list-none gap-0.5 px-1 p-0">
+								{col.links.map((l) => (
+									<li key={l.href}>
+										<SheetClose asChild>
+											<MegaLink link={l} cat={col.key} active={isActive(l.href)} />
+										</SheetClose>
+									</li>
+								))}
+							</ul>
+						</div>
 					))}
 				</div>
 				<div className="mt-6 flex items-center justify-between gap-3 px-3">
@@ -373,4 +397,5 @@ const MobileMenu = ({
 			</div>
 		</SheetContent>
 	</Sheet>
-);
+	);
+};
