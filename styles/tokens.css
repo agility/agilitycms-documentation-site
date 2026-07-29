@@ -29,6 +29,12 @@ main {
 	--font: var(--font-mulish), system-ui, sans-serif;
 	--serif: var(--font-mulish), system-ui, sans-serif;
 	--mono: var(--font-fira-mono), ui-monospace, monospace;
+	/* Apply the body font here so the whole subtree inherits Mulish. The
+	   `font-muli` Tailwind utility does NOT resolve (its @theme var references
+	   --font-mulish, which only exists on this element, so Tailwind never emits
+	   a usable --font-muli) — without this, header/nav/body fell back to the
+	   system stack, which reads visibly larger than Mulish at the same px. */
+	font-family: var(--font);
 }
 
 /* LIGHT is the base (:root). DARK overrides live in `html.dark` below — the

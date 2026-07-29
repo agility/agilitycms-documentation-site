@@ -5,6 +5,7 @@ import Link from "next/link";
 import nextConfig from "next.config";
 import { getFooterData } from "lib/cms-content/getFooterData";
 import { defaultLocale } from "lib/i18n/config";
+import ThemeControl from "./ThemeControl";
 
 /*
   Lean docs footer (Stripe/Vercel docs pattern): same brand tokens as the
@@ -152,6 +153,7 @@ const Footer = async ({ languageCode, isPreview }: FooterProps) => {
 								{link.text}
 							</a>
 						))}
+						<ThemeControl />
 					</div>
 				</div>
 			</div>

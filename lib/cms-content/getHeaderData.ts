@@ -3,18 +3,25 @@ import "server-only";
 import { gql } from "lib/cms/gql";
 import { getSitemapFlat } from "lib/cms/getSitemapFlat";
 
+export interface DropdownLink {
+	text: string;
+	href: string;
+	/** Icon slug from the Link model's `Icon` dropdown (maps to NAV_ICONS). */
+	icon?: string;
+}
+
 export interface HeaderData {
 	mainMenuLinks: { name: string; href: string }[];
-	primaryDropdownLinks: { text: string; href: string }[];
-	secondaryDropdownLinks: { text: string; href: string }[];
+	primaryDropdownLinks: DropdownLink[];
+	secondaryDropdownLinks: DropdownLink[];
 }
 
 const HEADER_QUERY = `
 {
 	header {
 		fields {
-			primaryDropdownLinks(sort: "properties.itemOrder") { fields { link { text href } } }
-			secondaryDropdownLinks(sort: "properties.itemOrder") { fields { link { text href } } }
+			primaryDropdownLinks(sort: "properties.itemOrder") { fields { link { text href } icon } }
+			secondaryDropdownLinks(sort: "properties.itemOrder") { fields { link { text href } icon } }
 		}
 	}
 }`;
@@ -53,10 +60,10 @@ export const getHeaderData = async ({
 	return {
 		mainMenuLinks,
 		primaryDropdownLinks: (headerFields?.primaryDropdownLinks || []).map(
-			(l: any) => l.fields.link
+			(l: any) => ({ ...l.fields.link, icon: l.fields.icon || undefined })
 		),
 		secondaryDropdownLinks: (headerFields?.secondaryDropdownLinks || []).map(
-			(l: any) => l.fields.link
+			(l: any) => ({ ...l.fields.link, icon: l.fields.icon || undefined })
 		),
 	};
 };
