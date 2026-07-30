@@ -49,5 +49,9 @@ yarn-error.log*
 # local scratch
 /screenshots/
 tsconfig.tsbuildinfo
-# cached OpenAPI specs pulled by the api-spec-drift skill
+# Cached OpenAPI specs and SDK packages pulled by the api-spec-drift skill.
+# The scripts resolve this to the repo root, so the root pattern is the one that
+# actually matters; the nested path is kept in case a script is run from there.
+/.spec-cache/
 .claude/skills/api-spec-drift/.spec-cache/
+.claude/skills/**/__pycache__/
