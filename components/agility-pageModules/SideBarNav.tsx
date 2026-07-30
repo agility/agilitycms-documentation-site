@@ -56,17 +56,29 @@ const SideBarNav = async ({ module, dynamicPageItem, sitemapNode, languageCode, 
 	// more than 250 articles (or 250 sections) will silently drop the overflow from the sidebar.
 	// Add pagination (loop on `skip`/`take` until fewer than `take` rows return) when any
 	// category approaches that limit. Developer is the largest today (~69 articles).
-	const data = await gql({
-		query: `
+	// Agility exposes a container in GraphQL as its reference name lowercased with
+	// non-alphanumerics folded to `_` (`ManagementSDK-Articles` -> `managementsdk_articles`).
+	// Interpolating the raw name only worked because every other container is
+	// purely alphanumeric; a hyphen is illegal in a GraphQL field name, so the
+	// query threw and took the whole article page down with it. Aliasing the
+	// selections also keeps the response keys stable whatever the container is
+	// called. Existing names are already lowercase from the read API, so this is
+	// a no-op for them.
+	const gqlField = (ref: string) => ref.toLowerCase().replace(/[^a-z0-9_]/g, "_");
+
+	let data: any;
+	try {
+		data = await gql({
+			query: `
 		{
-			${articlesRefName} (take: 250, sort: "properties.itemOrder") {
+			articles: ${gqlField(articlesRefName)} (take: 250, sort: "properties.itemOrder") {
 				contentID
 				fields {
 					title
 					section_ValueField
 				}
 			},
-			${sectionsRefName} (take: 250, sort: "properties.itemOrder") {
+			sections: ${gqlField(sectionsRefName)} (take: 250, sort: "properties.itemOrder") {
 				contentID
 				fields {
 					title
@@ -75,12 +87,18 @@ const SideBarNav = async ({ module, dynamicPageItem, sitemapNode, languageCode, 
 			}
 		}
 		`,
-		locale,
-		preview,
-	});
+			locale,
+			preview,
+		});
+	} catch (error) {
+		// A sidebar that can't load its nav must not blank the article. Fall back
+		// to just the category link and let the page body render.
+		console.error("SideBarNav: GraphQL query failed", error);
+		return <SideBarNavClient navigation={navigation} />;
+	}
 
-	const sections = data[sectionsRefName];
-	const articles = data[articlesRefName];
+	const sections = data.sections;
+	const articles = data.articles;
 
 	if (!sections || !articles) {
 		console.log("No `sections` or `articles` were found for this category");
