@@ -108,7 +108,21 @@ Implemented as a **code registry** rather than per-article CMS edits: [lib/docs/
 2. ✅ **Canonical article authored** — "Getting Started" (**1598**) merges the JS (1277) and .NET (1405) intros into one tabbed guide: install, OAuth, PAT, client setup, Options/region tables, method-group map, and a **feature-gap table** (what the .NET SDK still lacks vs. JavaScript). New sections created: **Introduction 1596**, **Instance 1597**.
 3. ✅ **Fixed a broken page module** — dynamic page **54**'s `DynamicArticleDetails` had `item.contentId: null`, so *every* article under the section rendered an empty body (including the already-published 1402). Repaired via `save_page` (now item **1600**); no duplicate module was appended.
 
-🔴 **BLOCKED — hyphenated container reference names break the sidebar (needs a decision).**
+✅ **RESOLVED 2026-07-29 — the section renders for the first time.** Diagnosis and fix below.
+
+**4. Migrated to hyphen-free containers.** New `ManagementSDKArticles` (485) + `ManagementSDKSections` (486) — created identical to the old ones in every respect except the name (same model, type, category, flags), which isolated the hyphen as the sole cause. Proof: GraphQL returns **2 articles / 7 sections** from the new containers vs **0** from the old.
+- Sections (reading order): Introduction **1601**, Content **1602**, Models **1603**, Containers **1604**, Pages **1605**, Assets **1606**, Instance **1607**.
+- Articles re-created **with slugs preserved** so no URL changes: Getting Started **1608**, Creating Content and Pages in Other Locales **1609** (also upgraded its C#-only samples to JS/.NET tabs, and fixed a stray `d` typo in the original). The 32-char stub (1251) was deliberately **not** migrated.
+- Repointed DocCategory **1258** (Articles/Sections) and dynamic page **54** (`dynamic.referenceName`). Old items 1402/1598 unpublished — they were orphaned once the dynamic page moved.
+- **Verified live on the rebuild deployment:** h1, sidebar (both articles), 4 tab groups, 11 code panels, 4 tables. The pre-existing URL `/javascript/management-sdk/management-sdk-creating-content-and-pages-in-other-locales` still resolves — **backwards compatible**.
+
+**5. Hardened the sidebar** ([SideBarNav.tsx](../components/agility-pageModules/SideBarNav.tsx), commit `5eea0b9`) so this class of bug can't blank an article again: reference names are mapped to the field name Agility actually exposes (lowercased, non-alphanumerics → `_`; verified a **no-op for every existing container**), selections are aliased, and a failed query now falls back to the category-only nav instead of throwing.
+
+*Kept the section at `/javascript/management-sdk` rather than moving to top-level `/management-sdk`, to preserve existing URLs (DocCategory `LandingPage` corrected to match). Moving it is still the better IA and can be done later with redirects.*
+
+<details><summary>Original diagnosis (kept for the record)</summary>
+
+**Hyphenated container reference names broke the sidebar.**
 `ManagementSDK-Articles` / `ManagementSDK-Sections` contain a hyphen, and [SidebarNav.tsx](../components/agility-pageModules/SidebarNav.tsx) interpolates the reference name straight into a GraphQL query (`${articlesRefName} (take: 250) {…}`). Hyphens are illegal in GraphQL field names, so the query throws and the whole section hits the error boundary ("This page couldn't load"). Every other category works only because its name is alphanumeric (the read API lowercases it, e.g. `sveltekitarticles`).
 
 Worse, it isn't only a syntax problem — probing the API shows the data isn't reachable over GraphQL at all:
@@ -121,6 +135,19 @@ Worse, it isn't only a syntax problem — probing the API shows the data isn't r
 So a code-side fix (sanitising the field name to `managementsdk_articles`) makes the query *valid* but still returns nothing — the sidebar would render empty. **Recommended fix:** create fresh hyphen-free containers (`ManagementSDKArticles` / `ManagementSDKSections`), move the 3 items across, and repoint DocCategory **1258** + dynamic page **54**. Preferred over renaming the existing containers (avoids whatever indexing state is wrong) and over rewriting SidebarNav to use REST (which would touch every category). **Also worth fixing regardless:** make `SidebarNav` sanitise/alias the GraphQL field name so a hyphenated container degrades to an empty sidebar instead of a crashed page.
 
 ℹ️ Related: DocCategory 1258's `LandingPage.href` is `/management-sdk` but the page tree actually sits at `/javascript/management-sdk` (pages 53 → 54). Cosmetic today (the sidebar derives hrefs from the sitemap node, not this field), but the original author clearly intended a **top-level** `/management-sdk` — worth moving page 53 to the root while the section is being fixed, since a language-neutral SDK doesn't belong under `/javascript`.
+
+</details>
+
+**Remaining for Phase 3:** author the 6 other canonical tabbed topics (Content, Models, Containers, Pages, Assets, Instance) by merging each JS + .NET pair; then retire the duplicates in `JavaScriptArticles` (290, 1277, 1278–1282) and `dotNetArticles` (1405–1411) via the §4 archive convention (banner + `noindex`, URLs stay alive) rather than deleting; then add the **Management SDK** nav entry (the `Icon` dropdown has generic `sdk`/`code` slugs).
+
+| Topic | JS source | .NET source | Target section |
+|---|---|---|---|
+| Content Items | 1280 | 1408 | Content 1602 |
+| Models | 1281 | 1409 | Models 1603 |
+| Containers & Lists | 1279 | 1407 | Containers 1604 |
+| Pages | 1282 | 1410 | Pages 1605 |
+| Assets | 290 | 1411 | Assets 1606 |
+| Instance & Users | 1278 | 1406 | Instance 1607 |
 
 ### Phase 4 — Flagship refresh *(weeks, ongoing)*
 - **Next.js** (25 articles, mostly 2021–22):
