@@ -97,7 +97,7 @@ Implemented as a **code registry** rather than per-article CMS edits: [lib/docs/
 
 > **Publish-dependency lesson (recorded for future publishes):** an article's page render needs its whole chain published — article → its `*Sections` items → the category's `DocCategories` item → the landing/dynamic pages + their SidebarNav/Hero/Details module items. A staged `DocCategory` fails the section server-side (error boundary), and staged sections make sidebars silently empty. The rebuild deployment's caches are tag-driven: after any MCP publish, fire the same payloads at `{deploy}/docs/api/revalidate` (Agility's webhook only targets production).
 
-### Phase 3 — Consolidate Management SDK *(language tabs)*
+### Phase 3 — Consolidate Management SDK *(language tabs)* ✅ **DONE 2026-07-30**
 - Make the Management SDK container the single source of truth; present JS / .NET via code-tabs, not parallel article trees.
 - Migrate/redirect the Management-SDK articles currently inside `JavaScript` and `.NET`.
 - Add a **Management SDK** entry to the nav dropdown.
@@ -156,7 +156,14 @@ So a code-side fix (sanitising the field name to `managementsdk_articles`) makes
 - **QC performed on the delegated work:** every article's Markdown was run through the site's real `unified` pipeline to confirm each `code-tabs` wrapper renders with matching label↔`<pre>` counts and zero unparsed fences (9/9 clean), plus a client-variable consistency sweep — which caught Content Items using `client.` in its JS samples where the rest of the set (and Getting Started's setup code) uses `apiClient.`. Fixed.
 - **Nav entry added** — `Header_Link` **1610** → `~/javascript/management-sdk`, `Icon: sdk`, rendering in the **SDKs** column.
 
-⏳ **Remaining:** retire the duplicates in `JavaScriptArticles` (290, 1277, 1278–1282) and `dotNetArticles` (1405–1411) via the §4 archive convention (banner + `noindex`, URLs stay alive) rather than deleting — they're still live and now duplicate the canonical set.
+**7. ✅ Duplicates retired 2026-07-30 (`superseded` status).** The 14 old copies (7 under `/javascript`, 7 under `/dotNet`) were competing with the canonical set in search. Rather than reuse `archived` — whose banner reads "no longer actively maintained", untrue of freshly-merged content — §4 gained a second status:
+
+- **`superseded`** — banner reads "This page has moved" and links the canonical guide; still `noindex` (the whole point: stop the duplicate outranking its own canonical copy); URL stays live for bookmarks and external links.
+- Entries are **per exact article path** (the matcher only matches a whole path or a `path/` prefix, and these duplicates sit inside otherwise-current sections). Generated from a `[old path, canonical slug]` table in [legacyFrameworks.ts](../lib/docs/legacyFrameworks.ts).
+- `getArchivedEntry` aliases the new `getNoticeEntry`, so existing callers were untouched.
+- **Verified with 39 assertions** over the real matcher, specifically covering the two damaging failure modes: `noindex`-ing the new canonical articles, and dropping `/javascript` or `/dotNet` from the nav. Confirmed live: duplicate shows the banner + `noindex` + still renders; canonical has neither.
+
+**Phase 3 is complete.** Optional follow-up: move the section from `/javascript/management-sdk` to top-level `/management-sdk` with redirects — better IA for a language-neutral SDK, deferred to preserve URLs.
 
 ### SDK / doc discrepancies surfaced while merging (for the SDK teams — not doc bugs)
 
