@@ -49,3 +49,5 @@ yarn-error.log*
 # local scratch
 /screenshots/
 tsconfig.tsbuildinfo
+# cached OpenAPI specs pulled by the api-spec-drift skill
+.claude/skills/api-spec-drift/.spec-cache/
