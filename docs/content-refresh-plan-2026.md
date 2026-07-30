@@ -138,16 +138,40 @@ So a code-side fix (sanitising the field name to `managementsdk_articles`) makes
 
 </details>
 
-**Remaining for Phase 3:** author the 6 other canonical tabbed topics (Content, Models, Containers, Pages, Assets, Instance) by merging each JS + .NET pair; then retire the duplicates in `JavaScriptArticles` (290, 1277, 1278–1282) and `dotNetArticles` (1405–1411) via the §4 archive convention (banner + `noindex`, URLs stay alive) rather than deleting; then add the **Management SDK** nav entry (the `Icon` dropdown has generic `sdk`/`code` slugs).
+**6. ✅ Canonical tabbed article set authored & published 2026-07-30.** Each topic merges its JS + .NET pair into one language-tabbed article; single-language methods are shown as a lone `ts`/`csharp` block with an explicit "not available in the other SDK yet" note rather than being silently dropped.
 
-| Topic | JS source | .NET source | Target section |
-|---|---|---|---|
-| Content Items | 1280 | 1408 | Content 1602 |
-| Models | 1281 | 1409 | Models 1603 |
-| Containers & Lists | 1279 | 1407 | Containers 1604 |
-| Pages | 1282 | 1410 | Pages 1605 |
-| Assets | 290 | 1411 | Assets 1606 |
-| Instance & Users | 1278 | 1406 | Instance 1607 |
+| Article | JS source | .NET source | Section | Tab groups |
+|---|---|---|---|---|
+| Getting Started **1608** | 1277 | 1405 | Introduction 1601 | 4 |
+| Content Items **1618** | 1280 | 1408 | Content 1602 | 12 |
+| Models **1615** | 1281 | 1409 | Models 1603 | 7 |
+| Containers & Lists **1614** | 1279 | 1407 | Containers 1604 | 7 |
+| Pages **1611** | 1282 | 1410 | Pages 1605 | 15 |
+| Assets **1613** | 290 | 1411 | Assets 1606 | 7 |
+| Instance & Users **1612** | 1278 | 1406 | Instance 1607 | 3 |
+| Webhooks **1617** | 1278 (rescued) | — | Webhooks 1616 | 0 (JS-only) |
+| Creating Content/Pages in Other Locales **1609** | — | (was 1402) | Content 1602 | 2 |
+
+- **Webhooks was nearly lost.** Source 1278 ("Management SDK - Instance") was ~40% webhook content (`webhookMethods` CRUD + the `saveWebhook` payload) that fit neither the Instance nor any other topic. It got its own section + article. Webhook management is **JavaScript-SDK only** (corroborated by 1405's own "not yet supported" list), so it deliberately uses no tabs.
+- **QC performed on the delegated work:** every article's Markdown was run through the site's real `unified` pipeline to confirm each `code-tabs` wrapper renders with matching label↔`<pre>` counts and zero unparsed fences (9/9 clean), plus a client-variable consistency sweep — which caught Content Items using `client.` in its JS samples where the rest of the set (and Getting Started's setup code) uses `apiClient.`. Fixed.
+- **Nav entry added** — `Header_Link` **1610** → `~/javascript/management-sdk`, `Icon: sdk`, rendering in the **SDKs** column.
+
+⏳ **Remaining:** retire the duplicates in `JavaScriptArticles` (290, 1277, 1278–1282) and `dotNetArticles` (1405–1411) via the §4 archive convention (banner + `noindex`, URLs stay alive) rather than deleting — they're still live and now duplicate the canonical set.
+
+### SDK / doc discrepancies surfaced while merging (for the SDK teams — not doc bugs)
+
+Merging the two language sets side by side exposed places where the JS and .NET docs disagree about the same endpoint. Each was reproduced faithfully rather than guessed at, and none were "fixed" in the docs:
+
+- **Method naming diverges beyond the camel/Pascal rule:** `getContainerByID` vs `GetContainerById`; `getAssetByUrl` vs `GetAssetByURL`; `getSitemap` vs `GetSiteMap`; .NET mixes `GetAssetByID` with `GetGalleryById`. `getPageTemplateName` (JS) looks like it should be `getPageTemplateByName`.
+- **Return shapes disagree:** JS `saveContentItem` returns `number[]` for a *single* item while .NET returns `int`; JS delete methods document no return while .NET returns `string?`; .NET `SaveContentItems` returns `List<object?>` needing an `is int` cast; .NET `GetUsers` returns `List<WebsiteUser?>` while `SaveUser` returns `InstanceUser?`.
+- **`getContentItems` deprecation conflict:** the JS docs deprecate it in favour of `getContentList`, while the .NET docs present `GetContentItems` as the primary (and only) list method — and `getContentList` isn't in .NET at all.
+- **Parameter contracts disagree:** `getContentModules` — JS labels the args `includeShared, guid, includeDeleted`; .NET documents `(bool includeDefaults, string guid, bool includeModules)`. `getPageModules` — JS puts the boolean first, .NET puts `guid` first. At most one of each pair is right.
+- **`take: 1000` / `take: 5000` in JS import examples** exceed the documented page cap (250 in this repo's own guidance; .NET shows a 50 default), so those examples would silently truncate — which breaks the duplicate-detection logic they demonstrate.
+- **`saveWebhook` passes `instanceGuid` inside the payload** even though the method already takes `guid` positionally.
+- **`serverUserMethods.me("")`** takes an unexplained empty-string argument.
+- **Unverified/likely-invented JS details:** the container `settings` object (`defaultSort`, `defaultSortDirection`, `itemsPerPage`) appears nowhere in .NET; a `type: 'html'` field example contains TypeScript union syntax (`toolbar: 'full' | 'basic'`) inside a runtime object literal.
+- **Coverage gaps are doc gaps, not SDK gaps:** article 290 never documented `getAssetByID` or gallery save/delete, so the merged Assets article says "not documented for the JavaScript SDK" rather than asserting absence. Same caveat on several .NET-only container methods.
+- Housekeeping in the old JS articles: decorative emoji in H2s, bodies stored only as legacy EditorJS (no `MarkdownContent`), and samples mixing `require()` with TypeScript annotations.
 
 ### Phase 4 — Flagship refresh *(weeks, ongoing)*
 - **Next.js** (25 articles, mostly 2021–22):
@@ -204,6 +228,7 @@ Traffic data should drive tiering (§2) and the Next.js refresh ranking (Phase 4
 | 2026-07-28 | Docs site **instrumented**: PostHog (pageviews + search events) and Algolia Insights (click analytics). PostHog key still to be set in prod. |
 | 2026-07-29 | **Next.js core docs modernized** (Phase 4, staged): #985 caching, #744 rendering, #488 intro, #480 starter-works all aligned to App Router + Cache Components, grounded in the 2026-site/docs-repo code and cross-linked. |
 | 2026-07-29 | **Dated Next.js guides — prune calls recorded** (Phase 4): retire AWS EC2/Amplify + Commerce Starter, delete already-unpublished Google Optimize, keep+verify Vercel/Netlify/Azure, low-pri Storybook. Actual unpublishing deferred to rollout. |
+| 2026-07-30 | **Phase 3 substantially complete.** Real code-tabs component shipped; Management SDK migrated to hyphen-free containers (the hyphen made it invisible to GraphQL); 8 canonical tabbed articles authored + published, including a Webhooks article rescuing content that the merge would have dropped; nav entry added. Remaining: archive the duplicate JS/.NET copies. Merge also surfaced ~10 JS-vs-.NET SDK contract discrepancies, recorded in §5 Phase 3 for the SDK teams. |
 | 2026-07-29 | **Bulk publish executed** (user-approved): all staged framework articles + header nav items went live — Next.js core rewrites (985/744/488/480), .NET (281 + Mgmt-SDK 1405–1411), JavaScript (290/1277), all 10 SvelteKit + sections + DocCategory 1177 + pages 44/46, ManagementSDK 1402 (+5 sections), 17 header links incl. Blazor 1595, Angular hero 196. **Deliberately skipped:** ManagementSDK stub 1251 (32-char body). **Left staged:** the ocean-redesign pages (2/3/4/5/58/59/60/61) and their reskin content. Verified on the rebuild deployment; legacy prod (Pages-Router, Netlify+Vercel stale caches) heals on its own ISR cadence and is superseded by the rebuild anyway. |
 | 2026-07-29 | **SvelteKit Phase 2 authored (staged):** all 8 empty/stub articles written from a fresh clone of the sveltekit-starter (Routing & Sitemaps, Pages, Components, Content Lists, 4 deploy guides incl. the build-hook-on-publish + `$env/static/private` build-time gotchas); 1202's "Test" description fixed. Verified on local dev **and** the deployed branch preview. Rollout = publish all 10 + un-hide SvelteKit in `legacyFrameworks.ts` + published nav link. |
 | 2026-07-29 | **Version-drift audit refined on inspection.** The 2026-07-29 audit flagged .NET/Astro on *vintage*, but the bodies hold up: **.NET #281** was already current (only its Description said ".NET 7" — fixed, staged); **Astro** articles are version-neutral and their patterns still valid (no urgent fix). **Angular is the real drift** (#1090 "Angular 18" vs current 22 + four 2021 pre-SSR articles) — deferred: needs the current Angular starter repo checked out for accurate version-specific steps. |
