@@ -231,11 +231,28 @@ def check_unknown_paths(articles, idx_all):
             p = m.rstrip("/.,`\"')")
             if len(p) < 12:
                 continue
-            if any(rx.search(p) or rx.fullmatch(p) for rx in known):
+            # fullmatch, not search: `search` treats any real path as a licence for
+            # anything appended to it, so an invented suffix on a real route
+            # (.../locales/{id}/obliterate) went unflagged.
+            if any(rx.fullmatch(p) for rx in known):
                 continue
-            # tolerate a trailing query string or fragment in prose
+            # tolerate a trailing query string or fragment in prose. fullmatch
+            # again: the query string is already gone, so a substring match here
+            # would re-open the same hole the check above just closed.
             base = p.split("?")[0]
-            if any(rx.search(base) for rx in known):
+            if any(rx.fullmatch(base) for rx in known):
+                continue
+            # Code samples legitimately build URLs from a base fragment:
+            #   const base = 'https://mgmt.aglty.io/api/v1/instance'
+            # A strict prefix of real spec paths is a building block, not a claim
+            # that this endpoint exists. Only flag paths that go somewhere no real
+            # path goes.
+            stem = base.rstrip("/")
+            if any(
+                real.startswith(stem + "/") or real.startswith(stem + "{")
+                for idx in idx_all.values()
+                for real in idx["paths"]
+            ):
                 continue
             add("HIGH", "unknown-endpoint", a, f"path not in either spec: {p}")
 
@@ -251,7 +268,11 @@ def check_required_claims(articles, idx_all):
     pats = [
         re.compile(r"`(?P<f>[A-Za-z][A-Za-z0-9_]{2,})`[^.\n]{0,60}?\bis\s+required\b", re.I),
         re.compile(r"\*\*`(?P<f>[A-Za-z][A-Za-z0-9_]{2,})`\s+is\s+required\*\*", re.I),
-        re.compile(r"\brequired\b[^.\n]{0,40}?`(?P<f>[A-Za-z][A-Za-z0-9_]{2,})`", re.I),
+        # The lookbehind matters: when "required" is itself backticked the docs are
+        # *discussing the property named `required`*, not asserting that some other
+        # field is mandatory. Without it, a sentence like "`required` (it's a
+        # `settings` entry)" reads as "settings is required".
+        re.compile(r"(?<!`)\brequired\b[^.\n]{0,40}?`(?P<f>[A-Za-z][A-Za-z0-9_]{2,})`", re.I),
     ]
     for a in articles:
         for pat in pats:

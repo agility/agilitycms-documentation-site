@@ -81,6 +81,20 @@ unpublished edits count, and exit non-zero on a HIGH finding.
 the packages. Use `--matrix` when writing or reviewing any cross-SDK availability
 table; it is the only trustworthy source for those columns.
 
+### After changing either checker, run the control suite
+
+```bash
+python3 .claude/skills/api-spec-drift/test_checks.py
+```
+
+19 cases pinning **both** directions: known-bad wording must flag, known-good
+wording must stay quiet. It exists because tuning for precision is how a checker
+goes silent — one pass here reported 28 findings that were almost all scoping
+artifacts, and every loosening risked the opposite failure. The flag-cases use the
+verbatim article wording from before the 2026-07-30 corrections, so if the SDK
+checker ever stops catching them it has gone blind. No network or CMS access; needs
+the caches warm and `dnfile` for the SDK half.
+
 > **`check_sdk_drift.py` needs `dnfile`** (`pip install dnfile`) for the .NET half —
 > a `strings` scan is not a substitute, because the ECMA-335 string heap stores one
 > name as a suffix of another (`PublishContent` inside `UnPublishContent`), so
