@@ -3,10 +3,15 @@ import Link from "next/link";
 import type { LegacyEntry } from "lib/docs/legacyFrameworks";
 
 /**
- * "Legacy — no longer maintained" banner shown at the top of archived framework
- * articles (content refresh plan §4). Styled to match the ocean CalloutBlock's
- * `caution` variant (--warn) so it reads as part of the design system rather
- * than a bolted-on warning.
+ * Notice banner at the top of an archived or superseded article (content refresh
+ * plan §4). Styled to match the ocean CalloutBlock's `caution` variant (--warn)
+ * so it reads as part of the design system rather than a bolted-on warning.
+ *
+ * The lead sentence follows the entry's `status`, because the two cases mean
+ * different things to a reader: `archived` docs describe tooling nobody
+ * maintains, while `superseded` docs are still correct but have moved. Telling a
+ * reader that a freshly-consolidated guide is "no longer maintained" would be
+ * plainly untrue, so the wording differs.
  *
  * Driven entirely by lib/docs/legacyFrameworks.ts — no per-article CMS edit.
  */
@@ -33,7 +38,9 @@ const LegacyNotice = ({ entry }: { entry: LegacyEntry }) => (
 		</span>
 		<p className="m-0" style={{ fontSize: ".92rem", color: "var(--text-2)" }}>
 			<b className="font-extrabold" style={{ color: "var(--text)" }}>
-				Legacy — {entry.name} docs are no longer actively maintained.{" "}
+				{entry.status === "superseded"
+					? `This page has moved — ${entry.name} is now documented elsewhere. `
+					: `Legacy — ${entry.name} docs are no longer actively maintained. `}
 			</b>
 			{entry.reason}
 			{entry.successor && (

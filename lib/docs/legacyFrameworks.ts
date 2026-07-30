@@ -20,8 +20,16 @@
 */
 
 export type LegacyStatus =
-	/** Superseded / unmaintained. Banner + noindex + hidden from nav. */
+	/** Unmaintained tooling. Banner + noindex + hidden from nav. */
 	| "archived"
+	/**
+	 * Content that moved — a duplicate left in place after a consolidation. The
+	 * docs are still accurate, they're just no longer the canonical copy, so the
+	 * banner points at the successor instead of calling them unmaintained. Also
+	 * `noindex`, which is the point: it stops the duplicate competing with the
+	 * canonical article in search.
+	 */
+	| "superseded"
 	/** Not ready for prime time (content unwritten). Hidden from nav only. */
 	| "hidden";
 
@@ -36,6 +44,26 @@ export interface LegacyEntry {
 	successor?: { text: string; href: string };
 }
 
+/** Canonical home of the consolidated, language-tabbed Management SDK docs. */
+const MANAGEMENT_SDK_BASE = "/javascript/management-sdk";
+
+/**
+ * Build `superseded` entries for the old Management SDK duplicates. Each tuple is
+ * [old article path, canonical slug under MANAGEMENT_SDK_BASE].
+ */
+const supersededByManagementSDK = (pairs: [string, string][]): LegacyEntry[] =>
+	pairs.map(([path, slug]) => ({
+		path,
+		name: "the Management SDK",
+		status: "superseded" as const,
+		reason:
+			"The JavaScript and .NET guides have been merged into a single set with per-language code tabs.",
+		successor: {
+			text: "Read the current guide",
+			href: `${MANAGEMENT_SDK_BASE}/${slug}`,
+		},
+	}));
+
 export const LEGACY_ENTRIES: LegacyEntry[] = [
 	{
 		path: "/gatsby",
@@ -48,6 +76,36 @@ export const LEGACY_ENTRIES: LegacyEntry[] = [
 	// SvelteKit was `hidden` here while its articles were unwritten; Phase 2
 	// landed 2026-07-29 (all 10 articles authored + published), so it's back in
 	// the nav. See docs/content-refresh-plan-2026.md §5 Phase 2.
+
+	/*
+	  Management SDK consolidation (Phase 3, 2026-07-30). The SDK used to be
+	  documented twice — once under /javascript and once under /dotNet — and both
+	  copies are still published. They're now superseded by one language-tabbed
+	  set at /javascript/management-sdk/*, so each old path gets a "this moved"
+	  banner and `noindex` (so the duplicate stops competing with the canonical
+	  article in search) while the URL itself keeps working for bookmarks and
+	  external links. These are exact article paths, not section prefixes — the
+	  matcher only matches a whole path or a `path/` prefix, and the duplicates
+	  are individual articles inside otherwise-current sections.
+	*/
+	...supersededByManagementSDK([
+		// JavaScript copies
+		["/javascript/content-management-js-sdk", "getting-started"],
+		["/javascript/management-sdk-content", "content-items"],
+		["/javascript/management-sdk-models", "models"],
+		["/javascript/management-sdk-containers", "containers"],
+		["/javascript/management-sdk-pages", "pages"],
+		["/javascript/management-sdk-assets", "assets"],
+		["/javascript/management-sdk-instance-operations", "instance"],
+		// .NET copies
+		["/dotNet/management-sdk-dotnet-intro", "getting-started"],
+		["/dotNet/management-sdk-dotnet-content", "content-items"],
+		["/dotNet/management-sdk-dotnet-models", "models"],
+		["/dotNet/management-sdk-dotnet-containers", "containers"],
+		["/dotNet/management-sdk-dotnet-pages", "pages"],
+		["/dotNet/management-sdk-dotnet-assets", "assets"],
+		["/dotNet/management-sdk-dotnet-instance-users", "instance"],
+	]),
 ];
 
 // Lower-cased + de-trailing-slashed. Case folding is deliberate: docs section
@@ -65,14 +123,24 @@ const matchEntry = (path: string): LegacyEntry | undefined => {
 	});
 };
 
-/** The archived entry for a path, if it should show the Legacy banner. */
-export const getArchivedEntry = (path: string): LegacyEntry | undefined => {
+/**
+ * The entry for a path if it should show a notice banner — either `archived`
+ * (unmaintained) or `superseded` (moved). The banner varies its wording by
+ * `status`; see components/common/LegacyNotice.tsx.
+ */
+export const getNoticeEntry = (path: string): LegacyEntry | undefined => {
 	const entry = matchEntry(path);
-	return entry?.status === "archived" ? entry : undefined;
+	return entry?.status === "archived" || entry?.status === "superseded" ? entry : undefined;
 };
 
-/** Archived docs must not be indexed — they describe unmaintained tooling. */
-export const isNoIndexPath = (path: string): boolean => !!getArchivedEntry(path);
+/** @deprecated use getNoticeEntry — kept so existing callers keep compiling. */
+export const getArchivedEntry = getNoticeEntry;
+
+/**
+ * Neither archived nor superseded docs should be indexed: the first describes
+ * unmaintained tooling, the second would compete with its own canonical copy.
+ */
+export const isNoIndexPath = (path: string): boolean => !!getNoticeEntry(path);
 
 /**
  * Should this nav href be hidden from the APIs & SDKs menu? Applies to both
