@@ -169,6 +169,6 @@ After **any** create or update, give the user both links. Substitute the new `{c
 2. Look up the target **section contentID** in that category's `*Sections` container.
 3. Write Markdown: leading `# H1`, fenced code blocks, GFM, descriptive image alt.
 4. Upload any images → use the returned `cdn.aglty.io` URL in the Markdown.
-5. Save to the container with `Section`/`Concept` set to **exact-case** container names (+ the `_TextField`/`_ValueField` companions). Don't rely on `state` — the MCP can't set it.
-6. `get_content_item` to verify fields survived, then hand off to a human to review and **publish in the Agility UI** (the MCP can't publish or delete).
+5. Save to the container with `Section`/`Concept` set to **exact-case** container names (+ the `_TextField`/`_ValueField` companions). Don't set `state` on save — it's ignored; the item lands in **Staging**.
+6. `get_content_item` to verify fields survived. The item is in **Staging**; to take it live call **`publish_content`** (the MCP can publish — see the publishing note above) or hand off to a human. Publishing is outward-facing, so **confirm first** and don't claim the edit is live until it's published.
 7. Return the **Preview** and **Edit in Agility** links (see above).
