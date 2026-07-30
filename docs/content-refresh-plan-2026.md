@@ -165,9 +165,30 @@ So a code-side fix (sanitising the field name to `managementsdk_articles`) makes
 
 **Phase 3 is complete.** Optional follow-up: move the section from `/javascript/management-sdk` to top-level `/management-sdk` with redirects — better IA for a language-neutral SDK, deferred to preserve URLs.
 
+### Verified against the OpenAPI spec 2026-07-30
+
+The merge findings below were checked against `https://mgmt.aglty.io/swagger/v1/swagger.json`. That settled several open questions — and found that **four claims we had published were wrong**, all inherited from the pre-merge source articles.
+
+**Corrected in the canonical set** (fixed + published; the superseded originals still carry the errors but are `noindex`):
+
+| Claim | Spec says | Where |
+|---|---|---|
+| "`expiryDate` is **required**" for PATs | `PersonalAccessTokenRequest.required = ["name"]` only; `expiryDate` is nullable | 1608 ✅ |
+| single `saveContentItem` returns `number[]` | `POST /{locale}/item` → **`integer`**; batches use `POST /{locale}/item/multi` | 1618 ✅ |
+| params `includeShared` / `includeDeleted` | Don't exist. `GET /model/list/{includeDefaults}` + query `includeModules` (default `false`), `updatedSince` | 1615 ✅ |
+| examples with `take: 1000` / `5000` | `POST /{locale}/list/{referenceName}` → `take` default **50**, `skip` default 0. **No maximum declared**, so "exceeds the cap" was itself unverifiable — the real defect is examples assuming one request captured everything instead of paginating | 1618 ✅ |
+
+> The `expiryDate` fix deliberately does **not** assert what happens when it's omitted — the spec doesn't say, and settling it would mean minting a real token on the instance. It recommends always setting one instead.
+
+**Confirmed correct:** the locale-variant mechanism (`?parentPageID`, `?otherLocale`, `?pageIDInOtherLocale` — all present, plus undocumented `placeBeforePageItemID` and `linkExistingComponents`); the OAuth endpoints; `POST /api/v1/tokens/create`; and all 7 documented `Webhook` payload fields.
+
+**Also confirmed: every ".NET SDK can't do this" gap is a real SDK gap, not an API gap.** The REST endpoints all exist — `/locales`, `/users/me`, `/webhook/*`, `/item/{id}/history`, `/item/{id}/comments`, `/item/batch-workflow`, `POST /list/{referenceName}` — so the "call the Management API directly" workaround in the feature-gap table is sound, and can now name exact endpoints.
+
+**Coverage measured:** 11 of 15 capability areas are documented somewhere. Genuinely undocumented: **locale management CRUD** (7 endpoints), **programmatic API-key retrieval** (`/oauth/getfetchkey`, `/oauth/getpreviewkey`), `fetch-api-status`, `/api/v1/types`.
+
 ### SDK / doc discrepancies surfaced while merging (for the SDK teams — not doc bugs)
 
-Merging the two language sets side by side exposed places where the JS and .NET docs disagree about the same endpoint. Each was reproduced faithfully rather than guessed at, and none were "fixed" in the docs:
+Merging the two language sets side by side exposed places where the JS and .NET docs disagree about the same endpoint. Each was reproduced faithfully rather than guessed at, and none were "fixed" in the docs. Items settled by the spec check above have been resolved; these remain open:
 
 - **Method naming diverges beyond the camel/Pascal rule:** `getContainerByID` vs `GetContainerById`; `getAssetByUrl` vs `GetAssetByURL`; `getSitemap` vs `GetSiteMap`; .NET mixes `GetAssetByID` with `GetGalleryById`. `getPageTemplateName` (JS) looks like it should be `getPageTemplateByName`.
 - **Return shapes disagree:** JS `saveContentItem` returns `number[]` for a *single* item while .NET returns `int`; JS delete methods document no return while .NET returns `string?`; .NET `SaveContentItems` returns `List<object?>` needing an `is int` cast; .NET `GetUsers` returns `List<WebsiteUser?>` while `SaveUser` returns `InstanceUser?`.
@@ -200,7 +221,14 @@ Merging the two language sets side by side exposed places where the JS and .NET 
 
 ## 6. Continual audit (anti-drift)
 
-Run the [audit-framework-docs skill](../.claude/skills/audit-framework-docs/SKILL.md) on a cadence (recommend **monthly**, and before any framework-docs release). It flags: staging backlogs, empty/stub articles, nav-vs-content mismatches, dead-product references, framework-version drift, and articles past a staleness threshold — then emits a report to paste into §3. It **audits only**; remediation follows this plan and the authoring skill.
+Two read-only skills, both on a **monthly** cadence (and before any framework-docs or API/SDK release):
+
+1. **[audit-framework-docs](../.claude/skills/audit-framework-docs/SKILL.md)** — content health: staging backlogs, empty/stub articles, nav-vs-content mismatches, dead-product references, framework-version drift, articles past a staleness threshold. Emits a report to paste into §3.
+2. **[api-spec-drift](../.claude/skills/api-spec-drift/SKILL.md)** *(added 2026-07-30)* — accuracy: diffs the docs' API claims against the live OpenAPI specs for the **Management API** (`mgmt.aglty.io/swagger/v1/swagger.json`, 100 paths) and **Fetch API** (`api.aglty.io/swagger/v1/swagger.json`, 15 paths). Catches endpoints that don't exist, fields documented as required that aren't, parameter names absent from the spec, oversized page-size examples, and coverage gaps. Bundles `check_drift.py`, grades findings HIGH/MEDIUM/INFO, and exits non-zero on a HIGH so it can gate CI later.
+
+   *Why it exists:* the four wrong claims found on 2026-07-30 (below) all came from hand-written API prose with nothing tying it to the contract. The skill documents its own blind spots — unbackticked identifiers, free-form return-type prose, and semantic drift are **not** detected — so a clean run means "no mechanical contradiction found", not "the docs are correct".
+
+Both **audit only**; remediation follows this plan and the authoring skill.
 
 A scheduled cloud agent (`/schedule`) or a `/loop` can run it; the skill itself is host-agnostic and read-only against the CMS.
 
