@@ -170,6 +170,12 @@ Be explicit about these when reporting, so nobody reads a clean run as proof:
 - **.NET argument order and full signatures.** The assembly gives reliable method
   *names*; the articles' `Task<...>` signature lines are not machine-checked beyond
   the method name. Verify those by hand or against the .NET repo.
+- **The preview Fetch API is CDN-cached and lags behind a save by minutes.** Both
+  scripts read articles through it, so a very recent edit — or a revert — may not be
+  reflected. On 2026-07-31 it reported an article still carrying changes that had
+  already been reverted, which nearly caused the revert to be redone. **Never confirm
+  a change or a revert from the preview endpoint.** Use the Management API
+  (`get_content_item` via the Agility MCP), which is uncached and authoritative.
 
 ## Procedure
 
