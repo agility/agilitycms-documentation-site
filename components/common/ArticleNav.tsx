@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -8,8 +8,7 @@ function classNames(...classes: string[]) {
 
 interface NavItem {
   name: string;
-  href: string;
-  current: boolean;
+  id: string;
 }
 
 interface ArticleNavProps {
@@ -17,62 +16,111 @@ interface ArticleNavProps {
   sitemapNode: any;
 }
 
+/**
+ * Fallback only. The real value comes from the `--heading-scroll-offset` custom
+ * property so the CSS that positions a heading after an anchor jump and the JS
+ * that decides which heading is active read the same number.
+ */
+const FALLBACK_OFFSET = 80;
+
+const readScrollOffset = () => {
+  const raw = getComputedStyle(document.documentElement).getPropertyValue(
+    "--heading-scroll-offset"
+  );
+  const parsed = Number.parseFloat(raw);
+  return Number.isFinite(parsed) ? parsed : FALLBACK_OFFSET;
+};
+
 export default function ArticleNav({ dynamicPageItem }: ArticleNavProps) {
   const [navigation, setNavigation] = useState<NavItem[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const headingsRef = useRef<HTMLElement[]>([]);
 
   const content = dynamicPageItem.fields.content;
   const markdownContent = dynamicPageItem.fields.markdownContent;
 
-  //set up the Article Nav sync for the reader
+  /**
+   * Which heading is "current": the last one whose top has reached the offset
+   * where anchor jumps park it.
+   *
+   * Measured with getBoundingClientRect rather than offsetTop. offsetTop is
+   * relative to the nearest positioned ancestor, and this article sits inside
+   * positioned/sticky wrappers, so it does not reliably give a document
+   * coordinate. Viewport coordinates sidestep that entirely.
+   *
+   * The +1 absorbs sub-pixel scroll positions: browsers report fractional
+   * scrollTop on trackpads and at fractional zoom levels, so a heading that
+   * "should" sit exactly at the offset can measure 79.6 and be missed.
+   */
+  const sync = useCallback(() => {
+    const headings = headingsRef.current;
+    if (headings.length === 0) return;
+
+    const offset = readScrollOffset();
+    let active = headings[0];
+
+    for (const heading of headings) {
+      if (heading.getBoundingClientRect().top <= offset + 1) {
+        active = heading;
+      } else {
+        break; // headings are in document order; the rest are further down
+      }
+    }
+
+    setActiveId(active.id || null);
+  }, []);
+
   useEffect(() => {
-    // Use a timeout to allow markdown processing to complete
+    let frame = 0;
+    let cancelled = false;
+
+    // The markdown/EditorJS body is processed after mount, so wait a tick for
+    // the headings (and their ids) to exist before reading them.
     const timer = setTimeout(() => {
-      const $articleNav = document.getElementById("ArticleNav");
-      const $articleHeaders = document.querySelectorAll(
-        "#DynamicArticleDetails h2"
+      if (cancelled) return;
+
+      const headings = Array.from(
+        document.querySelectorAll<HTMLElement>("#DynamicArticleDetails h2")
+      ).filter((h) => h.id && h.textContent);
+
+      headingsRef.current = headings;
+      setNavigation(
+        headings.map((h) => ({ name: h.textContent as string, id: h.id }))
       );
 
-      //if we don't have an article nav or no headers, return and don't do anything
-      if (!$articleNav || $articleHeaders.length === 0) return;
+      if (headings.length === 0) return;
+      sync();
 
-      // Build navigation from actual rendered H2 elements
-      const navItems: NavItem[] = [];
-      $articleHeaders.forEach((header) => {
-        if (header.id && header.textContent) {
-          navItems.push({
-            name: header.textContent,
-            href: `#${header.id}`,
-            current: false,
-          });
-        }
-      });
-
-      setNavigation(navItems);
-
-      const $articleNavHeaders = $articleNav.children;
-
-      //run on load...
-      syncArticleNav({
-        $articleNav,
-        $articleHeaders,
-        $articleNavHeaders,
-      });
-
-      //run again when we scroll
-      window.onscroll = () => {
-        syncArticleNav({
-          $articleNav,
-          $articleHeaders,
-          $articleNavHeaders,
-        });
-      };
+      // addEventListener, not window.onscroll: assigning onscroll silently
+      // replaces whatever else on the page is listening.
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll, { passive: true });
+      // Anchor clicks and browser-restored scroll positions don't always emit a
+      // scroll event before paint; hashchange covers the click case.
+      window.addEventListener("hashchange", onScroll);
     }, 100);
 
+    // rAF-throttled: scroll fires far more often than we can usefully re-measure,
+    // and every call reads layout.
+    function onScroll() {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        sync();
+      });
+    }
+
     return () => {
+      cancelled = true;
       clearTimeout(timer);
-      window.onscroll = null;
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("hashchange", onScroll);
     };
-  }, [content, markdownContent]);
+  }, [content, markdownContent, sync]);
+
+  if (navigation.length === 0) return null;
 
   return (
     <div className="font-muli text-[.8rem]">
@@ -87,55 +135,25 @@ export default function ArticleNav({ dynamicPageItem }: ArticleNavProps) {
             duplicate id — rehype-slug only fills in missing ones — so the index
             keeps the key unique either way. Safe as a key here: the list is
             rebuilt wholesale from DOM order, never reordered or spliced. */}
-        {navigation.map((item, idx) => (
-          <a
-            key={`${item.href}-${idx}`}
-            href={item.href}
-            className={classNames(
-              item.current
-                ? "border-(--primary) text-(--primary)"
-                : "border-(--border) text-(--muted) hover:border-(--border-strong) hover:text-(--text)",
-              "block border-l-2 py-1.5 pl-3 font-medium"
-            )}
-            aria-current={item.current ? "page" : undefined}
-          >
-            <span className="block truncate">{item.name}</span>
-          </a>
-        ))}
+        {navigation.map((item, idx) => {
+          const current = item.id === activeId;
+          return (
+            <a
+              key={`${item.id}-${idx}`}
+              href={`#${item.id}`}
+              className={classNames(
+                current
+                  ? "border-(--primary) text-(--primary)"
+                  : "border-(--border) text-(--muted) hover:border-(--border-strong) hover:text-(--text)",
+                "block border-l-2 py-1.5 pl-3 font-medium"
+              )}
+              aria-current={current ? "location" : undefined}
+            >
+              <span className="block truncate">{item.name}</span>
+            </a>
+          );
+        })}
       </nav>
     </div>
   );
 }
-
-const syncArticleNav = ({ $articleNavHeaders, $articleHeaders }: any) => {
-  //determine scroll position of container
-  let scrollPos = document.documentElement.scrollTop;
-
-  //find the headers we've already scrolled psat
-  let $articleHeadersScrolledPast: any[] = [];
-  $articleHeaders.forEach((element: any, idx: number) => {
-    if (scrollPos >= element.offsetTop - 60) {
-      $articleHeadersScrolledPast.push(element);
-    }
-  });
-
-  let $activeHeader: any = null;
-  if ($articleHeadersScrolledPast.length > 0) {
-    $activeHeader =
-      $articleHeadersScrolledPast[$articleHeadersScrolledPast.length - 1];
-  } else {
-    //default to first header
-    $activeHeader = $articleHeaders[0];
-  }
-
-  //update the classes on the Article Nav List
-  for (const obj of $articleNavHeaders) {
-    if (`#${$activeHeader?.id}` === obj.getAttribute("href")) {
-      obj.classList.add("border-(--primary)", "text-(--primary)");
-      obj.classList.remove("border-(--border)", "text-(--muted)");
-    } else {
-      obj.classList.remove("border-(--primary)", "text-(--primary)");
-      obj.classList.add("border-(--border)", "text-(--muted)");
-    }
-  }
-};

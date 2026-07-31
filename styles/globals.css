@@ -130,8 +130,16 @@ html.dark .ocean-show-dark { display: block; }
 	to { transform: translateX(120%); }
 }
 
-.prose h2 {
-	scroll-margin-top: 80px; /* Offset for the 60px sticky topbar */
+/* Where a heading comes to rest when you jump to its anchor, clear of the sticky
+   header. ArticleNav reads this same value to decide which heading is active, so
+   the two can't drift apart — they did, and the 20px gap between them put the
+   highlight one heading behind on every click. Change it here only. */
+:root {
+	--heading-scroll-offset: 80px;
+}
+
+.prose :is(h2, h3, h4) {
+	scroll-margin-top: var(--heading-scroll-offset);
 }
 
 /* Article prose on ocean tokens — the typography plugin's gray defaults are
