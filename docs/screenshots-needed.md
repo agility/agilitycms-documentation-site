@@ -3,14 +3,21 @@
 A backlog of screenshots the docs are missing, with enough detail that whoever
 captures them doesn't have to reverse-engineer the intent.
 
-**Why this file exists.** Two locale articles sat unpublished from 2026-03-20 to
-2026-07-30 because they contained placeholder lines like
+**Why this file exists.** Two locale articles carry placeholder lines like
 `<i>[Screenshot: The Save & Localize Item dialog…]</i>` — instructions to a
-screenshotter that never got actioned. Those render as literal bracketed text on a
-public page, so the articles couldn't ship. They were published text-only on
-2026-07-30 and the placeholders removed; the intent is preserved here instead, where
-it doesn't block a release. **Draft prose should never hold a release hostage to an
-image.** Ship the text, log the shot.
+screenshotter, sitting in the article body. They render as literal bracketed text on
+a public page, so they have to be resolved before either article can ship.
+
+> ⚠️ **These two are Nick's active drafts. Don't edit or publish them without him.**
+> On 2026-07-30 I read "last modified 2026-03-20" as abandoned, stripped the
+> placeholders, and published both. They were unpublished the same day. Age is not
+> ownership — a draft that hasn't moved in months may still be someone's, and the
+> way to find out is to ask, not to infer. This file records what the screenshots
+> need to show; it is **not** approval to act on the articles.
+
+The general principle still holds and is worth keeping: **draft prose shouldn't be
+held hostage to an image.** Ship text, log the shot — but that's a call for the
+article's author to make, not a passer-by.
 
 ---
 
@@ -106,9 +113,11 @@ have to tear down to get it.
 
 ## After capturing
 
+0. **Check with the article's author first** (Nick, for both of these). Everything
+   below edits their draft.
 1. Upload to `images/editor/`.
-2. Add the `image` blocks at the recorded ids.
+2. Add the `image` blocks at the recorded ids, replacing the placeholder paragraphs.
 3. `get_content_item` to confirm the JSON survived.
-4. **Publish** — the articles are live, so an edit sits in Staging until published.
-   Confirm with a human first; publishing is outward-facing.
+4. **Publish** only when the author says the article is ready — a save lands in
+   Staging, and publishing is outward-facing. Not a passer-by's call.
 5. Delete the row from this file.
