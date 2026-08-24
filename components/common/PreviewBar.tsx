@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
 	LinkIcon,
-	AdjustmentsIcon,
 	PencilAltIcon,
-	MinusIcon,
+	EyeIcon,
+	XIcon,
+	InformationCircleIcon,
+	CheckIcon,
 } from "@heroicons/react/outline";
 import nextConfig from "next.config";
 
@@ -13,8 +15,8 @@ function classNames(...classes: string[]) {
 	return classes.filter(Boolean).join(" ");
 }
 
-const AgilityLogo = () => (
-	<svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+const AgilityTriangle = ({ className }: { className?: string }) => (
+	<svg viewBox="0 0 20 18" fill="none" className={className} aria-hidden="true">
 		<path
 			d="M11.7251 14.8743H4.71989L10 5.82228L15.2805 14.8743L16.8207 17.5714H20L10 0.428558L0 17.5714H12.9528L11.7251 14.8743Z"
 			fill="#FFCB28"
@@ -23,7 +25,7 @@ const AgilityLogo = () => (
 );
 
 const AgilityLogoLarge = () => (
-	<svg width="95" height="24" viewBox="0 0 95 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+	<svg width="95" height="24" viewBox="0 0 95 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 		<g clipPath="url(#clip0_15_967)">
 			<path
 				d="M16.4152 20.2241H6.60785L14 7.55122L21.3927 20.2241L23.549 24H28L14 0L0 24H18.1339L16.4152 20.2241Z"
@@ -45,10 +47,21 @@ const AgilityLogoLarge = () => (
 );
 
 /**
- * Floating preview/edit bar for editors — same style as the main site's
- * PreviewBar (vertical pill, expandable options panel). Combines the old
- * PreviewWidget (preview-mode indicator/exit) and CMSWidget (Edit Page deep
- * link). Visible by default in preview/dev mode; Ctrl/Cmd+Q toggles it anywhere.
+ * Floating preview panel for editors — a round button pinned to the RIGHT edge
+ * that opens a centred modal, matching the 2026 marketing site
+ * (Agility-Website-Nextjs-2026 src/components/preview/preview-bar.client.tsx).
+ *
+ * Differences from that one, all deliberate:
+ *  · It is pinned right, not left. The old docs bar sat on the left edge and
+ *    overlapped the sidebar nav.
+ *  · It keeps the docs-only editor affordances the marketing panel has no need
+ *    for: Copy Link, the Edit-in-CMS deep link, and the Ctrl/Cmd+Q toggle.
+ *  · It is styled from the ocean tokens rather than hardcoded Tailwind greys,
+ *    so it tracks the brand palette and both themes.
+ *  · No Enter Preview action: /api/preview requires a valid agilitypreviewkey,
+ *    so there is no keyless way into preview from the UI.
+ *
+ * Visible by default in preview/dev; Ctrl/Cmd+Q toggles it anywhere.
  */
 interface PreviewBarProps {
 	isPreview?: boolean;
@@ -59,148 +72,214 @@ interface PreviewBarProps {
 
 const PreviewBar = ({ isPreview, isDevelopmentMode, page, dynamicPageItem }: PreviewBarProps) => {
 	const [visible, setVisible] = useState(isPreview || isDevelopmentMode);
-	const [isSelecting, setIsSelecting] = useState(false);
+	const [open, setOpen] = useState(false);
+	const [copied, setCopied] = useState(false);
+	// Two-step inline confirm; replaces the old window.confirm().
+	const [confirmingExit, setConfirmingExit] = useState(false);
+
+	// Closing also clears the transient states, so reopening never shows a stale
+	// "Link copied" tick or a half-finished exit confirmation.
+	const closePanel = useCallback(() => {
+		setOpen(false);
+		setCopied(false);
+		setConfirmingExit(false);
+	}, []);
 
 	useEffect(() => {
 		function onKey(e: KeyboardEvent) {
 			if ((e.metaKey || e.ctrlKey) && e.code === "KeyQ") {
 				setVisible((v) => !v);
+				return;
 			}
+			if (e.key === "Escape") closePanel();
 		}
 		window.addEventListener("keydown", onKey);
 		return () => window.removeEventListener("keydown", onKey);
+	}, [closePanel]);
+
+	const editPage = useCallback(() => {
+		const itemPath = dynamicPageItem
+			? `content/listitem-${dynamicPageItem.contentID}`
+			: `pages/page-${page?.pageID}`;
+		window.open(
+			`https://manager.agilitycms.com/instance/${process.env.NEXT_PUBLIC_AGILITY_GUID}/en-us/${itemPath}`
+		);
+	}, [dynamicPageItem, page]);
+
+	const copyLink = useCallback(() => {
+		navigator.clipboard
+			.writeText(window.location.href)
+			.then(() => setCopied(true))
+			.catch((error) => console.error("Could not copy link", error));
 	}, []);
 
-	const modeLabel = isDevelopmentMode
-		? "Development mode"
-		: isPreview
-			? "Preview mode"
-			: "Live";
-
-	const editPage = () => {
-		let itemPath: string | null = null;
-		if (dynamicPageItem) {
-			itemPath = `content/listitem-${dynamicPageItem.contentID}`;
-		} else {
-			itemPath = `pages/page-${page.pageID}`;
-		}
-		const cmsURL = `https://manager.agilitycms.com/instance/${process.env.NEXT_PUBLIC_AGILITY_GUID}/en-us/${itemPath}`;
-		window.open(cmsURL);
-	};
-
-	const exitPreview = () => {
-		if (isDevelopmentMode) {
-			alert(
-				"You are currently in Development Mode, Live Mode is unavailable. Use `yarn build && yarn start` to run a production build locally in Live Mode."
-			);
-			return;
-		}
-		const exit = confirm("Would you like to exit Preview Mode?");
-		if (exit === true) {
-			// pathname includes the /docs basePath already; slug is basePath-relative
-			const slug = window.location.pathname.replace(nextConfig.basePath, "") || "/";
-			window.location.href = `${nextConfig.basePath}/api/preview/exit?slug=${encodeURIComponent(slug)}`;
-		}
-	};
+	const exitPreview = useCallback(() => {
+		// pathname includes the /docs basePath already; slug is basePath-relative
+		const slug = window.location.pathname.replace(nextConfig.basePath, "") || "/";
+		window.location.href = `${nextConfig.basePath}/api/preview/exit?slug=${encodeURIComponent(slug)}`;
+	}, []);
 
 	if (!visible) return null;
 
-	const iconButtonClass =
-		"flex p-1 text-(--muted) hover:text-(--text) focus:outline-hidden";
+	const status = isDevelopmentMode ? "Development" : isPreview ? "Preview" : "Live";
 
-	return !isSelecting ? (
-		<ul className="fixed top-1/2 left-0 z-50 ml-4 flex -translate-y-1/2 transform flex-col items-center gap-y-[10px] rounded-lg border border-(--border) bg-(--surface) p-2 shadow-xl">
-			<li>
-				<AgilityLogo />
-			</li>
-			<li>
-				<button
-					type="button"
-					onClick={() => navigator.clipboard.writeText(window.location.href)}
-					title="Copy Link"
-					className={iconButtonClass}
-				>
-					<LinkIcon className="h-5 w-5" aria-hidden="true" />
-				</button>
-			</li>
-			<li>
-				<button
-					type="button"
-					onClick={editPage}
-					title="Edit this page in Agility (Ctrl+Q toggles this bar)"
-					className={iconButtonClass}
-				>
-					<PencilAltIcon className="h-5 w-5" aria-hidden="true" />
-				</button>
-			</li>
-			<li>
-				<button
-					type="button"
-					onClick={() => setIsSelecting(true)}
-					title="Preview Options"
-					className={iconButtonClass}
-				>
-					<AdjustmentsIcon className="h-5 w-5" aria-hidden="true" />
-				</button>
-			</li>
-		</ul>
-	) : (
-		<div className="fixed top-1/2 left-0 z-50 ml-4 flex w-[368px] -translate-y-1/2 transform flex-col rounded-lg border border-(--border) bg-(--surface) p-6 shadow-xl">
-			<div className="mb-6 flex w-full items-center justify-between border-b border-b-(--border) pb-6">
-				<div className="flex items-end gap-x-3">
-					<AgilityLogoLarge />
-					<div className="h-full text-xs font-medium text-(--muted)">
-						{modeLabel}
-					</div>
-				</div>
-				<button
-					type="button"
-					onClick={() => setIsSelecting(false)}
-					title="Minimize"
-					className={iconButtonClass}
-				>
-					<MinusIcon className="h-5 w-5" aria-hidden="true" />
-				</button>
-			</div>
+	// Solid pills for the two "not live" states so the label colour is fixed in
+	// both themes: near-black on the yellow (12.78:1) and white on the blue
+	// (6.59:1). Live is a neutral outline — it needs no attention.
+	const pillStyle: React.CSSProperties =
+		status === "Development"
+			? { background: "var(--secondary)", color: "#FFFFFF" }
+			: status === "Preview"
+				? { background: "var(--tertiary)", color: "var(--on-color)" }
+				: { border: "1px solid var(--border-strong)", color: "var(--text-2)" };
 
-			<div className="text-sm text-(--text-2)">
-				{isDevelopmentMode
-					? "You are currently in Development Mode."
-					: isPreview
-						? "You are in Preview Mode."
-						: "You are viewing the Live site."}
-			</div>
+	const actionClass =
+		"flex w-full items-center justify-center gap-2 rounded-(--r-sm) border border-(--border) bg-(--surface) px-3 py-2 text-sm text-(--text-2) transition-colors hover:border-(--primary) hover:text-(--primary-text) focus-visible:outline-hidden";
 
-			<div className="mt-6 flex w-full items-center gap-2 border-t border-t-(--border) pt-6">
-				<button
-					type="button"
-					onClick={editPage}
-					className={classNames(
-						"w-full rounded-md border border-(--border) bg-(--surface) py-1.5 text-sm text-(--text-2) hover:text-(--primary) hover:border-(--primary)"
-					)}
-				>
-					Edit in CMS
-				</button>
-				{(isPreview || isDevelopmentMode) && (
+	return (
+		<div className="fixed top-[40%] right-2 z-50 flex flex-col items-end">
+			{!open && (
+				<div className="relative">
 					<button
 						type="button"
-						onClick={exitPreview}
-						className="w-full rounded-md border border-(--border) bg-(--surface) py-1.5 text-sm text-(--text-2) hover:text-(--primary) hover:border-(--primary)"
+						onClick={() => setOpen(true)}
+						title={`${status} mode — open the Agility preview panel (Ctrl/Cmd+Q hides it)`}
+						aria-label={`${status} mode — open the Agility preview panel`}
+						className={classNames(
+							"grid size-10 place-items-center rounded-full border-2 bg-(--surface) shadow-lg transition-transform duration-200 hover:scale-110 focus-visible:outline-hidden",
+							isPreview || isDevelopmentMode
+								? "border-(--tertiary)"
+								: "border-(--border-strong)"
+						)}
 					>
-						Exit Preview
+						<AgilityTriangle className="size-5" />
 					</button>
-				)}
-				<button
-					type="button"
-					onClick={() => {
-						setIsSelecting(false);
-						setVisible(false);
-					}}
-					className="w-full rounded-md border border-(--border) bg-(--surface) py-1.5 text-sm text-(--text-2) hover:text-(--primary) hover:border-(--primary)"
+					{(isPreview || isDevelopmentMode) && (
+						<span
+							aria-hidden="true"
+							className="absolute -top-0.5 -right-0.5 grid place-items-center rounded-full bg-(--raised) p-0.5 shadow-sm"
+						>
+							<EyeIcon className="size-3 text-(--muted)" />
+						</span>
+					)}
+				</div>
+			)}
+
+			{open && (
+				<div
+					className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+					onClick={closePanel}
 				>
-					Hide
-				</button>
-			</div>
+					<div
+						role="dialog"
+						aria-modal="true"
+						aria-label="Agility preview panel"
+						onClick={(e) => e.stopPropagation()}
+						className="relative flex w-105 max-w-full flex-col rounded-(--r-lg) border border-(--border) bg-(--surface) p-6"
+						style={{ boxShadow: "var(--elev-3)" }}
+					>
+						<button
+							type="button"
+							onClick={closePanel}
+							aria-label="Close preview panel"
+							className="absolute top-3 right-3 rounded-(--r-sm) p-1.5 text-(--muted) transition-colors hover:bg-(--raised) hover:text-(--text) focus-visible:outline-hidden"
+						>
+							<XIcon className="size-5" aria-hidden="true" />
+						</button>
+
+						<div className="flex items-center gap-3 border-b border-(--border) pb-5">
+							<AgilityLogoLarge />
+							<span
+								className="rounded-(--r-sm) px-2 py-0.5 text-xs font-bold"
+								style={pillStyle}
+							>
+								{status}
+							</span>
+						</div>
+
+						<p className="pt-5 text-sm text-(--text-2)">
+							This site is in <span className="font-bold text-(--text)">{status}</span> mode.
+							{isDevelopmentMode && (
+								<>
+									{" "}
+									Live mode is unavailable locally — run a production build
+									(<code className="text-(--text)">npm run build &amp;&amp; npm start</code>) to see it.
+								</>
+							)}
+						</p>
+
+						<div className="mt-5 flex flex-col gap-2">
+							<button type="button" onClick={copyLink} className={actionClass}>
+								{copied ? (
+									<CheckIcon className="size-4" aria-hidden="true" />
+								) : (
+									<LinkIcon className="size-4" aria-hidden="true" />
+								)}
+								{copied ? "Link copied" : "Copy link"}
+							</button>
+
+							<button type="button" onClick={editPage} className={actionClass}>
+								<PencilAltIcon className="size-4" aria-hidden="true" />
+								Edit in CMS
+							</button>
+
+							{/* Exit is only reachable out of real preview — in development mode
+							    draft state is implicit and there is nothing to turn off. */}
+							{isPreview && !isDevelopmentMode && (
+								confirmingExit ? (
+									<div className="flex gap-2">
+										<button
+											type="button"
+											onClick={exitPreview}
+											className="flex-1 rounded-(--r-sm) bg-(--primary) px-3 py-2 text-sm font-medium text-(--on-primary) transition-opacity hover:opacity-90 focus-visible:outline-hidden"
+										>
+											Yes, exit preview
+										</button>
+										<button
+											type="button"
+											onClick={() => setConfirmingExit(false)}
+											className="rounded-(--r-sm) border border-(--border) px-3 py-2 text-sm text-(--text-2) transition-colors hover:text-(--text) focus-visible:outline-hidden"
+										>
+											Cancel
+										</button>
+									</div>
+								) : (
+									<button
+										type="button"
+										onClick={() => setConfirmingExit(true)}
+										className={actionClass}
+									>
+										Exit preview
+									</button>
+								)
+							)}
+						</div>
+
+						<div className="mt-5 flex items-center justify-between border-t border-(--border) pt-4">
+							<a
+								href="https://agilitycms.com/docs"
+								target="_blank"
+								rel="noreferrer"
+								className="flex items-center gap-1.5 text-xs text-(--muted) transition-colors hover:text-(--primary-text)"
+							>
+								<InformationCircleIcon className="size-4" aria-hidden="true" />
+								Agility Docs
+							</a>
+							<button
+								type="button"
+								onClick={() => {
+									closePanel();
+									setVisible(false);
+								}}
+								className="text-xs text-(--muted) transition-colors hover:text-(--text) focus-visible:outline-hidden"
+								title="Ctrl/Cmd+Q brings it back"
+							>
+								Hide panel
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };
