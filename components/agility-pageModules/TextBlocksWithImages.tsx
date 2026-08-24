@@ -40,7 +40,7 @@ const TextBlocksWithImages = ({ module }: TextBlocksWithImagesProps) => {
             </div>
             <div className="text-center md:text-left mt-8 md:mt-0 md:ml-10 w-full flex items-center justify-center">
               <div>
-                <h4 className="text-(--text) text-lg mb-2 group-hover:text-(--primary)">
+                <h4 className="text-(--text) text-lg mb-2 group-hover:text-(--primary-text)">
                   {fields.link1.text}
                 </h4>
                 <p className="text-(--text-2) font-normal">{fields.text1}</p>
@@ -70,7 +70,7 @@ const TextBlocksWithImages = ({ module }: TextBlocksWithImagesProps) => {
             </div>
             <div className="text-center md:text-left mt-8 md:mt-0 md:ml-10 w-full flex items-center justify-center">
               <div>
-                <h4 className="text-(--text) text-lg mb-2 group-hover:text-(--primary)">
+                <h4 className="text-(--text) text-lg mb-2 group-hover:text-(--primary-text)">
                   {fields.link2.text}
                 </h4>
                 <p className="text-(--text-2) font-normal">{fields.text2}</p>

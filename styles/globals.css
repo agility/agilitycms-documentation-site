@@ -15,13 +15,18 @@
    marketing site). Toggled pre-paint + by the three-state ThemeControl. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Ocean feature-card accents: bar and ink are separate so yellow never sits
-   as text on a light surface (handoff §7 gotcha / mockup per-card ink). */
-.ocean-card-primary { --tcbar: var(--primary); --tcink: var(--primary); }
+/* Ocean feature-card accents: --tcbar is the 3px top bar and the 15% icon
+   tint (both fills); --tcink is the icon glyph and the link label (both type).
+   They are separate tokens so yellow never sits as text on a light surface
+   (handoff §7 gotcha / mockup per-card ink), and on dark so the teal and blue
+   inks take their type-safe steps rather than their fill values. */
+.ocean-card-primary { --tcbar: var(--primary); --tcink: var(--primary-text); }
 .ocean-card-secondary { --tcbar: var(--secondary); --tcink: var(--secondary-dim); }
 .ocean-card-tertiary { --tcbar: var(--tertiary); --tcink: var(--warn); }
-html.dark .ocean-card-primary { --tcink: var(--primary); }
-html.dark .ocean-card-secondary { --tcink: var(--secondary); }
+html.dark .ocean-card-primary { --tcink: var(--primary-text); }
+/* Dark: the blue fill is 2.53:1 on --surface, which fails as ink AND is under
+   the 3:1 bar for the accent bar itself — so both take the lifted step. */
+html.dark .ocean-card-secondary { --tcbar: var(--secondary-bright); --tcink: var(--secondary-bright); }
 html.dark .ocean-card-tertiary { --tcink: var(--tertiary); }
 
 /* ThemeAwareImage visibility */
@@ -188,7 +193,7 @@ html.dark .ocean-show-dark { display: block; }
 }
 
 .prose a {
-	color: var(--primary);
+	color: var(--primary-text);
 }
 
 span.hljs-string {
@@ -340,7 +345,7 @@ code > span.hljs-string {
 }
 
 .code-tabs__tab[data-active="true"] {
-	color: var(--primary);
+	color: var(--primary-text);
 	border-bottom-color: var(--primary);
 	background: var(--code-bg);
 }
@@ -378,29 +383,20 @@ code > span.hljs-string {
 	content: none;
 }
 
-/* list item css */
-.prose ul > li::before {
-	background-color: var(--primary);
-}
+/* List markers.
+   @tailwindcss/typography draws these with `::marker`, driven by its own
+   --tw-prose-* variables — NOT with the `li::before` pseudo-elements this file
+   used to target. Those rules parsed fine but never painted (a ::before with no
+   `content` generates no box), which left the markers on the plugin's cool-grey
+   defaults: counters #6A7282 (3.70:1 on --bg — under the 4.5 bar for type) and
+   bullets #D1D5DC (1.28:1 on the light --bg — invisible). Setting the plugin's
+   variables is what actually reaches them.
 
-.prose ul > li > ul > li::before {
-	background-color: var(--muted);
-}
-
-.prose ul > li > ol > li::before {
-	color: var(--muted);
-}
-
-.prose ol > li::before {
-	color: var(--primary);
-}
-
-.prose ol > li > ol > li::before {
-	color: var(--muted);
-}
-
-.prose ol > li > ul > li::before {
-	background-color: var(--muted);
+   Bullets take the fill teal (a non-text graphic, 3:1 bar); counters are type,
+   so they take --primary-text. Both clear their bar in both themes. */
+.prose {
+	--tw-prose-bullets: var(--primary);
+	--tw-prose-counters: var(--primary-text);
 }
 
 .custom-shadow {

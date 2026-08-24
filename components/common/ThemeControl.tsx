@@ -77,7 +77,7 @@ const ThemeControl = () => {
 						mode === key
 							? {
 									background: "var(--raised)",
-									color: "var(--primary)",
+									color: "var(--primary-text)",
 									boxShadow: "var(--elev-1)",
 							  }
 							: { background: "transparent", color: "var(--muted)" }

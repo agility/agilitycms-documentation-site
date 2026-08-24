@@ -1,5 +1,12 @@
 /*
-|| Ocean design tokens — source of truth: docs/plan-handoff.md §3 (verbatim).
+|| Ocean design tokens.
+||
+|| Neutrals, radius and type: docs/plan-handoff.md §3 (verbatim).
+|| Brand colours (teal / blue / CTA yellow): docs/brand-palette-2026.md — the
+|| 2026 brand palette Jina chose on 2026-08-21, shared with the marketing site
+|| (Agility-Website-Nextjs-2026 src/app/globals.css). The hexes in
+|| plan-handoff.md §3 are the pre-2026 teal and blue and are superseded.
+||
 || Components must read semantic tokens only (--primary, --surface, --text…).
 || Never hardcode hex in a component.
 */
@@ -9,7 +16,10 @@
 	--n-950: #0E0D0C; --n-900: #181716; --n-850: #1F1E1C; --n-800: #2A2826;
 	--n-700: #3B3935; --n-600: #504D49; --n-500: #76716B; --n-400: #9E988F;
 	--n-300: #C4BFB5; --n-200: #E3E0D8; --n-100: #F1EFE9; --n-50: #F8F7F2;
-	--tertiary: #FFC414; --tertiary-bright: #FFD75E; --tertiary-dim: #E0A800;
+	/* CTA yellow — identical in both themes. Primary action only; always with
+	   --on-color copy on it (12.78:1). Never as text or an icon on a light
+	   surface. */
+	--tertiary: #FFCB28; --tertiary-bright: #FFD75B; --tertiary-dim: #DEAE16;
 
 	/* Radius — sharp corners are a signature, do not round them */
 	--r-xs: 2px; --r-sm: 2px; --r-md: 2px; --r-lg: 4px; --r-round: 999px;
@@ -42,8 +52,19 @@ main {
    matching the marketing site's technique (namespaced `aglty-theme` key so the
    preference is shared across the agilitycms.com / agilitycms.com/docs origin). */
 :root {
-	--primary: #0F7885; --primary-bright: #159AAA; --primary-dim: #0B5C66;
-	--secondary: #3A6FD0; --secondary-bright: #6A96E8; --secondary-dim: #2A57B0;
+	/* Brand teal, light steps. Light needs no fill/type split: #027970 already
+	   clears AA as copy on all three light surfaces (4.60 / 5.02 / 5.20 on
+	   --bg / --surface / --raised), so --primary-text is the same value. The
+	   value is DERIVED — the brand teal #028D83 at −4% lightness — because her
+	   exact hex is only 3.55:1 as copy on --bg. */
+	--primary: #027970; --primary-text: #027970;
+	--primary-bright: #028D83; --primary-dim: #015B54;
+	/* The label that sits ON a --primary fill. Light takes WHITE (5.29:1);
+	   near-black would be 3.67:1 and fail. Dark is the reverse — see html.dark. */
+	--on-primary: #FFFFFF;
+	/* Brand blue. Jina's exact value needs no shift on light: 5.73:1 as copy on
+	   --bg, 6.59:1 as a white-label fill. (Dark is the reverse case.) */
+	--secondary: #295BAC; --secondary-bright: #2F68C5; --secondary-dim: #234E93;
 	--ok: #1A6E36; --warn: #836400; --err: #C0362F; --info: #2F62C9;
 	--s-purple: #7C4DD6;
 	--bg: #F1EFE9; --surface: #FBF9F3; --raised: #FEFDF9;
@@ -57,8 +78,25 @@ main {
 }
 
 html.dark {
-	--primary: #3EB4C2; --primary-bright: #5FC8D4; --primary-dim: #2E97A4;
-	--secondary: #83A9F4; --secondary-bright: #A6C1F8; --secondary-dim: #5E90F0;
+	/* The brand teal splits in two on dark, because one hex cannot be both a
+	   fill and body-size copy:
+	   · --primary is Jina's exact value and is the FILL / graphic teal — tints,
+	     borders, rings, the focus indicator, the active nav pill.
+	   · --primary-text is the same hue and saturation 4% lighter, for the teal
+	     as TYPE and icons. Her value reads 4.38 / 4.08 / 3.59 on
+	     --bg / --surface / --raised, under the 4.5 AA bar; this reads
+	     5.58 / 5.19 / 4.57 and clears it on all three.
+	   · --primary-bright is the step above the text colour, so teal type still
+	     visibly changes on hover. */
+	--primary: #028D83; --primary-text: #02A196;
+	--primary-bright: #03B5A8; --primary-dim: #026F67;
+	/* Near-black on the dark teal is 4.75:1; white would be 4.09:1 and fail. */
+	--on-primary: #0E0D0C;
+	/* Brand blue is a FILL colour on dark and never a text colour — #295BAC as
+	   copy is 2.72 / 2.53 / 2.23, under a third of the bar on every surface.
+	   --secondary-bright is the only step that reads as type here (5.11 / 4.75
+	   / 4.19), so any dark-theme text or thin graphic takes that, not --secondary. */
+	--secondary: #295BAC; --secondary-bright: #5989D8; --secondary-dim: #1F4583;
 	--ok: #79C06B; --warn: #F2C23E; --err: #F26A6E; --info: #79BBF0;
 	--s-purple: #A67DFF;
 	--bg: #181716; --surface: #1F1E1C; --raised: #2A2826;
@@ -72,7 +110,7 @@ html.dark {
 	   with the elev-1 inset hairline for definition. */
 	/* Near-black code well so panels read as clearly distinct against the warm
 	   --bg (#181716), paired with a --border-strong frame. */
-	--code-bg: #050504; --tok-str: #FFD75E;
+	--code-bg: #050504; --tok-str: #FFD75B;
 }
 
 /* Focus ring pattern (handoff §3, non-negotiable) */

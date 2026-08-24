@@ -68,7 +68,7 @@ const ChangelogClient = ({ changelog: changeLogItems, changelogtags: changeLogTa
                             {changeLogList.map((item) => (
                                 <section key={item.contentID} className="group">
                                     <header className="flex items-center">
-                                        <div className="min-w-[220px] p-4 pr-4 text-right group-hover:text-(--primary) font-semibold text-lg">{getChangeDate(item.fields.date)}</div>
+                                        <div className="min-w-[220px] p-4 pr-4 text-right group-hover:text-(--primary-text) font-semibold text-lg">{getChangeDate(item.fields.date)}</div>
                                         <h3 className="border-gray border-l-(--border-strong) min-h-[65px] -ml-px p-5 pl-9 text-lg font-bold border-l-3 group-hover:border-(--primary)">{item.fields.description}</h3>
                                     </header>
 
@@ -80,12 +80,12 @@ const ChangelogClient = ({ changelog: changeLogItems, changelogtags: changeLogTa
                                                         <a href={change.fields.linkURL} className="anchor group/scope">
                                                             <div className="w-[220px] left-[-220px] absolute top-0 flex justify-end mt-3 pr-4">
                                                                 {change.fields.tags?.map((tag: any, index: Key) => (
-                                                                    <span key={index} className="group-hover/scope:bg-(--raised) bg-(--raised) text-[11px] inline-block ml-2 px-3 py-1 group-hover/scope:text-(--primary) text-(--muted) font-bold rounded-full">
+                                                                    <span key={index} className="group-hover/scope:bg-(--raised) bg-(--raised) text-[11px] inline-block ml-2 px-3 py-1 group-hover/scope:text-(--primary-text) text-(--muted) font-bold rounded-full">
                                                                         {tag.fields.title}
                                                                     </span>
                                                                 ))}
                                                             </div>
-                                                            <h4 className="inline font-bold group-hover/scope:text-(--primary)">
+                                                            <h4 className="inline font-bold group-hover/scope:text-(--primary-text)">
                                                                 {change.fields.title}
                                                                 <span className="block pl-6 text-base font-normal">{change.fields.description}</span>
                                                             </h4>

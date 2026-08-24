@@ -102,7 +102,7 @@ const PagerCard = ({ item, rel }: { item: PagerItem; rel: "prev" | "next" }) => 
 			<div className="font-mono text-[.66rem] uppercase tracking-[.14em] text-(--faint)">
 				{isNext ? "Next →" : "← Previous"}
 			</div>
-			<div className="mt-1 text-[.95rem] font-semibold text-(--text-2) group-hover:text-(--primary)">
+			<div className="mt-1 text-[.95rem] font-semibold text-(--text-2) group-hover:text-(--primary-text)">
 				{item.title}
 			</div>
 		</Link>

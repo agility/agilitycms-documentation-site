@@ -37,6 +37,13 @@ The rebuild is itself a proof of the product, so build the pages as component-dr
 
 ## 3. Design tokens (verbatim, verified)
 
+> **Superseded in part (2026-08-21).** The neutrals, radius and type below are
+> still current. The three brand hues — `--primary` (teal), `--secondary` (blue)
+> and `--tertiary` (yellow) — were replaced by the 2026 brand palette. See
+> [brand-palette-2026.md](brand-palette-2026.md) for the live values and the
+> fill-vs-type split the teal now carries. The hexes in this section are kept as
+> the historical record of the July build.
+
 Warm neutral scale, shared by both themes:
 
 ```

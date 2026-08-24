@@ -75,7 +75,7 @@ const ArticleListSection = async ({
 								>
 									<span
 										className="block font-bold"
-										style={{ color: "var(--primary)" }}
+										style={{ color: "var(--primary-text)" }}
 									>
 										{item.fields.heading}
 									</span>

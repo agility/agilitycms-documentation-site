@@ -33,7 +33,7 @@ export default function NotFound() {
 					href="/"
 					className="inline-block border-2 pt-2 pb-1.5 px-4 font-bold"
 					style={{
-						color: "var(--primary)",
+						color: "var(--primary-text)",
 						borderColor: "var(--primary)",
 						borderRadius: "var(--r-sm)",
 					}}

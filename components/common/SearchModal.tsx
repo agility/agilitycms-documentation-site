@@ -337,7 +337,7 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 									{item.hit ? (
 										<>
 											<span
-												className="block text-[.95rem] font-bold text-(--primary)"
+												className="block text-[.95rem] font-bold text-(--primary-text)"
 												dangerouslySetInnerHTML={renderHTML(
 													item.hit._highlightResult?.title?.value || item.hit.title
 												)}
@@ -356,7 +356,7 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 										</>
 									) : (
 										<>
-											<span className="block text-[.95rem] font-bold text-(--primary)">
+											<span className="block text-[.95rem] font-bold text-(--primary-text)">
 												{item.quick.title}
 											</span>
 											<span className="mt-0.5 block font-mono text-[.66rem] uppercase tracking-[.12em] text-(--faint)">

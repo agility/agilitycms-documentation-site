@@ -94,7 +94,7 @@ export default function Header({
 								href={item.href}
 								className={classNames(
 									item.current
-										? "text-(--primary)"
+										? "text-(--primary-text)"
 										: "text-(--text-2) hover:bg-(--raised) hover:text-(--text)",
 									"whitespace-nowrap rounded-(--r-sm) px-2.5 py-2 text-sm font-medium transition-colors"
 								)}
@@ -175,8 +175,8 @@ const MegaLink = React.forwardRef<HTMLAnchorElement, MegaLinkProps>(
 				className={classNames(
 					"group/mega flex items-center gap-2.5 rounded-(--r-sm) px-2 py-1.5 text-sm font-medium transition-colors",
 					active
-						? "bg-(--raised) text-(--primary)"
-						: "text-(--text-2) hover:bg-(--raised) hover:text-(--primary)"
+						? "bg-(--raised) text-(--primary-text)"
+						: "text-(--text-2) hover:bg-(--raised) hover:text-(--primary-text)"
 				)}
 				onClick={onNavigate}
 				// Spread last: SheetClose (asChild) injects its own onClick to close
@@ -186,9 +186,12 @@ const MegaLink = React.forwardRef<HTMLAnchorElement, MegaLinkProps>(
 				<span
 					className={classNames(
 						"grid size-7 shrink-0 place-items-center rounded-(--r-sm) border transition-colors",
+						// Active is a label on a teal fill, so it takes --on-primary rather
+						// than --on-color: near-black on dark (4.75:1) but white on light
+						// (5.29:1 — near-black there would be 3.67 and fail).
 						active
-							? "border-(--primary) bg-(--primary) text-(--on-color)"
-							: "border-(--border) bg-(--raised) text-(--primary) group-hover/mega:border-(--primary)"
+							? "border-(--primary) bg-(--primary) text-(--on-primary)"
+							: "border-(--border) bg-(--raised) text-(--primary-text) group-hover/mega:border-(--primary)"
 					)}
 				>
 					<Icon className="h-4 w-4" />
@@ -279,7 +282,7 @@ const ApiSdkDropdown = ({
 				APIs &amp; SDKs
 				<ChevronDownIcon
 					className={classNames(
-						"h-4 w-4 text-(--primary) transition-transform duration-200",
+						"h-4 w-4 text-(--primary-text) transition-transform duration-200",
 						open ? "rotate-180" : ""
 					)}
 					aria-hidden="true"
@@ -388,7 +391,7 @@ const MobileMenu = ({
 						href={SIGN_IN.href}
 						target="_blank"
 						rel="noreferrer"
-						className="text-sm font-semibold text-(--text-2) hover:text-(--primary)"
+						className="text-sm font-semibold text-(--text-2) hover:text-(--primary-text)"
 					>
 						{SIGN_IN.name}
 					</a>

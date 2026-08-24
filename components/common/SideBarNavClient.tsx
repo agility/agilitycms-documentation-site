@@ -19,7 +19,7 @@ type LinkWrapComponent = React.ComponentType<{ children: React.ReactNode }>;
 const itemClass = (current: boolean) =>
 	classNames(
 		current
-			? "bg-[color-mix(in_srgb,var(--primary)_12%,transparent)] font-bold text-(--primary)"
+			? "bg-[color-mix(in_srgb,var(--primary)_12%,transparent)] font-bold text-(--primary-text)"
 			: "font-medium text-(--text-2) hover:bg-(--raised) hover:text-(--text)",
 		"block rounded-(--r-sm) px-3 py-1.5 text-[.9rem]"
 	);
@@ -40,7 +40,7 @@ const NavSection = ({ item, LinkWrap }: { item: any; LinkWrap: LinkWrapComponent
 				<ChevronRightIcon
 					className={classNames(
 						open ? "rotate-90" : "",
-						"h-3 w-3 shrink-0 text-(--faint) transition-all duration-150 group-hover:translate-x-0.5 group-hover:text-(--primary)"
+						"h-3 w-3 shrink-0 text-(--faint) transition-all duration-150 group-hover:translate-x-0.5 group-hover:text-(--primary-text)"
 					)}
 					aria-hidden="true"
 				/>
@@ -92,7 +92,7 @@ const SideBarNavClient = ({ navigation }: { navigation: any[] }) => {
 			<div className="lg:hidden">
 				<Sheet>
 					<SheetTrigger
-						className="fixed left-2 top-[65px] z-40 flex items-center justify-center w-9 h-9 bg-(--surface) rounded-full shadow-md hover:shadow-lg text-(--muted) hover:text-(--primary) focus:outline-hidden focus:ring-2 focus:ring-(--primary) focus:ring-offset-1 transition-all duration-200"
+						className="fixed left-2 top-[65px] z-40 flex items-center justify-center w-9 h-9 bg-(--surface) rounded-full shadow-md hover:shadow-lg text-(--muted) hover:text-(--primary-text) focus:outline-hidden focus:ring-2 focus:ring-(--primary) focus:ring-offset-1 transition-all duration-200"
 						aria-label="Open navigation menu"
 					>
 						<ChevronRightIcon className="h-4 w-4" aria-hidden="true" />

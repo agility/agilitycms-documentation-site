@@ -101,7 +101,7 @@ const LinkCard = ({ item }: { item: any }) => {
 				{ActionIcon && (
 					<span
 						aria-hidden="true"
-						className="grid h-9 w-9 flex-none place-items-center rounded-(--r-sm) text-(--primary)"
+						className="grid h-9 w-9 flex-none place-items-center rounded-(--r-sm) text-(--primary-text)"
 						style={{ background: "color-mix(in srgb, var(--primary) 12%, transparent)" }}
 					>
 						<ActionIcon className="h-5 w-5" />
@@ -117,7 +117,7 @@ const LinkCard = ({ item }: { item: any }) => {
 					</span>
 				)}
 				<span className="min-w-0">
-					<span className="block font-bold text-(--primary)">{item.title}</span>
+					<span className="block font-bold text-(--primary-text)">{item.title}</span>
 					{item.description && (
 						<span className="mt-1 block text-[.9rem] leading-normal text-(--text-2)">
 							{item.description}

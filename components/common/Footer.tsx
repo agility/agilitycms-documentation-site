@@ -56,7 +56,7 @@ const FALLBACK = {
 };
 
 const FooterLink = ({ link }: { link: { text: string; href: string } }) => {
-	const cls = "text-sm text-(--muted) hover:text-(--primary)";
+	const cls = "text-sm text-(--muted) hover:text-(--primary-text)";
 	// CMS link hrefs use the "~/" site-root convention for internal paths.
 	const href = link.href.startsWith("~") ? link.href.slice(1) : link.href;
 	const isExternal = /^https?:/.test(href);
@@ -148,7 +148,7 @@ const Footer = async ({ languageCode, isPreview }: FooterProps) => {
 								href={link.href}
 								target="_blank"
 								rel="noreferrer"
-								className="hover:text-(--primary)"
+								className="hover:text-(--primary-text)"
 							>
 								{link.text}
 							</a>

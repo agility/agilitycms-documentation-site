@@ -23,7 +23,7 @@ export const FilterBlock = ({ filterOptions, setFilterSelection, filterSelection
                             id={`${filterOption.id}`}
                             onChange={(e) => handleChange(e)}
                         />
-                        <label className="group-hover:text-(--primary) inline-block text-base cursor-pointer text-(--text-2) ml-3" htmlFor={`${filterOption.id}`}>
+                        <label className="group-hover:text-(--primary-text) inline-block text-base cursor-pointer text-(--text-2) ml-3" htmlFor={`${filterOption.id}`}>
                             {filterOption.title}
                         </label>
                     </div>

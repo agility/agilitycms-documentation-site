@@ -49,7 +49,7 @@ const LegacyNotice = ({ entry }: { entry: LegacyEntry }) => (
 					<Link
 						href={entry.successor.href}
 						className="underline underline-offset-2"
-						style={{ color: "var(--primary)" }}
+						style={{ color: "var(--primary-text)" }}
 					>
 						{entry.successor.text}
 					</Link>
