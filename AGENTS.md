@@ -1,98 +1,168 @@
 # Agents
 
-This document provides context for AI agents working with this codebase.
+This document is the source of truth for AI agents working with this codebase. It reflects the **App Router architecture** (migrated July 2026) and the **ocean redesign** in progress on the `rebuild/ocean` branch.
 
 ## Project Overview
 
-This is the source code for the [Agility CMS Documentation Site](https://agilitycms.com/docs) — a Next.js application that serves as the official knowledgebase for Agility CMS. All documentation content is managed in Agility CMS (headless) and rendered via this frontend.
+Source code for the [Agility CMS Documentation Site](https://agilitycms.com/docs) — the official knowledgebase for Agility CMS. All documentation content lives in Agility CMS (instance `67bc73e6-u`); this Next.js app renders it. The site is served under `agilitycms.com/docs` via a Netlify proxy in front of Vercel (see [HOSTING.md](HOSTING.md)) with `basePath: '/docs'`.
 
-## Architecture
+## Web Stack
 
-- **Framework**: Next.js 14 (Pages Router primary, App Router for MCP endpoint)
-- **CMS**: Agility CMS — content is fetched via GraphQL (`@apollo/client`) and the Agility SDK (`@agility/nextjs`)
-- **Search**: Algolia (`algoliasearch`) — index name `doc_site`
-- **MCP Server**: Streamable HTTP endpoint at `/docs/api/mcp` using `mcp-handler`
-- **Styling**: Tailwind CSS
-- **Hosting**: Vercel with ISR (Incremental Static Regeneration)
-- **Base Path**: All routes are under `/docs` (configured in `next.config.js`)
+- **Next.js 16.2 (App Router, Turbopack)** with **Cache Components** (`cacheComponents: true` in [next.config.js](next.config.js)) — the `'use cache'` + `cacheTag`/`cacheLife` model with Partial Prerendering. There is **no `pages/` directory**.
+- **React 19**, **Tailwind CSS v4** (CSS-first config in [styles/globals.css](styles/globals.css)), **TypeScript** for all new code (legacy `.js` components remain until rewritten).
+- **Ocean design tokens** in [styles/tokens.css](styles/tokens.css) (light + dark theme blocks). Neutrals, radius and type come from `docs/plan-handoff.md` §3; the brand teal/blue/yellow come from the 2026 brand palette — see [docs/brand-palette-2026.md](docs/brand-palette-2026.md), which the marketing site shares. Components must use semantic tokens (`--primary`, `--surface`, `--text`…), never hardcoded hex. **On dark the teal splits in two**: `--primary` is the fill/graphic teal and `--primary-text` is the type/icon teal — `--primary` on body-size copy fails AA. Blue (`--secondary`) is never a text colour on dark; use `--secondary-bright`. A label on a `--primary` fill takes `--on-primary` (it flips near-black/white by theme), not `--on-color`. Dark mode = `data-theme` on `<html>`, three-state control in [components/common/ThemeControl.js](components/common/ThemeControl.js).
+- **Fonts**: Mulish / Inder (400 only) / Fira Mono via `next/font` in [app/layout.tsx](app/layout.tsx). The CSS variables sit on the `<main>` wrapper because tokens.css resolves its font aliases at the `main` selector (custom properties resolve `var()` refs at the declaring node).
+- **Search**: Algolia, index `doc_site`. **MCP server**: `/docs/api/mcp` ([app/api/mcp/README.md](app/api/mcp/README.md)).
+- Package manager: **npm** (package-lock.json; `.npmrc` sets `legacy-peer-deps` — the tree has peer conflicts strict `npm ci` would reject). Lint: ESLint 9 flat config ([eslint.config.mjs](eslint.config.mjs)), `npm run lint`.
 
-## Key Directories
+## Routing
 
 ```
-app/api/mcp/          — MCP server endpoint (App Router)
-pages/                — Site pages and API routes (Pages Router)
-pages/api/search/     — Algolia indexing endpoints
-components/           — React components
-  agility-pageModules/  — CMS-driven page modules
-  common/               — Shared components (Search, Layout, etc.)
-utils/                — Utility functions (search normalization, sitemap, etc.)
-lib/cms/              — Agility CMS SDK integration
+app/
+  layout.tsx                     # html shell, theme bootstrap script, fonts
+  [locale]/
+    layout.tsx                   # site chrome: Header (fetches its own data)
+    page.tsx                     # home = re-export of the catch-all
+    [...slug]/page.tsx           # THE page route: generateStaticParams + generateMetadata + render
+    [...slug]/not-found.tsx      # 404 (ocean-styled)
+  api/…                          # route handlers (see below)
+  sitemap.xml/route.ts           # sitemap.xml (all locales)
+  llms.txt/route.ts              # AI-agent index of the docs (T7), from the cached sitemap
+proxy.ts                         # Next 16 proxy (renamed middleware)
 ```
 
-## MCP Server (`app/api/mcp/route.ts`)
+**Locale routing** (pattern from demosite2025): locales come from `AGILITY_LOCALES` (comma-separated, e.g. `en-us,fr-ca`). The **first is the default and serves unprefixed URLs** — [proxy.ts](proxy.ts) rewrites `/overview` → internal `/en-us/overview`. Non-default locales are prefixed (`/fr-ca/overview`). Adding a language = adding it to `AGILITY_LOCALES` (plus content in Agility). Helper: `localizeUrl(path, locale)` in [lib/i18n/config.ts](lib/i18n/config.ts) for building locale-aware hrefs.
 
-The Agility Knowledgebase MCP server exposes two read-only tools over the Model Context Protocol:
+**proxy.ts order of operations** (handle with care — verified against `next start`):
+1. `?agilitypreviewkey=` → redirect to `/api/preview` (enter draft mode)
+2. `?AgilityPreview=0` → redirect to `/api/preview/exit`
+3. `?ContentID=n` → rewrite to `/api/dynamic-redirect` (CMS deep links)
+4. `/{article-path}.md` → rewrite to `/api/article-md/{article-path}` (clean markdown, T7). The path travels **in the URL path, not a query param** — query strings added during a middleware rewrite don't reliably survive under basePath.
+5. No locale prefix + not static/api → **rewrite** to `/{defaultLocale}{path}`
 
-- **`search_docs`** — Full-text search across all documentation articles via Algolia
-- **`fetch_doc`** — Retrieve complete article content by objectID
+> ⚠️ **Matcher gotcha:** the negative-lookahead matcher pattern does **not** match the bare basePath root `/` — it must be listed explicitly (`matcher: ["/", "/((?!api|_next/…).*)"]`) or the home page silently skips the locale rewrite and 404s. `request.nextUrl.pathname` excludes the `/docs` basePath; rewrites built by cloning `nextUrl` keep the basePath automatically.
 
-Clients connect at: `https://agilitycms.com/docs/api/mcp`
+> ⚠️ **Route-handler redirect gotcha:** the "basePath comes back automatically" rule above holds **only in middleware**. In a route handler (`app/api/*/route.ts`), a redirect built from `request.nextUrl.clone()` does **not** re-add the basePath — the preview enter/exit and ContentID redirects must prepend `nextConfig.basePath` themselves or they land outside `/docs` and 404.
 
-See [app/api/mcp/README.md](app/api/mcp/README.md) for full details.
+## Data Layer (`lib/cms/`)
+
+All Agility reads go through cached primitives. Each takes explicit `{ locale, preview }`; **published requests are cached** under `'use cache'` + `cacheTag` + `cacheLife("days")`, **preview requests bypass the cache** entirely.
+
+| Module | Purpose | Cache tag |
+|---|---|---|
+| `getAgilityPage.ts` | sitemap→node→page→dynamicItem composition (replaces `getAgilityPageProps` — its fetch options predate Cache Components) | composes the tags below |
+| `getSitemapFlat.ts` | flat sitemap | `agility-sitemap-flat-{locale}` |
+| `getContentItem.ts` | single item | `agility-content-{contentID}-{locale}` |
+| `getContentList.ts` | container list | `agility-content-{refname.toLowerCase()}-{locale}` |
+| (page fetch inside getAgilityPage) | page by ID | `agility-page-{pageID}-{locale}` |
+| `gql.ts` | Agility GraphQL API (fetch-based; Apollo is gone from the render path) | `agility-graphql-{locale}` (coarse) |
+| `getAgilitySDK.ts` | SDK factory; `getAgilitySDK_NonReact({isPreview})` for non-request contexts | — |
+| `getAgilityContext.ts` | `{locale, isPreview, isDevelopmentMode}` from draftMode + env | — |
+| `isDevMode.ts` | dev detection; `FORCE_PUBLISHED=1` makes local dev behave like production | — |
+
+`lib/cms-content/` has the composed helpers: `getHeaderData` (sitemap nav + `header` container), `getFooterData` (the docs instance's single `Footer` item: tagline + three nested link columns + legal links; returns null → component fallback when unpublished), `getRichSnippet` (JSON-LD: WebSite / TechArticle / BreadcrumbList, emitted as an in-body `<script type="application/ld+json">`), `resolveAgilityMetaData` (generateMetadata: title precedence = dynamic item metaTitle → sitemap title; canonical `https://agilitycms.com/docs{path}`; Cloudinary OG image; extracts `<meta>` pairs from the CMS metaHTML field).
+
+## Caching & Instant Invalidation
+
+Long TTLs (`cacheLife("days")`) + **instant invalidation via the publish webhook** — the model the Next docs recommend for CMSs.
+
+**Webhook**: `POST /docs/api/revalidate` ([app/api/revalidate/route.ts](app/api/revalidate/route.ts)). Configure in Agility Settings → Webhooks for publish/unpublish events. It maps the payload to `revalidateTag(tag, "max")` + `revalidatePath`:
+- content item → item tag + container list tag + coarse GraphQL tag (+ path + sitemap tags on publish)
+- page → page tag + sitemap tags + path
+- no contentID/pageID (redirect change) → `BUILD_HOOK_URL` full rebuild if configured
+
+The tag strings in the webhook **must stay in lockstep with lib/cms** — they are the contract. The edge layer adds `CDN-Cache-Control: public, s-maxage=60, stale-while-revalidate=86400` on pages (RFC 9213; honored by both Netlify and Vercel — see HOSTING.md), so full propagation is ≤60s edge TTL after the webhook fires.
+
+## Preview / Draft Mode
+
+- **Local dev serves staging (preview) content** (`isDevMode()`), so editors' unpublished work is visible at `npm run dev`. `FORCE_PUBLISHED=1 npm run dev` tests the published experience.
+- Production preview = Next `draftMode()` cookie, entered through `?agilitypreviewkey=` → proxy → `/api/preview` (validates via `validatePreview`), exited via `/api/preview/exit`. `draftMode()` is prerender-safe: it reads disabled during static generation.
+- The floating **PreviewBar** ([components/common/PreviewBar.js](components/common/PreviewBar.js), main-site design) shows in preview/dev; Ctrl/Cmd+Q toggles it anywhere. "Edit in CMS" deep-links via `NEXT_PUBLIC_AGILITY_GUID`.
+
+### Web Studio (in-context editing)
+
+Following demosite2025's pattern. Two halves that must stay in sync:
+1. **The SDK** — [app/[locale]/layout.tsx](app/[locale]/layout.tsx) loads `@agility/web-studio-sdk` via `next/script` (`afterInteractive`) **only when `isPreview`** (draft mode or local dev), never on the public production site. The `frame-ancestors 'self' https://app.agilitycms.com` CSP in [next.config.js](next.config.js) lets Web Studio iframe the site.
+2. **`data-agility-*` DOM tags** — the SDK maps DOM elements to CMS records through these: `data-agility-page`/`data-agility-dynamic-content` on the page wrapper ([app/[locale]/[...slug]/page.tsx](app/[locale]/[...slug]/page.tsx)); `data-agility-component={module.contentID}` on a module's outermost element; `data-agility-field="<fieldName>"` on the element rendering each editable field (exact CMS field name). Tagged: the article ([DynamicArticleDetails](components/agility-pageModules/DynamicArticleDetails.tsx): title/description/content|markdownContent), `HeroHeading`, the shared `SectionBand` (heading/intro — threaded from the 5 landing modules via `contentID`/`headingField`/`introField` props), and the ocean modules. Only a module's own fields are tagged, not nested-list child items (separate content records).
+
+## Rendering Model
+
+The catch-all page fetches `getAgilityPage`, resolves the **page template** by name ([components/agility-pageTemplates/index.js](components/agility-pageTemplates/index.js): MainTemplate / WithSidebarNavTemplate / FullwidthTemplate), which renders `<ContentZone getModule={getModule}>` over `page.zones`. Modules are registered in [components/agility-pageModules/index.js](components/agility-pageModules/index.js).
+
+**Modules are async server components that fetch their own data** (the Pages-Router `getCustomInitialProps` pattern is dead). A module receives `{ module, languageCode, isPreview, sitemapNode, dynamicPageItem, page }` from ContentZone; child lists are fetched via `getContentList` using `module.fields.<field>.referencename` (the page is fetched with `expandAllContentLinks: false`, so linked lists arrive as `{referencename}`). Interactive UI is split into client components: `SideBarNav` (server data) → `SideBarNavClient`; `Changelog` → `ChangelogClient`; `DynamicArticleDetails` and `CodeBlock` are `"use client"`.
+
+**Chrome** (redesigned 2026-07-18, Stripe/Vercel docs pattern — same brand tokens as marketing, leaner functional chrome): `app/[locale]/layout.tsx` renders `Header` (client; one 60px sticky blurred row per the mockup `.topbar`: logo, section nav from the sitemap, APIs & SDKs dropdown from the `header` container, compact search, theme control, Sign in / Try Free). Templates render `<Footer languageCode isPreview/>` — a lean docs footer whose content lives in the **docs instance's `Footer` container** (single item 699, model 35: tagline, three named columns of nested `Link` items in `Footer_Link`/`FooterLink2`/`FooterLink3`, and legal links), with hard-coded fallbacks in the component for when the item isn't published. There is **no cross-instance dependency**: the marketing preheader banner and marketing footer were dropped with the redesign, so the new marketing instance launch does not affect docs chrome.
+
+**UI primitives**: shadcn-style Radix components in [components/ui/](components/ui/) (`dropdown-menu`, `sheet`, `dialog`) styled with ocean tokens + `tw-animate-css`; `cn()` in [lib/utils.ts](lib/utils.ts). `@headlessui/react` is fully removed — build new interactive UI on these primitives.
+
+## Content Model (instance `67bc73e6-u`)
+
+### Doc articles (the core content — UNTOUCHED by the redesign, hard constraint)
+
+`DocArticle` fields: `title`, `content` (EditorJS JSON), `markdownContent` (Markdown alternative), `description`, `section` (linked `DocSection`), `concept`. **Categories map to *pairs* of containers** — there is no single Articles container. Each top-level category (Overview, Developer, Editor, Owners & Admins, Apps, Training Guide, and each SDK/framework) has its own `*Articles` (model `DocArticle`) + `*Sections` (model `DocSection`) containers, e.g. `DeveloperArticles` + `DeveloperSections`. An article's category = which container it lives in; sidebar placement = its `section_ValueField` (contentID of a `DocSection`), matched in `SideBarNav`. Articles become pages through **dynamic pages** in the sitemap (node `contentID` > 0 → `dynamicPageItem`).
+
+`DynamicArticleDetails` renders `markdownContent` through unified/remark/rehype **only when `content` has no EditorJS blocks**. Markdown: leading `# H1` stripped and used as title; GFM + raw HTML (incl. executed `<script>`) enabled; indented code blocks disabled (use fences).
+
+### Ocean redesign models (added 2026-07, all additive)
+
+Content models: `FeatureCard` (id 44: Heading, Body, LinkText, LinkURL, Icon, Accent primary/secondary/tertiary, Badge), `LinkCard` (45: Heading, Body, LinkURL, Category). Component models: `PageHero` (46), `MediaHero` (47), `FeatureCardGroup` (48, nested Cards→FeatureCard), `ArticleListSection` (49, nested Items→LinkCard), `CodeBlock` (50), `CalloutBlock` (51, Style note/control/caution), `ThemeAwareImage` (52). React components in [components/agility-pageModules/ocean/](components/agility-pageModules/ocean/).
+
+Nested-list containers so far: `HomeFeatureCardGroup-Cards`, `HomeRoleLinkCards`, `WebStudioPageLinks`, `PageManagementPageLinks`, `AIPageLinks`, and (T5, 2026-07-17) `Overview-WhatMakesAgilityDifBCF555`, `Editors-LeadFeatureCards`, `Editors-AIAuthoringLinks`, `Developers-LeadFeatureCards`, `DevelopersAIMCPLinks`. Redesigned pages (staging only until the redesign ships): home hub (pageID 2), `/web-studio` (59), `/page-management` (60), `/ai` (61), the section landings `/overview` (5), `/editors` (4), `/developers` (3), and test page `ocean-test` (58). **Do not publish these pages until the redesign branch is deployed** — production code must know the ocean components first.
+
+### Other containers
+
+`header` (site header config + dropdowns), `changelog` + `changelogtags`, `doccategories` (category cards + article joins for search indexing).
 
 ## Search Indexing
 
-Articles are indexed into the `doc_site` Algolia index with these searchable attributes: `title`, `headings`, `body`, `description`. Indexing is triggered via:
+Algolia index `doc_site`; searchable: `title`, `headings`, `body`, `description`. Route handlers (still Apollo-based — the only remaining Apollo usage, isolated from the render path):
+- `POST/GET /docs/api/search/indexAllArticles` — atomic full rebuild (`replaceAllObjects`)
+- `POST /docs/api/search/indexArticle` — single article, wired to an Agility webhook; deletes on unpublish
 
-- `POST /docs/api/search/indexAllArticles` — Bulk re-index all articles
-- `POST /docs/api/search/indexArticle` — Index a single article (used by CMS webhooks)
+Normalization in [utils/searchUtils.js](utils/searchUtils.js) (EditorJS + Markdown).
 
-The normalization logic lives in `utils/searchUtils.js` and handles both EditorJS block content and Markdown content.
+## API Routes (all under `/docs/api/…`)
+
+`revalidate` (webhook) · `preview` + `preview/exit` (draft mode) · `dynamic-redirect` (ContentID deep links) · `generatePreviewKey` · `mcp` (knowledgebase MCP server: `search_docs`, `fetch_doc`) · `article-md/[...slug]` (clean markdown per article — reached via the proxy `.md` rewrite; serializer in [lib/cms-content/articleMarkdown.ts](lib/cms-content/articleMarkdown.ts), shared candidate for the MCP `fetch_doc`) · `search/*` (Algolia; GraphQL reads go through `gqlFresh` — uncached) · `robots` (crawling allowed only behind the Netlify proxy — `cdn-loop` header check).
+
+**Machine readability (T7)**: `/docs/llms.txt` indexes flagship pages, section landings, and every article (as `.md` links) from the cached published sitemap — flagship entries appear automatically once those pages publish. Any article URL + `.md` returns clean markdown (`markdownContent` served nearly verbatim; EditorJS blocks converted).
 
 ## Environment Variables
 
 | Variable | Purpose |
 |---|---|
-| `AGILITY_GUID` | Agility CMS instance GUID |
-| `AGILITY_API_FETCH_KEY` | Published content API key |
-| `AGILITY_API_PREVIEW_KEY` | Preview content API key |
-| `AGILITY_SECURITY_KEY` | Webhook security key |
-| `ALGOLIA_APP_ID` | Algolia application ID (server-side) |
-| `ALGOLIA_ADMIN_API_KEY` | Algolia admin key (server-side, for indexing and getObject) |
-| `NEXT_PUBLIC_ALGOLIA_APP_ID` | Algolia app ID (client-side) |
-| `NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY` | Algolia search-only key (client-side) |
+| `AGILITY_GUID` / `AGILITY_API_FETCH_KEY` / `AGILITY_API_PREVIEW_KEY` | Docs instance + keys |
+| `AGILITY_LOCALES` | Comma-separated; **first = default (unprefixed URLs)**. Currently `en-us` |
+| `AGILITY_SITEMAP` | Channel name (default `website`) |
+| `AGILITY_SECURITY_KEY` | Preview key validation |
+| `NEXT_PUBLIC_AGILITY_GUID` | PreviewBar edit links |
+| `AGILITY_FETCH_CACHE_DURATION` / `AGILITY_PATH_REVALIDATE_DURATION` | Cache TTL backstops ([lib/cms/cacheConfig.ts](lib/cms/cacheConfig.ts)) |
+| `BUILD_HOOK_URL` | Full-rebuild hook for redirect-only changes |
+| `INDEXNOW_KEY` | IndexNow submission key. Served at `/docs/{key}.txt` ([proxy.ts](proxy.ts)) for ownership verification; the publish webhook pings IndexNow on content/page publish ([lib/indexnow/submitToIndexNow.ts](lib/indexnow/submitToIndexNow.ts)). Submits only from production — set `INDEXNOW_ALLOW_NON_PROD=true` to test elsewhere |
+| `FORCE_PUBLISHED` | `1` = dev behaves like production (published content) |
+| `ALGOLIA_APP_ID` / `ALGOLIA_ADMIN_API_KEY` / `NEXT_PUBLIC_ALGOLIA_APP_ID` / `NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY` | Search |
+| `AZURE_APP_INSIGHTS_CONNECTION_STRING` | MCP telemetry (never initialized during build — see gotchas) |
+| `ROBOTS_NO_INDEX` | Force noindex meta |
 
 ## Running Locally
 
 ```bash
 yarn install
-yarn dev
-# Site available at http://localhost:3000/docs
-# MCP endpoint at http://localhost:3000/docs/api/mcp
+yarn dev            # http://localhost:3000/docs — serves STAGING content
+FORCE_PUBLISHED=1 yarn dev   # published content (what production serves)
+yarn build && yarn start -p 3006   # production build (prerenders ~300 pages)
 ```
 
-## Content Model
+## Gotchas & Conventions (read before editing CMS-driven code or content)
 
-Documentation articles have these key fields:
-
-- `title` — Article title
-- `content` — EditorJS block content (JSON)
-- `markdownContent` — Markdown content (alternative to EditorJS)
-- `description` — Short description
-- `section` — Parent section (linked content)
-- `concept` — Related concept (linked content)
-
-Articles are organized under `doccategories`, each with a `title`, `subTitle`, and linked `articles`.
-
-### Categories map to *pairs* of containers
-
-There is **no single Articles container**. Each top-level category (Overview, Developer, Editor, Owners & Admins, Apps, Training Guide, and each SDK/framework under SDKs & Frameworks) has its **own** `*Articles` container (model `DocArticle`) and `*Sections` container (model `DocSection`) — e.g. `DeveloperArticles` + `DeveloperSections`. An article's category is determined by **which container it lives in**; its sidebar placement is determined by its `section_ValueField` (the contentID of a `DocSection`), matched in `SideBarNav.js`.
-
-`DynamicArticleDetails.js` renders `markdownContent` through a `unified`/remark/rehype pipeline **only when `content` has no EditorJS blocks**. Markdown specifics: the leading `# H1` is stripped and used as the page title; GFM and raw HTML (incl. executed `<script>`) are enabled; indented code blocks are disabled (use fenced blocks); images pass through untransformed.
-
-## Gotchas & conventions (read before editing CMS-driven code or content)
-
-- **GraphQL lists default to 50 items.** Container queries (e.g. `developerarticles`) return only the first 50 unless you pass `(take: 250, ...)` (250 is the per-request max). This silently drops content from navs/listings once a category exceeds 50 — it was the cause of an article missing from the sidebar. When adding/auditing a list query (`SideBarNav.js`, `ArticleListing.js`, indexing, etc.), always set an explicit `take`.
-- **Reference names are case-sensitive on write, lowercased on read.** When saving a "User Selectable" linked-content field (e.g. `Section`, `Concept`), the stored container reference name must match the container's exact case (`DeveloperSections`, not `developersections`) or the editor dropdown renders blank. The read/delivery APIs lowercase all reference names, so you can't detect the mismatch by reading the item back — verify in the editor.
-- **Published vs preview** is switched by the `global.IS_PREVIEW` flag in `agility-graphql-client.js`, which picks the `fetch` (published) vs `preview` API and key. Staging content only appears in preview.
-- **Authoring docs content via the Agility MCP**: follow the dedicated skill at `.claude/skills/authoring-agility-docs/SKILL.md` — it has the full category→container map (with IDs), the case rules above, the image-upload workflow, and the preview/edit link templates. Note the MCP **cannot** set workflow state or publish/delete; those are human actions in the Agility UI.
+- **Lists cap at 250 / default 50.** Agility REST + GraphQL list calls default to 50 items and max out at 250 per request. Always pass explicit `take` (and paginate with `skip` if a category could exceed 250). This has silently dropped sidebar articles before.
+- **Reference names are case-sensitive on write, lowercased on read.** Saving a "User Selectable" linked-content field requires the container's exact case (`DeveloperSections`); reads lowercase everything so you can't detect a mismatch by reading back — verify in the editor.
+- **Cache Components is strict about non-determinism.** During prerender, `Math.random()`/`Date.now()` outside a `'use cache'` scope aborts the build (`next-prerender-random`). Known landmines already handled: `applicationinsights` (OpenTelemetry's RandomIdGenerator) must never initialize during `next build` — guarded in [lib/telemetry.ts](lib/telemetry.ts); the Algolia client is created lazily in [components/common/Search.js](components/common/Search.js) (host-shuffle uses Math.random). If a build fails with `next-prerender-random`, bisect with `FORCE_PUBLISHED=1 npx next build --debug-prerender`.
+- **`export const revalidate` is not allowed** with Cache Components — lifetimes live in `cacheLife()` inside cached scopes.
+- **generateStaticParams must return ≥1 result** under Cache Components (no dev-mode empty shortcut).
+- **proxy.ts matcher must include bare `/`** (see Routing above).
+- **New cache tags must be added in two places**: the lib/cms getter AND the `/api/revalidate` webhook.
+- **Publishing redesigned pages before deploying the redesign branch breaks production** — the live bundle won't know the ocean components.
+- **Authoring docs content via the Agility MCP**: follow the skill at [.claude/skills/authoring-agility-docs/SKILL.md](.claude/skills/authoring-agility-docs/SKILL.md) — full category→container map, case rules, image-upload workflow, preview/edit link templates. `save_content_items` still always writes to the instance default state (**Staging**) — `state` is ignored on save — but the MCP **can** now take content live: `publish_content` / `unpublish_content`, `manage_content_workflow`, `publish_page` / `unpublish_page`, and `delete_content_item` all exist (verified 2026-07-28; earlier docs said otherwise). They run with the caller's Agility permissions. **Publishing is an outward-facing action on the live docs site — confirm with a human before calling it.** Known Agility MCP server bugs (phantom `save_page_model`, module reordering is a no-op, occasional dropdown choice mangling, `initialize_media_upload` double-prefixing the folder path) are logged in [docs/rebuild-plan-2026.md](docs/rebuild-plan-2026.md) §4 — with 2026-07-29 notes on which no longer reproduce.
+- **Never use `dynamicPageItem.seo.sitemapVisible` as a robots signal.** It is `false` by default on every `DocArticle`, so treating it as "noindex" deindexes the entire knowledgebase. See the note in [lib/cms-content/resolveAgilityMetaData.ts](lib/cms-content/resolveAgilityMetaData.ts). Archive/noindex lifecycle lives in [lib/docs/legacyFrameworks.ts](lib/docs/legacyFrameworks.ts).
+- **The redesign plan** lives in [docs/rebuild-plan-2026.md](docs/rebuild-plan-2026.md) (phases, open decisions); design handoff in `docs/plan-handoff.md`; hosting portability rules in [HOSTING.md](HOSTING.md).

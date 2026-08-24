@@ -37,9 +37,21 @@ yarn-error.log*
 .env
 .env.local
 
-# sitemap
-sitemap.xml
+# sitemap — legacy generated file at repo root only. Anchored with a leading
+# slash so it does NOT match the app/sitemap.xml/ route directory (the bare
+# pattern did, which kept the route handler out of git entirely).
+/sitemap.xml
 
 
 # claude
 .claude/settings.local.json
+
+# local scratch
+/screenshots/
+tsconfig.tsbuildinfo
+# Cached OpenAPI specs and SDK packages pulled by the api-spec-drift skill.
+# The scripts resolve this to the repo root, so the root pattern is the one that
+# actually matters; the nested path is kept in case a script is run from there.
+/.spec-cache/
+.claude/skills/api-spec-drift/.spec-cache/
+.claude/skills/**/__pycache__/

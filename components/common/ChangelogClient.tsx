@@ -1,0 +1,123 @@
+'use client';
+
+import { DateTime } from 'luxon';
+import React, { Key, useEffect, useState } from 'react';
+import { FilterBlock } from 'components/common/FilterBlock';
+
+const getChangeDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const dt = DateTime.fromJSDate(d);
+    return dt.toFormat('LLLL dd, yyyy');
+};
+
+// Interactive changelog UI (client) — data comes from the Changelog server component.
+const ChangelogClient = ({ changelog: changeLogItems, changelogtags: changeLogTags }: { changelog: any[]; changelogtags: any[] }): React.JSX.Element => {
+    const [filterOptions, setFilterOptions] = useState<{ title: string; id: number }[]>([]);
+    const [changeLogList, setChangeLogList] = useState<any[]>([]);
+    const [filterSelection, setFilterSelection] = useState<string[]>([]);
+
+    // sets the filter options for the filterblock
+    useEffect(() => {
+        const tagOptions = changeLogTags.map((tags) => ({ title: tags.fields.title, id: tags.contentID }));
+        const tagList = changeLogItems.reduce((acc: string[], cur) => {
+            cur.fields.changes?.forEach((change) => {
+                change.fields.tags?.forEach((tag) => acc.push(tag.fields.title));
+            });
+            return acc;
+        }, []);
+        setFilterOptions(tagOptions.filter((tags) => tagList.includes(tags.title)));
+    }, [changeLogItems, changeLogTags]);
+
+    // filter the content using the filterselection array
+    useEffect(() => {
+        let changeLogListArray = changeLogItems.map((section) => {
+            // disable this section by default until a filter is selected and one of the object tags are part of the filter
+            let isShow = false;
+            // 1st level filtering: if there are no filters selected return all sections
+            if (!section.fields.changes?.length && !filterSelection?.length) return section;
+            const filteredSection = section.fields.changes?.filter((change) => {
+                // 2nd level filtering: if one of the tags is part of the filter list then show this section and return the bullet list
+                if (change.fields.tags?.some((tag) => filterSelection.includes(tag.contentID.toString()) || !filterSelection.length)) {
+                    isShow = true;
+                    return true;
+                }
+                return false;
+            });
+            // destructure from original list and repleace 'changes' property with the filtered one above
+            if (isShow) return { ...section, fields: { ...section.fields, changes: filteredSection } };
+        });
+
+        // remove undefined and null values
+        setChangeLogList(changeLogListArray.filter((n) => n));
+    }, [changeLogItems, filterSelection]);
+
+    return (
+        <>
+            <div id="SideNav" className="z-40 flex-col order-1 hidden w-64 row-span-2 pt-4 pb-4 lg:flex font-muli">
+                <div className="top-[128px] sticky overflow-y-auto lg:flex lg:shrink-0">
+                    <FilterBlock filterOptions={filterOptions} setFilterSelection={setFilterSelection} filterSelection={filterSelection} />
+                </div>
+            </div>
+            <div id="ScrollContainer" className="grow order-3 w-full pt-20 border-l border-(--border) lg:flex lg:justify-center">
+                <div className="relative px-4 mb-20 font-muli sm:px-6 lg:px-8">
+                    <div className="absolute inset-0">
+                        <div className="bg-(--surface) h-1/3 sm:h-2/3" />
+                    </div>
+                    <div className="relative mx-auto max-w-7xl">
+                        <div>
+                            {changeLogList.map((item) => (
+                                <section key={item.contentID} className="group">
+                                    <header className="flex items-center">
+                                        <div className="min-w-[220px] p-4 pr-4 text-right group-hover:text-(--primary-text) font-semibold text-lg">{getChangeDate(item.fields.date)}</div>
+                                        <h3 className="border-gray border-l-(--border-strong) min-h-[65px] -ml-px p-5 pl-9 text-lg font-bold border-l-3 group-hover:border-(--primary)">{item.fields.description}</h3>
+                                    </header>
+
+                                    <div className="border-(--border)">
+                                        <ul className="ml-[220px] border-l border-gray border-l-2 list-inside list-disc">
+                                            {item.fields.changes?.map((change) => (
+                                                <li key={change.contentID} className="relative py-3 pl-9 text-(--text)">
+                                                    {change.fields.linkURL ? (
+                                                        <a href={change.fields.linkURL} className="anchor group/scope">
+                                                            <div className="w-[220px] left-[-220px] absolute top-0 flex justify-end mt-3 pr-4">
+                                                                {change.fields.tags?.map((tag: any, index: Key) => (
+                                                                    <span key={index} className="group-hover/scope:bg-(--raised) bg-(--raised) text-[11px] inline-block ml-2 px-3 py-1 group-hover/scope:text-(--primary-text) text-(--muted) font-bold rounded-full">
+                                                                        {tag.fields.title}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                            <h4 className="inline font-bold group-hover/scope:text-(--primary-text)">
+                                                                {change.fields.title}
+                                                                <span className="block pl-6 text-base font-normal">{change.fields.description}</span>
+                                                            </h4>
+                                                        </a>
+                                                    ) : (
+                                                        <>
+                                                            <div className="w-[200px] left-[-200px] absolute top-0 flex justify-end mt-3 pr-4">
+                                                                {change.fields.tags?.map((tag: any, index: Key) => (
+                                                                    <span key={index} className="bg-(--raised) text-[11px] inline-block ml-2 px-3 py-1 text-(--muted) font-bold rounded-full">
+                                                                        {tag.fields.title}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+
+                                                            <h4 className="inline font-bold hover:text-(--text)">
+                                                                {change.fields.title}
+                                                                <span className="block pl-6 text-base font-normal">{change.fields.description}</span>
+                                                            </h4>
+                                                        </>
+                                                    )}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </section>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+};
+
+export default ChangelogClient;

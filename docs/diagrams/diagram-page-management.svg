@@ -1,0 +1,79 @@
+<svg width="1200" height="640" viewBox="0 0 1200 640" fill="none" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="1200" height="640" rx="4" fill="#181716"/>
+  <rect x="0.5" y="0.5" width="1199" height="639" rx="4" stroke="#3B3935"/>
+
+  <text x="90" y="52" font-family="ui-monospace, monospace" font-size="13" letter-spacing="4" fill="#AAA49B">PAGE MANAGEMENT — SITEMAP → PAGE → COMPONENTS</text>
+
+  <!-- Sitemap panel -->
+  <rect x="90" y="84" width="320" height="486" rx="2" fill="#1F1E1C"/>
+  <rect x="90.5" y="84.5" width="319" height="485" rx="2" stroke="#3B3935"/>
+  <rect x="90" y="84" width="320" height="3" fill="#5989D8"/>
+  <text x="114" y="126" font-size="17" font-weight="600" fill="#F1EFE9">Sitemap</text>
+  <text x="114" y="148" font-size="13" fill="#AAA49B">Editors own pages and URLs</text>
+
+  <text x="114" y="196" font-size="15" fill="#C4BFB5">▸ Home</text>
+  <text x="114" y="232" font-size="15" fill="#C4BFB5">▸ Products</text>
+  <!-- selected node -->
+  <rect x="126" y="248" width="260" height="34" rx="2" fill="#026F67"/>
+  <text x="140" y="270" font-size="15" font-weight="600" fill="#F1EFE9">• Pricing</text>
+  <text x="300" y="270" font-family="ui-monospace, monospace" font-size="11" fill="#F1EFE9">/pricing</text>
+  <text x="114" y="318" font-size="15" fill="#C4BFB5">▸ About</text>
+  <text x="114" y="354" font-size="15" fill="#C4BFB5">▸ Blog</text>
+  <text x="132" y="390" font-size="13" fill="#989289">▸ posts/{slug} — dynamic</text>
+
+  <rect x="114" y="428" width="270" height="1" fill="#3B3935"/>
+  <text x="114" y="462" font-size="13" fill="#AAA49B">＋ New page, new URL, reorder,</text>
+  <text x="129" y="482" font-size="13" fill="#AAA49B">redirect — no developer ticket.</text>
+  <rect x="114" y="506" width="120" height="30" rx="2" fill="#FFCB28"/>
+  <text x="132" y="526" font-size="13" font-weight="700" fill="#0E0D0C">＋ New Page</text>
+
+  <!-- connector -->
+  <path d="M410 265 L500 265" stroke="#5989D8" stroke-width="2"/>
+  <path d="M500 265 l-10 -6 v12 z" fill="#5989D8"/>
+
+  <!-- Page panel -->
+  <rect x="500" y="84" width="610" height="486" rx="2" fill="#1F1E1C"/>
+  <rect x="500.5" y="84.5" width="609" height="485" rx="2" stroke="#3B3935"/>
+  <rect x="500" y="84" width="610" height="3" fill="#028D83"/>
+  <text x="524" y="126" font-size="17" font-weight="600" fill="#F1EFE9">Page — /pricing</text>
+  <text x="524" y="148" font-size="13" fill="#AAA49B">Composed from components developers built</text>
+
+  <!-- component stack -->
+  <g>
+    <rect x="524" y="176" width="560" height="72" rx="2" fill="#2A2826"/>
+    <rect x="524" y="176" width="4" height="72" fill="#5989D8"/>
+    <circle cx="552" cy="206" r="2" fill="#989289"/><circle cx="552" cy="214" r="2" fill="#989289"/>
+    <circle cx="560" cy="206" r="2" fill="#989289"/><circle cx="560" cy="214" r="2" fill="#989289"/>
+    <text x="584" y="208" font-size="15" font-weight="600" fill="#F1EFE9">Hero</text>
+    <text x="584" y="228" font-family="ui-monospace, monospace" font-size="11" fill="#989289">PageHero</text>
+  </g>
+  <g>
+    <rect x="524" y="264" width="560" height="72" rx="2" fill="#2A2826"/>
+    <rect x="524" y="264" width="4" height="72" fill="#028D83"/>
+    <circle cx="552" cy="294" r="2" fill="#989289"/><circle cx="552" cy="302" r="2" fill="#989289"/>
+    <circle cx="560" cy="294" r="2" fill="#989289"/><circle cx="560" cy="302" r="2" fill="#989289"/>
+    <text x="584" y="296" font-size="15" font-weight="600" fill="#F1EFE9">Feature Grid</text>
+    <text x="584" y="316" font-family="ui-monospace, monospace" font-size="11" fill="#989289">FeatureCardGroup</text>
+  </g>
+  <!-- dragging component -->
+  <g transform="translate(24 0)">
+    <rect x="524" y="352" width="560" height="72" rx="2" fill="#2A2826" stroke="#FFCB28" stroke-dasharray="5 4"/>
+    <rect x="524" y="352" width="4" height="72" fill="#FFCB28"/>
+    <circle cx="552" cy="382" r="2" fill="#AAA49B"/><circle cx="552" cy="390" r="2" fill="#AAA49B"/>
+    <circle cx="560" cy="382" r="2" fill="#AAA49B"/><circle cx="560" cy="390" r="2" fill="#AAA49B"/>
+    <text x="584" y="384" font-size="15" font-weight="600" fill="#F1EFE9">Pricing Table</text>
+    <text x="584" y="404" font-family="ui-monospace, monospace" font-size="11" fill="#989289">PricingTable — dragging…</text>
+  </g>
+  <g>
+    <rect x="524" y="440" width="560" height="72" rx="2" fill="#2A2826"/>
+    <rect x="524" y="440" width="4" height="72" fill="#028D83"/>
+    <circle cx="552" cy="470" r="2" fill="#989289"/><circle cx="552" cy="478" r="2" fill="#989289"/>
+    <circle cx="560" cy="470" r="2" fill="#989289"/><circle cx="560" cy="478" r="2" fill="#989289"/>
+    <text x="584" y="472" font-size="15" font-weight="600" fill="#F1EFE9">Call to Action</text>
+    <text x="584" y="492" font-family="ui-monospace, monospace" font-size="11" fill="#989289">CTABanner</text>
+  </g>
+
+  <text x="524" y="546" font-size="13" fill="#AAA49B">Add, reorder, and configure components per page — the layout stays in the CMS.</text>
+
+  <text x="90" y="606" font-family="ui-monospace, monospace" font-size="12" letter-spacing="2" fill="#989289">AGILITY CMS · PAGE MANAGEMENT</text>
+</svg>

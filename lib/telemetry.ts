@@ -9,6 +9,13 @@ let initialized = false;
  */
 export function initializeTelemetry() {
   if (initialized) return;
+
+  // NEVER initialize during `next build`: appinsights v3 wires OpenTelemetry
+  // into the whole worker process, and OTel's RandomIdGenerator calls
+  // Math.random() on every span — which aborts Cache Components prerendering
+  // (next-prerender-random). Runtime server start initializes normally.
+  if (process.env.NEXT_PHASE === "phase-production-build") return;
+
   initialized = true;
 
   const connectionString = process.env.AZURE_APP_INSIGHTS_CONNECTION_STRING;
