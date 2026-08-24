@@ -1,5 +1,6 @@
-"use client";
-
+// A server component: it only parses JSON and renders blocks — no state, no
+// hooks, no browser APIs. It was marked "use client", which pulled Blocks (and
+// through blocks/Code.tsx, all of highlight.js) into the client bundle.
 import React from "react";
 import Blocks from "../common/blocks/index";
 

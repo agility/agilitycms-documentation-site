@@ -1,7 +1,6 @@
-"use client";
-
-import React, { useEffect, useRef, useState } from "react";
-const hljs = require("highlight.js");
+import React from "react";
+import hljs from "highlight.js";
+import CopyCodeButton from "./CopyCodeButton";
 
 interface CodeBlockProps {
 	module: {
@@ -16,32 +15,21 @@ interface CodeBlockProps {
 }
 
 // Ocean code panel (mockup .code): traffic-light dots, filename, copy button.
-// Highlighting is a client-side enhancement; the code text itself is SSR'd.
+// A SERVER component — highlighting runs here, at render time, so the panel
+// arrives coloured and highlight.js never reaches the browser. It used to
+// highlight in a client effect, which shipped the whole library and redid work
+// the server could have done once.
 const CodeBlock = ({ module: { fields, contentID } }: CodeBlockProps) => {
-	const codeRef = useRef<HTMLElement>(null);
-	const [copied, setCopied] = useState(false);
 	const showCopy = fields.showCopy === true || fields.showCopy === "true";
 
-	useEffect(() => {
-		if (!codeRef.current) return;
-		if (fields.language && hljs.getLanguage(fields.language)) {
-			try {
-				const highlighted = hljs.highlight(fields.code, {
-					language: fields.language,
-				});
-				codeRef.current.innerHTML = highlighted.value;
-			} catch (e) {
-				// leave plain text in place
-			}
+	let highlighted: string | null = null;
+	if (fields.language && hljs.getLanguage(fields.language)) {
+		try {
+			highlighted = hljs.highlight(fields.code, { language: fields.language }).value;
+		} catch {
+			highlighted = null; // fall back to plain text
 		}
-	}, [fields.code, fields.language]);
-
-	const copy = () => {
-		navigator.clipboard?.writeText(fields.code).then(() => {
-			setCopied(true);
-			setTimeout(() => setCopied(false), 1200);
-		});
-	};
+	}
 
 	return (
 		<section className="ocean-band px-[var(--space)] py-3" style={{ background: "var(--bg)" }} data-agility-component={contentID}>
@@ -67,30 +55,13 @@ const CodeBlock = ({ module: { fields, contentID } }: CodeBlockProps) => {
 					<span className="w-[9px] h-[9px]" style={{ borderRadius: "var(--r-round)", background: "var(--tertiary)" }} />
 					<span className="w-[9px] h-[9px]" style={{ borderRadius: "var(--r-round)", background: "var(--ok)" }} />
 					<span className="ml-1.5">{fields.filename || fields.language}</span>
-					{showCopy && (
-						<button
-							type="button"
-							onClick={copy}
-							className="ml-auto font-bold px-2 py-0.5 cursor-pointer"
-							style={{
-								fontFamily: "var(--font)",
-								fontSize: ".7rem",
-								color: "var(--muted)",
-								background: "var(--raised)",
-								border: "1px solid var(--border)",
-								borderRadius: "var(--r-xs)",
-							}}
-						>
-							{copied ? "Copied" : "Copy"}
-						</button>
-					)}
+					{showCopy && <CopyCodeButton code={fields.code} />}
 				</div>
 				{/* Padding on the <code>, not the scrolling <pre>, so the horizontal
 				    scrollbar sits flush to the panel edges. */}
 				<pre className="m-0 overflow-x-auto">
 					<code
-						ref={codeRef}
-						className={`language-${fields.language} block p-4`}
+						className={`language-${fields.language}${highlighted ? " hljs" : ""} block p-4`}
 						style={{
 							fontFamily: "var(--mono)",
 							fontSize: ".82rem",
@@ -98,9 +69,10 @@ const CodeBlock = ({ module: { fields, contentID } }: CodeBlockProps) => {
 							lineHeight: 1.75,
 						}}
 						data-agility-field="code"
-					>
-						{fields.code}
-					</code>
+						{...(highlighted
+							? { dangerouslySetInnerHTML: { __html: highlighted } }
+							: { children: fields.code })}
+					/>
 				</pre>
 			</div>
 		</section>
