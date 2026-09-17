@@ -18,9 +18,18 @@ export default function ClientInit() {
 		Intercom({ app_id: "fj9g3mkl" });
 		initPostHog();
 		// Once per session: flag whether this reader is logged into Agility, so
-		// every event carries agility_signed_in. Runs after init so the super
-		// property is registered before the first $pageview below.
-		identifySignedInState();
+		// every event carries agility_signed_in. Deferred to browser idle so the
+		// probe never competes with hydration. (A Web Worker would be the wrong
+		// tool — the network wait is already off the main thread, and workers
+		// can't read sessionStorage, which is what keeps this once-per-session.)
+		const w = window as typeof window & {
+			requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+		};
+		if (typeof w.requestIdleCallback === "function") {
+			w.requestIdleCallback(() => void identifySignedInState(), { timeout: 2000 });
+		} else {
+			setTimeout(() => void identifySignedInState(), 1000);
+		}
 	}, []);
 
 	// PostHog $pageview on every client-side navigation. capture_pageview is

@@ -92,10 +92,30 @@ export async function identifySignedInState(): Promise<void> {
 		// which forwards cookies. Credentials are same-origin by default.
 		const res = await fetch("/docs/api/me", { cache: "no-store" });
 		if (!res.ok) return;
-		const { signedIn } = (await res.json()) as { signedIn: boolean };
+		const { signedIn, validated, userId } = (await res.json()) as {
+			signedIn: boolean;
+			validated?: boolean;
+			userId?: string;
+		};
 
-		posthog.register({ agility_signed_in: !!signedIn });
-		posthog.capture("session_identified", { agility_signed_in: !!signedIn });
+		// agility_session_validated keeps a checked session distinguishable from a
+		// bare cookie, so the two never get conflated in a funnel.
+		posthog.register({
+			agility_signed_in: !!signedIn,
+			agility_session_validated: !!validated,
+		});
+
+		// The Manager App already identifies into THIS SAME PostHog project using
+		// the Agility UserID as distinct_id, so identifying with the same value is
+		// what actually merges a person across app.agilitycms.com, the marketing
+		// site and /docs. Without it they stay three anonymous visitors.
+		// Only ever the numeric id — never the email or name Classic also returns.
+		if (userId) posthog.identify(userId);
+
+		posthog.capture("session_identified", {
+			agility_signed_in: !!signedIn,
+			agility_session_validated: !!validated,
+		});
 
 		try {
 			sessionStorage.setItem(SIGNED_IN_PROBE_KEY, "1");

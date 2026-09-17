@@ -71,7 +71,9 @@ Long TTLs (`cacheLife("days")`) + **instant invalidation via the publish webhook
 - page → page tag + sitemap tags + path
 - no contentID/pageID (redirect change) → `BUILD_HOOK_URL` full rebuild if configured
 
-The tag strings in the webhook **must stay in lockstep with lib/cms** — they are the contract. The edge layer adds `CDN-Cache-Control: public, s-maxage=60, stale-while-revalidate=86400` on pages (RFC 9213; honored by both Netlify and Vercel — see HOSTING.md), so full propagation is ≤60s edge TTL after the webhook fires.
+The tag strings in the webhook **must stay in lockstep with lib/cms** — they are the contract. The webhook also purges the fronting Netlify CDN by cache tag ([lib/netlify/purgeNetlifyCache.ts](lib/netlify/purgeNetlifyCache.ts)): `revalidateTag` only reaches Vercel, and agilitycms.com/docs is a Netlify proxy rewrite that has no idea a publish happened.
+
+Edge cache headers are set in [proxy.ts](proxy.ts), **not** `next.config` — that rule was unconditional and would put `CDN-Cache-Control: public` on draft-mode renders. Pages get `CDN-Cache-Control: public, s-maxage=60, stale-while-revalidate=86400` (portable, what Vercel honours) plus `Netlify-CDN-Cache-Control` with a longer TTL, `Netlify-Vary` and `Netlify-Cache-Tag`. Full detail + a post-deploy runbook in [HOSTING.md](HOSTING.md).
 
 ## Preview / Draft Mode
 
@@ -146,7 +148,8 @@ Normalization in [utils/searchUtils.js](utils/searchUtils.js) (EditorJS + Markdo
 | `NETLIFY_PURGE_TOKEN` | Netlify personal access token. Lets the publish webhook purge the apex CDN ([lib/netlify/purgeNetlifyCache.ts](lib/netlify/purgeNetlifyCache.ts)) — `revalidateTag` only reaches Vercel, and agilitycms.com/docs is a Netlify proxy rewrite. **Optional:** unset = purge no-ops and the apex self-heals on `s-maxage` instead |
 | `NETLIFY_SITE_ID` | Site ID of the **apex/marketing** Netlify site — *not* this docs app. That site owns the cached proxy responses. Required alongside `NETLIFY_PURGE_TOKEN` |
 | `NEXT_PUBLIC_POSTHOG_KEY` / `NEXT_PUBLIC_POSTHOG_HOST` | Product analytics. **Same PostHog project as the marketing site**, so a visitor is one person across agilitycms.com, /docs and app.agilitycms.com. No key = `init()` and all capture calls no-op ([lib/analytics/posthog.ts](lib/analytics/posthog.ts)). ⚠️ `NEXT_PUBLIC_*` is inlined at **build** time — setting it in Vercel needs a redeploy to take effect |
-| `AGILITY_AUTH_COOKIE_NAME` | Cookie the signed-in probe looks for ([app/api/me/route.ts](app/api/me/route.ts)). Defaults to `AgilityAuthOWIN`; override only if Classic CM's OWIN config renames it. The route returns a boolean and **never** the cookie value |
+| `AGILITY_AUTH_COOKIE_NAME` | Cookie the signed-in probe looks for ([app/api/me/route.ts](app/api/me/route.ts)). Defaults to `AgilityAuthOWIN`; override only if Classic CM renames it. The route returns `{signedIn, validated, userId?}` and **never** the cookie value, email or name |
+| `AGILITY_MANAGER_URL` | Classic CM base URL, e.g. `https://manager.agilitycms.com`. **Unset = presence-only** (a stale cookie reads as signed-in, `validated:false`). Set = the cookie is validated against `json/User/GetCurrentServerUser` once per session |
 
 ## Running Locally
 
