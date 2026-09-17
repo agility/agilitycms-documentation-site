@@ -6,17 +6,22 @@ import ChangelogClient from "components/common/ChangelogClient";
  * Changelog (server component): fetches releases + tags from the Agility
  * GraphQL API (cached under agility-graphql-{locale}); the filtering UI is
  * client-side in components/common/ChangelogClient.
+ *
+ * `take: 250` on BOTH levels is deliberate — container lists default to 50, and
+ * at 50 the page silently dropped 40 of the 90 releases (and truncated any
+ * release with more than 50 changes). 250 is the API maximum; if the changelog
+ * ever passes that, this needs paging rather than a bigger number.
  */
 const Changelog = async ({ languageCode, isPreview }: any): Promise<React.JSX.Element> => {
 	const data = await gql({
 		query: `
 			{
-				changelog(take: 50, sort: "fields.date", direction: "desc") {
+				changelog(take: 250, sort: "fields.date", direction: "desc") {
 					contentID
 					fields {
 						date
 						description
-						changes(take: 50, filter: "fields.internalOnly[ne]true") {
+						changes(take: 250, filter: "fields.internalOnly[ne]true") {
 							contentID
 							properties {
 								itemOrder
