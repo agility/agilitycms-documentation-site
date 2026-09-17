@@ -2,8 +2,17 @@
 
 Source: `design/handoff/brand-palette-handoff.html` in **Agility-Website-Nextjs-2026**
 (the marketing site). Jina chose **Concept 4** on 2026-08-21 — teal `#028D83`,
-blue `#295BAC`, CTA yellow `#FFCB28` — on the **Stone** background with **Warm
-bone** body copy. This file records how that palette lands in *this* repo.
+blue `#295BAC`, CTA yellow `#FFCB28` — with **Warm bone** body copy. This file
+records how that palette lands in *this* repo.
+
+> **Update 2026-09-17 — the surface ramp moved from Stone to Deep.** The marketing
+> site closed its palette on 2026-09-15 (`design/DECISIONS-palette.md`) and Joel
+> moved the dark background from **Stone** to **Deep** as part of that close. This
+> site adopted the palette on 2026-08-24, *before* that move, so it was left one
+> step behind on the only axis that changed. It now matches. See
+> [The Stone → Deep move](#the-stone--deep-move-2026-09-17) below. Everything else
+> in this document — the brand hues, the fill/type split, the light theme — was
+> already correct and is unchanged.
 
 Live token values are in [styles/tokens.css](../styles/tokens.css); this document
 is the reasoning behind them. **Deploying this? Read
@@ -15,16 +24,19 @@ manual media step that code cannot do.** The marketing site's copy of the same p
 
 ## What changed here, and what didn't
 
-**The neutrals did not change.** Stone surfaces and Warm bone text were already
-this site's defaults, in both themes, at the exact hexes the brand handoff
-specifies. Choosing them confirmed them:
+**The text neutrals did not change**, and the **light theme did not change at all** —
+Warm bone text was already this site's default at the exact hexes the brand handoff
+specifies, and every light surface already matched the marketing site's `:root`
+value for value. **The dark surface ramp did change**, on 2026-09-17, from Stone to
+Deep (struck through below):
 
 | Token | Dark | Light |
 | --- | --- | --- |
-| `--bg` | `#181716` | `#F1EFE9` |
-| `--surface` | `#1F1E1C` | `#FBF9F3` |
-| `--raised` | `#2A2826` | `#FEFDF9` |
-| `--border` / `--border-strong` | `#3B3935` / `#504D49` | `#E4E0D8` / `#CFC9BC` |
+| `--bg` | ~~`#181716`~~ → `#0E0D0C` | `#F1EFE9` |
+| `--surface` | ~~`#1F1E1C`~~ → `#171615` | `#FBF9F3` |
+| `--raised` | ~~`#2A2826`~~ → `#201F1D` | `#FEFDF9` |
+| `--border` / `--border-strong` | ~~`#3B3935` / `#504D49`~~ → `#302E2B` / `#45423E` | `#E4E0D8` / `#CFC9BC` |
+| `--code-bg` | ~~`#050504`~~ → `#201F1D` | `#FBF9F3` |
 | `--text` / `--text-2` | `#F1EFE9` / `#C4BFB5` | `#181716` / `#3B3935` |
 | `--muted` / `--faint` | `#AAA49B` / `#989289` | `#5E5951` / `#6E685E` |
 
@@ -127,6 +139,44 @@ is the same hex in both themes.)
 - [public/assets/agility-docs-logo.svg](../public/assets/agility-docs-logo.svg) —
   the mark's yellow moved `#FFC414` → `#FFCB28` to match the brand CTA yellow
   and the marketing site's logo.
+
+## The Stone → Deep move (2026-09-17)
+
+The marketing site replaced **Stone** with **Deep** when Joel closed the palette on
+2026-09-15: the same warm hue, one step darker at every stop. This site followed on
+2026-09-17. Only the dark theme is affected — light is untouched.
+
+**Nothing regressed.** The surfaces got darker while every text and accent token
+stayed exactly where it was, so each contrast ratio *improved*. On `--bg` / `--surface`
+/ `--raised`:
+
+| | on Stone | on Deep |
+| --- | --- | --- |
+| Body copy `#F1EFE9` | 15.57 / 14.49 / 12.77 | **16.89 / 15.72 / 14.32** |
+| Teal as type `--primary-text` `#02A196` | 5.58 / 5.19 / 4.57 | **6.05 / 5.63 / 5.13** |
+| Teal as fill `--primary` `#028D83` | 4.38 / 4.08 / 3.59 | **4.75 / 4.42 / 4.03** |
+| Blue as type `--secondary-bright` `#5989D8` | 5.11 / 4.75 / 4.19 | **5.54 / 5.16 / 4.70** |
+| `--faint` `#989289` | 5.80 / 5.40 / 4.76 | **6.29 / 5.86 / 5.34** |
+
+The **fill/type split on the teal still stands and must not be undone.** `#028D83` now
+clears 4.5 on the page ground (4.75) but still misses on a card (4.42) and on a raised
+surface (4.03), so body-size teal copy keeps using `--primary-text`.
+
+### The code panel flipped from a well to a raised panel
+
+This is the one thing the move *forced* to change, and it is worth understanding before
+anyone "restores" the old value. On Stone, `--code-bg` was a near-black `#050504` well
+sitting **below** `--bg` `#181716` — 1.14:1 of separation, enough to read as inset. On
+Deep, `--bg` is itself `#0E0D0C`, and there is no room left underneath: `#050504` against
+it is **1.05:1**, indistinguishable from the page. The well stops existing.
+
+So code now takes the **raised** step, `#201F1D` — which is also exactly what the
+marketing site does (`--tw-prose-pre-bg: var(--muted)`, `#201F1D` on Deep). The
+`--border-strong` frame on `.prose pre` and on the `Code.tsx` wrapper still does the
+framing. Every hljs token stays above AA on the new ground; the tightest is
+`--secondary-bright` (keywords) at **4.70**.
+
+---
 
 ## Known gaps
 
@@ -237,15 +287,31 @@ The repo sources are recoloured; the live CDN copies are not. Until they are
 replaced, three docs pages render the pre-2026 teal and blue against the new
 palette.
 
+> **Verified 2026-09-17: this upload has never been done.** Fetching all three live
+> CDN copies shows they still carry *both* the pre-2026 brand hues (`#3EB4C2`
+> teal, `#83A9F4` blue, `#FFC414` yellow) **and** the Stone ramp. The August 2026
+> palette change never reached the CDN. That is not extra work — the repo sources
+> now carry the brand hues *and* Deep, so **one upload clears both.** Re-verify
+> rather than assuming:
+>
+> ```bash
+> for n in web-studio page-management ai-mcp; do
+>   echo "== $n"; curl -s "https://cdn.aglty.io/agility-cms-docs/docs-redesign/docs-diagram-$n.svg" \
+>     | grep -o "#3EB4C2\|#FFC414\|#83A9F4\|#181716\|#1F1E1C\|#2A2826" | sort -u
+> done
+> # Any output at all = the old file is still live.
+> ```
+
 | Upload this | To this CDN path |
 | --- | --- |
-| `docs/diagrams/diagram-web-studio.svg` | `agility-cms-docs/docs-redesign/docs-diagram-web-studio.svg` |
-| `docs/diagrams/diagram-page-management.svg` | `agility-cms-docs/docs-redesign/docs-diagram-page-management.svg` |
-| `docs/diagrams/diagram-ai-mcp.svg` | `agility-cms-docs/docs-redesign/docs-diagram-ai-mcp.svg` |
+| `docs/diagrams/docs-diagram-web-studio.svg` | `agility-cms-docs/docs-redesign/docs-diagram-web-studio.svg` |
+| `docs/diagrams/docs-diagram-page-management.svg` | `agility-cms-docs/docs-redesign/docs-diagram-page-management.svg` |
+| `docs/diagrams/docs-diagram-ai-mcp.svg` | `agility-cms-docs/docs-redesign/docs-diagram-ai-mcp.svg` |
 
 Notes:
-- **The CDN filenames carry a `docs-` prefix the repo filenames do not.** Keep
-  the CDN names exactly as above or the `<img src>` in the articles breaks.
+- **The repo filenames now match the CDN filenames exactly** (they were renamed
+  to carry the `docs-` prefix on 2026-09-17). Upload each file under the name it
+  already has — if a name drifts, the `<img src>` in the articles breaks.
 - These replace live media on the production docs site, so the change is visible
   the moment it is saved — do it as part of the deploy, not before.
 - `cdn.aglty.io` may serve a cached copy of the old file for a while. Hard-reload
@@ -260,7 +326,13 @@ Notes:
   switches bodies, and the nav highlight follows scrolling.
 - A markdown article (`/docs/overview/publishing-to-multiple-destinations`):
   body renders, code highlighted, prose list markers are teal.
-- Both themes — dark is the default, `?theme=light` for the other.
+- All three theme modes from the footer picker — **Light / Dark / Match system** —
+  not just the two colour schemes. Dark is the default; `?theme=light|dark|system`
+  deep-links and persists. Confirm `--bg` is `#0e0d0c` in dark and `#f1efe9` in
+  light, and that "Match system" follows the OS rather than sticking.
+- **Code panels specifically**, on dark: they must read as *raised* panels against
+  the page, not as near-black wells. If they look flat, `--code-bg` has been
+  reverted — see the Stone → Deep section.
 - The preview panel: right edge, opens a modal, Copy link and Edit in CMS work.
 - The three diagram pages, once uploaded.
 

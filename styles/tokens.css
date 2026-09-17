@@ -1,7 +1,11 @@
 /*
 || Ocean design tokens.
 ||
-|| Neutrals, radius and type: docs/plan-handoff.md §3 (verbatim).
+|| Radius and type: docs/plan-handoff.md §3 (verbatim).
+|| Dark neutrals: the "Deep" surface ramp, docs/brand-palette-2026.md — adopted
+|| 2026-09-17 from the marketing site's 2026-09-15 palette close. These SUPERSEDE
+|| the "Stone" ramp in plan-handoff.md §3. Light neutrals are unchanged and still
+|| match the marketing site's `:root` exactly.
 || Brand colours (teal / blue / CTA yellow): docs/brand-palette-2026.md — the
 || 2026 brand palette Jina chose on 2026-08-21, shared with the marketing site
 || (Agility-Website-Nextjs-2026 src/app/globals.css). The hexes in
@@ -99,18 +103,29 @@ html.dark {
 	--secondary: #295BAC; --secondary-bright: #5989D8; --secondary-dim: #1F4583;
 	--ok: #79C06B; --warn: #F2C23E; --err: #F26A6E; --info: #79BBF0;
 	--s-purple: #A67DFF;
-	--bg: #181716; --surface: #1F1E1C; --raised: #2A2826;
-	--border: #3B3935; --border-strong: #504D49;
+	/* Surface ramp = "Deep" (n-950 / #171615 / n-850), adopted 2026-09-17 to
+	   follow the marketing site, which moved off "Stone" (#181716 / #1F1E1C /
+	   #2A2826) on 2026-09-15 when Joel closed the palette. Same warm hue, one
+	   step darker at every stop. Nothing regressed: the text and accent tokens
+	   did not move, so every contrast ratio in the theme IMPROVED — teal as type
+	   5.58/5.19/4.57 → 6.05/5.63/5.13, body copy 15.57/14.49/12.77 →
+	   16.89/15.72/14.32 on bg/surface/raised. */
+	--bg: #0E0D0C; --surface: #171615; --raised: #201F1D;
+	--border: #302E2B; --border-strong: #45423E;
 	--text: #F1EFE9; --text-2: #C4BFB5; --muted: #AAA49B; --faint: #989289;
 	--on-color: #0E0D0C;
 	--elev-1: inset 0 0 0 1px rgba(255, 255, 255, .06);
 	--elev-2: 0 10px 28px -14px rgba(0, 0, 0, .75), inset 0 0 0 1px rgba(255, 255, 255, .05);
 	--elev-3: 0 24px 60px -20px rgba(0, 0, 0, .8), inset 0 0 0 1px rgba(255, 255, 255, .06);
-	/* Darker well (n-950) so code blocks read as inset against --bg (#181716),
-	   with the elev-1 inset hairline for definition. */
-	/* Near-black code well so panels read as clearly distinct against the warm
-	   --bg (#181716), paired with a --border-strong frame. */
-	--code-bg: #050504; --tok-str: #FFD75B;
+	/* Code panels are RAISED on Deep, not a well — the direction flipped when the
+	   ramp moved (2026-09-17). On Stone the near-black #050504 well sat 1.14:1
+	   below --bg and read as inset; on Deep (--bg #0E0D0C) there is no room left
+	   underneath — #050504 is 1.05:1, indistinguishable from the page. So code
+	   takes the raised step instead, which is also exactly what the marketing
+	   site does (`--tw-prose-pre-bg: var(--muted)` = #201F1D). The
+	   --border-strong frame on `.prose pre` still does the framing. Every hljs
+	   token stays above AA here; the tightest is --secondary-bright at 4.70. */
+	--code-bg: #201F1D; --tok-str: #FFD75B;
 }
 
 /* Focus ring pattern (handoff §3, non-negotiable) */
