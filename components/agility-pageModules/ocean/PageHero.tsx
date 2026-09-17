@@ -68,7 +68,10 @@ const PageHero = ({ module: { fields, contentID } }: PageHeroProps) => {
 					<img
 						src={fields.media.url}
 						alt={fields.media.label || ""}
-						className="max-w-full mb-8"
+						// w-full, not just max-w-full: the hero diagrams are 1200px
+						// intrinsic and the wrap is 1240px, so max-w-full alone left
+						// them 40px short of the right edge every sibling band reaches.
+						className="w-full max-w-full mb-8"
 						style={{ borderRadius: "var(--r-md)", boxShadow: "var(--elev-2)" }}
 						data-agility-field="media"
 					/>

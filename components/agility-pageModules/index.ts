@@ -18,6 +18,7 @@ import ArticleListSection from "./ocean/ArticleListSection";
 import CodeBlock from "./ocean/CodeBlock";
 import CalloutBlock from "./ocean/CalloutBlock";
 import ThemeAwareImage from "./ocean/ThemeAwareImage";
+import ProseSection from "./ocean/ProseSection";
 
 // All of the Agility Page Module Components that are in use in this site need to be imported into this index file.
 // Place Page Modules in allModules array below, passing in a name and the component.
@@ -47,6 +48,7 @@ const allModules: { name: string; module: any }[] = [
   { name: "CodeBlock", module: CodeBlock },
   { name: "CalloutBlock", module: CalloutBlock },
   { name: "ThemeAwareImage", module: ThemeAwareImage },
+  { name: "ProseSection", module: ProseSection },
 ];
 
 export const getModule = (moduleName: string) => {
