@@ -2,8 +2,7 @@
 module.exports = {
   plugins: {
     // Tailwind CSS (Utility First CSS Framework)
-	tailwindcss: {},
+	'@tailwindcss/postcss': {},
     // Autoprefixer (Use the data based on current browser popularity and property support to apply prefixes for you)
-    autoprefixer: {},
   },
 };

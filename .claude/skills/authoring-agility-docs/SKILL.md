@@ -142,11 +142,10 @@ Use `save_content_items` (contentID `-1` for new):
 }
 ```
 
-- **The MCP cannot set workflow state.** The `state` property is **ignored on save**, and there are **no publish / approve / decline / unpublish / delete** operations. So:
-  - A new item is created in the instance's default state (**Staging**). You can't publish it — a human must publish in the Agility UI.
-  - Saving changes to a **published** item creates a **new Staging version**; the live published version is unchanged until a human re-publishes. Don't claim an edit is "live."
-  - You **cannot delete** items either. A test/unwanted item has to be deleted by a human in the UI — flag it clearly (e.g. prefix the title with `TEST - … (delete me)`) and tell the user it needs manual removal.
-  - Don't bother sending `state` (or expecting it to stick) — set the real workflow state in the UI.
+- **`state` is ignored on save — but the MCP *can* publish** (verified 2026-07-28; this skill previously said it couldn't):
+  - `save_content_items` always writes to the instance default state (**Staging**), regardless of any `state` you pass. A new item lands in Staging; saving changes to a **published** item creates a **new Staging version** while the live version stays as-is.
+  - To take content live, call **`publish_content`** (reversible via `unpublish_content`); `manage_content_workflow` moves items through approval, and `delete_content_item` / `publish_page` / `unpublish_page` also exist. These run with the caller's Agility permissions.
+  - ⚠️ **Publishing changes the live docs site.** Treat it as outward-facing: confirm with a human before publishing, and never publish as a side effect of an authoring request. Until you publish, don't claim an edit is "live."
 - **Updates:** first `get_content_item` for the current `versionID` and all field values, then save with **every** field included (omitted fields are wiped) plus `properties.versionID`.
 - Verify after saving with `get_content_item` — confirm `Section_ValueField` resolved and the Markdown/image survived. Remember the read **lowercases** the `Section`/`Concept` container names, so you can't verify their case this way; verify case visually in the editor.
 
@@ -170,6 +169,6 @@ After **any** create or update, give the user both links. Substitute the new `{c
 2. Look up the target **section contentID** in that category's `*Sections` container.
 3. Write Markdown: leading `# H1`, fenced code blocks, GFM, descriptive image alt.
 4. Upload any images → use the returned `cdn.aglty.io` URL in the Markdown.
-5. Save to the container with `Section`/`Concept` set to **exact-case** container names (+ the `_TextField`/`_ValueField` companions). Don't rely on `state` — the MCP can't set it.
-6. `get_content_item` to verify fields survived, then hand off to a human to review and **publish in the Agility UI** (the MCP can't publish or delete).
+5. Save to the container with `Section`/`Concept` set to **exact-case** container names (+ the `_TextField`/`_ValueField` companions). Don't set `state` on save — it's ignored; the item lands in **Staging**.
+6. `get_content_item` to verify fields survived. The item is in **Staging**; to take it live call **`publish_content`** (the MCP can publish — see the publishing note above) or hand off to a human. Publishing is outward-facing, so **confirm first** and don't claim the edit is live until it's published.
 7. Return the **Preview** and **Edit in Agility** links (see above).

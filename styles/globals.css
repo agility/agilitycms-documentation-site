@@ -3,17 +3,174 @@
 */
 
 /* Import tailwind base styles */
-@tailwind base;
+@import 'tailwindcss';
+
+/* Ocean design tokens (light + dark theme blocks) */
+@import './tokens.css';
+
+/* Enter/exit animations for the shadcn-style ui/ primitives (Radix data-state) */
+@import 'tw-animate-css';
+
+/* Class-based dark mode driven by the `.dark` class on <html> (matches the
+   marketing site). Toggled pre-paint + by the three-state ThemeControl. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Ocean feature-card accents: --tcbar is the 3px top bar and the 15% icon
+   tint (both fills); --tcink is the icon glyph and the link label (both type).
+   They are separate tokens so yellow never sits as text on a light surface
+   (handoff §7 gotcha / mockup per-card ink), and on dark so the teal and blue
+   inks take their type-safe steps rather than their fill values. */
+.ocean-card-primary { --tcbar: var(--primary); --tcink: var(--primary-text); }
+.ocean-card-secondary { --tcbar: var(--secondary); --tcink: var(--secondary-dim); }
+.ocean-card-tertiary { --tcbar: var(--tertiary); --tcink: var(--warn); }
+html.dark .ocean-card-primary { --tcink: var(--primary-text); }
+/* Dark: the blue fill is 2.53:1 on --surface, which fails as ink AND is under
+   the 3:1 bar for the accent bar itself — so both take the lifted step. */
+html.dark .ocean-card-secondary { --tcbar: var(--secondary-bright); --tcink: var(--secondary-bright); }
+html.dark .ocean-card-tertiary { --tcink: var(--tertiary); }
+
+/* ThemeAwareImage visibility */
+.ocean-show-dark { display: none; }
+html.dark .ocean-show-light { display: none; }
+html.dark .ocean-show-dark { display: block; }
+
+@plugin '@tailwindcss/typography';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/aspect-ratio';
+
+@utility container {
+  @media (width >= --theme(--breakpoint-sm)) {
+    max-width: none;
+  }
+  @media (width >= 1200px) {
+    max-width: 1200px;
+  }
+  @media (width >= 1200px) {
+    max-width: 1200px;
+  }
+  @media (width >= 1200px) {
+    max-width: 1200px;
+  }
+  @media (width >= 1200px) {
+    max-width: 1200px;
+  }
+}
+
+@theme {
+  --border-width-*: initial;
+  --border-width-0: 0;
+  --border-width-2: 2px;
+  --border-width-3: 3px;
+  --border-width-4: 4px;
+  --border-width-6: 6px;
+  --border-width-8: 8px;
+  --default-border-width: 1px;
+
+  --font-*: initial;
+  --font-fontFamily-sans: var(--font-mulish);
+
+  /* `font-muli` utility name kept to avoid churn across ~15 components; it now
+     resolves to Mulish (the marketing site's single body+heading font). */
+  --font-muli: var(--font-mulish), sans-serif;
+  --font-mono:
+    Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+  --width-15_1: 15.1rem;
+
+  --color-transparent: transparent;
+  /* Legacy purple/gray palette removed — components use the ocean semantic
+     tokens from tokens.css. Warm near-black kept for dialog scrims. */
+  --color-black: #171b20;
+
+  --grid-template-columns-fullWidth: 256px 1fr;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 /* Import tailwind component styles */
-@tailwind components;
 
 /* Import tailwind utility styles */
-@tailwind utilities;
 
-.prose h2 {
-	font-weight: 600;
-	scroll-margin-top: 140px; /* Offset for sticky header */
+/* Hover shimmer on the primary CTA — a diagonal light sweep. Ported verbatim
+   from the marketing site so the header's Try Free button behaves identically.
+   Animation (not transition) so the sweep only plays on hover-IN. */
+.btn-shimmer {
+	position: relative;
+	overflow: hidden;
+}
+.btn-shimmer::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		115deg,
+		transparent 35%,
+		color-mix(in oklch, white 45%, transparent) 50%,
+		transparent 65%
+	);
+	transform: translateX(-120%);
+	pointer-events: none;
+}
+.btn-shimmer:hover::after {
+	animation: btn-shimmer-sweep 0.7s ease;
+}
+@keyframes btn-shimmer-sweep {
+	from { transform: translateX(-120%); }
+	to { transform: translateX(120%); }
+}
+
+/* Where a heading comes to rest when you jump to its anchor, clear of the sticky
+   header. ArticleNav reads this same value to decide which heading is active, so
+   the two can't drift apart — they did, and the 20px gap between them put the
+   highlight one heading behind on every click. Change it here only. */
+:root {
+	--heading-scroll-offset: 80px;
+}
+
+.prose :is(h2, h3, h4) {
+	scroll-margin-top: var(--heading-scroll-offset);
+}
+
+/* Article prose on ocean tokens — the typography plugin's gray defaults are
+   unreadable in dark mode. */
+.prose {
+	color: var(--text-2);
+}
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6,
+.prose strong, .prose thead th {
+	color: var(--text);
+}
+/* Headings in Mulish (--serif now resolves to Mulish, same as body), weight 700
+   with tight tracking + balanced wrapping — matches the marketing site's
+   heading treatment (Mulish is lighter than Jost was, so 700 keeps contrast). */
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+	font-family: var(--serif);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	text-wrap: balance;
+}
+.prose blockquote {
+	color: var(--text-2);
+	border-left-color: var(--border-strong);
+}
+.prose hr {
+	border-color: var(--border);
 }
 
 /* @import url("https://fonts.googleapis.com/css?family=Muli:100,200,300,400,600,700,900&display=swap"); */
@@ -23,12 +180,12 @@
 } */
 
 #marketing-content a {
-	color: #ffc414;
+	color: var(--tertiary);
 	margin-left: 17px;
 }
 
 .marketing-arrow {
-	color: #ffc414;
+	color: var(--tertiary);
 }
 
 #marketing-content {
@@ -36,11 +193,64 @@
 }
 
 .prose a {
-	color: #6d06ff;
+	color: var(--primary-text);
 }
 
 span.hljs-string {
-	color: #7556e8;
+	color: var(--tok-str);
+}
+
+/* lightfair (styles/lightfair.css) is a light-only hljs theme; in dark mode
+   remap its token colours onto the ocean palette so code is legible and
+   cohesive on --code-bg. Base text is --text; accents use semantic tokens. */
+html.dark .hljs {
+	color: var(--text);
+	background: transparent;
+}
+html.dark .hljs-comment,
+html.dark .hljs-quote {
+	color: var(--muted);
+	font-style: italic;
+}
+html.dark .hljs-keyword,
+html.dark .hljs-selector-tag,
+html.dark .hljs-literal,
+html.dark .hljs-built_in,
+html.dark .hljs-type {
+	color: var(--secondary-bright);
+}
+html.dark .hljs-string,
+html.dark .hljs-regexp,
+html.dark .hljs-meta-string,
+html.dark .hljs-addition {
+	color: var(--tok-str);
+}
+html.dark .hljs-number,
+html.dark .hljs-symbol,
+html.dark .hljs-bullet {
+	color: var(--warn);
+}
+html.dark .hljs-title,
+html.dark .hljs-name,
+html.dark .hljs-function,
+html.dark .hljs-section,
+html.dark .hljs-selector-id,
+html.dark .hljs-selector-class,
+html.dark .hljs-attr,
+html.dark .hljs-attribute {
+	color: var(--primary-bright);
+}
+html.dark .hljs-variable,
+html.dark .hljs-template-variable,
+html.dark .hljs-link {
+	color: var(--s-purple);
+}
+html.dark .hljs-tag,
+html.dark .hljs-meta {
+	color: var(--faint);
+}
+html.dark .hljs-deletion {
+	color: var(--err);
 }
 
 /* code css */
@@ -61,21 +271,108 @@ code > span.hljs-string {
 }
 
 .prose code {
-	@apply text-base bg-gray-100 px-2 py-1 text-gray-700;
+	@apply text-base px-2 py-1;
+	background: var(--raised);
+	color: var(--text);
 	font-weight: normal !important;
 }
 
+/* The highlight.js theme (lightfair) gives the .hljs <code> its own
+   overflow-x + padding + background. Strip those: the panel (bg/scroll/padding)
+   is managed by the container, and a self-scrolling padded <code> nests a
+   second scroller whose scrollbar is inset from the panel edges. */
+.hljs {
+	overflow: visible;
+	padding: 0;
+	background: transparent;
+}
+
+/* The <pre> is the code panel — bg + border + radius + horizontal scroll. It
+   carries NO padding: a padded overflow container makes WebKit inset the
+   scrollbar (gaps on all sides). Padding lives on the inner <code> instead, so
+   the scrollbar sits flush to the panel's bottom/right edges. */
 .prose pre {
-	@apply bg-transparent p-0 my-8;
-	overflow-x: auto;
+	@apply my-8 overflow-x-auto;
+	background: var(--code-bg);
+	border: 1px solid var(--border-strong);
+	border-radius: var(--r-md);
+	padding: 0;
 }
 
 .prose pre code {
-	@apply bg-lightGray block p-5 text-base;
-	border-radius: 0.375rem;
-	/* Override inline code styling for code blocks */
-	background: #F4F7FA !important;
+	@apply block;
+	/* Override inline-code styling: the panel is on <pre>, code is bare. */
+	background: transparent !important;
+	color: var(--text);
 	padding: 1.25rem !important;
+	font-weight: normal !important;
+}
+
+/* Code tabs (components/common/codeTabs.ts) — one framed panel with a tab bar,
+   used for multi-language SDK snippets. The WRAPPER owns the frame here, so the
+   `pre` panels inside drop their own border/radius/margin. Before the client
+   enhancer runs (or if it skips a malformed group) the snippets simply stack —
+   each still framed by the `.prose pre` rule above, which is a fine fallback. */
+.prose .code-tabs[data-code-tabs-ready="true"] {
+	@apply my-8 overflow-hidden;
+	background: var(--code-bg);
+	border: 1px solid var(--border-strong);
+	border-radius: var(--r-md);
+}
+
+.code-tabs__bar {
+	display: flex;
+	flex-wrap: wrap;
+	background: var(--surface);
+	border-bottom: 1px solid var(--border-strong);
+}
+
+.code-tabs__tab {
+	font-family: var(--mono);
+	font-size: 0.72rem;
+	padding: 0.5rem 0.9rem;
+	color: var(--muted);
+	background: transparent;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	cursor: pointer;
+	transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.code-tabs__tab:hover {
+	color: var(--text);
+	background: var(--raised);
+}
+
+.code-tabs__tab[data-active="true"] {
+	color: var(--primary-text);
+	border-bottom-color: var(--primary);
+	background: var(--code-bg);
+}
+
+/* Panels sit inside the wrapper's frame — no second border, radius or margin. */
+.prose .code-tabs[data-code-tabs-ready="true"] > pre {
+	@apply my-0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+}
+
+.code-tabs__panel[hidden] {
+	display: none;
+}
+
+/* Code typography — Fira Code, a little smaller than body text, with the
+   font's coding ligatures on. Applies to both render paths: react-highlight
+   (.hljs) and prose fenced blocks (<pre>), plus the SSR state before JS
+   highlighting adds the .hljs class. */
+.hljs,
+.prose pre,
+.prose pre code {
+	font-family: var(--mono);
+	font-size: 0.8125rem;
+	line-height: 1.7;
+	font-variant-ligatures: contextual;
 }
 
 .prose code:before {
@@ -86,33 +383,32 @@ code > span.hljs-string {
 	content: none;
 }
 
-/* list item css */
-.prose ul > li::before {
-	background-color: #6d06ff;
-}
+/* List markers.
+   @tailwindcss/typography draws these with `::marker`, driven by its own
+   --tw-prose-* variables — NOT with the `li::before` pseudo-elements this file
+   used to target. Those rules parsed fine but never painted (a ::before with no
+   `content` generates no box), which left the markers on the plugin's cool-grey
+   defaults: counters #6A7282 (3.70:1 on --bg — under the 4.5 bar for type) and
+   bullets #D1D5DC (1.28:1 on the light --bg — invisible). Setting the plugin's
+   variables is what actually reaches them.
 
-.prose ul > li > ul > li::before {
-	background-color: #6b7280;
-}
-
-.prose ul > li > ol > li::before {
-	color: #6b7280;
-}
-
-.prose ol > li::before {
-	color: #6d06ff;
-}
-
-.prose ol > li > ol > li::before {
-	color: #6b7280;
-}
-
-.prose ol > li > ul > li::before {
-	background-color: #6b7280;
+   Bullets take the fill teal (a non-text graphic, 3:1 bar); counters are type,
+   so they take --primary-text. Both clear their bar in both themes. */
+.prose {
+	--tw-prose-bullets: var(--primary);
+	--tw-prose-counters: var(--primary-text);
 }
 
 .custom-shadow {
-	box-shadow: 0 10px 30px -8px rgb(85 63 164 / 25%);
+	box-shadow: var(--elev-1);
+}
+
+/* Ocean modules self-wrap with px-[--space] for full-width templates (hub,
+   flagships). Inside the sidebar shell the grid column provides the page
+   padding, so the band inset would misalign them with the legacy bands. */
+#WithSidebarNavTemplate .ocean-band {
+	padding-left: 0;
+	padding-right: 0;
 }
 
 /* Footer */
@@ -157,7 +453,7 @@ code > span.hljs-string {
 
 .scrollbar-none {
 	scrollbar-width: none; /* "auto" or "thin" */
-	scrollbar-color: #fff white; /* scroll thumb and track */
+	scrollbar-color: var(--surface) var(--surface); /* scroll thumb and track */
 }
 
 .scrollbar-none::-webkit-scrollbar {
@@ -201,25 +497,42 @@ code > span.hljs-string {
 }
 
 .prose thead {
-	@apply border-b-2 border-gray-300;
+	border-bottom: 2px solid var(--border-strong);
 }
 
 .prose th {
-	@apply px-4 py-3 text-left font-semibold bg-gray-50 border border-gray-300;
+	@apply px-4 py-3 text-left font-semibold;
+	background: var(--raised);
+	border: 1px solid var(--border-strong);
 }
 
 .prose td {
-	@apply px-4 py-3 border border-gray-300;
+	@apply px-4 py-3;
+	border: 1px solid var(--border);
 }
 
 .prose tbody tr {
-	@apply border-b border-gray-200;
+	border-bottom: 1px solid var(--border);
 }
 
 .prose tbody tr:hover {
-	@apply bg-gray-50;
+	background: var(--raised);
 }
 
-/* .SearchResult mark {
-  @apply bg-indigo-900 text-white
-} */
+/* The forms plugin gives bare <input>s a border + focus ring; the modal
+   input is chromeless — the dialog header itself is the field. */
+.search-modal input,
+.search-modal input:focus {
+	border: none;
+	box-shadow: none;
+	outline: none;
+	padding: 0;
+}
+
+/* Search-modal match highlighting — never the browser's default yellow. */
+.search-modal mark {
+	background: color-mix(in srgb, var(--primary) 25%, transparent);
+	color: inherit;
+	border-radius: 2px;
+	padding: 0 1px;
+}
