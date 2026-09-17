@@ -75,10 +75,27 @@ export default function Header({
 			style={{ background: "color-mix(in srgb, var(--bg) 95%, transparent)" }}
 		>
 			<div className="mx-auto flex h-16 max-w-[90rem] items-center gap-3 px-4 transition-[height] duration-300 ease-out group-data-[scrolled=true]/header:h-12 sm:px-6 lg:px-8">
+				{/* Two logo files, swapped by CSS rather than JS. The wordmark and the
+				    "docs" badge are #717171, which is only 3.98:1 on the dark page
+				    background — under AA, on the site's primary brand mark. The dark
+				    variant recolours exactly those two fills to --text (#F1EFE9,
+				    16.89:1) and leaves the yellow triangle alone.
+
+				    ocean-show-light / ocean-show-dark are the same classes
+				    ThemeAwareImage uses: the pre-paint theme script in app/layout.tsx
+				    sets `.dark` on <html> before first paint, so the correct one is
+				    visible immediately with no flash and no hydration dependency.
+				    (Deliberately no `block` class — it would out-specify the
+				    display:none in the swap rules.) */}
 				<Link href="/" title="Agility Docs" className="flex shrink-0 items-center">
 					<img
-						className="block h-8 w-auto transition-[height] duration-300 ease-out group-data-[scrolled=true]/header:h-7"
+						className="ocean-show-light h-8 w-auto transition-[height] duration-300 ease-out group-data-[scrolled=true]/header:h-7"
 						src="/docs/assets/agility-docs-logo.svg"
+						alt="Agility CMS documentation"
+					/>
+					<img
+						className="ocean-show-dark h-8 w-auto transition-[height] duration-300 ease-out group-data-[scrolled=true]/header:h-7"
+						src="/docs/assets/agility-docs-logo-dark.svg"
 						alt="Agility CMS documentation"
 					/>
 				</Link>
