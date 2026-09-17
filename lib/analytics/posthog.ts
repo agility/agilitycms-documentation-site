@@ -40,9 +40,17 @@ export function initPostHog(): typeof posthog | null {
 			capture_pageleave: true,
 			autocapture: true,
 			persistence: "localStorage+cookie",
-			// Anonymous visitors still produce pageview/event counts; only create
-			// person profiles once someone is identified (keeps event cost down).
-			person_profiles: "identified_only",
+			// Docs readers are treated exactly like marketing visitors: anonymous
+			// readers get person profiles too, so a journey across agilitycms.com,
+			// /docs and app.agilitycms.com is one person rather than a profile that
+			// only starts existing at the marketing-site boundary. This used to be
+			// "identified_only" to keep event cost down — changed deliberately
+			// (Joel, 2026-09-17); the marketing site leaves it at the same default.
+			//
+			// Identity carries across all three surfaces for free: the Netlify
+			// proxy makes agilitycms.com and agilitycms.com/docs the SAME origin,
+			// and posthog's cross_subdomain_cookie defaults to true, so the cookie
+			// is scoped to .agilitycms.com and app.* picks up the same distinct_id.
 		});
 		initialized = true;
 	}
@@ -52,6 +60,51 @@ export function initPostHog(): typeof posthog | null {
 /** True when a PostHog key is configured. */
 export function isPostHogEnabled(): boolean {
 	return !!process.env.NEXT_PUBLIC_POSTHOG_KEY;
+}
+
+/** sessionStorage flag so the probe runs once per session, not per navigation. */
+const SIGNED_IN_PROBE_KEY = "aglty-signedin-probed";
+
+/**
+ * Once per session, ask /api/me whether this reader is logged into Agility and
+ * record it on PostHog as a **super property**, so every subsequent event in the
+ * session carries `agility_signed_in`.
+ *
+ * Super property, not identify(): the probe only learns *that* someone is logged
+ * in, never *who* — the OWIN ticket is opaque to us and its value never leaves
+ * the server. Calling identify() with no real user id would invent identities
+ * and fragment the person records this is meant to join up.
+ *
+ * `register` (not `register_once`) so a reader who logs in or out mid-session
+ * gets the corrected value on their next session rather than being stuck.
+ */
+export async function identifySignedInState(): Promise<void> {
+	if (typeof window === "undefined" || !initialized) return;
+
+	try {
+		if (sessionStorage.getItem(SIGNED_IN_PROBE_KEY)) return;
+	} catch {
+		/* private mode — fall through and probe, it is one cheap request */
+	}
+
+	try {
+		// same-origin: at the apex this is /docs/api/me behind the Netlify proxy,
+		// which forwards cookies. Credentials are same-origin by default.
+		const res = await fetch("/docs/api/me", { cache: "no-store" });
+		if (!res.ok) return;
+		const { signedIn } = (await res.json()) as { signedIn: boolean };
+
+		posthog.register({ agility_signed_in: !!signedIn });
+		posthog.capture("session_identified", { agility_signed_in: !!signedIn });
+
+		try {
+			sessionStorage.setItem(SIGNED_IN_PROBE_KEY, "1");
+		} catch {
+			/* private mode — we just re-probe next navigation, which is harmless */
+		}
+	} catch {
+		/* analytics must never break the page */
+	}
 }
 
 /**

@@ -145,7 +145,8 @@ Normalization in [utils/searchUtils.js](utils/searchUtils.js) (EditorJS + Markdo
 | `ROBOTS_NO_INDEX` | Force noindex meta |
 | `NETLIFY_PURGE_TOKEN` | Netlify personal access token. Lets the publish webhook purge the apex CDN ([lib/netlify/purgeNetlifyCache.ts](lib/netlify/purgeNetlifyCache.ts)) — `revalidateTag` only reaches Vercel, and agilitycms.com/docs is a Netlify proxy rewrite. **Optional:** unset = purge no-ops and the apex self-heals on `s-maxage` instead |
 | `NETLIFY_SITE_ID` | Site ID of the **apex/marketing** Netlify site — *not* this docs app. That site owns the cached proxy responses. Required alongside `NETLIFY_PURGE_TOKEN` |
-| `NEXT_PUBLIC_POSTHOG_KEY` / `NEXT_PUBLIC_POSTHOG_HOST` | Product analytics; opt-in. No key = `init()` and all capture calls no-op ([lib/analytics/posthog.ts](lib/analytics/posthog.ts)). Host defaults to `https://us.i.posthog.com` |
+| `NEXT_PUBLIC_POSTHOG_KEY` / `NEXT_PUBLIC_POSTHOG_HOST` | Product analytics. **Same PostHog project as the marketing site**, so a visitor is one person across agilitycms.com, /docs and app.agilitycms.com. No key = `init()` and all capture calls no-op ([lib/analytics/posthog.ts](lib/analytics/posthog.ts)). ⚠️ `NEXT_PUBLIC_*` is inlined at **build** time — setting it in Vercel needs a redeploy to take effect |
+| `AGILITY_AUTH_COOKIE_NAME` | Cookie the signed-in probe looks for ([app/api/me/route.ts](app/api/me/route.ts)). Defaults to `AgilityAuthOWIN`; override only if Classic CM's OWIN config renames it. The route returns a boolean and **never** the cookie value |
 
 ## Running Locally
 

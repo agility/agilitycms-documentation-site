@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Intercom } from "@intercom/messenger-js-sdk";
-import { initPostHog, track } from "lib/analytics/posthog";
+import { initPostHog, track, identifySignedInState } from "lib/analytics/posthog";
 
 /**
  * Client-side bootstraps that used to live in the Pages-Router Layout.js:
@@ -17,6 +17,10 @@ export default function ClientInit() {
 	useEffect(() => {
 		Intercom({ app_id: "fj9g3mkl" });
 		initPostHog();
+		// Once per session: flag whether this reader is logged into Agility, so
+		// every event carries agility_signed_in. Runs after init so the super
+		// property is registered before the first $pageview below.
+		identifySignedInState();
 	}, []);
 
 	// PostHog $pageview on every client-side navigation. capture_pageview is
