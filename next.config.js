@@ -28,15 +28,13 @@ module.exports = {
     async headers() {
         return [
             {
-                // RFC 9213 targeted cache header: lets the fronting CDN (Netlify
-                // today — see HOSTING.md) cache docs pages at its edge and refresh
-                // in the background. Excludes /api/* — those must never be cached.
+                // Cache headers used to live here, but this rule is unconditional
+                // and would have put `CDN-Cache-Control: public` on draft-mode
+                // renders too — publishing unpublished content to a shared cache.
+                // They now live in proxy.ts, which can see the draft cookie.
+                // See HOSTING.md "Cache strategy".
                 source: '/((?!api/).*)',
                 headers: [
-                    {
-                        key: 'CDN-Cache-Control',
-                        value: 'public, s-maxage=60, stale-while-revalidate=86400'
-                    },
                     {
                         // Allow the Agility Web Studio to iframe the site for
                         // in-context editing/preview.

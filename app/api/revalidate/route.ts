@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import agilitySDK from "@agility/content-fetch";
 import { defaultLocale, localizeUrl } from "lib/i18n/config";
 import { submitToIndexNow } from "lib/indexnow/submitToIndexNow";
+import { purgeNetlifyCache } from "lib/netlify/purgeNetlifyCache";
 
 interface IRevalidateRequest {
 	state: string;
@@ -112,6 +113,14 @@ export async function POST(req: NextRequest) {
 		// if a build hook is configured (same escape hatch as the references).
 		const hookUrl = process.env.BUILD_HOOK_URL;
 		if (hookUrl) await fetch(hookUrl, { method: "POST" });
+	}
+
+	// The tags above only invalidate Vercel. agilitycms.com/docs is a Netlify
+	// proxy rewrite onto this deployment, and that CDN has no idea a publish
+	// happened — so purge it too, or the apex serves the old page until its TTL
+	// lapses. The tag matches the Netlify-Cache-Tag set in proxy.ts.
+	if (isPublish || isRemoval) {
+		await purgeNetlifyCache(["docs"]);
 	}
 
 	return new Response("OK", { status: 200 });

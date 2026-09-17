@@ -15,6 +15,67 @@ import { defaultLocale, getLocaleFromPathname } from "lib/i18n/config";
  * NOTE: request.nextUrl.pathname excludes the /docs basePath; rewrites built
  * by cloning nextUrl keep the basePath automatically.
  */
+/**
+ * Edge cache headers for page responses. Set here rather than in next.config's
+ * `headers()` because that rule is unconditional, and a draft-mode render must
+ * never carry public CDN headers (see applyCacheHeaders).
+ *
+ * Precedence on Netlify is Netlify-CDN-Cache-Control > CDN-Cache-Control >
+ * Cache-Control, so the two headers below tune the two CDNs independently:
+ *
+ * · CDN-Cache-Control is the portable default and is what Vercel's own edge
+ *   honours. Left short (60s) because Next's ISR + the /api/revalidate webhook
+ *   already invalidate Vercel precisely via revalidateTag/revalidatePath.
+ * · Netlify-CDN-Cache-Control is the fronting CDN at agilitycms.com/docs, which
+ *   has no idea a publish happened. It gets a long TTL and a very long SWR
+ *   window because /api/revalidate now purges it by tag on publish — the TTL is
+ *   just the self-healing floor if a purge is ever missed, and SWR means a
+ *   reader is served instantly from the edge either way.
+ *
+ * `stale-if-error` is deliberate but UNVERIFIED: Netlify documents
+ * stale-while-revalidate and does not mention stale-if-error. An unknown
+ * directive is ignored, so this costs nothing and pays off if/when supported.
+ */
+const CDN_CACHE = "public, s-maxage=60, stale-while-revalidate=86400";
+const NETLIFY_CDN_CACHE =
+	"public, s-maxage=3600, stale-while-revalidate=604800, stale-if-error=604800";
+
+/**
+ * Netlify keys its cache on ALL query params by default, so every ?utm_source,
+ * ?gclid and ?fbclid fragments the cache into a separate entry that has to go
+ * back to Vercel. Only these three change what the origin returns, so they are
+ * the only ones worth varying on:
+ *   · agilitypreviewkey / AgilityPreview — preview enter/exit (handled above)
+ *   · ContentID                          — dynamic-item deep link
+ * Everything else (?theme=light included — it is read client-side and the HTML
+ * is identical) collapses onto one cache entry.
+ *
+ * These MUST stay listed: drop agilitypreviewkey and a preview request would
+ * match the public cached entry and silently serve published content instead.
+ */
+const NETLIFY_VARY = "query=agilitypreviewkey|ContentID|AgilityPreview";
+
+// Next sets this cookie when draft mode is on.
+const DRAFT_COOKIE = "__prerender_bypass";
+
+const applyCacheHeaders = (res: NextResponse, request: NextRequest) => {
+	// A draft-mode render shows unpublished content. It must never reach a
+	// shared cache, so it gets no CDN headers at all.
+	if (request.cookies.has(DRAFT_COOKIE)) {
+		res.headers.set("Cache-Control", "private, no-store");
+		return res;
+	}
+
+	res.headers.set("CDN-Cache-Control", CDN_CACHE);
+	res.headers.set("Netlify-CDN-Cache-Control", NETLIFY_CDN_CACHE);
+	res.headers.set("Netlify-Vary", NETLIFY_VARY);
+	// One coarse tag for the whole docs space: /api/revalidate purges it on any
+	// publish. Coarse is fine here — docs publish rarely, and SWR means the
+	// re-fill is invisible to readers. Per-page tags are a later refinement.
+	res.headers.set("Netlify-Cache-Tag", "docs");
+	return res;
+};
+
 export function proxy(request: NextRequest) {
 	const { nextUrl } = request;
 	const pathname = nextUrl.pathname;
@@ -79,10 +140,15 @@ export function proxy(request: NextRequest) {
 	if (!hasLocalePrefix && !isStaticFile && !isApi) {
 		const url = nextUrl.clone();
 		url.pathname = `/${defaultLocale}${pathname === "/" ? "" : pathname}`;
-		return NextResponse.rewrite(url);
+		return applyCacheHeaders(NextResponse.rewrite(url), request);
 	}
 
-	return NextResponse.next();
+	// Locale-prefixed page requests land here; static files and /api/* are
+	// excluded above and keep their own caching (hashed assets are already
+	// immutable, API routes must not be cached at the edge).
+	if (isStaticFile || isApi) return NextResponse.next();
+
+	return applyCacheHeaders(NextResponse.next(), request);
 }
 
 export const config = {
