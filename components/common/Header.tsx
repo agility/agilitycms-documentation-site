@@ -21,13 +21,43 @@ import {
 } from "./navIcons";
 import { isNavHidden } from "lib/docs/legacyFrameworks";
 import { Sheet, SheetTrigger, SheetContent, SheetClose } from "components/ui/sheet";
+import { getSessionUser, type SessionUser } from "lib/auth/getSessionUser";
 
 function classNames(...classes: string[]) {
 	return classes.filter(Boolean).join(" ");
 }
 
 const SIGN_IN = { name: "Sign in", href: "https://manager.agilitycms.com/" };
-const TRY_FREE = { name: "Try Free", href: "https://agilitycms.com/trial/" };
+const LETS_CHAT = { name: "Let's Chat", href: "https://agilitycms.com/demo-request" };
+/** Where a signed-in reader goes instead — the Manager App. */
+const CONTENT_MANAGER = { name: "Content Manager", href: "https://app.agilitycms.com/" };
+
+/**
+ * Signed-in state for the header actions.
+ *
+ * Resolved on the CLIENT, deliberately. The header is statically rendered and
+ * cached at the Netlify edge with a long TTL (HOSTING.md), which only holds
+ * because the HTML is byte-identical for every reader — rendering a name into
+ * it would break the caching, or serve one person's name to everyone.
+ *
+ * So the page ships logged-out (the common case for docs readers, and what the
+ * cached HTML contains) and this swaps in the greeting once /api/me answers.
+ * `null` means "not yet known": the logged-out actions stay put rather than
+ * flashing a placeholder, so nothing shifts for the majority who never sign in.
+ */
+function useSessionUser(): SessionUser | null {
+	const [user, setUser] = useState<SessionUser | null>(null);
+	useEffect(() => {
+		let alive = true;
+		getSessionUser().then((u) => {
+			if (alive) setUser(u);
+		});
+		return () => {
+			alive = false;
+		};
+	}, []);
+	return user;
+}
 
 interface HeaderProps {
 	mainMenuLinks: any[];
@@ -43,6 +73,7 @@ export default function Header({
 	// Active section from the first path segment, so a top-level category
 	// highlights for any page beneath it.
 	const pathname = usePathname() || "/";
+	const sessionUser = useSessionUser();
 	const firstSegment = (p: string) => (p || "").split("/")[1] || "";
 	const navigation = (mainMenuLinks || []).map((item: any) => ({
 		...item,
@@ -130,23 +161,44 @@ export default function Header({
 				{/* Desktop actions (>=1340px) */}
 				<div className="hidden items-center gap-2 min-[1340px]:flex">
 					<SearchButton variant="topbar" />
-					<a
-						href={SIGN_IN.href}
-						target="_blank"
-						rel="noreferrer"
-						className="hidden h-8 items-center whitespace-nowrap rounded-(--r-sm) px-2.5 text-sm font-medium text-(--text-2) transition-colors hover:bg-(--raised) hover:text-(--text) min-[1440px]:inline-flex"
-					>
-						{SIGN_IN.name}
-					</a>
-					<a
-						href={TRY_FREE.href}
-						target="_blank"
-						rel="noreferrer"
-						className="btn-shimmer inline-flex h-8 items-center whitespace-nowrap rounded-(--r-sm) px-2.5 text-sm font-medium transition-[filter] hover:brightness-[.97]"
-						style={{ color: "var(--on-color)", backgroundColor: "var(--tertiary)" }}
-					>
-						{TRY_FREE.name}
-					</a>
+					{sessionUser?.signedIn ? (
+						<>
+							{sessionUser.firstName && (
+								<span className="hidden whitespace-nowrap px-1 text-sm text-(--muted) min-[1440px]:inline">
+									Hi, {sessionUser.firstName}
+								</span>
+							)}
+							<a
+								href={CONTENT_MANAGER.href}
+								target="_blank"
+								rel="noreferrer"
+								className="btn-shimmer inline-flex h-8 items-center whitespace-nowrap rounded-(--r-sm) px-2.5 text-sm font-medium transition-[filter] hover:brightness-[.97]"
+								style={{ color: "var(--on-color)", backgroundColor: "var(--tertiary)" }}
+							>
+								{CONTENT_MANAGER.name}
+							</a>
+						</>
+					) : (
+						<>
+							<a
+								href={SIGN_IN.href}
+								target="_blank"
+								rel="noreferrer"
+								className="hidden h-8 items-center whitespace-nowrap rounded-(--r-sm) px-2.5 text-sm font-medium text-(--text-2) transition-colors hover:bg-(--raised) hover:text-(--text) min-[1440px]:inline-flex"
+							>
+								{SIGN_IN.name}
+							</a>
+							<a
+								href={LETS_CHAT.href}
+								target="_blank"
+								rel="noreferrer"
+								className="btn-shimmer inline-flex h-8 items-center whitespace-nowrap rounded-(--r-sm) px-2.5 text-sm font-medium transition-[filter] hover:brightness-[.97]"
+								style={{ color: "var(--on-color)", backgroundColor: "var(--tertiary)" }}
+							>
+								{LETS_CHAT.name}
+							</a>
+						</>
+					)}
 				</div>
 
 				{/* Compact actions + menu (< 1340px) */}
@@ -348,6 +400,7 @@ const MobileMenu = ({
 	secondaryDropdownLinks?: any[];
 }) => {
 	const pathname = usePathname() || "/";
+	const sessionUser = useSessionUser();
 	const isActive = (href: string) => href !== "#" && pathname.startsWith(href);
 	const columns = groupNavLinks(primaryDropdownLinks, secondaryDropdownLinks);
 
@@ -404,24 +457,30 @@ const MobileMenu = ({
 				</div>
 				<div className="mt-6 flex items-center justify-between gap-3 px-3">
 					<ThemeControl />
-					<a
-						href={SIGN_IN.href}
-						target="_blank"
-						rel="noreferrer"
-						className="text-sm font-semibold text-(--text-2) hover:text-(--primary-text)"
-					>
-						{SIGN_IN.name}
-					</a>
+					{sessionUser?.signedIn ? (
+						sessionUser.firstName && (
+							<span className="text-sm text-(--muted)">Hi, {sessionUser.firstName}</span>
+						)
+					) : (
+						<a
+							href={SIGN_IN.href}
+							target="_blank"
+							rel="noreferrer"
+							className="text-sm font-semibold text-(--text-2) hover:text-(--primary-text)"
+						>
+							{SIGN_IN.name}
+						</a>
+					)}
 				</div>
 				<div className="mt-4 px-3">
 					<a
-						href={TRY_FREE.href}
+						href={sessionUser?.signedIn ? CONTENT_MANAGER.href : LETS_CHAT.href}
 						target="_blank"
 						rel="noreferrer"
 						className="block rounded-(--r-sm) py-2 text-center text-[.9rem] font-bold"
 						style={{ color: "var(--on-color)", backgroundColor: "var(--tertiary)" }}
 					>
-						{TRY_FREE.name}
+						{sessionUser?.signedIn ? CONTENT_MANAGER.name : LETS_CHAT.name}
 					</a>
 				</div>
 			</div>
