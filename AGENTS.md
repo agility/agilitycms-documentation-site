@@ -143,6 +143,9 @@ Normalization in [utils/searchUtils.js](utils/searchUtils.js) (EditorJS + Markdo
 | `ALGOLIA_APP_ID` / `ALGOLIA_ADMIN_API_KEY` / `NEXT_PUBLIC_ALGOLIA_APP_ID` / `NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY` | Search |
 | `AZURE_APP_INSIGHTS_CONNECTION_STRING` | MCP telemetry (never initialized during build — see gotchas) |
 | `ROBOTS_NO_INDEX` | Force noindex meta |
+| `NETLIFY_PURGE_TOKEN` | Netlify personal access token. Lets the publish webhook purge the apex CDN ([lib/netlify/purgeNetlifyCache.ts](lib/netlify/purgeNetlifyCache.ts)) — `revalidateTag` only reaches Vercel, and agilitycms.com/docs is a Netlify proxy rewrite. **Optional:** unset = purge no-ops and the apex self-heals on `s-maxage` instead |
+| `NETLIFY_SITE_ID` | Site ID of the **apex/marketing** Netlify site — *not* this docs app. That site owns the cached proxy responses. Required alongside `NETLIFY_PURGE_TOKEN` |
+| `NEXT_PUBLIC_POSTHOG_KEY` / `NEXT_PUBLIC_POSTHOG_HOST` | Product analytics; opt-in. No key = `init()` and all capture calls no-op ([lib/analytics/posthog.ts](lib/analytics/posthog.ts)). Host defaults to `https://us.i.posthog.com` |
 
 ## Running Locally
 
