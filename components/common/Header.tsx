@@ -85,15 +85,35 @@ export default function Header({
 		current: firstSegment(pathname) === firstSegment(item.href),
 	}));
 
-	// Scroll-shrink: flip a data-scrolled flag past a small threshold; the
-	// bar/logo shrink is done purely with `group-data-[scrolled]` CSS variants
-	// (matches the marketing site's HeaderScrollShell technique).
+	// Scroll-shrink: flip a data-scrolled flag; the bar/logo shrink is done
+	// purely with `group-data-[scrolled]` CSS variants.
+	//
+	// The two thresholds are HYSTERESIS and they are not decorative. The header
+	// is sticky, so it occupies layout space: shrinking it 64px -> 48px pulls
+	// the content above the viewport up by 16px and the browser compensates
+	// scrollY by the same 16px (measured — one wheel click landed at 100 and
+	// settled at 84).
+	//
+	// With the old single `scrollY > 8` threshold, that 16px correction is
+	// BIGGER than the 8px threshold, so any scroll landing between 8 and 24 got
+	// pulled back under the threshold, grew, got pushed over it again, and
+	// oscillated — the header visibly jittered on a single small wheel click.
+	//
+	// Separate thresholds break the loop: once shrunk it stays shrunk until you
+	// are well back up the page, and the 48px gap between them is far wider than
+	// the 16px correction, so no single toggle can ever cross back over.
+	const SHRINK_AT = 80;
+	const GROW_AT = 32;
 	const [scrolled, setScrolled] = useState(false);
 	useEffect(() => {
 		let raf = 0;
 		const onScroll = () => {
 			cancelAnimationFrame(raf);
-			raf = requestAnimationFrame(() => setScrolled(window.scrollY > 8));
+			raf = requestAnimationFrame(() => {
+				const y = window.scrollY;
+				// Only the crossings flip state; in between, whatever it is, it stays.
+				setScrolled((was) => (was ? y > GROW_AT : y > SHRINK_AT));
+			});
 		};
 		onScroll(); // sync on mount (restored scroll position)
 		window.addEventListener("scroll", onScroll, { passive: true });
