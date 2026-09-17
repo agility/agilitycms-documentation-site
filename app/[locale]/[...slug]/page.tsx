@@ -69,7 +69,7 @@ export default async function Page({ params }: PageProps) {
 	}
 
 	const AgilityPageTemplate = getPageTemplate(agilityData.pageTemplateName || "");
-	const jsonLD = getRichSnippet(agilityData);
+	const jsonLD = await getRichSnippet(agilityData);
 
 	return (
 		<>
