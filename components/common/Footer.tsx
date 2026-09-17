@@ -113,9 +113,15 @@ const Footer = async ({ languageCode, isPreview }: FooterProps) => {
 			<div className="mx-auto max-w-[1400px] px-4 py-12 lg:px-6">
 				<div className="grid gap-10 md:grid-cols-4">
 					<div>
+						{/* Theme-swapped like the header — see the note there. */}
 						<img
-							className="h-7 w-auto"
+							className="ocean-show-light h-7 w-auto"
 							src="/docs/assets/agility-docs-logo.svg"
+							alt="Agility CMS documentation"
+						/>
+						<img
+							className="ocean-show-dark h-7 w-auto"
+							src="/docs/assets/agility-docs-logo-dark.svg"
 							alt="Agility CMS documentation"
 						/>
 						{tagline && (

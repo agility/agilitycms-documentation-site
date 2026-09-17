@@ -1,6 +1,7 @@
 "use client";
 
 import posthog from "posthog-js";
+import { getSessionUser } from "lib/auth/getSessionUser";
 
 /*
   PostHog browser analytics for the docs site.
@@ -70,10 +71,9 @@ const SIGNED_IN_PROBE_KEY = "aglty-signedin-probed";
  * record it on PostHog as a **super property**, so every subsequent event in the
  * session carries `agility_signed_in`.
  *
- * Super property, not identify(): the probe only learns *that* someone is logged
- * in, never *who* — the OWIN ticket is opaque to us and its value never leaves
- * the server. Calling identify() with no real user id would invent identities
- * and fragment the person records this is meant to join up.
+ * When the session validates, the Agility UserID comes back too and we identify
+ * with it — see the note at the identify() call below. The cookie value itself
+ * never leaves the server.
  *
  * `register` (not `register_once`) so a reader who logs in or out mid-session
  * gets the corrected value on their next session rather than being stuck.
@@ -88,15 +88,9 @@ export async function identifySignedInState(): Promise<void> {
 	}
 
 	try {
-		// same-origin: at the apex this is /docs/api/me behind the Netlify proxy,
-		// which forwards cookies. Credentials are same-origin by default.
-		const res = await fetch("/docs/api/me", { cache: "no-store" });
-		if (!res.ok) return;
-		const { signedIn, validated, userId } = (await res.json()) as {
-			signedIn: boolean;
-			validated?: boolean;
-			userId?: string;
-		};
+		// Shared with the header via a memoised promise, so a page load makes one
+		// request rather than two.
+		const { signedIn, validated, userId } = await getSessionUser();
 
 		// agility_session_validated keeps a checked session distinguishable from a
 		// bare cookie, so the two never get conflated in a funnel.

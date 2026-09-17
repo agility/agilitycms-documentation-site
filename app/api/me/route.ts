@@ -50,6 +50,7 @@ const VALIDATE_TIMEOUT_MS = 2000
 interface ValidationResult {
 	valid: boolean | null // null = couldn't tell
 	userId?: string
+	firstName?: string
 }
 
 /**
@@ -93,16 +94,23 @@ async function validateSession(cookieValue: string): Promise<ValidationResult> {
 
 		const body = (await res.json().catch(() => null)) as {
 			IsError?: boolean
-			ResponseData?: { UserID?: number }
+			ResponseData?: { UserID?: number; FirstName?: string }
 		} | null
 
 		// Classic can answer 200 with a logical error, so the envelope matters.
 		if (!body || body.IsError === true) return { valid: false }
 
-		// ONLY the id. The same payload carries email, name and a lot else; none
-		// of it belongs in analytics, so it is deliberately not read.
-		const userID = body.ResponseData?.UserID
-		return { valid: true, userId: userID ? String(userID) : undefined }
+		// Only the id and first name. The same ~47KB payload also carries the
+		// email address, last name and internal-user flags — none of that is
+		// needed to greet someone in the header, so none of it is read. The id
+		// goes to analytics; the first name only ever reaches the header of the
+		// person it belongs to (this response is private, no-store).
+		const data = body.ResponseData
+		return {
+			valid: true,
+			userId: data?.UserID ? String(data.UserID) : undefined,
+			firstName: data?.FirstName?.trim() || undefined,
+		}
 	} catch {
 		return { valid: null } // aborted or network failure
 	} finally {
@@ -117,6 +125,7 @@ export async function GET() {
 	let signedIn = false
 	let validated = false
 	let userId: string | undefined
+	let firstName: string | undefined
 
 	if (value) {
 		const result = await validateSession(value)
@@ -124,12 +133,13 @@ export async function GET() {
 		signedIn = result.valid ?? true
 		validated = result.valid !== null
 		userId = result.userId
+		firstName = result.firstName
 	}
 
 	return Response.json(
 		// `validated` keeps a checked session distinguishable from a bare cookie,
 		// so the two are never conflated in a funnel.
-		{ signedIn, validated, ...(userId ? { userId } : {}) },
+		{ signedIn, validated, ...(userId ? { userId } : {}), ...(firstName ? { firstName } : {}) },
 		{
 			headers: {
 				// Per-visitor — no shared cache may store it.
