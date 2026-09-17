@@ -21,7 +21,7 @@ import {
 } from "./navIcons";
 import { isNavHidden } from "lib/docs/legacyFrameworks";
 import { Sheet, SheetTrigger, SheetContent, SheetClose } from "components/ui/sheet";
-import { getSessionUser, type SessionUser } from "lib/auth/getSessionUser";
+import { getSessionUser, onSessionRefocus, type SessionUser } from "lib/auth/getSessionUser";
 
 function classNames(...classes: string[]) {
 	return classes.filter(Boolean).join(" ");
@@ -49,11 +49,16 @@ function useSessionUser(): SessionUser | null {
 	const [user, setUser] = useState<SessionUser | null>(null);
 	useEffect(() => {
 		let alive = true;
-		getSessionUser().then((u) => {
+		const apply = (u: SessionUser) => {
 			if (alive) setUser(u);
-		});
+		};
+		getSessionUser().then(apply);
+		// Re-check when the tab regains focus, so signing in elsewhere catches up
+		// here without a hard reload.
+		const off = onSessionRefocus(apply);
 		return () => {
 			alive = false;
+			off();
 		};
 	}, []);
 	return user;
@@ -170,8 +175,6 @@ export default function Header({
 							)}
 							<a
 								href={CONTENT_MANAGER.href}
-								target="_blank"
-								rel="noreferrer"
 								className="btn-shimmer inline-flex h-8 items-center whitespace-nowrap rounded-(--r-sm) px-2.5 text-sm font-medium transition-[filter] hover:brightness-[.97]"
 								style={{ color: "var(--on-color)", backgroundColor: "var(--tertiary)" }}
 							>
@@ -182,16 +185,12 @@ export default function Header({
 						<>
 							<a
 								href={SIGN_IN.href}
-								target="_blank"
-								rel="noreferrer"
 								className="hidden h-8 items-center whitespace-nowrap rounded-(--r-sm) px-2.5 text-sm font-medium text-(--text-2) transition-colors hover:bg-(--raised) hover:text-(--text) min-[1440px]:inline-flex"
 							>
 								{SIGN_IN.name}
 							</a>
 							<a
 								href={LETS_CHAT.href}
-								target="_blank"
-								rel="noreferrer"
 								className="btn-shimmer inline-flex h-8 items-center whitespace-nowrap rounded-(--r-sm) px-2.5 text-sm font-medium transition-[filter] hover:brightness-[.97]"
 								style={{ color: "var(--on-color)", backgroundColor: "var(--tertiary)" }}
 							>
@@ -464,8 +463,6 @@ const MobileMenu = ({
 					) : (
 						<a
 							href={SIGN_IN.href}
-							target="_blank"
-							rel="noreferrer"
 							className="text-sm font-semibold text-(--text-2) hover:text-(--primary-text)"
 						>
 							{SIGN_IN.name}
@@ -475,8 +472,6 @@ const MobileMenu = ({
 				<div className="mt-4 px-3">
 					<a
 						href={sessionUser?.signedIn ? CONTENT_MANAGER.href : LETS_CHAT.href}
-						target="_blank"
-						rel="noreferrer"
 						className="block rounded-(--r-sm) py-2 text-center text-[.9rem] font-bold"
 						style={{ color: "var(--on-color)", backgroundColor: "var(--tertiary)" }}
 					>
