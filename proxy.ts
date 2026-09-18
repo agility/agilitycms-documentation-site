@@ -106,7 +106,18 @@ const applyCacheHeaders = (res: NextResponse, request: NextRequest) => {
  * They are listed anyway so this reads as the full inventory of hand-written
  * routes — add to it when you add one.
  */
-const APP_PATHS = new Set(["/", "/llms.txt", "/robots.txt", "/sitemap.xml"]);
+const APP_PATHS = new Set([
+	"/",
+	"/llms.txt",
+	"/robots.txt",
+	"/sitemap.xml",
+	// The CMS's own error pages. They must pass unconditionally, not via the
+	// sitemap lookup: notFoundResponse fetches /404 for its body, and if that
+	// fetch were itself subject to the check it would recurse the moment the CMS
+	// page went away.
+	"/404",
+	"/500",
+]);
 
 /**
  * Published paths per locale, memoised in module scope — the proxy runs on the
@@ -199,45 +210,82 @@ const isPublishedPath = async (locale: string, path: string): Promise<boolean | 
 };
 
 /**
- * Rewrite target for a real 404: Next's prerendered not-found page
- * (app/not-found.tsx), which carries status 404 in its own metadata and needs
- * no server render. Rewriting to a normal page route inside the basePath would
- * hit a partially prerendered route and hand back 200 again.
+ * A real 404 — status AND body, both set here.
  *
- * The path to reach it differs by host, and the two are exact opposites —
- * verified against a Vercel preview deployment and `next start`:
+ * The status cannot come from a rewrite. Verified on a Vercel preview: a
+ * rewrite to the prerendered not-found page serves the right HTML and answers
+ * 200, because Vercel does not adopt the destination's status (Next's own
+ * resolve-routes.js only propagates a status for the redirect branch, never the
+ * rewrite one). A rewrite to anything outside the basePath is worse — Vercel
+ * never reaches the app and returns its 79-byte plain-text platform 404.
  *
- *   · On Vercel the not-found page is published at {basePath}/404, and it wins
- *     over the CMS's own /404 page. Anything OUTSIDE the basePath doesn't reach
- *     the app at all: Vercel answers with its own 79-byte plain-text platform
- *     404 (x-vercel-error: NOT_FOUND), which is what shipped before this.
- *   · Under `next start` there is no such mapping. {basePath}/404 matches the
- *     catch-all and renders the CMS page at 200, while a path outside the
- *     basePath matches no route and gets the not-found page at 404.
+ * So the proxy answers directly. The status is ours by construction, and the
+ * body is the page the host already serves at {basePath}/404 — on Vercel that
+ * is the prerendered app/not-found.tsx (site chrome and all), under
+ * `next start` it is the CMS's /404 page. Either way a real 404 carrying a real
+ * page, with no per-host branching.
  *
- * So the target is picked per host rather than choosing one and letting the
- * other quietly regress — a 404 that only works in production is a 404 nobody
- * can test, and one that only works locally is the bug this comment exists for.
+ * Fetched once per instance and held in module scope: the page only changes on
+ * deploy, and a deploy gives us a new instance anyway.
  */
-const NOT_FOUND_PATH = process.env.VERCEL
-	? `${nextConfig.basePath || ""}/404`
-	: "/__docs-not-found";
+let notFoundHtml: string | null = null;
+let notFoundInFlight: Promise<string | null> | null = null;
 
-const notFoundResponse = (request: NextRequest) => {
-	const res = NextResponse.rewrite(new URL(NOT_FOUND_PATH, request.url));
+/**
+ * Used only if that fetch fails. Deliberately self-contained — no CSS file, no
+ * fonts, nothing that could fail second. A reader should still learn what
+ * happened and get a way out.
+ */
+const FALLBACK_NOT_FOUND_HTML = `<!doctype html>
+<html lang="en-US"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>404 — Page not found</title>
+<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0e0d0c;color:#f1efe9;font:16px/1.5 system-ui,-apple-system,sans-serif}
+main{text-align:center;max-width:32rem;padding:2rem}h1{font-size:1.75rem;margin:0 0 1rem}
+p{margin:0 0 2rem;color:#b5b0a5}a{color:#f1efe9}</style></head>
+<body><main><h1>We couldn&rsquo;t find that page.</h1>
+<p>It either moved or we pointed you at a dead link.</p>
+<a href="${nextConfig.basePath || "/"}">Back to Docs home</a></main></body></html>`;
 
-	// Short CDN life, unlike a page (an hour). A 404 cached for a path that has
-	// since been published can't be purged by the publish webhook — that purge
-	// runs at publish time, before this response was ever cached — so the TTL is
-	// the only thing that clears it. Keep it to seconds. Junk URLs are still
-	// absorbed at the edge rather than at the origin.
-	// (No Cache-Control here — Next sets its own no-store on a 404 response and
-	// overwrites ours. The two CDN headers are what actually govern the edge.)
-	res.headers.set("CDN-Cache-Control", "public, s-maxage=15");
-	res.headers.set("Netlify-CDN-Cache-Control", "public, s-maxage=15");
-	res.headers.set("Netlify-Vary", NETLIFY_VARY);
-	res.headers.set("Netlify-Cache-Tag", "docs");
-	return res;
+const loadNotFoundHtml = (origin: string): Promise<string | null> => {
+	if (notFoundInFlight) return notFoundInFlight;
+	notFoundInFlight = (async () => {
+		try {
+			const res = await fetch(`${origin}${nextConfig.basePath || ""}/404`, {
+				headers: { accept: "text/html" },
+			});
+			const html = await res.text();
+			// A tiny body means we got a platform error page, not the real one.
+			if (!html || html.length < 500) return null;
+			notFoundHtml = html;
+			return html;
+		} catch {
+			return null;
+		} finally {
+			notFoundInFlight = null;
+		}
+	})();
+	return notFoundInFlight;
+};
+
+const notFoundResponse = async (request: NextRequest) => {
+	const html = notFoundHtml || (await loadNotFoundHtml(request.nextUrl.origin));
+
+	return new NextResponse(html || FALLBACK_NOT_FOUND_HTML, {
+		status: 404,
+		headers: {
+			"content-type": "text/html; charset=utf-8",
+			// Short CDN life, unlike a page (an hour). A 404 cached for a path that
+			// has since been published can't be purged by the publish webhook — that
+			// purge runs at publish time, before this response was ever cached — so
+			// the TTL is the only thing that clears it. Keep it to seconds. Junk URLs
+			// are still absorbed at the edge rather than at the origin.
+			"CDN-Cache-Control": "public, s-maxage=15",
+			"Netlify-CDN-Cache-Control": "public, s-maxage=15",
+			"Netlify-Vary": NETLIFY_VARY,
+			"Netlify-Cache-Tag": "docs",
+		},
+	});
 };
 
 export async function proxy(request: NextRequest) {
@@ -322,7 +370,7 @@ export async function proxy(request: NextRequest) {
 			// false = we know it doesn't exist. null = Agility is unreachable, so
 			// we can't know — fall through and let the page render as before.
 			const published = await isPublishedPath(locale, lookup);
-			if (published === false) return notFoundResponse(request);
+			if (published === false) return await notFoundResponse(request);
 		}
 	}
 
