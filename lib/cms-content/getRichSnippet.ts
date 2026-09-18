@@ -1,3 +1,5 @@
+import { cacheLife } from "next/cache";
+
 import { AgilityPageData } from "lib/cms/getAgilityPage";
 
 const SITE_URL = "https://agilitycms.com/docs";
@@ -76,7 +78,8 @@ export const getRichSnippet = async ({
 		// One VideoObject per video embedded in the article body, so pages that
 		// carry a video are eligible for video rich results / the Video tab.
 		// YouTube ids yield a derivable thumbnail; Vimeo embeds are enriched with
-		// a real thumbnail/title/duration via Vimeo's oEmbed API (cached a day),
+		// a real thumbnail/title/duration via Vimeo's oEmbed API (in a 'use cache'
+		// scope — see vimeoOEmbed, it must stay there),
 		// falling back gracefully if that lookup fails. uploadDate isn't tracked
 		// per video, so it falls back to the article's publish date.
 		const videos = extractVideos(dynamicPageItem);
@@ -135,15 +138,28 @@ const iso8601Duration = (seconds: number): string => {
 };
 
 // Look up a public Vimeo video's thumbnail/title/duration via the oEmbed API.
-// Cached a day so builds/requests don't refetch; failures resolve to {} so the
-// VideoObject simply falls back to whatever the body already provided.
+//
+// MUST stay inside a 'use cache' scope. Cache Components treats an uncached
+// fetch as request-time IO, which postpones the render — and because
+// getRichSnippet is awaited in the page (inside the layout's <Suspense>), that
+// postponed the WHOLE article body. The eleven articles that embed a Vimeo
+// video were shipping a header-only shell and resuming the render on every
+// request, while every other page prerendered in full. `next: { revalidate }`
+// did not save us: under Cache Components that option is replaced by the cache
+// scope, so it cached nothing here.
+//
+// Failures resolve to {} so the VideoObject falls back to whatever the body
+// already provided — note that an empty result is cached like any other, so a
+// Vimeo outage costs a thumbnail until the entry revalidates, not a render.
 const vimeoOEmbed = async (id: string): Promise<Partial<ExtractedVideo>> => {
+	"use cache";
+	// Matches the 86400s this fetch asked for before: revalidate daily.
+	cacheLife("days");
 	try {
 		// width=1280 makes Vimeo return a large (1280px) thumbnail rather than the
 		// ~295px default — Google prefers high-res thumbnails for video results.
 		const res = await fetch(
 			`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}&width=1280`,
-			{ next: { revalidate: 86400 } },
 		);
 		if (!res.ok) return {};
 		const j: any = await res.json();
