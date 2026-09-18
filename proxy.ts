@@ -117,7 +117,13 @@ const APP_PATHS = new Set(["/", "/llms.txt", "/robots.txt", "/sitemap.xml"]);
  * so a flood of junk URLs can't turn into a fetch per request.
  */
 const PATHS_TTL_MS = 60_000;
-const MISS_MIN_AGE_MS = 10_000;
+// Deliberately small. This is the blind spot: a page published less than this
+// ago, on an instance that refreshed less than this ago, 404s — and the publish
+// webhook's Netlify purge has already run by then, so that 404 then sits in the
+// CDN for its TTL. Two seconds keeps an author from meeting a 404 on the page
+// they just published, and still caps a junk-URL flood at one sitemap fetch per
+// two seconds per instance.
+const MISS_MIN_AGE_MS = 2_000;
 
 interface KnownPaths {
 	paths: Set<string>;
@@ -203,13 +209,15 @@ const NOT_FOUND_PATH = "/__docs-not-found";
 const notFoundResponse = (request: NextRequest) => {
 	const res = NextResponse.rewrite(new URL(NOT_FOUND_PATH, request.url));
 
-	// Short CDN life, unlike a page: if we ever 404 a path we shouldn't have,
-	// it self-heals in a minute instead of sitting in the Netlify cache for an
-	// hour. Junk URLs still get absorbed at the edge rather than at the origin.
+	// Short CDN life, unlike a page (an hour). A 404 cached for a path that has
+	// since been published can't be purged by the publish webhook — that purge
+	// runs at publish time, before this response was ever cached — so the TTL is
+	// the only thing that clears it. Keep it to seconds. Junk URLs are still
+	// absorbed at the edge rather than at the origin.
 	// (No Cache-Control here — Next sets its own no-store on a 404 response and
 	// overwrites ours. The two CDN headers are what actually govern the edge.)
-	res.headers.set("CDN-Cache-Control", "public, s-maxage=60");
-	res.headers.set("Netlify-CDN-Cache-Control", "public, s-maxage=60");
+	res.headers.set("CDN-Cache-Control", "public, s-maxage=15");
+	res.headers.set("Netlify-CDN-Cache-Control", "public, s-maxage=15");
 	res.headers.set("Netlify-Vary", NETLIFY_VARY);
 	res.headers.set("Netlify-Cache-Tag", "docs");
 	return res;
