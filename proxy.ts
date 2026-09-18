@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import agility from "@agility/content-fetch";
+import nextConfig from "next.config";
 import { defaultLocale, getLocaleFromPathname } from "lib/i18n/config";
 import { isDevMode } from "lib/cms/isDevMode";
 
@@ -198,13 +199,29 @@ const isPublishedPath = async (locale: string, path: string): Promise<boolean | 
 };
 
 /**
- * Rewrite target for a real 404. It is OUTSIDE the /docs basePath deliberately:
- * a path the router does not match is served by Next's prerendered not-found
- * page (app/not-found.tsx) with a genuine 404 status and no server render.
- * Rewriting to anything INSIDE the basePath would hit a partially prerendered
- * route and hand back 200 again.
+ * Rewrite target for a real 404: Next's prerendered not-found page
+ * (app/not-found.tsx), which carries status 404 in its own metadata and needs
+ * no server render. Rewriting to a normal page route inside the basePath would
+ * hit a partially prerendered route and hand back 200 again.
+ *
+ * The path to reach it differs by host, and the two are exact opposites —
+ * verified against a Vercel preview deployment and `next start`:
+ *
+ *   · On Vercel the not-found page is published at {basePath}/404, and it wins
+ *     over the CMS's own /404 page. Anything OUTSIDE the basePath doesn't reach
+ *     the app at all: Vercel answers with its own 79-byte plain-text platform
+ *     404 (x-vercel-error: NOT_FOUND), which is what shipped before this.
+ *   · Under `next start` there is no such mapping. {basePath}/404 matches the
+ *     catch-all and renders the CMS page at 200, while a path outside the
+ *     basePath matches no route and gets the not-found page at 404.
+ *
+ * So the target is picked per host rather than choosing one and letting the
+ * other quietly regress — a 404 that only works in production is a 404 nobody
+ * can test, and one that only works locally is the bug this comment exists for.
  */
-const NOT_FOUND_PATH = "/__docs-not-found";
+const NOT_FOUND_PATH = process.env.VERCEL
+	? `${nextConfig.basePath || ""}/404`
+	: "/__docs-not-found";
 
 const notFoundResponse = (request: NextRequest) => {
 	const res = NextResponse.rewrite(new URL(NOT_FOUND_PATH, request.url));
