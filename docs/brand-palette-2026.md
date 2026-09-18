@@ -15,9 +15,10 @@ records how that palette lands in *this* repo.
 > already correct and is unchanged.
 
 Live token values are in [styles/tokens.css](../styles/tokens.css); this document
-is the reasoning behind them. **Deploying this? Read
-[Rollout to production](#rollout-to-production) at the bottom first — there is a
-manual media step that code cannot do.** The marketing site's copy of the same palette is
+is the reasoning behind them. **Changing a diagram? Read
+[Rollout to production](#rollout-to-production) at the bottom first — diagrams carry a
+manual media step that code cannot do** (done for the current three, and incurred again by
+any future change). The marketing site's copy of the same palette is
 `src/app/globals.css` in Agility-Website-Nextjs-2026 — the two must stay in step.
 
 ---
@@ -180,12 +181,23 @@ framing. Every hljs token stays above AA on the new ground; the tightest is
 
 ## Known gaps
 
-- **Three diagrams need re-uploading to Agility media.** The repo sources in
-  `docs/diagrams/` were byte-identical to the live CDN copies under
-  `agility-cms-docs/docs-redesign/`, and both carried the pre-2026 hexes. The
-  sources have now been recoloured (2026-08-24); **the CDN copies have not** —
-  they still render the old palette on live docs pages until someone uploads
-  the updated files. Five other CDN diagrams scanned clean.
+- ~~**Three diagrams need re-uploading to Agility media.**~~ ✅ **Uploaded — verified
+  2026-09-18.** The live copies under `agility-cms-docs/docs-redesign/` are
+  **byte-identical to the working-tree sources** in `docs/diagrams/`, carrying the brand
+  hues, Deep, *and* the dual-theme rewrite. Five other CDN diagrams scanned clean. The
+  recolour mapping is kept below for reference and for any diagram added later.
+
+  **Note on where these actually live.** The published diagram is an **Agility media asset**
+  in instance `67bc73e6-u` — same as every other image on this site — and `cdn.aglty.io` is
+  that media library's CDN, not a cache in front of the repo. Agility is the system of
+  record. `docs/diagrams/` holds working sources for the three diagrams that have them, and
+  **most diagrams added from here on will be Agility assets with no repo copy at all**, so
+  do not treat this folder as canonical or assume a live diagram has a source here.
+
+  Minor housekeeping as of 2026-09-18: the three working-tree files carry the dual-theme
+  rewrite and are ahead of `HEAD` (the committed versions are still single-theme, colours in
+  presentation attributes). Worth committing so the diff is reviewable — nothing is at risk
+  either way, since the published asset is in Agility.
 
   Mapping applied, per the dark-theme fill/type split:
 
@@ -279,45 +291,45 @@ faster; the duplicated work and bundle weight were real in both.
 
 ## Rollout to production
 
-Everything in this change set ships with the code **except one manual step**.
+Everything in this change set ships with the code **except the diagram media**, which is
+manual. That step is complete for the current three files (§1); it returns the next time a
+diagram changes.
 
-### 1. Upload the three recoloured diagrams (REQUIRED — do this at deploy)
+### 1. ✅ Upload the three recoloured diagrams — DONE (verified 2026-09-18)
 
-The repo sources are recoloured; the live CDN copies are not. Until they are
-replaced, three docs pages render the pre-2026 teal and blue against the new
-palette.
+Kept here because it is the one step in this change set that **code cannot do** — it is a
+manual media replacement — and because any future diagram change incurs it again.
 
-> **Verified 2026-09-17: this upload has never been done.** Fetching all three live
-> CDN copies shows they still carry *both* the pre-2026 brand hues (`#3EB4C2`
-> teal, `#83A9F4` blue, `#FFC414` yellow) **and** the Stone ramp. The August 2026
-> palette change never reached the CDN. That is not extra work — the repo sources
-> now carry the brand hues *and* Deep, so **one upload clears both.** Re-verify
-> rather than assuming:
->
-> ```bash
-> for n in web-studio page-management ai-mcp; do
->   echo "== $n"; curl -s "https://cdn.aglty.io/agility-cms-docs/docs-redesign/docs-diagram-$n.svg" \
->     | grep -o "#3EB4C2\|#FFC414\|#83A9F4\|#181716\|#1F1E1C\|#2A2826" | sort -u
-> done
-> # Any output at all = the old file is still live.
-> ```
+The live CDN copies match the **working-tree** sources byte for byte (they are ahead of
+`HEAD` — see Known gaps). Re-verify with a diff rather than a hex grep:
 
-| Upload this | To this CDN path |
+```bash
+for n in web-studio page-management ai-mcp; do
+  curl -s "https://cdn.aglty.io/agility-cms-docs/docs-redesign/docs-diagram-$n.svg" \
+    | diff -q - "docs/diagrams/docs-diagram-$n.svg" >/dev/null \
+    && echo "$n: current" || echo "$n: STALE — re-upload"
+done
+```
+
+> ⚠️ **The old hex-grep check in this section was unreliable and has been replaced.** It
+> grepped `#181716` as evidence of the Stone ramp — but `#181716` is *also* the light
+> theme's `--text`, so a fully correct current file still matches it. That false positive
+> is why this upload was reported as outstanding on 2026-09-17 when re-checking by diff
+> shows the files in place. Diff against the source; do not grep for old hexes.
+
+| Source | CDN path |
 | --- | --- |
 | `docs/diagrams/docs-diagram-web-studio.svg` | `agility-cms-docs/docs-redesign/docs-diagram-web-studio.svg` |
 | `docs/diagrams/docs-diagram-page-management.svg` | `agility-cms-docs/docs-redesign/docs-diagram-page-management.svg` |
 | `docs/diagrams/docs-diagram-ai-mcp.svg` | `agility-cms-docs/docs-redesign/docs-diagram-ai-mcp.svg` |
 
-Notes:
-- **The repo filenames now match the CDN filenames exactly** (they were renamed
-  to carry the `docs-` prefix on 2026-09-17). Upload each file under the name it
-  already has — if a name drifts, the `<img src>` in the articles breaks.
-- These replace live media on the production docs site, so the change is visible
-  the moment it is saved — do it as part of the deploy, not before.
-- `cdn.aglty.io` may serve a cached copy of the old file for a while. Hard-reload
-  and confirm rather than assuming; if the URL is unversioned, allow for cache TTL.
-- Ordering is not critical either way: old diagrams on the new palette look
-  off-brand, new diagrams on the old palette look equally off. Same-day is fine.
+Notes that still apply to **any** future diagram upload:
+- **The repo filenames match the CDN filenames exactly.** Upload each file under the name
+  it already has — if a name drifts, the `<img src>` in the articles breaks.
+- These replace live media on the production docs site, so the change is visible the moment
+  it is saved — do it as part of the deploy, not before.
+- `cdn.aglty.io` may serve a cached copy of the old file for a while. Hard-reload and confirm
+  rather than assuming; if the URL is unversioned, allow for cache TTL.
 
 ### 2. Verify after deploy
 
@@ -334,7 +346,10 @@ Notes:
   the page, not as near-black wells. If they look flat, `--code-bg` has been
   reverted — see the Stone → Deep section.
 - The preview panel: right edge, opens a modal, Copy link and Edit in CMS work.
-- The three diagram pages, once uploaded.
+- The three diagram pages — **in both themes**. The diagrams are dual-theme in one file
+  (`@media (prefers-color-scheme: dark)` inside the SVG), and they only follow the site's
+  theme because `<html>` carries `style.colorScheme`. Toggling the footer picker must flip
+  the diagrams too; if they stick to the OS setting, `color-scheme` is not being set.
 
 ### 3. Measure what was never measured
 
