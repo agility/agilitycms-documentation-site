@@ -58,15 +58,20 @@ const CodeBlock = ({ module: { fields, contentID } }: CodeBlockProps) => {
 					{showCopy && <CopyCodeButton code={fields.code} />}
 				</div>
 				{/* Padding on the <code>, not the scrolling <pre>, so the horizontal
-				    scrollbar sits flush to the panel edges. */}
+				    scrollbar sits flush to the panel edges. It has to be INLINE: the
+				    unlayered `.hljs { padding: 0 }` reset in globals.css outranks any
+				    Tailwind `p-*`, which lives in @layer utilities — so a class here
+				    silently collapsed to zero on every highlighted block. 1.25rem
+				    matches `.prose pre code` and the editor Code block. */}
 				<pre className="m-0 overflow-x-auto">
 					<code
-						className={`language-${fields.language}${highlighted ? " hljs" : ""} block p-4`}
+						className={`language-${fields.language}${highlighted ? " hljs" : ""} block`}
 						style={{
 							fontFamily: "var(--mono)",
 							fontSize: ".82rem",
 							color: "var(--text)",
 							lineHeight: 1.75,
+							padding: "1.25rem",
 						}}
 						data-agility-field="code"
 						{...(highlighted

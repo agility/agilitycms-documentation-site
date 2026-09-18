@@ -102,7 +102,7 @@ const PreviewBar = ({ isPreview, isDevelopmentMode, page, dynamicPageItem }: Pre
 			? `content/listitem-${dynamicPageItem.contentID}`
 			: `pages/page-${page?.pageID}`;
 		window.open(
-			`https://manager.agilitycms.com/instance/${process.env.NEXT_PUBLIC_AGILITY_GUID}/en-us/${itemPath}`
+			`https://app.agilitycms.com/instance/${process.env.NEXT_PUBLIC_AGILITY_GUID}/en-us/${itemPath}`
 		);
 	}, [dynamicPageItem, page]);
 

@@ -1,6 +1,7 @@
 import React from "react";
 import OceanLink from "./OceanLink";
 import { getContentList } from "lib/cms/getContentList";
+import { renderPageSections } from "lib/docs/renderPageSections";
 
 interface LinkCardFields {
 	heading: string;
@@ -23,6 +24,8 @@ interface ArticleListSectionProps {
 	};
 	languageCode?: string;
 	isPreview?: boolean;
+	/** Passed to every module by ContentZone; keys the shared heading pass. */
+	page?: any;
 }
 
 // Section heading + intro + link cards (mockup .sec-title + guide links)
@@ -30,21 +33,32 @@ const ArticleListSection = async ({
 	module: { fields, contentID },
 	languageCode,
 	isPreview,
+	page,
 }: ArticleListSectionProps) => {
 	const items = Array.isArray(fields.items)
 		? fields.items
 		: await getNestedItems(fields.items, languageCode, isPreview);
 
+	// The on-this-page nav lists this heading too, so it needs an anchor. The id
+	// is minted in the page-wide pass rather than here, so it is deduped against
+	// every other heading on the page.
+	const headingID = renderPageSections(page).headingIdByContentID.get(Number(contentID));
+
 	return (
 		<section className="ocean-band px-[var(--space)] py-6" style={{ background: "var(--bg)" }} data-agility-component={contentID}>
 			<div className="max-w-[var(--wrap)] mx-auto">
 				<h2
+					id={headingID}
 					className="m-0 mb-2"
 					style={{
 						fontFamily: "var(--serif)",
 						fontSize: "clamp(1.4rem,2.6vw,1.85rem)",
 						letterSpacing: "-.02em",
 						color: "var(--text)",
+						// `.prose :is(h2,h3,h4)` carries this for rich-text headings; this
+						// one sits outside .prose, so an anchor jump would otherwise park
+						// it under the sticky header.
+						scrollMarginTop: "var(--heading-scroll-offset)",
 					}}
 					data-agility-field="sectionHeading"
 				>
