@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import agility from "@agility/content-fetch";
 import { defaultLocale, getLocaleFromPathname } from "lib/i18n/config";
+import { isDevMode } from "lib/cms/isDevMode";
 
 /**
  * Proxy (Next 16's renamed middleware — the middleware.ts convention is
@@ -9,7 +11,8 @@ import { defaultLocale, getLocaleFromPathname } from "lib/i18n/config";
  *  2. Agility preview exit:   ?AgilityPreview=0       -> /api/preview/exit
  *  3. Dynamic-content deep link: ?ContentID=n         -> /api/dynamic-redirect
  *  4. Clean markdown (T7):     /{article-path}.md     -> /api/article-md
- *  5. Locale routing: unprefixed paths REWRITE to /{defaultLocale}/... so the
+ *  5. Unknown paths -> a real 404 (see notFoundResponse)
+ *  6. Locale routing: unprefixed paths REWRITE to /{defaultLocale}/... so the
  *     default locale serves clean URLs while routing into app/[locale].
  *
  * NOTE: request.nextUrl.pathname excludes the /docs basePath; rewrites built
@@ -76,7 +79,143 @@ const applyCacheHeaders = (res: NextResponse, request: NextRequest) => {
 	return res;
 };
 
-export function proxy(request: NextRequest) {
+/*
+ * ---------------------------------------------------------------------------
+ * Published-path validation (block 5)
+ * ---------------------------------------------------------------------------
+ * Without this the site answers every unknown URL with 200 and the not-found
+ * UI — a soft 404. The cause is structural, not a bug we can fix in the page:
+ * `cacheComponents` partially prerenders every route, so the static shell (and
+ * with it the 200 status line) is already on the wire before the page resolves
+ * the sitemap and calls notFound(). Next's own docs put it plainly: not-found
+ * returns "200 for streamed responses, 404 for non-streamed", and "because the
+ * response headers have already been sent, the status code cannot be updated".
+ *
+ * The proxy is the last place the status is still ours to set, so the check
+ * happens here, before anything renders.
+ */
+
+/**
+ * Paths this app serves itself. They are not in the Agility sitemap, so the
+ * check below has to let them through — anything answered by a route handler
+ * or a file convention rather than by the CMS belongs in this set.
+ *
+ * /robots.txt, /sitemap.xml and /_next/* never reach the proxy at all (see
+ * `matcher`), and /llms.txt is caught by the "has a dot" static-file rule.
+ * They are listed anyway so this reads as the full inventory of hand-written
+ * routes — add to it when you add one.
+ */
+const APP_PATHS = new Set(["/", "/llms.txt", "/robots.txt", "/sitemap.xml"]);
+
+/**
+ * Published paths per locale, memoised in module scope — the proxy runs on the
+ * Node.js runtime (Next 16 default), so a warm instance keeps this between
+ * requests and the common case costs nothing.
+ *
+ * TTL is the routine refresh. A miss additionally forces ONE refresh, because a
+ * page published since the last fetch must not 404 — throttled by MISS_MIN_AGE
+ * so a flood of junk URLs can't turn into a fetch per request.
+ */
+const PATHS_TTL_MS = 60_000;
+const MISS_MIN_AGE_MS = 10_000;
+
+interface KnownPaths {
+	paths: Set<string>;
+	fetchedAt: number;
+}
+
+const pathCache = new Map<string, KnownPaths>();
+const inFlight = new Map<string, Promise<KnownPaths | null>>();
+
+const fetchKnownPaths = async (locale: string): Promise<KnownPaths | null> => {
+	try {
+		const api = agility.getApi({
+			guid: process.env.AGILITY_GUID,
+			apiKey: process.env.AGILITY_API_FETCH_KEY,
+			isPreview: false,
+		});
+		const sitemap: any = await api.getSitemapFlat({
+			channelName: process.env.AGILITY_SITEMAP || "website",
+			languageCode: locale,
+		});
+
+		// Folders have no page of their own — getAgilityPage 404s them too, so
+		// they are not valid paths. Redirect nodes ARE kept: the page handles the
+		// redirect, and 404ing them here would break every legacy URL.
+		const paths = Object.keys(sitemap || {}).filter((p) => sitemap[p]?.isFolder !== true);
+
+		// An empty sitemap means the fetch went wrong upstream, not that the docs
+		// have no pages. Never let that 404 the entire site.
+		if (paths.length === 0) return null;
+
+		const entry: KnownPaths = { paths: new Set(paths), fetchedAt: Date.now() };
+		pathCache.set(locale, entry);
+		return entry;
+	} catch {
+		return null;
+	}
+};
+
+/** One in-flight fetch per locale, shared by every request that needs it. */
+const loadKnownPaths = (locale: string): Promise<KnownPaths | null> => {
+	const pending = inFlight.get(locale);
+	if (pending) return pending;
+	const load = fetchKnownPaths(locale).finally(() => inFlight.delete(locale));
+	inFlight.set(locale, load);
+	return load;
+};
+
+/**
+ * Is this a published path? `null` means we couldn't find out — Agility was
+ * unreachable — and every caller must then fail OPEN. A docs outage must not
+ * turn into a site-wide 404, and the old soft-404 behaviour is a safe fallback.
+ */
+const isPublishedPath = async (locale: string, path: string): Promise<boolean | null> => {
+	let entry = pathCache.get(locale) || null;
+
+	if (!entry || Date.now() - entry.fetchedAt > PATHS_TTL_MS) {
+		// Keep the stale set if the refresh fails — stale beats nothing.
+		entry = (await loadKnownPaths(locale)) || entry;
+	}
+	if (!entry) return null;
+	if (entry.paths.has(path)) return true;
+
+	// A miss may just be a page published since we last looked. Refresh once
+	// before committing to a 404 (see MISS_MIN_AGE_MS).
+	if (Date.now() - entry.fetchedAt > MISS_MIN_AGE_MS) {
+		const fresh = await loadKnownPaths(locale);
+		if (!fresh) return null;
+		return fresh.paths.has(path);
+	}
+
+	return false;
+};
+
+/**
+ * Rewrite target for a real 404. It is OUTSIDE the /docs basePath deliberately:
+ * a path the router does not match is served by Next's prerendered not-found
+ * page (app/not-found.tsx) with a genuine 404 status and no server render.
+ * Rewriting to anything INSIDE the basePath would hit a partially prerendered
+ * route and hand back 200 again.
+ */
+const NOT_FOUND_PATH = "/__docs-not-found";
+
+const notFoundResponse = (request: NextRequest) => {
+	const res = NextResponse.rewrite(new URL(NOT_FOUND_PATH, request.url));
+
+	// Short CDN life, unlike a page: if we ever 404 a path we shouldn't have,
+	// it self-heals in a minute instead of sitting in the Netlify cache for an
+	// hour. Junk URLs still get absorbed at the edge rather than at the origin.
+	// (No Cache-Control here — Next sets its own no-store on a 404 response and
+	// overwrites ours. The two CDN headers are what actually govern the edge.)
+	res.headers.set("CDN-Cache-Control", "public, s-maxage=60");
+	res.headers.set("Netlify-CDN-Cache-Control", "public, s-maxage=60");
+	res.headers.set("Netlify-Vary", NETLIFY_VARY);
+	res.headers.set("Netlify-Cache-Tag", "docs");
+	return res;
+};
+
+export async function proxy(request: NextRequest) {
 	const { nextUrl } = request;
 	const pathname = nextUrl.pathname;
 
@@ -132,11 +271,37 @@ export function proxy(request: NextRequest) {
 		return NextResponse.rewrite(url);
 	}
 
-	// 5. Locale routing — rewrite unprefixed paths into /[locale].
 	const isStaticFile = pathname.includes(".") || pathname.startsWith("/_next");
 	const isApi = pathname.startsWith("/api/");
-	const hasLocalePrefix = getLocaleFromPathname(pathname) !== null;
+	const localePrefix = getLocaleFromPathname(pathname);
+	const hasLocalePrefix = localePrefix !== null;
 
+	// 5. Does this path exist? Anything the CMS doesn't publish and the app
+	//    doesn't serve itself gets a real 404, decided here because by the time
+	//    the page could call notFound() the 200 is already sent.
+	//
+	//    Skipped for draft mode and local dev: both read STAGING content, which
+	//    includes pages missing from the published sitemap this checks against,
+	//    so an editor previewing a new page would be 404'd on their own draft.
+	const skipPathCheck =
+		isStaticFile || isApi || isDevMode() || request.cookies.has(DRAFT_COOKIE);
+
+	if (!skipPathCheck) {
+		const locale = localePrefix || defaultLocale;
+		// Sitemap keys are unprefixed ("/editors/scheduling"), so drop the locale
+		// segment; a bare locale ("/en-us") is the home page, same as "/".
+		const localeless = hasLocalePrefix ? pathname.slice(locale.length + 1) : pathname;
+		const lookup = localeless.length > 1 ? localeless.replace(/\/+$/, "") : localeless || "/";
+
+		if (!APP_PATHS.has(lookup)) {
+			// false = we know it doesn't exist. null = Agility is unreachable, so
+			// we can't know — fall through and let the page render as before.
+			const published = await isPublishedPath(locale, lookup);
+			if (published === false) return notFoundResponse(request);
+		}
+	}
+
+	// 6. Locale routing — rewrite unprefixed paths into /[locale].
 	if (!hasLocalePrefix && !isStaticFile && !isApi) {
 		const url = nextUrl.clone();
 		url.pathname = `/${defaultLocale}${pathname === "/" ? "" : pathname}`;
