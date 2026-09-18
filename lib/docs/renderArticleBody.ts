@@ -235,8 +235,13 @@ function rehypeGithubAlerts() {
 					className: ["callout-mark"],
 					style:
 						`flex: none; display: grid; place-items: center; width: 1.5rem; height: 1.5rem; ` +
+						// --on-primary, NOT --on-color: it is the token that flips
+						// white/near-black by theme, so the glyph clears AA on every
+						// fill. --on-color is near-black in BOTH themes and measured
+						// 3.08-3.67:1 on these light fills; --on-primary gives
+						// 5.29-6.31:1 and is identical in dark. AGENTS.md calls for it.
 						`font-weight: 800; font-size: .875rem; border-radius: var(--r-sm); ` +
-						`background: var(${token}); color: var(--on-color);`,
+						`background: var(${token}); color: var(--on-primary);`,
 				},
 				children: [{ type: "text", value: mark }],
 			};

@@ -275,6 +275,10 @@ code > span.hljs-string {
 	background: var(--raised);
 	color: var(--text);
 	font-weight: normal !important;
+	/* Inline code declared no family, so it fell through to Tailwind's default
+	   --font-mono (Menlo) while fenced blocks used --mono (Fira Code) — two
+	   monospace faces on the same page. Same family as the panels now. */
+	font-family: var(--mono);
 }
 
 /* The highlight.js theme (lightfair) gives the .hljs <code> its own
