@@ -20,6 +20,12 @@ interface ArticleNavProps {
    * with no JavaScript. Only the active-section highlight below needs the client.
    */
   headings: ArticleHeading[];
+  /**
+   * The element inside [data-article-scope] that holds the headings. Articles
+   * render one body (#DynamicArticleDetails); a module page's headings are
+   * spread across the whole content zone, so hub pages pass #ContentContainer.
+   */
+  bodySelector?: string;
 }
 
 /**
@@ -37,7 +43,10 @@ const readScrollOffset = () => {
   return Number.isFinite(parsed) ? parsed : FALLBACK_OFFSET;
 };
 
-export default function ArticleNav({ headings }: ArticleNavProps) {
+export default function ArticleNav({
+  headings,
+  bodySelector = "#DynamicArticleDetails",
+}: ArticleNavProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const elementsRef = useRef<HTMLElement[]>([]);
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -88,7 +97,7 @@ export default function ArticleNav({ headings }: ArticleNavProps) {
      */
     const resolve = () => {
       const scope = rootRef.current?.closest<HTMLElement>("[data-article-scope]");
-      const body = scope?.querySelector<HTMLElement>("#DynamicArticleDetails");
+      const body = scope?.querySelector<HTMLElement>(bodySelector);
       if (!body) return false;
       const found = headings
         .map((h) => body.querySelector<HTMLElement>(`#${CSS.escape(h.id)}`))
@@ -124,7 +133,7 @@ export default function ArticleNav({ headings }: ArticleNavProps) {
     // `ids` rather than `headings`: the array identity changes every render but
     // the content rarely does.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ids, sync]);
+  }, [ids, sync, bodySelector]);
 
   if (headings.length === 0) return null;
 
@@ -133,7 +142,7 @@ export default function ArticleNav({ headings }: ArticleNavProps) {
       <div className="mb-3 font-mono text-[.66rem] uppercase tracking-[.14em] text-(--faint)">
         On this page
       </div>
-      <nav id="ArticleNav" aria-label="Article Nav">
+      <nav id="ArticleNav" aria-label="On this page">
         {/* Key on the anchor + index, never the heading text: articles legitimately
             repeat an H2 (e.g. two "Features" sections), which collided on `name`.
             The id is normally unique (EditorJS block id, or github-slugger's
