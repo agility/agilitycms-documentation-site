@@ -45,7 +45,10 @@ const CalloutBlock = ({ module: { fields, contentID } }: CalloutBlockProps) => {
 					style={{
 						borderRadius: "var(--r-sm)",
 						background: `var(${token})`,
-						color: "var(--on-color)",
+						// --on-primary flips white/near-black by theme; --on-color is
+						// near-black in both and measured 3.08-3.67:1 on these light
+						// fills (AA needs 4.5). Same swap as the Markdown alerts.
+						color: "var(--on-primary)",
 					}}
 				>
 					{mark}

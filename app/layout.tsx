@@ -31,14 +31,23 @@ export const metadata: Metadata = {
 };
 
 /**
- * Root layout: html shell, theme bootstrap, and fonts. The font CSS variables
- * live on the <main> wrapper because styles/tokens.css resolves its --font /
- * --serif / --mono aliases at the `main` selector (custom properties resolve
- * var() references at the declaring node — see tokens.css comment).
+ * Root layout: html shell, theme bootstrap, and fonts. The next/font variables
+ * live on <html> so they reach the WHOLE document — including page content,
+ * which streams in after </main> under cacheComponents and so sits outside
+ * <main> in the DOM. styles/tokens.css resolves --font / --serif / --mono from
+ * them at :root (a var() reference resolves at its declaring node).
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
-		<html className="h-full dark" lang="en-US" suppressHydrationWarning>
+		// The next/font variables live HERE, not on <main>: a var() reference
+		// resolves at its declaring node, and with cacheComponents the page body
+		// streams in after </main>, so anything declared on <main> never reaches
+		// it. See the Type section of styles/tokens.css.
+		<html
+			className={classNames("h-full dark", mulish.variable, firaCode.variable)}
+			lang="en-US"
+			suppressHydrationWarning
+		>
 			<head>
 				{/* Theme bootstrap — matches the marketing site's technique so the
 				    preference is shared across the agilitycms.com / .../docs origin:
@@ -60,9 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 						// min-h (not h): the window scrolls, so the chain must be able
 						// to GROW past the viewport or sticky chrome stops at ~100vh
 						// and content gets clipped (the iPad no-scroll bug).
-						"min-h-full",
-						mulish.variable,
-						firaCode.variable
+						"min-h-full"
 					)}
 				>
 					{children}

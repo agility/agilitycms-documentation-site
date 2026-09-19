@@ -32,22 +32,28 @@
 	--wrap: 1240px;
 }
 
-/* Type — fonts loaded via next/font (see app/layout.tsx). These aliases must
-   be declared on the <main> wrapper that carries the next/font variables, NOT
-   at :root: custom properties resolve var() references at the declaring
-   node, and --font-mulish doesn't exist at <html>. Fonts match the marketing
-   site (2026-07-23): a single Mulish powers body AND headings, so --font and
-   --serif (the legacy heading alias) resolve to the same family. Fira Mono for
-   labels/code. */
-main {
+/* Type — fonts loaded via next/font (see app/layout.tsx). Fonts match the
+   marketing site (2026-07-23): a single Mulish powers body AND headings, so
+   --font and --serif (the legacy heading alias) resolve to the same family.
+   Fira Code for labels/code.
+
+   These lived on `main` until 2026-09-18, because next/font's --font-mulish
+   was declared by a className on <main> and a var() reference resolves at its
+   DECLARING node. That broke every article: with cacheComponents the page body
+   streams in after </main> closes, landing outside <main> in the DOM, so it
+   inherited neither the aliases nor the font-family and fell back to the system
+   stack — measured live on agilitycms.com, where .prose computed -apple-system
+   while <main> and the nav computed Mulish. The next/font variables now sit on
+   <html> (app/layout.tsx), so these aliases resolve document-wide and reach
+   streamed content wherever React puts it. Keep them here, not on a wrapper. */
+:root {
 	--font: var(--font-mulish), system-ui, sans-serif;
 	--serif: var(--font-mulish), system-ui, sans-serif;
 	--mono: var(--font-fira-code), ui-monospace, monospace;
-	/* Apply the body font here so the whole subtree inherits Mulish. The
-	   `font-muli` Tailwind utility does NOT resolve (its @theme var references
-	   --font-mulish, which only exists on this element, so Tailwind never emits
-	   a usable --font-muli) — without this, header/nav/body fell back to the
-	   system stack, which reads visibly larger than Mulish at the same px. */
+}
+
+/* On body, not main, for the same reason. */
+body {
 	font-family: var(--font);
 }
 

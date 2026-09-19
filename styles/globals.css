@@ -271,10 +271,22 @@ code > span.hljs-string {
 }
 
 .prose code {
-	@apply text-base px-2 py-1;
 	background: var(--raised);
 	color: var(--text);
 	font-weight: normal !important;
+	/* Inline code declared no family, so it fell through to Tailwind's default
+	   --font-mono (Menlo) while fenced blocks used --mono (Fira Code) — two
+	   monospace faces on the same page. Same family as the panels now. */
+	font-family: var(--mono);
+	/* em, NOT an absolute size. This was `text-base` (16px) regardless of
+	   context, so inside anything smaller — a callout body at 14.7px, a caption,
+	   a table cell — the code read LARGER than the prose around it. The 0.85
+	   factor is optical, not arithmetic: Fira Code's x-height is tall enough that
+	   matching Mulish px-for-px makes it look oversized, which is what it did.
+	   Lands at ~13.6px in article prose, next to the 13px fenced blocks.
+	   Fenced code keeps its own size — `.prose pre code` outranks this. */
+	font-size: 0.85em;
+	padding: 0.15em 0.4em;
 }
 
 /* The highlight.js theme (lightfair) gives the .hljs <code> its own
