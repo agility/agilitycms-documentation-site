@@ -50,6 +50,22 @@ export const resolveAgilityMetaData = (agilityData: AgilityPageData): Metadata =
 	const path = sitemapNode.path === "/home" ? "" : sitemapNode.path;
 	const canonical = `${SITE_URL}/docs${path}`;
 
+	// Advertise the clean-markdown twin of this page.
+	//
+	// Every article has one (proxy.ts rewrites `{path}.md` to
+	// /api/article-md/…), and llms.txt links them — but nothing in the HTML
+	// said so, which left them invisible to any agent that arrives at an
+	// article directly instead of via llms.txt. `rel="alternate"` with an
+	// explicit type is the convention those crawlers look for.
+	//
+	// ONLY articles: the endpoint 404s for section landings and hub pages,
+	// which have no contentID (verified against /developers.md, /overview.md,
+	// /web-studio.md — all 404). Advertising an alternate that 404s is worse
+	// than advertising none.
+	const isArticle = !!sitemapNode.contentID && sitemapNode.contentID > 0;
+	const alternates: Metadata["alternates"] = { canonical };
+	if (isArticle) alternates.types = { "text/markdown": `${canonical}.md` };
+
 	const ogImage = createSharingImage(title);
 
 	// Extract <meta name/property + content> pairs out of the CMS metaHTML field.
@@ -66,7 +82,7 @@ export const resolveAgilityMetaData = (agilityData: AgilityPageData): Metadata =
 		title: `${title} | Agility Docs`,
 		description,
 		keywords: page.seo?.metaKeywords || undefined,
-		alternates: { canonical },
+		alternates,
 		robots: noIndex ? { index: false } : undefined,
 		openGraph: {
 			title: `${title} | Agility Docs`,

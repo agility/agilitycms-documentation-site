@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import agility from "@agility/content-fetch";
 import nextConfig from "next.config";
 import { defaultLocale, getLocaleFromPathname } from "lib/i18n/config";
+import { apiReferencePaths } from "lib/api-specs/loadSpec";
 import { isDevMode } from "lib/cms/isDevMode";
 
 /**
@@ -118,6 +119,33 @@ const APP_PATHS = new Set([
 	"/404",
 	"/500",
 ]);
+
+/**
+ * The generated API reference: ~128 paths derived from the checked-in OpenAPI
+ * snapshots rather than from the Agility sitemap.
+ *
+ * ⚠️ THIS CHECK CANNOT BE SKIPPED, and it cannot be loosened to a prefix match.
+ *
+ * Under Cache Components there is no `dynamicParams = false` (the option is
+ * rejected outright), so an unrecognised operation slug would otherwise reach
+ * the page, call notFound(), and render the not-found fallback DYNAMICALLY —
+ * which trips the Application Insights problem (OpenTelemetry's
+ * RandomIdGenerator calls Math.random(), which Cache Components forbids outside
+ * a cached scope) and answers **500 instead of 404**. Verified against
+ * `next start`: /api-reference/fetch/not-a-real-op returned 500 until this
+ * check existed.
+ *
+ * That is the same reason the CMS paths are checked here rather than in the
+ * page — the comment at the top of this section — so the reference simply joins
+ * the existing rule instead of being exempted from it.
+ *
+ * Computed once at module scope: it is pure JSON parsing with no IO, and the
+ * proxy runs on the Node.js runtime so a warm instance keeps it.
+ */
+const API_REFERENCE_PATHS = apiReferencePaths();
+
+const isAppPath = (path: string): boolean =>
+	APP_PATHS.has(path) || API_REFERENCE_PATHS.has(path);
 
 /**
  * Published paths per locale, memoised in module scope — the proxy runs on the
@@ -366,7 +394,7 @@ export async function proxy(request: NextRequest) {
 		const localeless = hasLocalePrefix ? pathname.slice(locale.length + 1) : pathname;
 		const lookup = localeless.length > 1 ? localeless.replace(/\/+$/, "") : localeless || "/";
 
-		if (!APP_PATHS.has(lookup)) {
+		if (!isAppPath(lookup)) {
 			// false = we know it doesn't exist. null = Agility is unreachable, so
 			// we can't know — fall through and let the page render as before.
 			const published = await isPublishedPath(locale, lookup);
@@ -395,6 +423,13 @@ export const config = {
 		// below does not match the basePath root, so the home page would skip
 		// the locale rewrite entirely (verified against next start).
 		"/",
-		"/((?!api|_next/static|_next/image|assets|favicon\\.ico|sitemap\\.xml|robots\\.txt).*)",
+		// ⚠️ Each directory exclusion carries a TRAILING SLASH on purpose. The
+		// lookahead is a prefix test with no path boundary of its own, so a bare
+		// `api` here excludes every path merely STARTING with those letters —
+		// which silently took out /api-reference: the proxy never ran, so the
+		// locale rewrite never happened, and 128 pages that prerendered
+		// perfectly served a 404 shell instead. `api/` excludes the route
+		// handlers under /api/ and nothing else. Same reasoning for `assets/`.
+		"/((?!api/|_next/static|_next/image|assets/|favicon\\.ico|sitemap\\.xml|robots\\.txt).*)",
 	],
 };
