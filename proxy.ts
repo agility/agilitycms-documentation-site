@@ -128,16 +128,26 @@ const APP_PATHS = new Set([
  *
  * Under Cache Components there is no `dynamicParams = false` (the option is
  * rejected outright), so an unrecognised operation slug would otherwise reach
- * the page, call notFound(), and render the not-found fallback DYNAMICALLY —
- * which trips the Application Insights problem (OpenTelemetry's
- * RandomIdGenerator calls Math.random(), which Cache Components forbids outside
- * a cached scope) and answers **500 instead of 404**. Verified against
- * `next start`: /api-reference/fetch/not-a-real-op returned 500 until this
- * check existed.
+ * the page and call notFound() — which is exactly the soft-404 this whole
+ * section exists to prevent: the shell and its 200 are already on the wire.
+ * The reference simply joins the existing rule instead of being exempted
+ * from it.
  *
- * That is the same reason the CMS paths are checked here rather than in the
- * page — the comment at the top of this section — so the reference simply joins
- * the existing rule instead of being exempted from it.
+ * Locally it fails louder than that. On `next start` everything shares one
+ * process, so the Application Insights SDK loaded by /api/mcp is live for every
+ * route, and OpenTelemetry's RandomIdGenerator calls Math.random() during the
+ * fallback render — which Cache Components forbids outside a cached scope, so
+ * the route answers 500. Verified: /api-reference/fetch/not-a-real-op returned
+ * 500 until this check existed.
+ *
+ * That 500 is NOT a production behaviour, and it would be a mistake to design
+ * around it as if it were. Vercel builds a function per route and
+ * `initializeTelemetry()` is called only at module scope of
+ * app/api/mcp/route.ts, with no instrumentation.ts to hoist it — so the page
+ * functions never load the SDK (file tracing: 2,756 appinsights/otel files in
+ * the MCP route, 47 inert ones in a page route). In production the symptom is
+ * the plain soft-404 above. The thing that would make the 500 real everywhere
+ * is moving telemetry into instrumentation.ts.
  *
  * Computed once at module scope: it is pure JSON parsing with no IO, and the
  * proxy runs on the Node.js runtime so a warm instance keeps it.

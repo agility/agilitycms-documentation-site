@@ -19,9 +19,15 @@ interface Props {
 
 /**
  * Prerender every operation page — 126 of them at the last count. They are
- * fully static: the spec read is cached (loadSpec.ts) and the only dynamic
- * thing on the page, the explorer, is a client component that fetches its own
- * session after hydration. Nothing here postpones the route.
+ * fully static: the specs are checked-in snapshots (loadSpec.ts, no IO) and the
+ * only dynamic thing on the page, the explorer, is a client component that
+ * fetches its own session after hydration. Nothing here postpones the route.
+ *
+ * An operation slug NOT in this list never reaches the render: Cache Components
+ * rejects `dynamicParams = false`, so proxy.ts 404s unknown reference paths
+ * instead. That is why it validates against the same snapshots — if the two
+ * sources could disagree, the gap would show up as a soft 404 (200 + not-found
+ * UI), which is the failure the proxy check exists to prevent.
  */
 export function generateStaticParams() {
 	const flat = API_LIST.flatMap((api) =>
