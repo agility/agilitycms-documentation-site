@@ -42,10 +42,23 @@ export interface ExplorerProps {
 	parameters: OpenApiParameter[];
 	/** Shown before an instance is chosen. */
 	defaultHost: string;
-	/** False for APIs whose explorer is read-only in this release. */
+	/** False when this operation isn't on the runner's allowlist. */
 	runnable: boolean;
 	/** Why it isn't runnable, when it isn't. */
 	notRunnableReason?: string;
+	/**
+	 * How the request is made.
+	 *
+	 * "direct" — straight from the browser to api.aglty.io with a fetch key.
+	 * "proxy"  — through /api/explorer/mgmt-request, because the Management
+	 *            API's bearer token must never reach the browser. See the note
+	 *            on that route.
+	 */
+	transport: "direct" | "proxy";
+	/** Operation slug; how the proxy identifies what to run. */
+	slug: string;
+	/** False for operations that act on the caller, not on an instance. */
+	instanceScoped: boolean;
 }
 
 interface Instance {
@@ -129,9 +142,24 @@ const rememberGuid = (guid: string): void => {
 /** Stable empty array — a fresh [] each render would churn every memo on it. */
 const EMPTY_LOCALES: LocaleOption[] = [];
 
-const hostForGuid = (guid: string): string => {
+const regionOf = (guid: string): string => {
 	const suffix = (guid || "").split("-").pop()?.toLowerCase() || "u";
-	return `https://api${REGION_INFIX[suffix] ?? ""}.aglty.io`;
+	return REGION_INFIX[suffix] ?? "";
+};
+
+/**
+ * The host the request will actually hit, for the URL preview.
+ *
+ * Both APIs are addressed per region off the instance GUID, and they use the
+ * same infixes on different names — api-eu / mgmt-eu. Showing the wrong one
+ * would be a small lie in the one place the reader is looking to learn the
+ * shape of the call.
+ */
+const hostFor = (transport: "direct" | "proxy", guid: string, fallback: string): string => {
+	if (!guid) return fallback;
+	return transport === "proxy"
+		? `https://mgmt${regionOf(guid)}.aglty.io`
+		: `https://api${regionOf(guid)}.aglty.io`;
 };
 
 const ApiExplorer = ({
@@ -141,6 +169,9 @@ const ApiExplorer = ({
 	defaultHost,
 	runnable,
 	notRunnableReason,
+	transport,
+	slug,
+	instanceScoped,
 }: ExplorerProps) => {
 	const [session, setSession] = useState<SessionState | null>(null);
 	const [guid, setGuid] = useState("");
@@ -166,7 +197,12 @@ const ApiExplorer = ({
 	 * the guid is worth asking about and no answer for THAT guid has landed yet.
 	 * One less thing that can disagree with the other two.
 	 */
-	const loadingKey = isGuidShaped(guid) && !forCurrentGuid;
+	// A key is only ever fetched for the direct (Fetch API) transport. The
+	// proxy transport authenticates server-side, so there is nothing to load.
+	const needsKey = transport === "direct";
+	const loadingKey = needsKey && isGuidShaped(guid) && !forCurrentGuid;
+	/** Everything needed to send: a key when direct, an instance when scoped. */
+	const ready = needsKey ? !!apiKey : !instanceScoped || !!guid;
 	/**
 	 * Locales are stored WITH the instance they came from, and read back only
 	 * while the two still agree — the same shape as `keyState` above, for the
@@ -222,7 +258,7 @@ const ApiExplorer = ({
 	// Fetch the key whenever the chosen instance changes. The key is scoped to
 	// this component's lifetime — see the note at the top.
 	useEffect(() => {
-		if (!guid || !isGuidShaped(guid)) return;
+		if (!needsKey || !guid || !isGuidShaped(guid)) return;
 
 		let cancelled = false;
 		fetch(`/docs/api/explorer/fetch-key?guid=${encodeURIComponent(guid)}`, { cache: "no-store" })
@@ -244,7 +280,7 @@ const ApiExplorer = ({
 		return () => {
 			cancelled = true;
 		};
-	}, [guid]);
+	}, [guid, needsKey]);
 
 	// Remember the choice, and load that instance's OWN locales. Guessing the
 	// locale is a real failure mode: a wrong one returns an empty result rather
@@ -292,13 +328,20 @@ const ApiExplorer = ({
 	// (`guid`), and pinned where only one value is valid (`apitype`: we issue
 	// published-content keys, so `preview` would 401).
 	const effectiveValues = useMemo(
-		() => ({ ...values, ...(guid ? { guid } : {}), apitype: "fetch", locale: effectiveLocale }),
-		[values, guid, effectiveLocale]
+		() => ({
+			...values,
+			...(guid ? { guid } : {}),
+			// Fetch-API only: we issue published-content keys, so `preview`
+			// would 401. The Management API has no such parameter.
+			...(transport === "direct" ? { apitype: "fetch" } : {}),
+			locale: effectiveLocale,
+		}),
+		[values, guid, effectiveLocale, transport]
 	);
 
 	const requestUrl = useMemo(
-		() => buildUrl(guid ? hostForGuid(guid) : defaultHost, path, parameters, effectiveValues),
-		[guid, defaultHost, path, parameters, effectiveValues]
+		() => buildUrl(hostFor(transport, guid, defaultHost), path, parameters, effectiveValues),
+		[transport, guid, defaultHost, path, parameters, effectiveValues]
 	);
 
 	const missing = useMemo(
@@ -311,12 +354,45 @@ const ApiExplorer = ({
 	);
 
 	const run = useCallback(async () => {
-		if (!apiKey) return;
+		if (!ready) return;
 		setRunning(true);
 		setRunError(null);
 		setResult(null);
 		const started = performance.now();
+
 		try {
+			// PROXY — Management API. The server mints the bearer token, rebuilds
+			// the path from the spec and makes the call; we send a slug and
+			// values, never a URL. See app/api/explorer/mgmt-request/route.ts.
+			if (transport === "proxy") {
+				const res = await fetch("/docs/api/explorer/mgmt-request", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ slug, values: effectiveValues }),
+				});
+				const data = await res.json().catch(() => null);
+
+				// Our own route failing (403, 401, 502) is a different thing from
+				// the Management API answering with an error, and conflating them
+				// would tell the reader their request was rejected when in fact it
+				// never ran.
+				if (!res.ok || !data || typeof data.status !== "number") {
+					setRunError(data?.error || "The request could not be sent.");
+					return;
+				}
+
+				setResult({
+					status: data.status,
+					statusText: data.statusText || "",
+					durationMs: data.durationMs ?? Math.round(performance.now() - started),
+					body: data.body || "",
+					rateLimitRemaining: null,
+				});
+				return;
+			}
+
+			// DIRECT — Fetch API, browser to api.aglty.io.
+			if (!apiKey) return;
 			const res = await fetch(requestUrl, {
 				method: method.toUpperCase(),
 				headers: { APIKey: apiKey, Accept: "application/json" },
@@ -331,12 +407,12 @@ const ApiExplorer = ({
 			});
 		} catch {
 			// A browser-level failure here is almost always the network or an
-			// extension blocking the call — CORS is known-good for this API.
+			// extension blocking the call — CORS is known-good for both APIs.
 			setRunError("The request could not be sent. Check your connection and try again.");
 		} finally {
 			setRunning(false);
 		}
-	}, [apiKey, requestUrl, method]);
+	}, [ready, transport, slug, effectiveValues, apiKey, requestUrl, method]);
 
 	// Required first: a flat list of fifteen inputs gives no clue which three
 	// must actually be filled in.
@@ -380,14 +456,26 @@ const ApiExplorer = ({
 					</p>
 				) : (
 					<>
-						<InstancePicker
-							session={session}
-							guid={guid}
-							onChange={setGuid}
-							loadingKey={loadingKey}
-							keyError={keyError}
-							hasKey={!!apiKey}
-						/>
+						{instanceScoped ? (
+							<InstancePicker
+								session={session}
+								guid={guid}
+								onChange={setGuid}
+								loadingKey={loadingKey}
+								keyError={keyError}
+								hasKey={!!apiKey}
+								needsKey={needsKey}
+							/>
+						) : (
+							// users/me and types act on the caller, not on an
+							// instance — asking which instance would be noise, and
+							// answering it would change nothing.
+							<p className="text-xs" style={{ color: "var(--muted)", margin: 0 }}>
+								{session?.signedIn
+									? "Runs as you — this operation isn't tied to an instance."
+									: "Sign in to Agility to run this."}
+							</p>
+						)}
 
 						{editable.length > 0 && (
 							<div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -439,7 +527,7 @@ const ApiExplorer = ({
 							<button
 								type="button"
 								onClick={run}
-								disabled={!apiKey || running || missing.length > 0}
+								disabled={!ready || running || missing.length > 0}
 								className="px-3.5 py-1.5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
 								style={{
 									background: "var(--primary)",
@@ -451,7 +539,7 @@ const ApiExplorer = ({
 								{running ? "Sending…" : "Send request"}
 							</button>
 
-							{missing.length > 0 && apiKey && (
+							{missing.length > 0 && ready && (
 								<span className="ml-3 text-xs" style={{ color: "var(--muted)" }}>
 									Fill in {missing.join(", ")} first.
 								</span>
@@ -505,6 +593,7 @@ const InstancePicker = ({
 	loadingKey,
 	keyError,
 	hasKey,
+	needsKey,
 }: {
 	session: SessionState | null;
 	guid: string;
@@ -512,6 +601,8 @@ const InstancePicker = ({
 	loadingKey: boolean;
 	keyError: string | null;
 	hasKey: boolean;
+	/** Direct transport only — the proxy authenticates server-side. */
+	needsKey: boolean;
 }) => {
 	if (!session) {
 		return (
@@ -601,14 +692,24 @@ const InstancePicker = ({
 				</label>
 			)}
 
-			<p className="mt-2 text-xs" style={{ color: hasKey ? "var(--ok)" : "var(--muted)", margin: ".5rem 0 0" }}>
-				{loadingKey
-					? "Getting the Fetch API key…"
-					: keyError
-						? keyError
-						: hasKey
-							? "Ready — requests run against published content in this instance."
-							: "Choose an instance to load its API key."}
+			<p
+				className="mt-2 text-xs"
+				style={{
+					color: keyError ? "var(--err)" : hasKey || (!needsKey && guid) ? "var(--ok)" : "var(--muted)",
+					margin: ".5rem 0 0",
+				}}
+			>
+				{!needsKey
+					? guid
+						? "Ready — runs read-only against this instance, as you."
+						: "Choose an instance."
+					: loadingKey
+						? "Getting the Fetch API key…"
+						: keyError
+							? keyError
+							: hasKey
+								? "Ready — requests run against published content in this instance."
+								: "Choose an instance to load its API key."}
 			</p>
 		</div>
 	);

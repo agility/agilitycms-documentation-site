@@ -50,10 +50,18 @@ export interface ApiDefinition {
 	/** Default (US) host, for display in examples. */
 	defaultHost: string;
 	host: (guid: string) => string;
-	/** How the explorer authenticates a call. */
+	/**
+	 * How the explorer authenticates a call — and, by extension, how it makes
+	 * one: `apiKey` runs direct from the browser, `oauth` is proxied through
+	 * our server because the bearer token must not reach the client.
+	 *
+	 * Which OPERATIONS may run is a separate question, answered by the
+	 * allowlist in lib/explorer/runnable.ts (read-only in v1). That lives
+	 * there rather than here because it is enforced on every request, not just
+	 * consulted when rendering.
+	 */
 	auth: "apiKey" | "oauth";
-	/** Whether the explorer may issue non-GET requests against this API. */
-	allowWrites: boolean;
+
 	/** The hand-written article that introduces this API, if any. */
 	conceptualDocPath?: string;
 }
@@ -70,8 +78,6 @@ export const API_REGISTRY: Record<ApiId, ApiDefinition> = {
 		defaultHost: "https://api.aglty.io",
 		host: fetchApiHost,
 		auth: "apiKey",
-		// Every operation in this spec is a GET; there is nothing to write.
-		allowWrites: true,
 		conceptualDocPath: "/developers/content-fetch-api",
 	},
 	management: {
@@ -85,11 +91,6 @@ export const API_REGISTRY: Record<ApiId, ApiDefinition> = {
 		defaultHost: "https://mgmt.aglty.io",
 		host: managementApiHost,
 		auth: "oauth",
-		// v1 is READ-ONLY in the explorer, by product decision: a mis-click here
-		// lands on a customer's live instance. The reference still documents
-		// every operation — only the "try it" runner is restricted, which
-		// buildRunnableOperations enforces.
-		allowWrites: false,
 		conceptualDocPath: "/developers/content-management-api",
 	},
 };

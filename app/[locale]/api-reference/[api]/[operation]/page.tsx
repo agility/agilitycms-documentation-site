@@ -13,6 +13,12 @@ import { apiReferenceUrl, operationSchema } from "lib/seo/apiReferenceSchema";
 import { defaultLocale, locales } from "lib/i18n/config";
 import { OpenApiParameter } from "lib/api-specs/types";
 import { resolveParameters } from "lib/api-specs/resolveParams";
+import {
+	isInstanceScoped,
+	isRunnable,
+	notRunnableReason,
+	transportFor,
+} from "lib/explorer/runnable";
 
 interface Props {
 	params: Promise<{ locale: string; api: string; operation: string }>;
@@ -70,10 +76,9 @@ export default async function OperationPage({ params }: Props) {
 	const headerParams = parameters.filter((p) => p.in === "header");
 	const responses = Object.entries(op.operation.responses || {});
 
-	// v1 restricts the runner to read-only APIs — the reference still documents
-	// every operation, but "try it" is not wired to anything that writes to a
-	// customer's live instance. See allowWrites in lib/api-specs/registry.ts.
-	const runnable = api.allowWrites && api.auth === "apiKey";
+	// The runner's allowlist is enforced server-side on every request too — this
+	// only decides whether to render a form. See lib/explorer/runnable.ts.
+	const runnable = isRunnable(api.id, op);
 
 	return (
 		<>
@@ -185,11 +190,10 @@ export default async function OperationPage({ params }: Props) {
 								parameters={parameters}
 								defaultHost={api.defaultHost}
 								runnable={runnable}
-								notRunnableReason={
-									api.auth === "oauth"
-										? "The Management API explorer is coming in a later release. Its calls change live content, so it needs the OAuth flow and a confirmation step before it runs anything."
-										: "This operation can't be run from the browser."
-								}
+								notRunnableReason={notRunnableReason(api.id, op)}
+								transport={transportFor(api.id)}
+								slug={op.slug}
+								instanceScoped={isInstanceScoped(op)}
 							/>
 						</div>
 					</div>

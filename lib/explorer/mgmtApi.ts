@@ -54,7 +54,63 @@ export const getMgmtAccessToken = async (
 };
 
 /** Never let a slow Management API hold a request open. */
-const TIMEOUT_MS = 8000;
+const TIMEOUT_MS = 10000;
+
+/** Host root for a region, without the /api/v1 suffix. */
+const mgmtHost = (managerUrl: string): string =>
+	getMgmtApiBase(managerUrl).replace(/\/api\/v1$/, "");
+
+export interface MgmtResponse {
+	status: number;
+	statusText: string;
+	/** Raw body text, pretty-printed when it parses as JSON. */
+	body: string;
+	/** The URL actually requested, for the panel to display. */
+	url: string;
+}
+
+/**
+ * Perform one authenticated request and report what actually happened —
+ * including non-2xx.
+ *
+ * Distinct from `mgmtGet`, which collapses every failure to null because its
+ * callers only want the data. The explorer is the opposite: a 404 or a 403 IS
+ * the result the reader is trying to see, so statuses are passed through
+ * rather than swallowed.
+ *
+ * `path` is absolute from the host root (it starts `/api/v1/...`), because the
+ * spec's templates are written that way.
+ */
+export const mgmtFetch = async (
+	managerUrl: string,
+	path: string,
+	token: string
+): Promise<MgmtResponse> => {
+	const url = `${mgmtHost(managerUrl)}${path}`;
+	const controller = new AbortController();
+	const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+	try {
+		const res = await fetch(url, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"X-Requested-With": "XMLHttpRequest",
+				Accept: "application/json",
+			},
+			cache: "no-store",
+			signal: controller.signal,
+		});
+		const text = await res.text();
+		let body = text;
+		try {
+			body = JSON.stringify(JSON.parse(text), null, 2);
+		} catch {
+			/* not JSON — show it as it came */
+		}
+		return { status: res.status, statusText: res.statusText, body, url };
+	} finally {
+		clearTimeout(timer);
+	}
+};
 
 /** Authenticated GET against the regional Management API. */
 export const mgmtGet = async <T>(
