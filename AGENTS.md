@@ -92,7 +92,7 @@ Edge cache headers are set in [proxy.ts](proxy.ts), **not** `next.config` — th
 
 - **Local dev serves staging (preview) content** (`isDevMode()`), so editors' unpublished work is visible at `npm run dev`. `FORCE_PUBLISHED=1 npm run dev` tests the published experience.
 - Production preview = Next `draftMode()` cookie, entered through `?agilitypreviewkey=` → proxy → `/api/preview` (validates via `validatePreview`), exited via `/api/preview/exit`. `draftMode()` is prerender-safe: it reads disabled during static generation.
-- The floating **PreviewBar** ([components/common/PreviewBar.js](components/common/PreviewBar.js), main-site design) shows in preview/dev; Ctrl/Cmd+Q toggles it anywhere. "Edit in CMS" deep-links via `NEXT_PUBLIC_AGILITY_GUID`.
+- The floating **PreviewBar** ([components/common/PreviewBar.tsx](components/common/PreviewBar.tsx), main-site design) shows in preview/dev; Ctrl/Cmd+Q toggles it anywhere. "Edit in CMS" deep-links via `NEXT_PUBLIC_AGILITY_GUID`.
 
 ### Web Studio (in-context editing)
 
@@ -102,7 +102,7 @@ Following demosite2025's pattern. Two halves that must stay in sync:
 
 ## Rendering Model
 
-The catch-all page fetches `getAgilityPage`, resolves the **page template** by name ([components/agility-pageTemplates/index.js](components/agility-pageTemplates/index.js): MainTemplate / WithSidebarNavTemplate / FullwidthTemplate), which renders `<ContentZone getModule={getModule}>` over `page.zones`. Modules are registered in [components/agility-pageModules/index.js](components/agility-pageModules/index.js).
+The catch-all page fetches `getAgilityPage`, resolves the **page template** by name ([components/agility-pageTemplates/index.ts](components/agility-pageTemplates/index.ts): MainTemplate / WithSidebarNavTemplate / FullwidthTemplate), which renders `<ContentZone getModule={getModule}>` over `page.zones`. Modules are registered in [components/agility-pageModules/index.ts](components/agility-pageModules/index.ts).
 
 **Modules are async server components that fetch their own data** (the Pages-Router `getCustomInitialProps` pattern is dead). A module receives `{ module, languageCode, isPreview, sitemapNode, dynamicPageItem, page }` from ContentZone; child lists are fetched via `getContentList` using `module.fields.<field>.referencename` (the page is fetched with `expandAllContentLinks: false`, so linked lists arrive as `{referencename}`). Interactive UI is split into client components: `SideBarNav` (server data) → `SideBarNavClient`; `Changelog` → `ChangelogClient`; `DynamicArticleDetails` and `CodeBlock` are `"use client"`.
 
@@ -134,7 +134,7 @@ Algolia index `doc_site`; searchable: `title`, `headings`, `body`, `description`
 - `POST/GET /docs/api/search/indexAllArticles` — atomic full rebuild (`replaceAllObjects`)
 - `POST /docs/api/search/indexArticle` — single article, wired to an Agility webhook; deletes on unpublish
 
-Normalization in [utils/searchUtils.js](utils/searchUtils.js) (EditorJS + Markdown).
+Normalization in [utils/searchUtils.ts](utils/searchUtils.ts) (EditorJS + Markdown).
 
 ## API Routes (all under `/docs/api/…`)
 
@@ -196,7 +196,7 @@ yarn build && yarn start -p 3006   # production build (prerenders ~300 pages)
 
 - **Lists cap at 250 / default 50.** Agility REST + GraphQL list calls default to 50 items and max out at 250 per request. Always pass explicit `take` (and paginate with `skip` if a category could exceed 250). This has silently dropped sidebar articles before.
 - **Reference names are case-sensitive on write, lowercased on read.** Saving a "User Selectable" linked-content field requires the container's exact case (`DeveloperSections`); reads lowercase everything so you can't detect a mismatch by reading back — verify in the editor.
-- **Cache Components is strict about non-determinism.** During prerender, `Math.random()`/`Date.now()` outside a `'use cache'` scope aborts the build (`next-prerender-random`). Known landmines already handled: `applicationinsights` (OpenTelemetry's RandomIdGenerator) must never initialize during `next build` — guarded in [lib/telemetry.ts](lib/telemetry.ts); the Algolia client is created lazily in [components/common/Search.js](components/common/Search.js) (host-shuffle uses Math.random). If a build fails with `next-prerender-random`, bisect with `FORCE_PUBLISHED=1 npx next build --debug-prerender`.
+- **Cache Components is strict about non-determinism.** During prerender, `Math.random()`/`Date.now()` outside a `'use cache'` scope aborts the build (`next-prerender-random`). Known landmines already handled: `applicationinsights` (OpenTelemetry's RandomIdGenerator) must never initialize during `next build` — guarded in [lib/telemetry.ts](lib/telemetry.ts); the Algolia client is created lazily in [components/common/SearchModal.tsx](components/common/SearchModal.tsx) (host-shuffle uses Math.random). If a build fails with `next-prerender-random`, bisect with `FORCE_PUBLISHED=1 npx next build --debug-prerender`.
 - **After a build, no *concrete* page should be postponed.** A postponed page re-renders on every request instead of serving static HTML. Check with `find .next/server/app -name '*.meta' | grep -v '\[' | xargs grep -l '"postponed"' | wc -l` — must be **0**. Do not count total postponed routes: every parameterized route legitimately contributes its own fallback shell, so that number grows as routes are added and means nothing on its own. Run it *before* and after a change; the baseline is what makes it a signal. This caught a bare `fetch` with `next: { revalidate }` in getRichSnippet (which caches nothing under Cache Components) that was costing eleven article pages a full render per request.
 - **`dynamicParams` is not allowed either** (same family as `revalidate`). A route param that isn't in `generateStaticParams` therefore reaches the render and calls `notFound()` — a soft 404 (200 + not-found UI), the exact failure [proxy.ts](proxy.ts)'s published-path check exists to prevent. Any hand-written route with enumerable params must list its valid paths in `isAppPath`, **derived from the same source the pages are built from** (this is why the API reference reads checked-in OpenAPI snapshots rather than the live specs — a live spec could add a slug the proxy hasn't heard of).
 - **The App Insights `Math.random()` failure behaves differently in `next start` than in production — don't design around the local symptom.** Locally one process serves every route, so the SDK loaded by `/api/mcp` is live everywhere and a *dynamic* render answers **500**. On Vercel each route is its own function and `initializeTelemetry()` is called only at module scope of [app/api/mcp/route.ts](app/api/mcp/route.ts), with **no `instrumentation.ts`** — so page functions never load it (file tracing, 2026-09-20: 2,756 appinsights/otel files in the MCP route vs 47 inert ones in a page route) and the production symptom is the soft 404 above. ⚠️ Moving telemetry into an `instrumentation.ts` would hoist it into every route at once and make the 500 real in production — if that refactor ever happens, every dynamic render becomes a 500 and this note is the thing to read first.

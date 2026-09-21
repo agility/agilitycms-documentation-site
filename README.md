@@ -1,143 +1,62 @@
-# Agility Documentation Site
-This is the source code for the [Agility Documentation](https://agilitycms.com/docs) site.
+# Agility CMS Documentation Site
 
-[Demo](https://agilitycms.com/docs)
+Source for [agilitycms.com/docs](https://agilitycms.com/docs) — the Agility CMS knowledgebase. All content lives in Agility (instance `67bc73e6-u`); this Next.js app renders it.
 
-[New to Agility CMS? Sign up for a FREE account](https://agilitycms.com/free)
+> **Working on this codebase? Read [AGENTS.md](AGENTS.md) first.** It is the source of truth for architecture, the content model, caching, the proxy, and the gotchas that bite when editing CMS-driven code. This README is the short version.
 
-## About This Site
+## Stack
 
-- Uses our [`@agility/next`](https://github.com/agility/agility-next) package to make getting started with Agility and Next.js easy
-- Uses the `getStaticProps` function from Next.js to allow for full SSG (Static Site Generation)
-- Supports [`next/image`](https://nextjs.org/docs/api-reference/next/image) for image optimization
-- Supports full [Page Management](https://help.agilitycms.com/hc/en-us/articles/360055805831)
-- Supports Preview Mode
-- Uses `revalidate` tag with Vercel to enable [ISR (Incremental Static Regeneration)](https://nextjs.org/docs/basic-features/data-fetching#incremental-static-regeneration) builds
-- Provides a functional structure that dynamically routes each page based on the request, loads a Page Templates dynamically, and also dynamically loads and renders appropriate Agility CMS Page Modules (as React components)
+- **Next.js 16 (App Router, Turbopack)** with **Cache Components** — `'use cache'` + `cacheTag`/`cacheLife` and Partial Prerendering. There is no `pages/` directory.
+- **React 19**, **TypeScript**, **Tailwind CSS v4** (CSS-first config in [styles/globals.css](styles/globals.css), ocean tokens in [styles/tokens.css](styles/tokens.css)).
+- Served under `agilitycms.com/docs` via a Netlify proxy in front of Vercel — see [HOSTING.md](HOSTING.md). `basePath: '/docs'`.
+- **Search:** Algolia (`doc_site`). **MCP server:** `/docs/api/mcp`.
 
-### Tailwind CSS
+## Running locally
 
- Uses [Tailwind CSS](https://tailwindcss.com/), a simple and lightweight utility-first CSS framework packed with classes that can be composed to build any design, directly in your markup.
-
-It also comes equipped with [Autoprefixer](https://www.npmjs.com/package/autoprefixer), a plugin which use the data based on current browser popularity and property support to apply CSS prefixes for you.
-
-### TypeScript
-
-Supports [TypeScript](https://nextjs.org/docs/basic-features/typescript). Not currently being used, but simply rename your files with a `.ts` extension to start taking advantage of Typescript concepts such as types and interfaces to help describe your data.
-
-## Getting Started
-
-To start development on this site:
-
-1. Clone this repository
-2. Run `yarn install`
-3. Rename the `.env.local.template` file to `.env.local`
-4. Retrieve your `GUID`, `API Keys (Preview/Fetch)`, and `Security Key` from Agility by going to [Settings > API Keys](https://manager.agilitycms.com/settings/apikeys).
-
-[How to Retrieve your GUID and API Keys from Agility](https://help.agilitycms.com/hc/en-us/articles/360031919212-Retrieving-your-API-Key-s-Guid-and-API-URL-)
-
-## Running the Site Locally
-
-### Development Mode
-
-When running your site in `development` mode, you will see the latest content in real-time from the CMS.
-
-#### yarn
-
-1. `yarn install`
-2. `yarn dev`
-
-
-### Production Mode
-
-When running your site in `production` mode, you will see the published from the CMS.
-
-#### yarn
-
-1. `yarn build`
-2. `yarn start`
-
-## Accessing Content
-Content get's passed to your Agility Page Modules as `props`, but you can also use the built in API to access. The API uses the [REST API](https://agilitydocs.netlify.app/agility-content-fetch-js-sdk/).
-s
-## Notes
-
-### How to Register Page Modules
-
-1. To create a new Page Module, create a new React component within the `/components/agility-pageModules` directory.
-2. All of the Page Modules that are being used within the site need to be imported into the `index` file within the `/components/agility-pageModules` directory and added to the `allModules` array:
-
-```
-import RichTextArea from "./RichTextArea";
-import FeaturedPost from "./FeaturedPost";
-import PostsListing from "./PostsListing";
-import PostDetails from "./PostDetails";
-import Heading from "./Heading";
-import TextBlockWithImage from "./TextBlockWithImage";
-
-const allModules = [
-  { name: "TextBlockWithImage", module: TextBlockWithImage },
-  { name: "Heading", module: Heading },
-  { name: "FeaturedPost", module: FeaturedPost },
-  { name: "PostsListing", module: PostsListing },
-  { name: "PostDetails", module: PostDetails },
-  { name: "RichTextArea", module: RichTextArea },
-];
+```bash
+npm install
+npm run dev                        # http://localhost:3000/docs — serves STAGING content
+FORCE_PUBLISHED=1 npm run dev      # serve published content instead
+npm run build && npm start         # production build (prerenders ~500 pages)
 ```
 
-### How to Register Page Templates
+Copy [.env.local.template](.env.local.template) to `.env.local` and fill in the GUID, API keys and security key from **Settings → API Keys** in the CMS. The template documents every variable.
 
-1. To create a new Page Template, create a new React component within the `/components/agility-pageTemplates` directory.
-2. All of the Page Template that are being used within the site need to be imported into the `index` file within the `/components/agility-pageTemplates` directory and added to the `allTemplates` array:
+Local dev serves **staging** content by default, so editors' unpublished work is visible. `FORCE_PUBLISHED=1` makes it behave like production.
 
-```
-import MainTemplate from "./MainTemplate";
+## What's here
 
-const allTemplates = [
-  { name: "MainTemplate", template: MainTemplate }
-];
-```
+| Path | |
+|---|---|
+| `app/[locale]/[...slug]/` | The page route — every CMS-backed page renders through this one catch-all |
+| `app/[locale]/api-reference/` | Generated API reference + live explorer (not CMS-backed) |
+| `app/api/` | Route handlers: revalidate webhook, preview, MCP server, markdown endpoints, search indexing, explorer |
+| `components/agility-pageModules/` | One component per Agility component model |
+| `components/agility-pageTemplates/` | Page templates, resolved by name |
+| `lib/cms/` | Cached Agility read primitives — every content read goes through these |
+| `lib/api-specs/` | OpenAPI snapshots and the operation model behind the API reference |
+| `proxy.ts` | Locale routing, preview entry/exit, markdown rewrites, and real 404s |
+| `docs/` | Plans, handoffs and design references — start with [rebuild-plan-2026.md](docs/rebuild-plan-2026.md) |
 
-### How to Properly Link to an Internal Page
+## Things that will surprise you
 
-To link to internal pages, use the `next/link` component.
+These have each cost someone a debugging session. The full list is in [AGENTS.md](AGENTS.md#gotchas--conventions-read-before-editing-cms-driven-code-or-content).
 
-```
-import Link from 'next/link';
+- **Agility list calls default to 50 items and cap at 250.** Always pass an explicit `take`. This has silently dropped sidebar articles.
+- **404s are decided in `proxy.ts`, not by `notFound()`.** Under Cache Components the 200 is already on the wire before a page can call it. A hand-written route that isn't registered in `isAppPath` will 404 in production while working perfectly in `next dev`.
+- **Cache Components rejects `Math.random()`/`Date.now()` outside a cached scope**, and an uncached `fetch` reached from a render makes the page re-render on every request. After a build, no *concrete* page should be postponed:
+  ```bash
+  find .next/server/app -name '*.meta' | grep -v '\[' | xargs grep -l '"postponed"' | wc -l   # must be 0
+  ```
+- **Adding a new `process.env` read needs a rebuild** before `next start` sees it, even with the value in `.env.local`.
 
-<Link href="/posts">
-  <a>{item.fields.title}</a>
-</Link>
-```
+## Content
 
-### How to Preview Content
+Documentation articles are authored in Agility, not here. Categories map to *pairs* of containers (`DeveloperArticles` + `DeveloperSections`, and so on) — there is no single Articles container. See [AGENTS.md](AGENTS.md#content-model-instance-67bc73e6-u), and [.claude/skills/authoring-agility-docs/SKILL.md](.claude/skills/authoring-agility-docs/SKILL.md) for the full category→container map and the publishing workflow.
 
-Since this is a static site, how can editors preview content in real-time as they are making edits within Agility CMS? Vercel supports Previews out of the box! Simply paste the address of your site deployed on Vercel into your Agility Sitemap Configuration (Settings > Sitemaps), and use it as your Preview Deployment.
+## Machine readability
 
-## Resources
-
-### Agility CMS
-- [Official site](https://agilitycms.com)
-- [Documentation](https://help.agilitycms.com/hc/en-us)
-
-### Next.js
-- [Official site](https://nextjs.org/)
-- [Documentation](https://nextjs.org/docs/getting-started)
-
-### Vercel
-- [Official site](https://vercel.com/)
-
-### Tailwind CSS
-- [Official site](http://tailwindcss.com/)
-- [Documentation](http://tailwindcss.com/docs)
-
-### Community
-- [Official Slack](https://join.slack.com/t/agilitycommunity/shared_invite/enQtNzI2NDc3MzU4Njc2LWI2OTNjZTI3ZGY1NWRiNTYzNmEyNmI0MGZlZTRkYzI3NmRjNzkxYmI5YTZjNTg2ZTk4NGUzNjg5NzY3OWViZGI)
-- [Blog](https://agilitycms.com/resources/posts)
-- [GitHub](https://github.com/agility)
-- [Forums](https://help.agilitycms.com/hc/en-us/community/topics)
-- [Facebook](https://www.facebook.com/AgilityCMS/)
-- [Twitter](https://twitter.com/AgilityCMS)
-
-## Feedback and Questions
-If you have feedback or questions about this starter, please use the [Github Issues](https://github.com/agility/agilitycms-nextjs-starter/issues) on this repo, join our [Community Slack Channel](https://join.slack.com/t/agilitycommunity/shared_invite/enQtNzI2NDc3MzU4Njc2LWI2OTNjZTI3ZGY1NWRiNTYzNmEyNmI0MGZlZTRkYzI3NmRjNzkxYmI5YTZjNTg2ZTk4NGUzNjg5NzY3OWViZGI) or create a post on the [Agility Developer Community](https://help.agilitycms.com/hc/en-us/community/topics).
+- `/docs/llms.txt` — an index of the docs for AI agents
+- `<any article URL>.md` — that article as clean markdown
+- `/docs/api/mcp` — MCP server (`search_docs`, `fetch_doc`)
+- `/docs/api-reference` — every REST endpoint, generated from the OpenAPI specs
