@@ -41,8 +41,18 @@ export const AUTH_COOKIE = process.env.AGILITY_AUTH_COOKIE_NAME || "AgilityAuthO
 export const DEFAULT_MANAGER_URL =
 	process.env.AGILITY_MANAGER_URL || "https://manager.agilitycms.com";
 
-/** Never let a slow or unreachable Classic hold a request open. */
-const TIMEOUT_MS = 5000;
+/**
+ * Never let a slow or unreachable Classic hold a request open.
+ *
+ * 10s, not the 5s this started at. Resolving one key is THREE serial Classic
+ * round trips — GetCurrentServerUser (authorization, and a ~47KB payload for an
+ * account with many instances), SelectAllAPIKeys, then GetAPISecret — and
+ * against a far region each leg costs the better part of a second. Measured
+ * 2026-09-21: us/ca/usa2 ~0.1s, eu ~0.5s, aus ~0.9s. At 5s an Australian
+ * instance failed roughly one request in three while the other two succeeded,
+ * which reads as a broken instance rather than a tight budget.
+ */
+const TIMEOUT_MS = 10000;
 
 export class ClassicAuthError extends Error {}
 

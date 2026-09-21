@@ -1,6 +1,6 @@
 import "server-only";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 import { AUTH_COOKIE, ClassicAuthError, DEFAULT_MANAGER_URL, classicCall } from "lib/explorer/classicCall";
 
@@ -50,10 +50,85 @@ export interface ExplorerSession {
 
 const SIGNED_OUT: ExplorerSession = { signedIn: false, resolved: true, instances: [] };
 
-/** The auth cookie value, or null when the visitor isn't signed in. */
+/**
+ * LOCAL TESTING ONLY — impersonate a real Agility session from an env var.
+ *
+ * WHY THIS EXISTS
+ * The auth cookie is scoped to `.agilitycms.com`, so a browser will never send
+ * it to localhost and none of the signed-in explorer flows can be exercised on
+ * a dev machine without help. `AGILITY_DEV_AUTH_COOKIE` supplies the value that
+ * a real session would have.
+ *
+ * ⚠️ WHY THE GUARDS ARE PARANOID
+ * This is a credential stored in the environment, and the failure mode if it
+ * ever went live is not "a developer sees their own data" — it is that EVERY
+ * anonymous visitor is treated as whoever owns that cookie. They would get that
+ * person's instance list and, through /api/explorer/fetch-key, that person's
+ * API keys. So the override has to be impossible to activate accidentally, and
+ * three independent conditions must ALL hold:
+ *
+ *   1. `AGILITY_DEV_AUTH_COOKIE` is set — it is off unless explicitly opted in.
+ *   2. Not on Vercel and not in CI. `VERCEL` is set on every Vercel build and
+ *      runtime, production AND preview, so this alone rules out every deployed
+ *      environment we have.
+ *   3. The request is being served to localhost. This is the one that holds
+ *      even if the var somehow reached a deployed environment on some other
+ *      host: the override simply never applies to a real visitor's request.
+ *
+ * `isDevMode()` is deliberately NOT the guard here — it requires
+ * NODE_ENV === "development", which is false under `next start`, which is
+ * exactly how this gets tested locally (see AGENTS.md, Running Locally).
+ *
+ * A real cookie always wins, so setting this never shadows an actual session.
+ */
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]", "::1"]);
+
+let warnedAboutDevCookie = false;
+
+const devAuthCookieOverride = async (): Promise<string | null> => {
+	const value = process.env.AGILITY_DEV_AUTH_COOKIE?.trim();
+	if (!value) return null;
+
+	if (process.env.VERCEL || process.env.CI) {
+		console.error(
+			"[explorer] AGILITY_DEV_AUTH_COOKIE is set in a deployed/CI environment and was " +
+				"IGNORED. Remove it — it is a session credential and does not belong here."
+		);
+		return null;
+	}
+
+	const host = (await headers()).get("host") || "";
+	const hostname = host.replace(/:\d+$/, "");
+	if (!LOCAL_HOSTS.has(hostname)) {
+		console.error(
+			`[explorer] AGILITY_DEV_AUTH_COOKIE ignored for non-local host "${host}".`
+		);
+		return null;
+	}
+
+	// Once per process, not once per request — the explorer makes several calls
+	// per page and a warning on each drowns out everything else in the log.
+	if (!warnedAboutDevCookie) {
+		warnedAboutDevCookie = true;
+		console.warn(
+			"[explorer] ⚠️  Using AGILITY_DEV_AUTH_COOKIE — requests are acting as the owner of " +
+				"that session. Local only; never set this in a deployed environment."
+		);
+	}
+	return value;
+};
+
+/**
+ * The auth cookie value, or null when the visitor isn't signed in.
+ *
+ * Falls back to the local-testing override above ONLY when there is no real
+ * cookie and every guard in `devAuthCookieOverride` passes.
+ */
 export const getAuthCookie = async (): Promise<string | null> => {
 	const cookieStore = await cookies();
-	return cookieStore.get(AUTH_COOKIE)?.value || null;
+	const real = cookieStore.get(AUTH_COOKIE)?.value;
+	if (real) return real;
+	return devAuthCookieOverride();
 };
 
 /** Read the caller's session and the instances they can reach. */

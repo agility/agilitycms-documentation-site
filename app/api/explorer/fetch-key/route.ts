@@ -69,10 +69,26 @@ export async function GET(request: NextRequest) {
 			cookieValue,
 		});
 
-		const key = pickFetchKey(keyList?.Items || []);
+		// null means the CALL failed (non-2xx, or Classic's IsError envelope);
+		// an empty Items array means it succeeded and there is genuinely nothing
+		// there. Collapsing the two reported a regional outage as "this instance
+		// has no key", which sends the reader looking in the wrong place.
+		if (!keyList) {
+			return Response.json(
+				{ error: "Could not read the API keys for that instance." },
+				{ status: 502, headers: NO_STORE }
+			);
+		}
+
+		const items = keyList.Items || [];
+		const key = pickFetchKey(items);
 		if (!key) {
 			return Response.json(
-				{ error: "That instance has no enabled Fetch API key." },
+				{
+					error: items.some((k) => (k?.Type || "").toLowerCase() === "fetch")
+						? "That instance's Fetch API keys are all disabled or expired."
+						: "That instance has no Fetch API key.",
+				},
 				{ status: 404, headers: NO_STORE }
 			);
 		}
@@ -103,8 +119,13 @@ export async function GET(request: NextRequest) {
 				{ status: 401, headers: NO_STORE }
 			);
 		}
+		// Logged because the response deliberately says nothing specific — a
+		// bare 502 with no server-side trace is undiagnosable, and the causes
+		// here (timeout against a far region, DNS, a regional outage) are worth
+		// telling apart.
+		console.error(`[explorer] key lookup failed for ${websiteName} via ${managerUrl}:`, err);
 		return Response.json(
-			{ error: "Could not reach Agility to resolve the API key." },
+			{ error: "Could not reach Agility to resolve the API key. Try again." },
 			{ status: 502, headers: NO_STORE }
 		);
 	}
