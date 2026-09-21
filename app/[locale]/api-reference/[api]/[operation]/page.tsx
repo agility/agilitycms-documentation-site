@@ -12,6 +12,7 @@ import { getOperation, getOperations, getSpec } from "lib/api-specs/loadSpec";
 import { apiReferenceUrl, operationSchema } from "lib/seo/apiReferenceSchema";
 import { defaultLocale, locales } from "lib/i18n/config";
 import { OpenApiParameter } from "lib/api-specs/types";
+import { resolveParameters } from "lib/api-specs/resolveParams";
 
 interface Props {
 	params: Promise<{ locale: string; api: string; operation: string }>;
@@ -60,7 +61,10 @@ export default async function OperationPage({ params }: Props) {
 	const spec = getSpec(api.id);
 	if (!op) notFound();
 
-	const parameters: OpenApiParameter[] = op.operation.parameters || [];
+	// `$ref` schemas are inlined here rather than in the browser, so the
+	// explorer can render `apitype` as a select of its real enum values without
+	// shipping the whole components.schemas map to the client.
+	const parameters: OpenApiParameter[] = resolveParameters(op.operation.parameters || [], spec);
 	const pathParams = parameters.filter((p) => p.in === "path");
 	const queryParams = parameters.filter((p) => p.in === "query");
 	const headerParams = parameters.filter((p) => p.in === "header");
@@ -132,52 +136,63 @@ export default async function OperationPage({ params }: Props) {
 						</p>
 					)}
 
-					<ParameterTable title="Path parameters" parameters={pathParams} />
-					<ParameterTable title="Query parameters" parameters={queryParams} />
-					<ParameterTable title="Headers" parameters={headerParams} />
+					{/* Two columns from lg up: reference on the left, the runner
+					    pinned on the right. `items-start` is what lets the sticky
+					    child work — a stretched grid item is full-height, so it has
+					    nothing to stick within. */}
+					<div className="mt-8 grid items-start gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
+						<div className="min-w-0 [&>section:first-child]:mt-0">
+							<ParameterTable title="Path parameters" parameters={pathParams} />
+							<ParameterTable title="Query parameters" parameters={queryParams} />
+							<ParameterTable title="Headers" parameters={headerParams} />
 
-					{responses.length > 0 && (
-						<section className="mt-8">
-							<h3 className="mb-3 text-base font-semibold" style={{ color: "var(--text)" }}>
-								Responses
-							</h3>
-							<ul className="list-none p-0" style={{ margin: 0 }}>
-								{responses.map(([code, response]) => (
-									<li
-										key={code}
-										className="flex items-baseline gap-3 px-3 py-2"
-										style={{ borderBottom: "1px solid var(--border)", margin: 0 }}
-									>
-										<code
-											style={{
-												fontFamily: "var(--mono)",
-												fontSize: ".8rem",
-												color: Number(code) < 400 ? "var(--ok)" : "var(--err)",
-											}}
-										>
-											{code}
-										</code>
-										<span className="text-sm" style={{ color: "var(--text-2)" }}>
-											{response.description || "—"}
-										</span>
-									</li>
-								))}
-							</ul>
-						</section>
-					)}
+								{responses.length > 0 && (
+									<section className="mt-8">
+										<h3 className="mb-3 text-base font-semibold" style={{ color: "var(--text)" }}>
+											Responses
+										</h3>
+										<ul className="list-none p-0" style={{ margin: 0 }}>
+											{responses.map(([code, response]) => (
+												<li
+													key={code}
+													className="flex items-baseline gap-3 px-3 py-2"
+													style={{ borderBottom: "1px solid var(--border)", margin: 0 }}
+												>
+													<code
+														style={{
+															fontFamily: "var(--mono)",
+															fontSize: ".8rem",
+															color: Number(code) < 400 ? "var(--ok)" : "var(--err)",
+														}}
+													>
+														{code}
+													</code>
+													<span className="text-sm" style={{ color: "var(--text-2)" }}>
+														{response.description || "—"}
+													</span>
+												</li>
+											))}
+										</ul>
+									</section>
+								)}
+						</div>
 
-					<ApiExplorer
-						path={op.path}
-						method={op.method}
-						parameters={parameters}
-						defaultHost={api.defaultHost}
-						runnable={runnable}
-						notRunnableReason={
-							api.auth === "oauth"
-								? "The Management API explorer is coming in a later release. Its calls change live content, so it needs the OAuth flow and a confirmation step before it runs anything."
-								: "This operation can't be run from the browser."
-						}
-					/>
+						{/* top-[76px] clears the 60px sticky header plus a little air. */}
+						<div className="lg:sticky lg:top-[76px]">
+							<ApiExplorer
+								path={op.path}
+								method={op.method}
+								parameters={parameters}
+								defaultHost={api.defaultHost}
+								runnable={runnable}
+								notRunnableReason={
+									api.auth === "oauth"
+										? "The Management API explorer is coming in a later release. Its calls change live content, so it needs the OAuth flow and a confirmation step before it runs anything."
+										: "This operation can't be run from the browser."
+								}
+							/>
+						</div>
+					</div>
 				</div>
 			</div>
 			<Footer languageCode={defaultLocale} isPreview={false} />

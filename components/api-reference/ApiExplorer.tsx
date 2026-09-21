@@ -3,6 +3,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { OpenApiParameter } from "lib/api-specs/types";
+import ParamInput, { LocaleOption } from "components/api-reference/ParamInput";
+import { requiredFirst } from "lib/api-specs/resolveParams";
 
 /**
  * The "try it" panel: run a real request against an instance the reader
@@ -96,6 +98,34 @@ const REGION_INFIX: Record<string, string> = {
 	d: "-dev",
 };
 
+/**
+ * The last instance the reader chose, remembered across pages and visits.
+ *
+ * Only the GUID — never the key. A GUID is an identifier that already appears
+ * in client bundles and URLs; the key is a credential and stays in memory for
+ * the life of the component (see the note at the top of this file). Every
+ * access is wrapped because storage throws in a private window or with site
+ * data blocked, and the explorer has to work regardless.
+ */
+const REMEMBERED_GUID_KEY = "aglty-explorer-instance";
+
+const readRememberedGuid = (): string => {
+	try {
+		return window.localStorage.getItem(REMEMBERED_GUID_KEY) || "";
+	} catch {
+		return "";
+	}
+};
+
+const rememberGuid = (guid: string): void => {
+	try {
+		if (guid) window.localStorage.setItem(REMEMBERED_GUID_KEY, guid);
+		else window.localStorage.removeItem(REMEMBERED_GUID_KEY);
+	} catch {
+		/* private window or blocked storage — the picker still works */
+	}
+};
+
 const hostForGuid = (guid: string): string => {
 	const suffix = (guid || "").split("-").pop()?.toLowerCase() || "u";
 	return `https://api${REGION_INFIX[suffix] ?? ""}.aglty.io`;
@@ -134,6 +164,7 @@ const ApiExplorer = ({
 	 * One less thing that can disagree with the other two.
 	 */
 	const loadingKey = isGuidShaped(guid) && !forCurrentGuid;
+	const [locales, setLocales] = useState<LocaleOption[]>([]);
 	const [values, setValues] = useState<Record<string, string>>(() => initialValues(parameters));
 	const [result, setResult] = useState<RunResult | null>(null);
 	const [running, setRunning] = useState(false);
@@ -147,9 +178,13 @@ const ApiExplorer = ({
 			.then((data) => {
 				if (cancelled || !data) return;
 				setSession(data);
-				// Pre-select when there is no choice to make.
 				const usable = (data.instances || []).filter((i: Instance) => !i.isDormant);
-				if (usable.length === 1) setGuid(usable[0].guid);
+				// Prefer the instance they last used, if they still have access to
+				// it; otherwise pre-select only when there is no choice to make.
+				const remembered = readRememberedGuid();
+				const match = usable.find((i: Instance) => i.guid === remembered);
+				if (match) setGuid(match.guid);
+				else if (usable.length === 1) setGuid(usable[0].guid);
 			})
 			.catch(() => {
 				if (!cancelled) setSession({ signedIn: false, resolved: true, instances: [] });
@@ -186,12 +221,50 @@ const ApiExplorer = ({
 		};
 	}, [guid]);
 
+	// Remember the choice, and load that instance's OWN locales. Guessing the
+	// locale is a real failure mode: a wrong one returns an empty result rather
+	// than an error, which reads as "the API is broken".
+	useEffect(() => {
+		if (!guid || !isGuidShaped(guid)) return;
+		rememberGuid(guid);
+
+		let cancelled = false;
+		fetch(`/docs/api/explorer/locales?guid=${encodeURIComponent(guid)}`, { cache: "no-store" })
+			.then((res) => (res.ok ? res.json() : null))
+			.then((data) => {
+				if (cancelled || !data?.locales) return;
+				setLocales(data.locales);
+			})
+			.catch(() => {
+				// Falls back to a free-text locale box, which still works.
+			});
+		return () => {
+			cancelled = true;
+		};
+	}, [guid]);
+
+	/**
+	 * The locale actually used, DERIVED rather than stored.
+	 *
+	 * Carrying "en-us" over to an instance that is fr-ca only would silently
+	 * return nothing — a wrong locale is not an error, just an empty result, so
+	 * it reads as a broken API. Deriving means the field corrects itself the
+	 * moment the instance's locales arrive, with no effect writing back into
+	 * state and no render showing a value the instance doesn't have.
+	 */
+	const effectiveLocale = useMemo(() => {
+		const current = values.locale || "";
+		if (locales.length === 0) return current;
+		if (current && locales.some((l) => l.code === current)) return current;
+		return locales[0].code;
+	}, [values.locale, locales]);
+
 	// Path params are filled from the instance picker where we know the answer
 	// (`guid`), and pinned where only one value is valid (`apitype`: we issue
 	// published-content keys, so `preview` would 401).
 	const effectiveValues = useMemo(
-		() => ({ ...values, ...(guid ? { guid } : {}), apitype: "fetch" }),
-		[values, guid]
+		() => ({ ...values, ...(guid ? { guid } : {}), apitype: "fetch", locale: effectiveLocale }),
+		[values, guid, effectiveLocale]
 	);
 
 	const requestUrl = useMemo(
@@ -236,11 +309,15 @@ const ApiExplorer = ({
 		}
 	}, [apiKey, requestUrl, method]);
 
-	const editable = parameters.filter((p) => p.name !== "guid" && p.name !== "apitype");
+	// Required first: a flat list of fifteen inputs gives no clue which three
+	// must actually be filled in.
+	const editable = requiredFirst(
+		parameters.filter((p) => p.name !== "guid" && p.name !== "apitype")
+	);
 
 	return (
 		<section
-			className="mt-10 overflow-hidden"
+			className="overflow-hidden"
 			style={{
 				border: "1px solid var(--border)",
 				borderRadius: "var(--r-md)",
@@ -288,29 +365,26 @@ const ApiExplorer = ({
 								{editable.map((param) => (
 									<label key={`${param.in}-${param.name}`} className="block min-w-0">
 										<span
-											className="mb-1 flex items-baseline gap-1.5"
+											className="mb-1 flex flex-wrap items-baseline gap-x-1.5"
 											style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--muted)" }}
 										>
 											<span style={{ color: "var(--text)" }}>{param.name}</span>
-											{param.required && <span style={{ color: "var(--err)" }}>*</span>}
-											<span>{param.in}</span>
+											{/* Optional is stated in words, not just by the ABSENCE of a
+											    red asterisk. Fifteen inputs where three are required is
+											    the common case here, and "no marker" is far too quiet a
+											    signal for "you can leave this alone". */}
+											{param.required ? (
+												<span style={{ color: "var(--err)" }}>required</span>
+											) : (
+												<span style={{ opacity: 0.75 }}>optional</span>
+											)}
+											<span style={{ opacity: 0.75 }}>· {param.in}</span>
 										</span>
-										<input
-											type="text"
-											value={values[param.name] || ""}
-											onChange={(e) =>
-												setValues((v) => ({ ...v, [param.name]: e.target.value }))
-											}
-											placeholder={placeholderFor(param)}
-											className="w-full px-2.5 py-1.5"
-											style={{
-												background: "var(--bg)",
-												border: "1px solid var(--border)",
-												borderRadius: "var(--r-xs)",
-												color: "var(--text)",
-												fontFamily: "var(--mono)",
-												fontSize: ".8rem",
-											}}
+										<ParamInput
+											param={param}
+											value={effectiveValues[param.name] || ""}
+											onChange={(v) => setValues((prev) => ({ ...prev, [param.name]: v }))}
+											locales={locales}
 										/>
 									</label>
 								))}
@@ -524,13 +598,6 @@ const initialValues = (parameters: OpenApiParameter[]): Record<string, string> =
 	return out;
 };
 
-const placeholderFor = (p: OpenApiParameter): string => {
-	if (p.schema?.enum?.length) return String(p.schema.enum[0]);
-	if (p.schema?.type === "integer") return "0";
-	if (p.schema?.type === "boolean") return "true";
-	return p.name;
-};
-
 /**
  * A GUID is `<8 hex>-<region>`. Checked before asking the server for a key so
  * a half-typed value doesn't fire a request per keystroke.
@@ -553,12 +620,19 @@ const buildUrl = (
 	for (const p of parameters) {
 		if (p.in !== "query") continue;
 		const value = (values[p.name] || "").trim();
-		if (value) query.set(p.name, value);
+		// An <input type="datetime-local"> yields "2026-09-21T14:30" — local time,
+		// no zone. Sending that as-is makes the API interpret it as UTC and the
+		// reader gets results off by their offset. Normalise to a real ISO
+		// instant, which is what a date-time parameter means.
+		if (value) query.set(p.name, isLocalDateTime(value) ? new Date(value).toISOString() : value);
 	}
 
 	const qs = query.toString();
 	return `${host}${filled}${qs ? `?${qs}` : ""}`;
 };
+
+/** "2026-09-21T14:30" or with seconds — the datetime-local wire format. */
+const isLocalDateTime = (v: string): boolean => /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(v);
 
 /** Pretty-print a JSON response; leave anything else exactly as it came. */
 const prettyJson = (text: string): string => {
