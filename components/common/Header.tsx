@@ -20,6 +20,7 @@ import {
 	type NavCategory,
 } from "./navIcons";
 import { isNavHidden } from "lib/docs/legacyFrameworks";
+import { API_LIST } from "lib/api-specs/registry";
 import { Sheet, SheetTrigger, SheetContent, SheetClose } from "components/ui/sheet";
 import { getSessionUser, onSessionRefocus, type SessionUser } from "lib/auth/getSessionUser";
 
@@ -299,6 +300,32 @@ MegaLink.displayName = "MegaLink";
  * Archived/unready frameworks are filtered out here (lib/docs/legacyFrameworks)
  * so a single registry entry removes them from BOTH nav surfaces at once.
  */
+/**
+ * The generated API reference, appended to the APIs column of the mega menu.
+ *
+ * IN CODE, NOT THE CMS `header` CONTAINER — deliberately. These links ship in
+ * the same deploy as the pages they point at. Adding them as content would
+ * publish them to the LIVE header immediately, where /api-reference does not
+ * exist until this branch is deployed, so every reader would get a 404 from
+ * the nav. That is the same ordering hazard AGENTS.md flags for the redesigned
+ * ocean pages. Once the routes are live they can move into `header_link88`
+ * if editors want to own them, and this constant goes away.
+ *
+ * Derived from API_REGISTRY so a third API appears here the moment it is
+ * registered, rather than being a list someone has to remember to update.
+ *
+ * `swagger` is a real slug in NAV_ICONS, and the right one: it marks these as
+ * the generated, runnable reference, next to the four hand-written API guides
+ * already in this column rather than competing with them.
+ */
+const REFERENCE_NAV_LINKS: DropdownLink[] = API_LIST.map((api) => ({
+	// Shorter than `api.title` ("Content Fetch API Explorer" crowds the
+	// column, and the guide above it already carries the long name).
+	text: `${api.title.replace(/^Content /, "").replace(/ API$/, "")} API Explorer`,
+	href: `/api-reference/${api.slug}`,
+	icon: "swagger",
+}));
+
 const groupNavLinks = (
 	primaryDropdownLinks?: DropdownLink[],
 	secondaryDropdownLinks?: DropdownLink[]
@@ -312,6 +339,9 @@ const groupNavLinks = (
 		if (isNavHidden(l.href)) continue;
 		grouped.APIs.push(l);
 	}
+	// After the CMS links, so the hand-written guides stay first: someone
+	// meeting the API for the first time wants the guide, not the endpoint list.
+	grouped.APIs.push(...REFERENCE_NAV_LINKS);
 	return (["APIs", "SDKs", "Frameworks"] as NavCategory[])
 		.map((key) => ({ key, links: grouped[key] }))
 		.filter((c) => c.links.length > 0);

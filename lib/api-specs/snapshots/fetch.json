@@ -1,0 +1,2235 @@
+{
+ "components": {
+  "schemas": {
+   "APIType": {
+    "enum": [
+     "preview",
+     "fetch"
+    ],
+    "type": "string"
+   },
+   "AgilityDefinition": {
+    "additionalProperties": false,
+    "properties": {
+     "contentReferenceNames": {
+      "items": {
+       "type": "string"
+      },
+      "nullable": true,
+      "type": "array"
+     },
+     "displayName": {
+      "nullable": true,
+      "type": "string"
+     },
+     "fields": {
+      "items": {
+       "$ref": "#/components/schemas/AgilityField"
+      },
+      "nullable": true,
+      "type": "array"
+     },
+     "guid": {
+      "nullable": true,
+      "type": "string"
+     },
+     "id": {
+      "nullable": true,
+      "type": "string"
+     },
+     "lastModifiedDate": {
+      "format": "date-time",
+      "type": "string"
+     },
+     "modelId": {
+      "format": "int32",
+      "type": "integer"
+     },
+     "name": {
+      "nullable": true,
+      "type": "string"
+     },
+     "referenceName": {
+      "nullable": true,
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "AgilityField": {
+    "additionalProperties": false,
+    "properties": {
+     "label": {
+      "nullable": true,
+      "type": "string"
+     },
+     "name": {
+      "nullable": true,
+      "type": "string"
+     },
+     "settings": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "nullable": true,
+      "type": "object"
+     },
+     "type": {
+      "$ref": "#/components/schemas/AgilityFieldType"
+     }
+    },
+    "type": "object"
+   },
+   "AgilityFieldType": {
+    "enum": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16
+    ],
+    "format": "int32",
+    "type": "integer"
+   },
+   "EmptyResult": {
+    "additionalProperties": false,
+    "type": "object"
+   },
+   "HeadlessContentItem": {
+    "additionalProperties": false,
+    "properties": {
+     "contentID": {
+      "description": "The unique ID of the content item in this locale.",
+      "example": 10,
+      "format": "int32",
+      "type": "integer"
+     },
+     "fields": {
+      "additionalProperties": {},
+      "description": "A dictionary of the fields and the values of the content item.",
+      "nullable": true,
+      "type": "object"
+     },
+     "properties": {
+      "additionalProperties": {},
+      "description": "The system properties of the content item.",
+      "nullable": true,
+      "type": "object"
+     },
+     "seo": {
+      "additionalProperties": {},
+      "description": "SEO related fields for the content item. This is only returned for Dynamic Page Items.",
+      "nullable": true,
+      "type": "object"
+     }
+    },
+    "type": "object"
+   },
+   "HeadlessContentItemHeadlessSync": {
+    "additionalProperties": false,
+    "properties": {
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/HeadlessContentItem"
+      },
+      "nullable": true,
+      "type": "array"
+     },
+     "syncToken": {
+      "format": "int64",
+      "type": "integer"
+     }
+    },
+    "type": "object"
+   },
+   "HeadlessContentItemProperties": {
+    "additionalProperties": false,
+    "properties": {
+     "created": {
+      "description": "The date/time this item was last modified.",
+      "format": "date-time",
+      "type": "string"
+     },
+     "definitionName": {
+      "description": "The reference name of the content/module definition this item is based on.",
+      "example": "Article",
+      "nullable": true,
+      "type": "string"
+     },
+     "modified": {
+      "description": "The date/time the item was last modified",
+      "format": "date-time",
+      "type": "string"
+     },
+     "referenceName": {
+      "description": "The reference name of this item is part of. This may be the reference name of a content list, item, or module.",
+      "example": "News",
+      "nullable": true,
+      "type": "string"
+     },
+     "state": {
+      "description": "The state of this content item. 1 = Staging, 2 = Published, 3 = Deleted, 4 = Approved, 5 = AwaitingApproval, 6 = Declined, 7 = Unpublished",
+      "example": 2,
+      "format": "int32",
+      "type": "integer"
+     },
+     "syncToken": {
+      "description": "Used for sync tracking.",
+      "format": "int64",
+      "type": "integer"
+     },
+     "versionID": {
+      "description": "The unique versionID of this content item.",
+      "example": 101,
+      "format": "int32",
+      "type": "integer"
+     }
+    },
+    "type": "object"
+   },
+   "HeadlessContentItemSeo": {
+    "additionalProperties": false,
+    "properties": {
+     "metaDescription": {
+      "description": "The meta description for this static/dynamic page.",
+      "example": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
+      "nullable": true,
+      "type": "string"
+     },
+     "metaHTML": {
+      "description": "Additional markup to be included in the *head* element of the page.",
+      "example": "<meta name=\"robots\" content=\"noindex\" />",
+      "nullable": true,
+      "type": "string"
+     },
+     "metaKeywords": {
+      "description": "The meta keywords for this static/dynamic page.",
+      "example": "Agility, Fast, Nimble",
+      "nullable": true,
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "HeadlessContentListResponse": {
+    "additionalProperties": false,
+    "properties": {
+     "items": {
+      "description": "The paginated items returned from the query.",
+      "items": {
+       "$ref": "#/components/schemas/HeadlessContentItem"
+      },
+      "nullable": true,
+      "type": "array"
+     },
+     "totalCount": {
+      "description": "The total number of items in the list (excluding any pagination).",
+      "example": 20,
+      "format": "int32",
+      "type": "integer"
+     }
+    },
+    "type": "object"
+   },
+   "HeadlessContentPage": {
+    "additionalProperties": false,
+    "properties": {
+     "excludeFromOutputCache": {
+      "description": "Indicates if the page is excluded from cache.",
+      "type": "boolean"
+     },
+     "menuText": {
+      "description": "Menu text for the page.",
+      "nullable": true,
+      "type": "string"
+     },
+     "name": {
+      "description": "Page name.",
+      "nullable": true,
+      "type": "string"
+     },
+     "pageID": {
+      "description": "ID of the page.",
+      "format": "int32",
+      "type": "integer"
+     },
+     "path": {
+      "description": "Path of the page.",
+      "nullable": true,
+      "type": "string"
+     },
+     "properties": {
+      "$ref": "#/components/schemas/HeadlessContentItemProperties"
+     },
+     "redirectUrl": {
+      "description": "Redirect url of the page.",
+      "nullable": true,
+      "type": "string"
+     },
+     "scripts": {
+      "$ref": "#/components/schemas/HeadlessContentScripts"
+     },
+     "securePage": {
+      "description": "Indicates if the page is secure.",
+      "type": "boolean"
+     },
+     "seo": {
+      "$ref": "#/components/schemas/HeadlessContentItemSeo"
+     },
+     "templateName": {
+      "description": "Name of the template used to create the page.",
+      "nullable": true,
+      "type": "string"
+     },
+     "title": {
+      "description": "Title of the page.",
+      "nullable": true,
+      "type": "string"
+     },
+     "visible": {
+      "$ref": "#/components/schemas/HeadlessContentPageVisibility"
+     },
+     "zones": {
+      "additionalProperties": {
+       "items": {
+        "$ref": "#/components/schemas/HeadlessContentZone"
+       },
+       "type": "array"
+      },
+      "description": "Zones on the page defined by the template",
+      "nullable": true,
+      "type": "object"
+     }
+    },
+    "type": "object"
+   },
+   "HeadlessContentPageBase": {
+    "additionalProperties": false,
+    "properties": {
+     "menuText": {
+      "description": "Menu text for the page.",
+      "nullable": true,
+      "type": "string"
+     },
+     "name": {
+      "description": "Page name.",
+      "nullable": true,
+      "type": "string"
+     },
+     "pageID": {
+      "description": "ID of the page.",
+      "format": "int32",
+      "type": "integer"
+     },
+     "path": {
+      "description": "Path of the page.",
+      "nullable": true,
+      "type": "string"
+     },
+     "title": {
+      "description": "Title of the page.",
+      "nullable": true,
+      "type": "string"
+     },
+     "visible": {
+      "$ref": "#/components/schemas/HeadlessContentPageVisibility"
+     }
+    },
+    "type": "object"
+   },
+   "HeadlessContentPageByPath": {
+    "additionalProperties": false,
+    "properties": {
+     "page": {
+      "$ref": "#/components/schemas/HeadlessContentPage"
+     },
+     "sitemapNode": {
+      "$ref": "#/components/schemas/HeadlessContentPageBase"
+     }
+    },
+    "type": "object"
+   },
+   "HeadlessContentPageHeadlessSync": {
+    "additionalProperties": false,
+    "properties": {
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/HeadlessContentPage"
+      },
+      "nullable": true,
+      "type": "array"
+     },
+     "syncToken": {
+      "format": "int64",
+      "type": "integer"
+     }
+    },
+    "type": "object"
+   },
+   "HeadlessContentPageVisibility": {
+    "additionalProperties": false,
+    "properties": {
+     "menu": {
+      "description": "Indicates if page is visible in the menu.",
+      "type": "boolean"
+     },
+     "sitemap": {
+      "description": "Indicates if the page is visible in the sitemap.",
+      "type": "boolean"
+     }
+    },
+    "type": "object"
+   },
+   "HeadlessContentScripts": {
+    "additionalProperties": false,
+    "properties": {
+     "bottom": {
+      "description": "Scripts to include on the bottom of the page.",
+      "nullable": true,
+      "type": "string"
+     },
+     "excludedFromGlobal": {
+      "description": "Indicates if scripts are excluded from global.",
+      "type": "boolean"
+     },
+     "top": {
+      "description": "Scripts to include on top of the page.",
+      "nullable": true,
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "HeadlessContentSiteMapItem": {
+    "additionalProperties": false,
+    "properties": {
+     "contentID": {
+      "description": "Content ID of the item.",
+      "format": "int32",
+      "nullable": true,
+      "type": "integer"
+     },
+     "isFolder": {
+      "description": "Indicates if the item is a folder.",
+      "type": "boolean"
+     },
+     "menuText": {
+      "description": "Menu text for the page.",
+      "nullable": true,
+      "type": "string"
+     },
+     "name": {
+      "description": "Page name.",
+      "nullable": true,
+      "type": "string"
+     },
+     "pageID": {
+      "description": "ID of the page.",
+      "format": "int32",
+      "type": "integer"
+     },
+     "path": {
+      "description": "Path of the page.",
+      "nullable": true,
+      "type": "string"
+     },
+     "redirect": {
+      "$ref": "#/components/schemas/RedirectUrl"
+     },
+     "title": {
+      "description": "Title of the page.",
+      "nullable": true,
+      "type": "string"
+     },
+     "visible": {
+      "$ref": "#/components/schemas/HeadlessContentPageVisibility"
+     }
+    },
+    "type": "object"
+   },
+   "HeadlessContentSiteMapNestedItem": {
+    "additionalProperties": false,
+    "properties": {
+     "children": {
+      "description": "Children of this item",
+      "items": {
+       "$ref": "#/components/schemas/HeadlessContentSiteMapNestedItem"
+      },
+      "nullable": true,
+      "type": "array"
+     },
+     "contentID": {
+      "description": "Content ID of the item.",
+      "format": "int32",
+      "nullable": true,
+      "type": "integer"
+     },
+     "isFolder": {
+      "description": "Indicates if the item is a folder.",
+      "type": "boolean"
+     },
+     "menuText": {
+      "description": "Menu text for the page.",
+      "nullable": true,
+      "type": "string"
+     },
+     "name": {
+      "description": "Page name.",
+      "nullable": true,
+      "type": "string"
+     },
+     "pageID": {
+      "description": "ID of the page.",
+      "format": "int32",
+      "type": "integer"
+     },
+     "path": {
+      "description": "Path of the page.",
+      "nullable": true,
+      "type": "string"
+     },
+     "redirect": {
+      "$ref": "#/components/schemas/RedirectUrl"
+     },
+     "title": {
+      "description": "Title of the page.",
+      "nullable": true,
+      "type": "string"
+     },
+     "visible": {
+      "$ref": "#/components/schemas/HeadlessContentPageVisibility"
+     }
+    },
+    "type": "object"
+   },
+   "HeadlessContentZone": {
+    "additionalProperties": false,
+    "properties": {
+     "item": {
+      "$ref": "#/components/schemas/HeadlessContentItem"
+     },
+     "module": {
+      "description": "Name of the module",
+      "nullable": true,
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "HeadlessGallery": {
+    "additionalProperties": false,
+    "properties": {
+     "count": {
+      "format": "int32",
+      "type": "integer"
+     },
+     "description": {
+      "description": "Gallery description.",
+      "nullable": true,
+      "type": "string"
+     },
+     "galleryId": {
+      "description": "Gallery ID.",
+      "format": "int32",
+      "type": "integer"
+     },
+     "media": {
+      "description": "List of Media items in gallery.",
+      "items": {
+       "$ref": "#/components/schemas/HeadlessMediaItem"
+      },
+      "nullable": true,
+      "type": "array"
+     },
+     "name": {
+      "description": "Gallery name.",
+      "nullable": true,
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "HeadlessMediaItem": {
+    "additionalProperties": false,
+    "properties": {
+     "fileName": {
+      "description": "Media item file name.",
+      "nullable": true,
+      "type": "string"
+     },
+     "mediaID": {
+      "description": "media Id.",
+      "format": "int32",
+      "type": "integer"
+     },
+     "metaData": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "description": "List of meta data related to media item in key value format.",
+      "nullable": true,
+      "type": "object"
+     },
+     "modifiedOn": {
+      "description": "Last modified date.",
+      "format": "date-time",
+      "type": "string"
+     },
+     "size": {
+      "description": "Size of media item in bytes.",
+      "format": "int32",
+      "type": "integer"
+     },
+     "url": {
+      "description": "Url that media item can be accessed at.",
+      "nullable": true,
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "NotFoundResult": {
+    "additionalProperties": false,
+    "properties": {
+     "statusCode": {
+      "format": "int32",
+      "readOnly": true,
+      "type": "integer"
+     }
+    },
+    "type": "object"
+   },
+   "RedirectUrl": {
+    "additionalProperties": false,
+    "properties": {
+     "target": {
+      "description": "Target to open the Url in.",
+      "nullable": true,
+      "type": "string"
+     },
+     "url": {
+      "description": "Redirect Url.",
+      "nullable": true,
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "UrlRedirection": {
+    "additionalProperties": false,
+    "properties": {
+     "destinationUrl": {
+      "nullable": true,
+      "type": "string"
+     },
+     "id": {
+      "format": "int32",
+      "type": "integer"
+     },
+     "originUrl": {
+      "nullable": true,
+      "type": "string"
+     },
+     "statusCode": {
+      "format": "int32",
+      "type": "integer"
+     }
+    },
+    "type": "object"
+   }
+  },
+  "securitySchemes": {
+   "APIKeyAuthorization": {
+    "description": "Please enter your API Key for the API Type that you are accessing (fetch, preview)",
+    "in": "header",
+    "name": "APIKey",
+    "type": "apiKey"
+   }
+  }
+ },
+ "info": {
+  "contact": {
+   "name": "Get Help",
+   "url": "https://help.agilitycms.com"
+  },
+  "description": "Agility CMS REST API for retrieving content from the Agility CMS.  The API Types are fetch (for published content) and preview (for latest, or staging content).",
+  "title": "Agility CMS REST API",
+  "version": "v1"
+ },
+ "openapi": "3.0.1",
+ "paths": {
+  "/v1/{guid}/{apitype}/{locale}/item/{id}": {
+   "get": {
+    "parameters": [
+     {
+      "description": "The instance GUID, available from the API Keys section.",
+      "in": "path",
+      "name": "guid",
+      "required": true,
+      "schema": {
+       "description": "The instance GUID, available from the API Keys section.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The API type (preview, fetch).",
+      "in": "path",
+      "name": "apitype",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/APIType"
+      }
+     },
+     {
+      "description": "The locale code you want to retrieve content for.",
+      "in": "path",
+      "name": "locale",
+      "required": true,
+      "schema": {
+       "description": "The locale code you want to retrieve content for.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The contentID of the requested item in this locale.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "description": "The contentID of the requested item in this locale.",
+       "format": "int32",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "The maximum level to expand linked content from this item",
+      "in": "query",
+      "name": "contentLinkDepth",
+      "schema": {
+       "default": 1,
+       "description": "The maximum level to expand linked content from this item",
+       "format": "int32",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "Whether or not to expand entire linked content references, includings lists and items that are rendered in the CMS as Grid or Link.",
+      "in": "query",
+      "name": "expandAllContentLinks",
+      "schema": {
+       "default": false,
+       "description": "Whether or not to expand entire linked content references, includings lists and items that are rendered in the CMS as Grid or Link.",
+       "type": "boolean"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HeadlessContentItem"
+        }
+       }
+      },
+      "description": "Returns the content item."
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmptyResult"
+        }
+       }
+      },
+      "description": "The request could not be authorized. Invalid or missing apiKey."
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/NotFoundResult"
+        }
+       }
+      },
+      "description": "The content item is not found. If quering production, ensure the item has been published."
+     }
+    },
+    "summary": "Gets the details of a content item by ther Content ID.",
+    "tags": [
+     "Item"
+    ]
+   }
+  },
+  "/v1/{guid}/{apitype}/{locale}/list/{referenceName}": {
+   "get": {
+    "parameters": [
+     {
+      "description": "The instance GUID, available from the API Keys section.",
+      "in": "path",
+      "name": "guid",
+      "required": true,
+      "schema": {
+       "description": "The instance GUID, available from the API Keys section.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The API type (preview, fetch).",
+      "in": "path",
+      "name": "apitype",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/APIType"
+      }
+     },
+     {
+      "description": "The locale code you want to retrieve content for.",
+      "in": "path",
+      "name": "locale",
+      "required": true,
+      "schema": {
+       "description": "The locale code you want to retrieve content for.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The unique reference name of the content list you wish to retrieve in the current locale. Reference names must be ALL lowercase.",
+      "in": "path",
+      "name": "referenceName",
+      "required": true,
+      "schema": {
+       "description": "The unique reference name of the content list you wish to retrieve in the current locale. Reference names must be ALL lowercase.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "[Optional] The depth of list items. Maximum allowed is 5.",
+      "in": "query",
+      "name": "ContentLinkDepth",
+      "schema": {
+       "description": "[Optional] The depth of list items. Maximum allowed is 5.",
+       "format": "int32",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "[Optional] Whether or not to expand entire linked content references, includings lists and items that are rendered in the CMS as Grid or Link.",
+      "in": "query",
+      "name": "ExpandAllContentLinks",
+      "schema": {
+       "description": "[Optional] Whether or not to expand entire linked content references, includings lists and items that are rendered in the CMS as Grid or Link.",
+       "type": "boolean"
+      }
+     },
+     {
+      "description": "[Optional] A comma separated list of the fields to return.",
+      "in": "query",
+      "name": "Fields",
+      "schema": {
+       "description": "[Optional] A comma separated list of the fields to return.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "[Optional] The maximum number of items to retrieve in this request. Default is 10. Maximum allowed is 250.",
+      "in": "query",
+      "name": "Take",
+      "schema": {
+       "description": "[Optional] The maximum number of items to retrieve in this request. Default is 10. Maximum allowed is 250.",
+       "format": "int32",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "[Optional] The number of items to skip from the list. Default is 0. Used for implementing pagination.",
+      "in": "query",
+      "name": "Skip",
+      "schema": {
+       "description": "[Optional] The number of items to skip from the list. Default is 0. Used for implementing pagination.",
+       "format": "int32",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "[Optional] The filter you wish to apply to the list query. Supports [eq (Equal To), ne (Not Equal), lt (Less Than), lte (Less Than or Equal), gt (Greater Than), gte (Greater Than or Equal), contains (given that the field value is a csv string) and in (given that the filter value is a csv string)]. Example value: `fields.title[eq]\"some title\" or fields.details[like]\"some text\" and fields.linkedfield_ValueField[contains]\"1\"`",
+      "in": "query",
+      "name": "Filter",
+      "schema": {
+       "description": "[Optional] The filter you wish to apply to the list query. Supports [eq (Equal To), ne (Not Equal), lt (Less Than), lte (Less Than or Equal), gt (Greater Than), gte (Greater Than or Equal), contains (given that the field value is a csv string) and in (given that the filter value is a csv string)]. Example value: `fields.title[eq]\"some title\" or fields.details[like]\"some text\" and fields.linkedfield_ValueField[contains]\"1\"`",
+       "example": "",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "[Optional] The field to sort the results by. Example fields.title or properties.created, seo.metaDescription",
+      "in": "query",
+      "name": "Sort",
+      "schema": {
+       "description": "[Optional] The field to sort the results by. Example fields.title or properties.created, seo.metaDescription",
+       "example": "",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "[Optional] The direction to sort the results by. Default is asc. Valid values are asc, desc.",
+      "in": "query",
+      "name": "Direction",
+      "schema": {
+       "description": "[Optional] The direction to sort the results by. Default is asc. Valid values are asc, desc.",
+       "example": "",
+       "nullable": true,
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HeadlessContentListResponse"
+        }
+       }
+      },
+      "description": "Returns the content list."
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmptyResult"
+        }
+       }
+      },
+      "description": "The request could not be authorized. Invalid or missing apiKey."
+     },
+     "404": {
+      "description": "The content list is not found. If quering production, ensure at least one item in the list has been published."
+     }
+    },
+    "summary": "Retrieves a list of content items by reference name.",
+    "tags": [
+     "List"
+    ]
+   }
+  },
+  "/v1/{guid}/{apitype}/{locale}/page/{channel}": {
+   "get": {
+    "parameters": [
+     {
+      "description": "The instance GUID, available from the API Keys section.",
+      "in": "path",
+      "name": "guid",
+      "required": true,
+      "schema": {
+       "description": "The instance GUID, available from the API Keys section.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The API type (preview, fetch).",
+      "in": "path",
+      "name": "apitype",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/APIType"
+      }
+     },
+     {
+      "description": "The locale code you want to retrieve content for.",
+      "in": "path",
+      "name": "locale",
+      "required": true,
+      "schema": {
+       "description": "The locale code you want to retrieve content for.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The path of the page",
+      "in": "query",
+      "name": "path",
+      "schema": {
+       "description": "The path of the page",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The reference name of the digital channel of the sitemap to return. If you only have one channel, your channel reference name is likely 'website'.",
+      "in": "path",
+      "name": "channel",
+      "required": true,
+      "schema": {
+       "description": "The reference name of the digital channel of the sitemap to return. If you only have one channel, your channel reference name is likely 'website'.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The maximum level to expand linked content from this item",
+      "in": "query",
+      "name": "contentLinkDepth",
+      "schema": {
+       "default": 2,
+       "description": "The maximum level to expand linked content from this item",
+       "format": "int32",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "Whether or not to expand entire linked content references, includings lists and items that are rendered in the CMS as Grid or Link and linked to modules or linked items on this page.",
+      "in": "query",
+      "name": "expandAllContentLinks",
+      "schema": {
+       "default": false,
+       "description": "Whether or not to expand entire linked content references, includings lists and items that are rendered in the CMS as Grid or Link and linked to modules or linked items on this page.",
+       "type": "boolean"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HeadlessContentPageByPath"
+        }
+       }
+      },
+      "description": "Returns the page item."
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmptyResult"
+        }
+       }
+      },
+      "description": "The request could not be authorized. Invalid or missing apiKey."
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/NotFoundResult"
+        }
+       }
+      },
+      "description": "The page item is not found. If quering production, ensure the page has been published."
+     }
+    },
+    "summary": "Gets the details of a page by its Page path, in a specific channel.",
+    "tags": [
+     "Page"
+    ]
+   }
+  },
+  "/v1/{guid}/{apitype}/{locale}/page/{id}": {
+   "get": {
+    "parameters": [
+     {
+      "description": "The instance GUID, available from the API Keys section.",
+      "in": "path",
+      "name": "guid",
+      "required": true,
+      "schema": {
+       "description": "The instance GUID, available from the API Keys section.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The API type (preview, fetch).",
+      "in": "path",
+      "name": "apitype",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/APIType"
+      }
+     },
+     {
+      "description": "The locale code you want to retrieve content for.",
+      "in": "path",
+      "name": "locale",
+      "required": true,
+      "schema": {
+       "description": "The locale code you want to retrieve content for.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The unique page ID of the page you wish to retrieve in the current locale.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "description": "The unique page ID of the page you wish to retrieve in the current locale.",
+       "format": "int32",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "The maximum level to expand linked content from this item",
+      "in": "query",
+      "name": "contentLinkDepth",
+      "schema": {
+       "default": 2,
+       "description": "The maximum level to expand linked content from this item",
+       "format": "int32",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "Whether or not to expand entire linked content references, includings lists and items that are rendered in the CMS as Grid or Link and linked to modules or linked items on this page.",
+      "in": "query",
+      "name": "expandAllContentLinks",
+      "schema": {
+       "default": false,
+       "description": "Whether or not to expand entire linked content references, includings lists and items that are rendered in the CMS as Grid or Link and linked to modules or linked items on this page.",
+       "type": "boolean"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HeadlessContentPage"
+        }
+       }
+      },
+      "description": "Returns the page item."
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmptyResult"
+        }
+       }
+      },
+      "description": "The request could not be authorized. Invalid or missing apiKey."
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/NotFoundResult"
+        }
+       }
+      },
+      "description": "The page item is not found. If quering production, ensure the page has been published."
+     }
+    },
+    "summary": "Gets the details of a page by its Page ID.",
+    "tags": [
+     "Page"
+    ]
+   }
+  },
+  "/{guid}/{apitype}/contentmodels": {
+   "get": {
+    "parameters": [
+     {
+      "description": "The instance GUID, available from the API Keys section.",
+      "in": "path",
+      "name": "guid",
+      "required": true,
+      "schema": {
+       "description": "The instance GUID, available from the API Keys section.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The API type (preview, fetch).",
+      "in": "path",
+      "name": "apitype",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/APIType"
+      }
+     },
+     {
+      "description": "The last modified date/time that the Models list was updated, eg: 2020-09-24T10:00:00.00-04:00.",
+      "in": "query",
+      "name": "lastModifiedDate",
+      "schema": {
+       "description": "The last modified date/time that the Models list was updated, eg: 2020-09-24T10:00:00.00-04:00.",
+       "nullable": true,
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/AgilityDefinition"
+         },
+         "type": "array"
+        }
+       }
+      },
+      "description": "Success"
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmptyResult"
+        }
+       }
+      },
+      "description": "Unauthorized"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/NotFoundResult"
+        }
+       }
+      },
+      "description": "Not Found"
+     }
+    },
+    "summary": "Returns content models for the Agility instance.",
+    "tags": [
+     "ContentModels"
+    ]
+   }
+  },
+  "/{guid}/{apitype}/gallery/{id}": {
+   "get": {
+    "parameters": [
+     {
+      "description": "The instance GUID, available from the API Keys section.",
+      "in": "path",
+      "name": "guid",
+      "required": true,
+      "schema": {
+       "description": "The instance GUID, available from the API Keys section.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The Type of API - fetch or preview.",
+      "in": "path",
+      "name": "apitype",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/APIType"
+      }
+     },
+     {
+      "description": "The galleryID of the requested gallery.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "description": "The galleryID of the requested gallery.",
+       "format": "int32",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HeadlessGallery"
+        }
+       }
+      },
+      "description": "Returns the gallery."
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmptyResult"
+        }
+       }
+      },
+      "description": "The request could not be authorized. Invalid or missing apiKey."
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/NotFoundResult"
+        }
+       }
+      },
+      "description": "The gallery is not found."
+     }
+    },
+    "summary": "Gets the gallery by ID.",
+    "tags": [
+     "Gallery"
+    ]
+   }
+  },
+  "/{guid}/{apitype}/urlredirection": {
+   "get": {
+    "parameters": [
+     {
+      "description": "The instance GUID, available from the API Keys section.",
+      "in": "path",
+      "name": "guid",
+      "required": true,
+      "schema": {
+       "description": "The instance GUID, available from the API Keys section.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The Type of API - fetch or preview.",
+      "in": "path",
+      "name": "apitype",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/APIType"
+      }
+     },
+     {
+      "description": "The last access date/time that the URL Redirections list was previously accessed, eg: 2020-09-24T10:00:00.00-04:00.",
+      "in": "query",
+      "name": "lastAccessDate",
+      "schema": {
+       "description": "The last access date/time that the URL Redirections list was previously accessed, eg: 2020-09-24T10:00:00.00-04:00.",
+       "format": "date-time",
+       "nullable": true,
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/UrlRedirection"
+         },
+         "type": "array"
+        }
+       }
+      },
+      "description": "Returns the list."
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmptyResult"
+        }
+       }
+      },
+      "description": "The request could not be authorized. Invalid or missing apiKey."
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/NotFoundResult"
+        }
+       }
+      },
+      "description": "The list is not found."
+     }
+    },
+    "summary": "Gets the list of all URL Redirections since a particular date/time. Persist the lastAccessDate that is returned and use that value to maintain state on subsequent requests.",
+    "tags": [
+     "UrlRedirection"
+    ]
+   }
+  },
+  "/{guid}/{apitype}/{locale}/item/{id}": {
+   "get": {
+    "parameters": [
+     {
+      "description": "The instance GUID, available from the API Keys section.",
+      "in": "path",
+      "name": "guid",
+      "required": true,
+      "schema": {
+       "description": "The instance GUID, available from the API Keys section.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The API type (preview, fetch).",
+      "in": "path",
+      "name": "apitype",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/APIType"
+      }
+     },
+     {
+      "description": "The locale code you want to retrieve content for.",
+      "in": "path",
+      "name": "locale",
+      "required": true,
+      "schema": {
+       "description": "The locale code you want to retrieve content for.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The contentID of the requested item in this locale.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "description": "The contentID of the requested item in this locale.",
+       "format": "int32",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "The maximum level to expand linked content from this item",
+      "in": "query",
+      "name": "contentLinkDepth",
+      "schema": {
+       "default": 1,
+       "description": "The maximum level to expand linked content from this item",
+       "format": "int32",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "Whether or not to expand entire linked content references, includings lists and items that are rendered in the CMS as Grid or Link.",
+      "in": "query",
+      "name": "expandAllContentLinks",
+      "schema": {
+       "default": false,
+       "description": "Whether or not to expand entire linked content references, includings lists and items that are rendered in the CMS as Grid or Link.",
+       "type": "boolean"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HeadlessContentItem"
+        }
+       }
+      },
+      "description": "Returns the content item."
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmptyResult"
+        }
+       }
+      },
+      "description": "The request could not be authorized. Invalid or missing apiKey."
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/NotFoundResult"
+        }
+       }
+      },
+      "description": "The content item is not found. If quering production, ensure the item has been published."
+     }
+    },
+    "summary": "Gets the details of a content item by ther Content ID.",
+    "tags": [
+     "Item"
+    ]
+   }
+  },
+  "/{guid}/{apitype}/{locale}/list/{referenceName}": {
+   "get": {
+    "parameters": [
+     {
+      "description": "The instance GUID, available from the API Keys section.",
+      "in": "path",
+      "name": "guid",
+      "required": true,
+      "schema": {
+       "description": "The instance GUID, available from the API Keys section.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The API type (preview, fetch).",
+      "in": "path",
+      "name": "apitype",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/APIType"
+      }
+     },
+     {
+      "description": "The locale code you want to retrieve content for.",
+      "in": "path",
+      "name": "locale",
+      "required": true,
+      "schema": {
+       "description": "The locale code you want to retrieve content for.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The unique reference name of the content list you wish to retrieve in the current locale. Reference names must be ALL lowercase.",
+      "in": "path",
+      "name": "referenceName",
+      "required": true,
+      "schema": {
+       "description": "The unique reference name of the content list you wish to retrieve in the current locale. Reference names must be ALL lowercase.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "[Optional] The depth of list items. Maximum allowed is 5.",
+      "in": "query",
+      "name": "ContentLinkDepth",
+      "schema": {
+       "description": "[Optional] The depth of list items. Maximum allowed is 5.",
+       "format": "int32",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "[Optional] Whether or not to expand entire linked content references, includings lists and items that are rendered in the CMS as Grid or Link.",
+      "in": "query",
+      "name": "ExpandAllContentLinks",
+      "schema": {
+       "description": "[Optional] Whether or not to expand entire linked content references, includings lists and items that are rendered in the CMS as Grid or Link.",
+       "type": "boolean"
+      }
+     },
+     {
+      "description": "[Optional] A comma separated list of the fields to return.",
+      "in": "query",
+      "name": "Fields",
+      "schema": {
+       "description": "[Optional] A comma separated list of the fields to return.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "[Optional] The maximum number of items to retrieve in this request. Default is 10. Maximum allowed is 250.",
+      "in": "query",
+      "name": "Take",
+      "schema": {
+       "description": "[Optional] The maximum number of items to retrieve in this request. Default is 10. Maximum allowed is 250.",
+       "format": "int32",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "[Optional] The number of items to skip from the list. Default is 0. Used for implementing pagination.",
+      "in": "query",
+      "name": "Skip",
+      "schema": {
+       "description": "[Optional] The number of items to skip from the list. Default is 0. Used for implementing pagination.",
+       "format": "int32",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "[Optional] The filter you wish to apply to the list query. Supports [eq (Equal To), ne (Not Equal), lt (Less Than), lte (Less Than or Equal), gt (Greater Than), gte (Greater Than or Equal), contains (given that the field value is a csv string) and in (given that the filter value is a csv string)]. Example value: `fields.title[eq]\"some title\" or fields.details[like]\"some text\" and fields.linkedfield_ValueField[contains]\"1\"`",
+      "in": "query",
+      "name": "Filter",
+      "schema": {
+       "description": "[Optional] The filter you wish to apply to the list query. Supports [eq (Equal To), ne (Not Equal), lt (Less Than), lte (Less Than or Equal), gt (Greater Than), gte (Greater Than or Equal), contains (given that the field value is a csv string) and in (given that the filter value is a csv string)]. Example value: `fields.title[eq]\"some title\" or fields.details[like]\"some text\" and fields.linkedfield_ValueField[contains]\"1\"`",
+       "example": "",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "[Optional] The field to sort the results by. Example fields.title or properties.created, seo.metaDescription",
+      "in": "query",
+      "name": "Sort",
+      "schema": {
+       "description": "[Optional] The field to sort the results by. Example fields.title or properties.created, seo.metaDescription",
+       "example": "",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "[Optional] The direction to sort the results by. Default is asc. Valid values are asc, desc.",
+      "in": "query",
+      "name": "Direction",
+      "schema": {
+       "description": "[Optional] The direction to sort the results by. Default is asc. Valid values are asc, desc.",
+       "example": "",
+       "nullable": true,
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HeadlessContentListResponse"
+        }
+       }
+      },
+      "description": "Returns the content list."
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmptyResult"
+        }
+       }
+      },
+      "description": "The request could not be authorized. Invalid or missing apiKey."
+     },
+     "404": {
+      "description": "The content list is not found. If quering production, ensure at least one item in the list has been published."
+     }
+    },
+    "summary": "Retrieves a list of content items by reference name.",
+    "tags": [
+     "List"
+    ]
+   }
+  },
+  "/{guid}/{apitype}/{locale}/page/{channel}": {
+   "get": {
+    "parameters": [
+     {
+      "description": "The instance GUID, available from the API Keys section.",
+      "in": "path",
+      "name": "guid",
+      "required": true,
+      "schema": {
+       "description": "The instance GUID, available from the API Keys section.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The API type (preview, fetch).",
+      "in": "path",
+      "name": "apitype",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/APIType"
+      }
+     },
+     {
+      "description": "The locale code you want to retrieve content for.",
+      "in": "path",
+      "name": "locale",
+      "required": true,
+      "schema": {
+       "description": "The locale code you want to retrieve content for.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The path of the page",
+      "in": "query",
+      "name": "path",
+      "schema": {
+       "description": "The path of the page",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The reference name of the digital channel of the sitemap to return. If you only have one channel, your channel reference name is likely 'website'.",
+      "in": "path",
+      "name": "channel",
+      "required": true,
+      "schema": {
+       "description": "The reference name of the digital channel of the sitemap to return. If you only have one channel, your channel reference name is likely 'website'.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The maximum level to expand linked content from this item",
+      "in": "query",
+      "name": "contentLinkDepth",
+      "schema": {
+       "default": 2,
+       "description": "The maximum level to expand linked content from this item",
+       "format": "int32",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "Whether or not to expand entire linked content references, includings lists and items that are rendered in the CMS as Grid or Link and linked to modules or linked items on this page.",
+      "in": "query",
+      "name": "expandAllContentLinks",
+      "schema": {
+       "default": false,
+       "description": "Whether or not to expand entire linked content references, includings lists and items that are rendered in the CMS as Grid or Link and linked to modules or linked items on this page.",
+       "type": "boolean"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HeadlessContentPageByPath"
+        }
+       }
+      },
+      "description": "Returns the page item."
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmptyResult"
+        }
+       }
+      },
+      "description": "The request could not be authorized. Invalid or missing apiKey."
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/NotFoundResult"
+        }
+       }
+      },
+      "description": "The page item is not found. If quering production, ensure the page has been published."
+     }
+    },
+    "summary": "Gets the details of a page by its Page path, in a specific channel.",
+    "tags": [
+     "Page"
+    ]
+   }
+  },
+  "/{guid}/{apitype}/{locale}/page/{id}": {
+   "get": {
+    "parameters": [
+     {
+      "description": "The instance GUID, available from the API Keys section.",
+      "in": "path",
+      "name": "guid",
+      "required": true,
+      "schema": {
+       "description": "The instance GUID, available from the API Keys section.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The API type (preview, fetch).",
+      "in": "path",
+      "name": "apitype",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/APIType"
+      }
+     },
+     {
+      "description": "The locale code you want to retrieve content for.",
+      "in": "path",
+      "name": "locale",
+      "required": true,
+      "schema": {
+       "description": "The locale code you want to retrieve content for.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The unique page ID of the page you wish to retrieve in the current locale.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "description": "The unique page ID of the page you wish to retrieve in the current locale.",
+       "format": "int32",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "The maximum level to expand linked content from this item",
+      "in": "query",
+      "name": "contentLinkDepth",
+      "schema": {
+       "default": 2,
+       "description": "The maximum level to expand linked content from this item",
+       "format": "int32",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "Whether or not to expand entire linked content references, includings lists and items that are rendered in the CMS as Grid or Link and linked to modules or linked items on this page.",
+      "in": "query",
+      "name": "expandAllContentLinks",
+      "schema": {
+       "default": false,
+       "description": "Whether or not to expand entire linked content references, includings lists and items that are rendered in the CMS as Grid or Link and linked to modules or linked items on this page.",
+       "type": "boolean"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HeadlessContentPage"
+        }
+       }
+      },
+      "description": "Returns the page item."
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmptyResult"
+        }
+       }
+      },
+      "description": "The request could not be authorized. Invalid or missing apiKey."
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/NotFoundResult"
+        }
+       }
+      },
+      "description": "The page item is not found. If quering production, ensure the page has been published."
+     }
+    },
+    "summary": "Gets the details of a page by its Page ID.",
+    "tags": [
+     "Page"
+    ]
+   }
+  },
+  "/{guid}/{apitype}/{locale}/sitemap/flat/{channelName}": {
+   "get": {
+    "parameters": [
+     {
+      "description": "The instance GUID, available from the API Keys section.",
+      "in": "path",
+      "name": "guid",
+      "required": true,
+      "schema": {
+       "description": "The instance GUID, available from the API Keys section.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The Type of API - fetch or preview.",
+      "in": "path",
+      "name": "apitype",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/APIType"
+      }
+     },
+     {
+      "description": "The locale code you want to retreive content for",
+      "in": "path",
+      "name": "locale",
+      "required": true,
+      "schema": {
+       "description": "The locale code you want to retreive content for",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The reference name of the digital channel of the sitemap to return. If you only have one channel, your channel reference name is likely 'website'.",
+      "in": "path",
+      "name": "channelName",
+      "required": true,
+      "schema": {
+       "description": "The reference name of the digital channel of the sitemap to return. If you only have one channel, your channel reference name is likely 'website'.",
+       "nullable": true,
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": {
+          "$ref": "#/components/schemas/HeadlessContentSiteMapItem"
+         },
+         "type": "object"
+        }
+       }
+      },
+      "description": "Returns the sitemap."
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmptyResult"
+        }
+       }
+      },
+      "description": "The request could not be authorized. Invalid or missing apiKey."
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/NotFoundResult"
+        }
+       }
+      },
+      "description": "The page item is not found. If quering production, ensure the page has been published."
+     }
+    },
+    "summary": "Gets the sitemap, returned in a flat list, where the dictionary key is the page path. This method is ideal for page routing.",
+    "tags": [
+     "Sitemap"
+    ]
+   }
+  },
+  "/{guid}/{apitype}/{locale}/sitemap/nested/{channelName}": {
+   "get": {
+    "parameters": [
+     {
+      "description": "The instance GUID, available from the API Keys section.",
+      "in": "path",
+      "name": "guid",
+      "required": true,
+      "schema": {
+       "description": "The instance GUID, available from the API Keys section.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The Type of API - fetch or preview.",
+      "in": "path",
+      "name": "apitype",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/APIType"
+      }
+     },
+     {
+      "description": "The locale code you want to retreive content for",
+      "in": "path",
+      "name": "locale",
+      "required": true,
+      "schema": {
+       "description": "The locale code you want to retreive content for",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The reference name of the digital channel of the sitemap to return. If you only have one channel, your channel reference name is likely 'website'.",
+      "in": "path",
+      "name": "channelName",
+      "required": true,
+      "schema": {
+       "description": "The reference name of the digital channel of the sitemap to return. If you only have one channel, your channel reference name is likely 'website'.",
+       "nullable": true,
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/HeadlessContentSiteMapNestedItem"
+         },
+         "type": "array"
+        }
+       }
+      },
+      "description": "Returns the sitemap."
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmptyResult"
+        }
+       }
+      },
+      "description": "The request could not be authorized. Invalid or missing apiKey."
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/NotFoundResult"
+        }
+       }
+      },
+      "description": "The page item is not found. If quering production, ensure the page has been published."
+     }
+    },
+    "summary": "Gets the sitemap as an array in a nested format, ideal for generating menus.",
+    "tags": [
+     "Sitemap"
+    ]
+   }
+  },
+  "/{guid}/{apitype}/{locale}/sync/items": {
+   "get": {
+    "parameters": [
+     {
+      "description": "The instance GUID, available from the API Keys section.",
+      "in": "path",
+      "name": "guid",
+      "required": true,
+      "schema": {
+       "description": "The instance GUID, available from the API Keys section.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The Type of API - fetch or preview.",
+      "in": "path",
+      "name": "apitype",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/APIType"
+      }
+     },
+     {
+      "description": "The locale code you want to sync content items for.",
+      "in": "path",
+      "name": "locale",
+      "required": true,
+      "schema": {
+       "description": "The locale code you want to sync content items for.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The token from the most recently synced value.",
+      "in": "query",
+      "name": "syncToken",
+      "schema": {
+       "description": "The token from the most recently synced value.",
+       "format": "int64",
+       "nullable": true,
+       "type": "integer"
+      }
+     },
+     {
+      "description": "The number of items to return per set.",
+      "in": "query",
+      "name": "pageSize",
+      "schema": {
+       "default": 500,
+       "description": "The number of items to return per set.",
+       "format": "int32",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HeadlessContentItemHeadlessSync"
+        }
+       }
+      },
+      "description": "Returns the content items."
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmptyResult"
+        }
+       }
+      },
+      "description": "The request could not be authorized. Invalid or missing apiKey."
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/NotFoundResult"
+        }
+       }
+      },
+      "description": "Not Found"
+     }
+    },
+    "summary": "Retrieves all content items in a paged format.\r\nEach call returns a sync token that should be persisted and passed into subsequent requests to maintain sync state.",
+    "tags": [
+     "Sync"
+    ]
+   }
+  },
+  "/{guid}/{apitype}/{locale}/sync/pages": {
+   "get": {
+    "parameters": [
+     {
+      "description": "The instance GUID, available from the API Keys section.",
+      "in": "path",
+      "name": "guid",
+      "required": true,
+      "schema": {
+       "description": "The instance GUID, available from the API Keys section.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The Type of API - fetch or preview.",
+      "in": "path",
+      "name": "apitype",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/APIType"
+      }
+     },
+     {
+      "description": "The locale code you want to sync pages for.",
+      "in": "path",
+      "name": "locale",
+      "required": true,
+      "schema": {
+       "description": "The locale code you want to sync pages for.",
+       "nullable": true,
+       "type": "string"
+      }
+     },
+     {
+      "description": "The token from the most recently synced value.",
+      "in": "query",
+      "name": "syncToken",
+      "schema": {
+       "description": "The token from the most recently synced value.",
+       "format": "int64",
+       "nullable": true,
+       "type": "integer"
+      }
+     },
+     {
+      "description": "The number of items to return per set.",
+      "in": "query",
+      "name": "pageSize",
+      "schema": {
+       "default": 500,
+       "description": "The number of items to return per set.",
+       "format": "int32",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HeadlessContentPageHeadlessSync"
+        }
+       }
+      },
+      "description": "Returns the pages."
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmptyResult"
+        }
+       }
+      },
+      "description": "The request could not be authorized. Invalid or missing apiKey."
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/NotFoundResult"
+        }
+       }
+      },
+      "description": "Not Found"
+     }
+    },
+    "summary": "Retrieves all pages items in a paged format.\r\nEach call returns a sync token that should be persisted and passed into subsequent requests to maintain sync state.",
+    "tags": [
+     "Sync"
+    ]
+   }
+  }
+ },
+ "security": [
+  {
+   "APIKeyAuthorization": []
+  }
+ ]
+}

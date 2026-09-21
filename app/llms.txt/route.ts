@@ -1,5 +1,7 @@
 import { getSitemapFlat, SitemapNode } from "lib/cms/getSitemapFlat";
 import { defaultLocale } from "lib/i18n/config";
+import { API_LIST } from "lib/api-specs/registry";
+import { getOperations } from "lib/api-specs/loadSpec";
 
 /**
  * llms.txt (rebuild plan T7) — a machine-readable index of the docs for AI
@@ -64,6 +66,23 @@ export async function GET() {
 		flagships.forEach((p) => out.push(line(p, sitemap[p], false)));
 		out.push("");
 	}
+
+	// The generated API reference. Listed as its own section rather than mixed
+	// into the CMS articles, because it is the only part of the docs where an
+	// agent can get the exact contract — every endpoint, parameter and response
+	// straight from the OpenAPI spec — instead of prose about it.
+	//
+	// Every operation is NOT enumerated here: 126 lines of "GET /…" would drown
+	// out the 300 articles below them for no gain, since each API's landing page
+	// lists its own operations. The entry points are what an agent needs.
+	out.push("## API reference (generated from the OpenAPI specs)", "");
+	for (const api of API_LIST) {
+		const count = getOperations(api.id).length;
+		out.push(
+			`- [${api.title}](${BASE}/api-reference/${api.slug}): ${api.tagline} ${count} operations.`
+		);
+	}
+	out.push("");
 
 	// Section landing pages: depth-1 static pages (no article contentID).
 	const sectionPaths = paths.filter(

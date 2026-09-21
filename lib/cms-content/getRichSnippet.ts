@@ -1,76 +1,125 @@
 import { cacheLife } from "next/cache";
 
 import { AgilityPageData } from "lib/cms/getAgilityPage";
-
-const SITE_URL = "https://agilitycms.com/docs";
-
-const PUBLISHER = {
-	"@type": "Organization",
-	name: "Agility CMS",
-	logo: {
-		"@type": "ImageObject",
-		url: "https://agilitycms.com/assets/agility-logo.svg",
-	},
-};
-
-const WEBSITE_SCHEMA = {
-	"@context": "https://schema.org",
-	"@type": "WebSite",
-	name: "Agility CMS Documentation",
-	url: SITE_URL,
-};
+import { getSitemapFlat } from "lib/cms/getSitemapFlat";
+import { ORG_ID, SITE_URL, WEBSITE_ID, graph, organizationNode, ref, webSiteNode } from "lib/seo/schema";
 
 /**
  * JSON-LD for docs pages (principles from the marketing site's
  * getRichSnippet: string-returning builder, injected as an in-body
  * <script type="application/ld+json"> — NOT via the Metadata API).
  *
- * - Hub (home): WebSite
- * - Doc articles (dynamic DocArticle items): TechArticle + BreadcrumbList
- * - Other static pages: BreadcrumbList when they're nested
+ * Emits ONE `@graph` per page rather than a list of standalone schemas, so
+ * that the organization, the site and the page are connected nodes instead of
+ * repeated anonymous ones — see lib/seo/schema.ts for why that matters.
+ *
+ * Every page gets: Organization + WebSite + WebPage (+ BreadcrumbList when
+ * nested). Doc articles add a TechArticle and a VideoObject per embedded video.
  */
 export const getRichSnippet = async ({
 	sitemapNode,
 	dynamicPageItem,
+	languageCode,
+	isPreview,
 }: AgilityPageData): Promise<string | null> => {
 	if (!sitemapNode) return null;
 
 	const isHomepage = sitemapNode.path === "/" || sitemapNode.path === "/home";
-	if (isHomepage) return JSON.stringify(WEBSITE_SCHEMA);
+	const pageUrl = isHomepage ? SITE_URL : `${SITE_URL}${sitemapNode.path}`;
+	const webPageId = `${pageUrl}#webpage`;
+	const breadcrumbId = `${pageUrl}#breadcrumb`;
 
-	const pageUrl = `${SITE_URL}${sitemapNode.path}`;
-	const schemas: any[] = [];
+	const nodes: any[] = [organizationNode(), webSiteNode()];
+
+	const webPage: any = {
+		"@type": "WebPage",
+		"@id": webPageId,
+		url: pageUrl,
+		name: sitemapNode.title,
+		isPartOf: ref(WEBSITE_ID),
+		inLanguage: toBcp47(languageCode),
+	};
+	nodes.push(webPage);
 
 	// Breadcrumbs from the path segments (Docs -> section -> article).
-	const segments = sitemapNode.path.split("/").filter(Boolean);
-	if (segments.length > 0) {
-		schemas.push({
-			"@context": "https://schema.org",
+	//
+	// Intermediate names come from the SITEMAP, not from the slug. Slugifying
+	// back produced real published errors — /javascript/management-sdk/assets
+	// advertised "Javascript" and "Management Sdk" to Google (verified live
+	// 2026-09-20). humanize() survives only as the fallback for a segment that
+	// has no sitemap node of its own (a folder, say).
+	const segments = isHomepage ? [] : sitemapNode.path.split("/").filter(Boolean);
+
+	// Fetched once and shared by the breadcrumb names and articleSection below.
+	// This is the same cached read getAgilityPage already made for this request,
+	// so it costs nothing extra — but it MUST stay a cached read: an uncached
+	// fetch reached from here postpones the whole article body (see vimeoOEmbed).
+	const sitemap =
+		segments.length > 0
+			? await getSitemapFlat({ locale: languageCode, preview: isPreview })
+			: null;
+
+	if (segments.length > 0 && sitemap) {
+		const crumbName = (idx: number) => {
+			if (idx === segments.length - 1) return sitemapNode.title;
+			const path = `/${segments.slice(0, idx + 1).join("/")}`;
+			const node = sitemap[path];
+			const title = node?.title || node?.menuText;
+			// A CMS title that IS the slug is an unedited page title, not a name —
+			// /javascript/management-sdk is titled "management-sdk" (1 of 345 nodes,
+			// checked 2026-09-20). Publishing that as a breadcrumb label would be
+			// worse than the humanized slug, so fall through when they match.
+			//
+			// The comparison is case-SENSITIVE on purpose. Case is exactly what
+			// distinguishes an edited title from an unedited one here: /javascript
+			// is correctly titled "JavaScript" and must be kept, while
+			// "management-sdk" matches its segment byte for byte. Comparing
+			// case-insensitively threw the good title away too.
+			if (title && title !== segments[idx]) return title;
+			return humanize(segments[idx]);
+		};
+
+		nodes.push({
 			"@type": "BreadcrumbList",
+			"@id": breadcrumbId,
 			itemListElement: [
 				{ "@type": "ListItem", position: 1, name: "Docs", item: SITE_URL },
 				...segments.map((seg, idx) => ({
 					"@type": "ListItem",
 					position: idx + 2,
-					name: idx === segments.length - 1 ? sitemapNode.title : humanize(seg),
+					name: crumbName(idx),
 					item: `${SITE_URL}/${segments.slice(0, idx + 1).join("/")}`,
 				})),
 			],
 		});
+		webPage.breadcrumb = ref(breadcrumbId);
 	}
 
 	if (dynamicPageItem?.properties?.definitionName === "DocArticle") {
 		const datePublished =
 			dynamicPageItem.fields.date || dynamicPageItem.properties.modified;
 
-		schemas.push({
-			"@context": "https://schema.org",
+		// The top-level segment is the section the article belongs to
+		// ("Developers", "Editors", …) — articleSection is how a crawler learns
+		// that grouping without having to infer it from the URL.
+		const sectionNode = segments.length > 1 ? sitemap?.[`/${segments[0]}`] : undefined;
+		const sectionTitle = sectionNode?.title || sectionNode?.menuText;
+
+		nodes.push({
 			"@type": "TechArticle",
-			mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
+			"@id": `${pageUrl}#article`,
+			mainEntityOfPage: ref(webPageId),
+			isPartOf: ref(webPageId),
 			headline: dynamicPageItem.fields.title,
 			description: dynamicPageItem.fields.description || undefined,
 			url: pageUrl,
-			publisher: PUBLISHER,
+			inLanguage: toBcp47(languageCode),
+			articleSection: sectionTitle || undefined,
+			publisher: ref(ORG_ID),
+			// No per-article byline exists in the CMS, so the organization is the
+			// author. That is a truthful claim and still an authorship signal —
+			// an omitted author is not.
+			author: ref(ORG_ID),
 			datePublished,
 			dateModified: dynamicPageItem.properties.modified,
 		});
@@ -89,9 +138,9 @@ export const getRichSnippet = async ({
 				videos.length > 1
 					? `${dynamicPageItem.fields.title} — Video ${i + 1}`
 					: dynamicPageItem.fields.title;
-			schemas.push({
-				"@context": "https://schema.org",
+			nodes.push({
 				"@type": "VideoObject",
+				"@id": `${pageUrl}#video-${i + 1}`,
 				name: v.name || fallbackName,
 				description:
 					v.description ||
@@ -106,12 +155,38 @@ export const getRichSnippet = async ({
 		});
 	}
 
-	if (schemas.length === 0) return null;
-	return JSON.stringify(schemas.length === 1 ? schemas[0] : schemas);
+	return graph(nodes);
 };
 
+/**
+ * Slug -> readable label, with the acronyms that actually appear in these docs
+ * kept upper-case. Plain title-casing renders "management-sdk" as "Management
+ * Sdk", which reads as a typo in a breadcrumb.
+ */
+const ACRONYMS = new Set([
+	"sdk", "api", "apis", "cms", "url", "urls", "html", "css", "js", "ai", "mcp",
+	"seo", "cli", "json", "rest", "ui", "cdn", "dns", "ssr", "ssg", "id",
+]);
+
 const humanize = (slug: string) =>
-	slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+	slug
+		.split("-")
+		.filter(Boolean)
+		.map((word) =>
+			ACRONYMS.has(word.toLowerCase())
+				? word.toUpperCase()
+				: word.charAt(0).toUpperCase() + word.slice(1)
+		)
+		.join(" ");
+
+/**
+ * Agility locale codes are lowercase (`en-us`); schema.org's `inLanguage`
+ * wants a BCP 47 tag, whose region subtag is uppercase (`en-US`).
+ */
+const toBcp47 = (locale: string): string => {
+	const [lang, region] = (locale || "en-us").split("-");
+	return region ? `${lang.toLowerCase()}-${region.toUpperCase()}` : lang.toLowerCase();
+};
 
 // ---- Video extraction for VideoObject JSON-LD ----------------------------
 // The article body is either EditorJS JSON (`content`/`classicContent`, with

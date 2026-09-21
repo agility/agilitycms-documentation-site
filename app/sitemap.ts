@@ -2,6 +2,8 @@ import { MetadataRoute } from "next";
 import { getSitemapFlat } from "lib/cms/getSitemapFlat";
 import { getSitemapLastModifiedMap } from "lib/cms/getSitemapLastModifiedMap";
 import { locales, localizeUrl } from "lib/i18n/config";
+import { API_LIST } from "lib/api-specs/registry";
+import { getOperations } from "lib/api-specs/loadSpec";
 
 // Canonical base, matching the rest of the docs site (getRichSnippet /
 // resolveAgilityMetaData). basePath /docs is baked in because MetadataRoute
@@ -43,6 +45,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			const lastModified = lastModMap[path];
 			entries.push(lastModified ? { url, lastModified: new Date(lastModified) } : { url });
 		});
+	}
+
+	// The generated API reference isn't in the Agility sitemap — it comes from
+	// the OpenAPI specs — so it has to be added here or the ~128 pages would be
+	// crawlable but never advertised.
+	//
+	// No <lastmod>: the honest date would be "when the spec last changed", and
+	// nothing in the spec records that. Emitting a build timestamp instead would
+	// tell Google every one of these pages changed on every deploy, which is the
+	// exact false signal the CMS entries above go to some trouble to avoid.
+	const defaultLocalePrefix = localizeUrl("/api-reference", locales[0]);
+	entries.push({ url: `${SITE_URL}${defaultLocalePrefix}` });
+	for (const api of API_LIST) {
+		entries.push({ url: `${SITE_URL}${defaultLocalePrefix}/${api.slug}` });
+		const operations = getOperations(api.id);
+		for (const op of operations) {
+			entries.push({ url: `${SITE_URL}${defaultLocalePrefix}/${api.slug}/${op.slug}` });
+		}
 	}
 
 	return entries;
