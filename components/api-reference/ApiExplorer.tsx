@@ -126,6 +126,9 @@ const rememberGuid = (guid: string): void => {
 	}
 };
 
+/** Stable empty array — a fresh [] each render would churn every memo on it. */
+const EMPTY_LOCALES: LocaleOption[] = [];
+
 const hostForGuid = (guid: string): string => {
 	const suffix = (guid || "").split("-").pop()?.toLowerCase() || "u";
 	return `https://api${REGION_INFIX[suffix] ?? ""}.aglty.io`;
@@ -164,7 +167,29 @@ const ApiExplorer = ({
 	 * One less thing that can disagree with the other two.
 	 */
 	const loadingKey = isGuidShaped(guid) && !forCurrentGuid;
-	const [locales, setLocales] = useState<LocaleOption[]>([]);
+	/**
+	 * Locales are stored WITH the instance they came from, and read back only
+	 * while the two still agree — the same shape as `keyState` above, for the
+	 * same reason.
+	 *
+	 * Holding them in a bare array meant that changing instance left the
+	 * PREVIOUS instance's locales on screen until the new fetch resolved, and
+	 * left them there permanently if it failed or came back empty. That is not
+	 * a cosmetic problem: `effectiveLocale` would then keep a locale the new
+	 * instance doesn't have, and a wrong locale returns an empty result rather
+	 * than an error — the precise failure this whole feature exists to avoid.
+	 *
+	 * Pairing them means switching instance drops straight back to the
+	 * free-text fallback until the real list arrives, and a late response for
+	 * an instance the reader has already moved off is ignored.
+	 */
+	const [localeState, setLocaleState] = useState<{
+		guid: string;
+		locales: LocaleOption[];
+	} | null>(null);
+
+	// Empty unless the stored locales belong to the instance currently selected.
+	const locales = localeState?.guid === guid ? localeState.locales : EMPTY_LOCALES;
 	const [values, setValues] = useState<Record<string, string>>(() => initialValues(parameters));
 	const [result, setResult] = useState<RunResult | null>(null);
 	const [running, setRunning] = useState(false);
@@ -232,11 +257,15 @@ const ApiExplorer = ({
 		fetch(`/docs/api/explorer/locales?guid=${encodeURIComponent(guid)}`, { cache: "no-store" })
 			.then((res) => (res.ok ? res.json() : null))
 			.then((data) => {
-				if (cancelled || !data?.locales) return;
-				setLocales(data.locales);
+				if (cancelled) return;
+				// Recorded even when the list is empty, so "we asked and this
+				// instance has none" is distinguishable from "we haven't asked
+				// yet" — otherwise a failed lookup would leave the previous
+				// instance's locales on screen indefinitely.
+				setLocaleState({ guid, locales: Array.isArray(data?.locales) ? data.locales : [] });
 			})
 			.catch(() => {
-				// Falls back to a free-text locale box, which still works.
+				if (!cancelled) setLocaleState({ guid, locales: [] });
 			});
 		return () => {
 			cancelled = true;
