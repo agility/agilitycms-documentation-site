@@ -57,6 +57,8 @@ interface SessionState {
 	signedIn: boolean;
 	resolved: boolean;
 	instances: Instance[];
+	/** Classic host to build the sign-in link against. */
+	managerUrl?: string;
 }
 
 interface RunResult {
@@ -66,6 +68,23 @@ interface RunResult {
 	body: string;
 	rateLimitRemaining?: string | null;
 }
+
+/**
+ * Sign-in link that lands the reader back on the page they were reading.
+ *
+ * Classic's own pattern, lifted from the Manager app's LoginRequired.tsx:
+ * `{managerUrl}/login?returnUrl={encodeURIComponent(href)}`. Classic stores the
+ * returnUrl in its OWIN AuthenticationProperties and shows Auth0 only its own
+ * registered callback, so no Auth0 redirect_uri has to be added for /docs.
+ *
+ * Coming back signed in is enough on its own — the auth cookie is scoped to
+ * `.agilitycms.com`, so /docs sees it without any token exchange.
+ */
+const loginUrl = (managerUrl?: string): string => {
+	const base = (managerUrl || "https://manager.agilitycms.com").replace(/\/$/, "");
+	const here = typeof window === "undefined" ? "" : window.location.href;
+	return `${base}/login?returnUrl=${encodeURIComponent(here)}`;
+};
 
 /** Region infix from an instance GUID — mirrors lib/api-specs/registry.ts. */
 const REGION_INFIX: Record<string, string> = {
@@ -430,10 +449,14 @@ const InstancePicker = ({
 							}}
 						/>
 					</label>
-					{!session.signedIn && (
+					{/* Also shown when signedIn is true but resolved is false: a stale
+					    cookie reads as signed in until Classic is asked, and telling
+					    someone in that state that they have no instances would be
+					    both wrong and unactionable. Signing in again fixes it. */}
+					{(!session.signedIn || !session.resolved) && (
 						<p className="mt-2 text-xs" style={{ color: "var(--muted)", margin: ".5rem 0 0" }}>
 							<a
-								href="https://app.agilitycms.com"
+								href={loginUrl(session.managerUrl)}
 								style={{ color: "var(--primary-text)", textDecoration: "underline" }}
 							>
 								Sign in to Agility

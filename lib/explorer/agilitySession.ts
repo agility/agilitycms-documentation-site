@@ -2,6 +2,8 @@ import "server-only";
 
 import { cookies } from "next/headers";
 
+import { AUTH_COOKIE, ClassicAuthError, DEFAULT_MANAGER_URL, classicCall } from "lib/explorer/classicCall";
+
 /**
  * Server-side reader for the signed-in Agility session, shared by the API
  * explorer routes.
@@ -9,49 +11,38 @@ import { cookies } from "next/headers";
  * WHY NOT OAUTH (for the Fetch explorer)
  * --------------------------------------
  * The obvious route to "let people try this against their own instance" is the
- * Management API's OAuth flow. It isn't needed here, and skipping it removes a
- * whole redirect dance plus a long-lived write-capable token from the browser.
+ * Management API's OAuth flow. It isn't needed, and skipping it keeps a
+ * long-lived, write-capable token out of the browser entirely.
  *
  * Classic CM's `GetCurrentServerUser` — already called by /api/me to validate
  * the session — returns the full ServerUser DTO, and that DTO carries
- * `websiteAccess`: every instance the signed-in user can reach, with its GUID.
- * So the instance list comes from a cookie the visitor already has, and the
- * Fetch explorer needs no token at all.
- *
- * The Management explorer WILL need OAuth, because its calls are authorized
- * per-request by a bearer token. That is deliberately a later phase.
+ * `WebsiteAccess`: every instance the signed-in user can reach, with its GUID,
+ * website name and regional manager URL. This is the same source the Manager
+ * app reads (`useWebsiteInfo` → `serverUser.WebsiteAccess`), so the docs
+ * explorer resolves instances exactly the way the product does.
  *
  * WHAT THIS DELIBERATELY NEVER RETURNS
  * ------------------------------------
  * The upstream payload is ~47KB and includes the email address, last name and
- * internal-user flags. Only the id, first name and the instance list
- * (guid / display name / org / dormant flag) cross back to the browser.
+ * internal-user flags. Only the first name and the instance list cross back to
+ * the browser.
  */
-
-/** Owned by Classic CM's OWIN config, not this repo — hence overridable. */
-const AUTH_COOKIE = process.env.AGILITY_AUTH_COOKIE_NAME || "AgilityAuthOWIN";
-
-/**
- * Classic Content Manager base URL, e.g. `https://manager.agilitycms.com`.
- * UNSET disables the instance picker entirely — there is no way to learn which
- * instances someone can reach without asking Classic, and guessing is not an
- * option when the answer gates an API key.
- */
-const MANAGER_URL = process.env.AGILITY_MANAGER_URL;
-
-const TIMEOUT_MS = 4000;
 
 export interface ExplorerInstance {
 	guid: string;
+	/** Classic's key for the instance — what the /json/Settings/* calls want. */
+	websiteName: string;
 	displayName: string;
 	orgName?: string;
+	/** The instance's own regional Classic host; falls back to the default. */
+	managerUrl: string;
 	/** Dormant instances answer API calls with errors — worth greying out. */
 	isDormant?: boolean;
 }
 
 export interface ExplorerSession {
 	signedIn: boolean;
-	/** False when AGILITY_MANAGER_URL is unset, or Classic couldn't be reached. */
+	/** False when Classic couldn't be reached — NOT the same as "no instances". */
 	resolved: boolean;
 	firstName?: string;
 	instances: ExplorerInstance[];
@@ -59,111 +50,94 @@ export interface ExplorerSession {
 
 const SIGNED_OUT: ExplorerSession = { signedIn: false, resolved: true, instances: [] };
 
-/**
- * Read the caller's session and the instances they can reach.
- *
- * `redirect: "manual"` is load-bearing, exactly as in /api/me: a bogus cookie
- * gets a 302 to the login page, and fetch would otherwise follow it and hand
- * back a 200, reading an invalid session as valid.
- */
-export const getExplorerSession = async (): Promise<ExplorerSession> => {
+/** The auth cookie value, or null when the visitor isn't signed in. */
+export const getAuthCookie = async (): Promise<string | null> => {
 	const cookieStore = await cookies();
-	const value = cookieStore.get(AUTH_COOKIE)?.value;
-	if (!value) return SIGNED_OUT;
+	return cookieStore.get(AUTH_COOKIE)?.value || null;
+};
 
-	// Presence-only mode: we know someone is signed in but cannot enumerate
-	// their instances, so the picker falls back to a manual GUID entry.
-	if (!MANAGER_URL) return { signedIn: true, resolved: false, instances: [] };
-
-	const controller = new AbortController();
-	const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+/** Read the caller's session and the instances they can reach. */
+export const getExplorerSession = async (): Promise<ExplorerSession> => {
+	const cookieValue = await getAuthCookie();
+	if (!cookieValue) return SIGNED_OUT;
 
 	try {
-		const res = await fetch(`${MANAGER_URL.replace(/\/$/, "")}/json/User/GetCurrentServerUser`, {
-			method: "POST",
-			headers: {
-				// Forward ONLY the auth cookie — never the visitor's whole jar.
-				Cookie: `${AUTH_COOKIE}=${value}`,
-				"Content-Type": "application/x-www-form-urlencoded",
-				"Content-Length": "0",
-			},
-			redirect: "manual",
-			cache: "no-store",
-			signal: controller.signal,
+		const data = await classicCall<{
+			FirstName?: string;
+			WebsiteAccess?: RawWebsite[];
+			websiteAccess?: RawWebsite[];
+		}>({
+			path: "/json/User/GetCurrentServerUser",
+			body: {},
+			cookieValue,
 		});
 
-		if (res.status === 302 || res.status === 401 || res.status === 403) return SIGNED_OUT;
-		if (!res.ok) return { signedIn: true, resolved: false, instances: [] };
+		if (!data) return { signedIn: true, resolved: false, instances: [] };
 
-		const body = (await res.json().catch(() => null)) as {
-			IsError?: boolean;
-			ResponseData?: {
-				FirstName?: string;
-				WebsiteAccess?: RawWebsite[];
-				websiteAccess?: RawWebsite[];
-			};
-		} | null;
-
-		if (!body || body.IsError === true) return SIGNED_OUT;
-
-		const data = body.ResponseData;
-		// Classic is a .NET app and has historically been inconsistent about JSON
-		// casing across endpoints, so both spellings are accepted rather than
-		// silently yielding an empty instance list.
-		const raw = data?.WebsiteAccess || data?.websiteAccess || [];
+		// Classic is a .NET app and has been inconsistent about JSON casing
+		// across endpoints, so both spellings are accepted rather than silently
+		// yielding an empty instance list. The Manager app reads the PascalCase
+		// form (serverUser.WebsiteAccess), which is the one seen in practice.
+		const raw = data.WebsiteAccess || data.websiteAccess || [];
 
 		return {
 			signedIn: true,
 			resolved: true,
-			firstName: data?.FirstName?.trim() || undefined,
+			firstName: data.FirstName?.trim() || undefined,
 			instances: raw.map(normalizeWebsite).filter((i): i is ExplorerInstance => i !== null),
 		};
-	} catch {
+	} catch (err) {
+		if (err instanceof ClassicAuthError) return SIGNED_OUT;
+		// A network blip must not be reported as "no instances", which would
+		// read to the visitor as "you don't have access to anything".
 		return { signedIn: true, resolved: false, instances: [] };
-	} finally {
-		clearTimeout(timer);
 	}
 };
 
 interface RawWebsite {
 	Guid?: string;
 	guid?: string;
-	DisplayName?: string;
-	displayName?: string;
 	WebsiteName?: string;
 	websiteName?: string;
+	DisplayName?: string;
+	displayName?: string;
 	OrgName?: string;
 	orgName?: string;
+	ManagerUrl?: string;
+	managerUrl?: string;
 	IsDormant?: boolean;
 	isDormant?: boolean;
 }
 
 const normalizeWebsite = (w: RawWebsite): ExplorerInstance | null => {
 	const guid = (w.Guid || w.guid || "").trim();
-	if (!guid) return null;
-	const displayName = (w.DisplayName || w.displayName || w.WebsiteName || w.websiteName || guid).trim();
+	const websiteName = (w.WebsiteName || w.websiteName || "").trim();
+	// Both are required: the guid addresses the Fetch API, the website name
+	// addresses Classic. An entry missing either can't be used for anything.
+	if (!guid || !websiteName) return null;
+
 	return {
 		guid,
-		displayName,
+		websiteName,
+		displayName: (w.DisplayName || w.displayName || websiteName).trim(),
 		orgName: (w.OrgName || w.orgName || "").trim() || undefined,
+		// Mirrors the Manager app's `instance?.ManagerUrl || <default>` — this is
+		// what routes a non-US instance at its own regional host.
+		managerUrl: (w.ManagerUrl || w.managerUrl || "").trim() || DEFAULT_MANAGER_URL,
 		isDormant: w.IsDormant ?? w.isDormant ?? false,
 	};
 };
 
 /**
- * Does the signed-in caller actually have access to this instance?
+ * The caller's own record for an instance, or null if they have no access.
  *
- * This is the gate on key issuance. It matters because the upstream endpoint
- * has none: `GET mgmt.aglty.io/oauth/getfetchkey?guid=…` returns a live Fetch
- * API key for ANY guid with no authentication at all (verified 2026-09-20).
- * Fetch keys are low-sensitivity by design — they ship in the client bundle of
- * every Agility-backed site — but that is no reason for the documentation site
- * to add a second, friendlier key oracle to the internet. We only ever hand
- * back a key for an instance the caller can already open in the CMS.
+ * This is the authorization gate for key issuance, and it is why the key route
+ * can be trusted: a key is only ever resolved for an instance that came back in
+ * THIS visitor's `WebsiteAccess`.
  */
-export const canAccessInstance = async (guid: string): Promise<boolean> => {
-	if (!guid) return false;
+export const getAccessibleInstance = async (guid: string): Promise<ExplorerInstance | null> => {
+	if (!guid) return null;
 	const session = await getExplorerSession();
-	if (!session.signedIn || !session.resolved) return false;
-	return session.instances.some((i) => i.guid.toLowerCase() === guid.toLowerCase());
+	if (!session.signedIn || !session.resolved) return null;
+	return session.instances.find((i) => i.guid.toLowerCase() === guid.toLowerCase()) || null;
 };
