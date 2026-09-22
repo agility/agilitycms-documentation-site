@@ -9,6 +9,21 @@ website's Next.js App Router repo with minimal adaptation.
 Audience: a developer on the main site who already has some JSON-LD output and wants to
 add video support.
 
+> **Update 2026-09-21 — the docs site moved to a `@graph`, and you probably want to as
+> well.** The extraction logic below is unchanged and still correct. What changed is how
+> the docs site *emits* it: one `@graph` per page whose nodes carry stable `@id`s, with
+> `Organization` defined once and referenced by `@id` everywhere instead of an anonymous
+> copy inlined per article. See `lib/cms-content/getRichSnippet.ts` and
+> `lib/seo/schema.ts`.
+>
+> That matters for the marketing site specifically: **agilitycms.com currently publishes
+> an `Organization` with no `@id`**, so the apex and /docs describe two unrelated
+> organizations to a crawler. The docs side now uses
+> `"@id": "https://agilitycms.com/#organization"` — rooted at the apex, not at /docs,
+> precisely so the two reconcile into one entity the moment the marketing site adopts the
+> same `@id`. It is a one-line change there and it is the highest-value piece of this
+> whole handoff.
+
 ---
 
 ## 1. Background / why this shape

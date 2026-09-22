@@ -1,7 +1,14 @@
 # Docs Site Rebuild Plan — Ocean Redesign, TypeScript, Next.js Latest
 
-**Status:** Approved-pending-review · **Branch:** `rebuild/ocean` · **Owner:** Joel Varty
+**Status:** **Shipped — Phases 0–4 and 5a are live on `main`.** `rebuild/ocean` is merged and deleted; work now lands on `main` via PR. Remaining: Phase 5b (Ask-AI agent) and the content drops called out in §10.
+**Owner:** Joel Varty
+**Last reviewed:** 2026-09-21
 **Inputs:** [plan-handoff.md](plan-handoff.md) · [agility-docs-mockup-ocean.html](agility-docs-mockup-ocean.html) · main-site design system (`Agility-Website-Nextjs/designs/design-system-components-ocean*.html`)
+
+> This document is the plan **and** the progress log. Phase headings carry their
+> own **Done** notes; §10 tracks what is still open. For how the code actually
+> works today, [AGENTS.md](../AGENTS.md) is the source of truth — this file
+> records *why* and *when*, not *what is where*.
 
 ---
 
@@ -110,10 +117,49 @@ Code side:
 - Prompt-shaped titles/meta on flagship pages ("MCP server", "AI agent", "visual page builder", "page orchestration", "headless CMS").
 
 ### Phase 5 — Net-new experiences (the world-class layer)
-**5a. Signed-in awareness + live API playground.**
-- Detect an Agility session and greet with the user's instances; on API-reference pages, offer "Run this against *your* instance."
-- Mechanism: **cookie detection.** app.agilitycms.com sets its auth cookie on the `.agilitycms.com` domain, and the docs site serves under `agilitycms.com/docs` (the Netlify proxy forwards cookies), so a docs route handler can see the session server-side. Two rules: (1) detection happens via a small client-side fetch to an **uncached** API route (`Netlify-CDN-Cache-Control: no-store`) so pages themselves stay cacheable at the edge (§1) and never leak personalized HTML; (2) local dev / direct `*.vercel.app` access won't have the cookie — build a dev fallback. For *executing* API calls as the user, confirm whether the app cookie can authorize management-API calls from the docs origin or whether we exchange it for a scoped token; the MCP server's OAuth popup remains the fallback.
-- Playground v1: interactive fetch/GraphQL explorer on developer articles — pick instance → keys fetched via Management API → editable request → live response, with copy-as-curl/JS. `CodeBlock` model gets an optional `runnable` flag.
+**5a. Signed-in awareness + live API playground — ✅ SHIPPED 2026-09-21 (PR #59).**
+
+It landed larger than planned. The plan called for a runnable widget on developer
+articles; what shipped is a **generated API reference** at `/docs/api-reference`
+with the playground built into it — **126 operation pages** (11 Fetch + 115
+Management) rendered from the OpenAPI specs, each server-rendered, prerendered,
+in `sitemap.xml` and `llms.txt`, and carrying `APIReference` JSON-LD. That
+roughly doubled the site's indexable surface and retired the outbound link to
+the unbranded Swagger UI at `mgmt.aglty.io`. Full mechanics in
+[AGENTS.md § API Reference](../AGENTS.md); the decisions worth remembering:
+
+- **Specs are checked-in snapshots** (`lib/api-specs/snapshots/`), not fetched
+  live. The operation slugs are a public URL contract in `sitemap.xml`, so they
+  change by PR rather than because a vendor deployed. `npm run specs:refresh`
+  updates them, `-- --check` reports drift.
+- **Neither spec has a single `operationId`** (0 of 130), so slugs are derived
+  from method + literal path segments. Verified collision-free; the builder
+  throws rather than letting two operations share a URL.
+- **No OAuth was needed.** Open item 6 below resolved the auth question: the
+  Classic session cookie is sufficient for everything, including Management
+  calls.
+- **Read-only, enforced server-side.** GET only, `/api/v1/` only, no
+  `/api/v1/tokens` (`lib/explorer/runnable.ts`). Enabling writes is a change to
+  one allowlist function plus a confirmation step — deliberately deferred.
+- **Fetch runs direct from the browser; Management is proxied.** A Management
+  bearer token is write-capable across every instance the user can reach, and
+  this origin executes author-supplied `<script>`, so it is minted per request
+  and never reaches the client.
+
+Also shipped alongside: a stronger entity graph (one `Organization` by `@id`,
+one `@graph` per page), the breadcrumb fix (`/javascript/management-sdk/assets`
+was publishing "Javascript" and "Management Sdk" to Google), and
+`<link rel="alternate" type="text/markdown">` so the `.md` twins are
+discoverable from the HTML rather than only via llms.txt.
+
+**Still to do on 5a:**
+- Move the two mega-menu links from `REFERENCE_NAV_LINKS` in `Header.tsx` into
+  the CMS `header_link88` container, now that `/api-reference` is live. Held in
+  code during the build so the live header couldn't point at a 404.
+- GraphQL has no OpenAPI spec, so it has no generated pages — a GraphQL
+  explorer is a separate build if wanted.
+- Copy-as-curl / copy-as-JS from the runner.
+- The `CodeBlock` `runnable` flag was never needed and was not added.
 **5b. Ask-AI docs agent.**
 - **⌘K palette shell shipped 2026-07-18** (`components/common/SearchModal.js`): rich Algolia search modal with keyboard nav and a `mode` switch + "Ask AI — coming soon" affordance reserved for the agent. Remaining 5b work is the agent itself:
 - v1 (ship with redesign): "Search or ask AI" in the ⌘K palette → `/docs/api/chat` route handler → Claude with tool use over the **existing docs MCP tools** (`search_docs`, `fetch_doc`). Streaming answers with citation links. Cheap, grounded, no new infra.
@@ -138,6 +184,24 @@ Code side:
 4. **`initialize_media_upload` double-prefixes the folder path.** Passing `folderPath: "agility-cms-docs/logos"` (instance name + folder) returned an asset URL with the instance segment doubled: `cdn.aglty.io/agility-cms-docs/agility-cms-docs/logos/…`. `folderPath` is relative to the media-library root — pass just the folder (`logos`), not the CDN/instance prefix. The doubled URL still resolves and serves, so it's cosmetic; re-upload with a bare path if a clean URL matters. (Observed 2026-07-29 uploading the Angular hero logo. The upload token itself worked fine within its 5-minute window — the older "instant-expiring token" note no longer reproduced.)
 
 ---
+
+### Platform findings from building the playground (2026-09-21)
+
+Neither is ours to fix in this repo; both surfaced while building §3 Phase 5a
+and are recorded so they aren't rediscovered.
+
+1. **`GET mgmt.aglty.io/oauth/getfetchkey?guid=…` is unauthenticated.** Any GUID,
+   no token, live Fetch API key in the response. Fetch keys are low-sensitivity
+   by design — they ship in the client bundle of every Agility-backed site — so
+   this may be deliberate. But **`getpreviewkey` sits on the same controller
+   with an identical signature and was NOT tested**, and a preview key reads
+   unpublished content. Worth reading the controller. The docs explorer
+   deliberately uses neither endpoint.
+2. **The Manager app's `getMgmtAPIUrl` mis-routes USA2.** It tests
+   `managerUrl.includes("manager-us2")`, but every `WebsiteAccess` record says
+   `manager-usa2`, which does not contain that string — so USA2 instances
+   silently fall through to the US Management API. This repo's port
+   (`lib/explorer/mgmtApi.ts`) matches the host that actually exists.
 
 ## 5. Shared design system with the marketing site
 
@@ -192,11 +256,26 @@ Docs-specific components (sidebar, TOC, article prose, code panels) stay in this
 
 **Competitor teardown — scheduled before Phase 3 (hub design):** structured, screenshot-based review of **Contentful, Sanity, Storyblok** docs plus **Shopify.dev** (role-based IA benchmark), scoring: time-to-first-success for a new dev, role-based pathing (Editors/Developers/Admins), search & ask-AI quality, and AI/MCP story. Output: comparison report checked into `docs/`.
 
+### Repo hygiene noted 2026-09-21
+
+`deploying-next-js-to-aws-amplify.md` and `deploying-next-js-to-aws-ec2.md` sit in the
+**repo root** and are stale source drafts: both are published articles in the CMS
+(`/docs/nextjs/deploying-next-js-to-aws-amplify`, `…-ec2`), which is the system of
+record. Editing the root copies changes nothing live, and having two copies invites
+editing the wrong one — the same trap AGENTS.md flags for diagrams. **Suggest deleting
+them** (the published articles are canonical), or moving them under `docs/drafts/` if
+they are wanted as working copies. Left in place pending Joel's call.
+
 ## 10. Open items (need Joel / owner input — nothing blocks Phases 0–2)
 1. **Missing input docs:** the handoff references `agility-docs-master-build-plan.md` and `agility-docs-copy-and-build-strategy.md` (Part A = all page copy). **Neither is in this repo.** Needed before T3/T4 content drops.
 2. Handoff open decision 1: promote-and-301 `/docs/overview/page-management`? (Blocks part of Phase 4.)
 3. Handoff open decision 2: keep Inder for headings (400-only, synthesized bold) or pick a heading face with real weights? (Affects Phase 1; default: keep Inder, flag don't substitute.)
 4. Handoff open decision 3: Ask-AI now vs later → recommendation in §3 Phase 5b: ship v1 (MCP-tools-backed) with the redesign.
 5. Handoff open decision 4: how many AI-section articles are publishable (gates content drop).
-6. Playground auth: confirm the `.agilitycms.com` auth cookie's flags/scope (httpOnly, SameSite) and whether it can authorize Management-API calls made from/for the docs origin, or whether a token-exchange endpoint is needed (OAuth popup as fallback).
+6. ~~**Playground auth**~~ — **RESOLVED 2026-09-21. No OAuth, no token-exchange endpoint, no popup.** The `.agilitycms.com` cookie covers all three things the playground needs, following the Manager app's own methodology (`agility-cms-manager-app-react`):
+   - **Instances:** Classic's `GetCurrentServerUser` returns `WebsiteAccess` — every instance the user can reach, with GUID, website name and regional `ManagerUrl`. The same source `useWebsiteInfo` reads.
+   - **Fetch keys:** `POST {managerUrl}/json/Settings/SelectAllAPIKeys` → pick the enabled `Type: "fetch"` entry → `POST /json/Settings/GetAPISecret`; the usable key is `Name.secret`. Authorization is intrinsic: the call runs as the visitor and is keyed by `websiteName`.
+   - **Management calls:** `POST {managerUrl}/json/User/GetAccessToken` exchanges the cookie for a Management API bearer token. This is the find that removed the OAuth dependency entirely.
+   - **Sign-in returning to the docs** needs **no Auth0 change**: `{managerUrl}/login?returnUrl=<encoded>` keeps the returnUrl in Classic's OWIN `AuthenticationProperties` and shows Auth0 only its own registered callback. Confirmed from the live 302 and from `GlobalController.Login`.
+   - Local testing uses `AGILITY_DEV_AUTH_COOKIE` (see `.env.local.template`) — guarded three ways, and **never to be set in a deployed environment**.
 7. Hosting for the new marketing site: staying on Netlify (keep the tuned proxy + `Netlify-CDN-Cache-Control` approach in §1) or moving to Vercel (adopt Vercel Microfrontends, drop the cross-provider hop)?
