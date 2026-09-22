@@ -80,6 +80,14 @@ export async function POST(req: NextRequest) {
 		preview: false,
 	});
 
+	// Published, but no dynamic page resolves to it — a retired item still sitting
+	// in its container, or the loser of a duplicate slug. It has no URL to offer,
+	// so drop it from the index rather than saving a "null" one.
+	if (!url) {
+		await index.deleteObject(`${contentID}`);
+		return NextResponse.json({ deleted: contentID, reason: "no-dynamic-page" });
+	}
+
 	const object = await normalizeArticle({ article, url, category: undefined });
 
 	await index.saveObject(object);
