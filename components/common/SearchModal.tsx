@@ -206,7 +206,10 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 		: QUICK_LINKS.map((q) => ({ quick: q, url: q.url }));
 
 	const go = (url: string) => {
-		if (!url) return;
+		// Only absolute paths (or full URLs) are navigable. A malformed index
+		// record would otherwise be pushed as a relative path and resolve against
+		// whatever page the searcher was on.
+		if (!url || !/^(https?:\/\/|\/)/.test(url)) return;
 		close();
 		// index URLs are absolute site paths including /docs
 		router.push(url.replace(/^https?:\/\/[^/]+/, "").replace(/^\/docs/, "") || "/");

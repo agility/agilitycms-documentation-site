@@ -67,6 +67,7 @@ const indexAll = async () => {
 	const articleUrls = await getDynamicPageSitemapMappingREST();
 
 	let objects: any[] = [];
+	const skipped: any[] = [];
 	const categoryBreakdown: any[] = [];
 	for (const cat of data.doccategories) {
 		const articles = cat.fields.articles || [];
@@ -76,11 +77,22 @@ const indexAll = async () => {
 			articleCount: articles.length,
 		});
 		for (const article of articles) {
-			const object = await normalizeArticle({
-				article,
-				url: articleUrls[article.contentID],
-				category: cat,
-			});
+			// No sitemap node means no page to send a searcher to. Indexing it
+			// anyway wrote the string "null"/"undefined" into the record's url,
+			// which the search modal then pushed as a RELATIVE path — landing on
+			// /docs/<current-section>/null, a 404. Leave it out of the index.
+			const url = articleUrls[article.contentID];
+			if (!url) {
+				skipped.push({
+					contentID: article.contentID,
+					title: article.fields.title,
+					category: cat.fields.title,
+					reason: "no-dynamic-page",
+				});
+				continue;
+			}
+
+			const object = await normalizeArticle({ article, url, category: cat });
 			objects.push(object);
 		}
 	}
@@ -99,6 +111,7 @@ const indexAll = async () => {
 		ok: true,
 		index: "doc_site",
 		indexed: objects.length,
+		skipped,
 		categories: categoryBreakdown.length,
 		durationMs: Date.now() - startedAt,
 		categoryBreakdown,

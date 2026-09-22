@@ -125,19 +125,27 @@ const SideBarNav = async ({ module, dynamicPageItem, sitemapNode, languageCode, 
 			return article.fields.section_ValueField == section.contentID;
 		});
 
-		//don't show a section if it has no articles
-		if (articlesInSection.length === 0) return;
-
-		navigation.push({
-			name: section.fields.title,
-			children: articlesInSection.map((article: any) => {
+		// An article with no sitemap node has no page to point at — a retired item
+		// still sitting in the container, or the loser of a duplicate slug (two
+		// items sharing a slug, only one of which gets the dynamic page). It used
+		// to fall back to href="#", which rendered as a dead link in the nav.
+		const children = articlesInSection
+			.filter((article: any) => articleUrls[article.contentID])
+			.map((article: any) => {
 				const url = articleUrls[article.contentID];
 				return {
 					name: article.fields.title || null,
-					href: articleUrls[article.contentID] || "#",
+					href: url,
 					current: url === sitemapNode.path || null,
 				};
-			}),
+			});
+
+		//don't show a section if it has no linkable articles
+		if (children.length === 0) return;
+
+		navigation.push({
+			name: section.fields.title,
+			children,
 		});
 	});
 

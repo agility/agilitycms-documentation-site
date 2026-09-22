@@ -52,7 +52,7 @@ const normalizeArticle = async ({ article, category, url }: { article: any; cate
         body,
         section: sectionLabel,
         concept: conceptLabel,
-        url: `${url}`,
+        url,
         category: categoryLabel,
         itemOrder: article.properties.itemOrder
     }
