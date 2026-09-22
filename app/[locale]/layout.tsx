@@ -4,7 +4,9 @@ import { GoogleTagManager } from "@next/third-parties/google";
 
 import { getAgilityContext } from "lib/cms/getAgilityContext";
 import { getHeaderData } from "lib/cms-content/getHeaderData";
+import { getMainSiteBanner } from "lib/cms/getMainSiteContent";
 import Header from "components/common/Header";
+import MarketingBanner from "components/common/MarketingBanner";
 import ClientInit from "components/common/ClientInit";
 
 export async function generateStaticParams() {
@@ -35,6 +37,14 @@ export default async function LocaleLayout({
 			<GoogleTagManager gtmId="GTM-NJW8WMX" />
 			<ClientInit />
 			<div id="Site" className="flex flex-col min-h-full">
+				{/* Reserves exactly the bar's 36px so the header doesn't jump when it
+				    streams in. It renders nothing when the bar is switched off, which
+				    costs one empty strip's worth of shift in that case only. */}
+				<Suspense
+					fallback={<div className="h-9 shrink-0 border-b border-(--border)" aria-hidden="true" />}
+				>
+					<MarketingBar requestedLocale={locale} />
+				</Suspense>
 				<Suspense
 					fallback={<div className="h-16 shrink-0 border-b border-(--border)" aria-hidden="true" />}
 				>
@@ -47,6 +57,42 @@ export default async function LocaleLayout({
 				<PreviewScripts requestedLocale={locale} />
 			</Suspense>
 		</div>
+	);
+}
+
+/**
+ * The marketing bar, in its own async boundary so a CROSS-INSTANCE fetch can
+ * never block the docs shell — that instance is not ours and has no webhook
+ * into this app (see lib/cms/getMainSiteContent).
+ *
+ * Two switches, owned by different teams: `showPreHeader` on the docs instance
+ * decides whether the bar exists at all, and the marketing side's own
+ * `hideMarketingBanner` only suppresses the message.
+ *
+ * The message falls back to `fallbackMarketingMessage` on the docs header
+ * whenever the marketing instance doesn't supply one — which is the NORMAL
+ * state until the 2026 marketing site launches, not an error. Every route to
+ * "no message" lands on the same fallback: instance unconfigured or
+ * unreachable, nothing published there, the copy cleared, or their
+ * `hideMarketingBanner` switched on. Docs therefore always has something to
+ * say, and never shows an empty strip.
+ */
+async function MarketingBar({ requestedLocale }: { requestedLocale: string }) {
+	const { locale, isPreview } = await getAgilityContext(requestedLocale);
+	const [headerData, banner] = await Promise.all([
+		getHeaderData({ locale, preview: isPreview }),
+		getMainSiteBanner({ preview: isPreview }),
+	]);
+
+	if (!headerData.preHeader.show) return null;
+
+	const marketingMessage = banner && !banner.hidden ? banner.html : "";
+
+	return (
+		<MarketingBanner
+			html={marketingMessage || headerData.preHeader.fallbackMessage}
+			ctas={headerData.preHeader.ctas}
+		/>
 	);
 }
 
