@@ -2,7 +2,7 @@ import "server-only";
 
 import { gql } from "lib/cms/gql";
 import { getSitemapFlat } from "lib/cms/getSitemapFlat";
-import { toMainSiteUrl } from "lib/cms/getMainSiteContent";
+import { prepareBannerHtml, toMainSiteUrl } from "lib/cms/getMainSiteContent";
 
 export interface DropdownLink {
 	text: string;
@@ -21,8 +21,11 @@ export interface HeaderData {
 	mainMenuLinks: { name: string; href: string }[];
 	primaryDropdownLinks: DropdownLink[];
 	secondaryDropdownLinks: DropdownLink[];
-	/** Marketing bar: docs-owned CTAs pointing back at the marketing site. */
-	preHeader: { show: boolean; ctas: BannerCta[] };
+	/**
+	 * Marketing bar: docs-owned CTAs pointing back at the marketing site, plus
+	 * the message to show when the marketing instance has none.
+	 */
+	preHeader: { show: boolean; ctas: BannerCta[]; fallbackMessage?: string };
 }
 
 const HEADER_QUERY = `
@@ -32,6 +35,7 @@ const HEADER_QUERY = `
 			primaryDropdownLinks(sort: "properties.itemOrder") { fields { link { text href } icon } }
 			secondaryDropdownLinks(sort: "properties.itemOrder") { fields { link { text href } icon } }
 			showPreHeader
+			fallbackMarketingMessage
 			marketingCta1 { text href target }
 			marketingCta2 { text href target }
 		}
@@ -98,6 +102,11 @@ export const getHeaderData = async ({
 		preHeader: {
 			show: headerFields?.showPreHeader === true || headerFields?.showPreHeader === "true",
 			ctas,
+			// An Html field comes back as an empty string, not null, once an editor
+			// has opened and cleared it — so emptiness, not presence, is the test.
+			fallbackMessage: headerFields?.fallbackMarketingMessage?.trim()
+				? prepareBannerHtml(headerFields.fallbackMarketingMessage)
+				: undefined,
 		},
 	};
 };

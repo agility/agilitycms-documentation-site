@@ -66,13 +66,15 @@ export const toMainSiteUrl = (href: string): string => {
 };
 
 /**
- * Absolutize the hrefs inside the marketing message, and drop executable
- * markup. The docs site renders author-supplied `<script>` by design in article
+ * Absolutize the hrefs inside a banner message, and drop executable markup.
+ * Applied to the marketing instance's message AND to the docs-authored
+ * fallback, so a site-relative href means "the marketing site" in both — the
+ * bar's whole job is pointing away from here. The docs site renders author-supplied `<script>` by design in article
  * bodies, but this HTML crosses an instance boundary into every page's chrome,
  * which is a different trust question — a marketing-side edit should not be
  * able to run script on the docs site.
  */
-const prepareBannerHtml = (html: string): string =>
+export const prepareBannerHtml = (html: string): string =>
 	html
 		.replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, "")
 		.replace(/href=(["'])(.*?)\1/gi, (_match, quote, href) => `href=${quote}${toMainSiteUrl(href)}${quote}`);

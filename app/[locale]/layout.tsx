@@ -67,10 +67,15 @@ export default async function LocaleLayout({
  *
  * Two switches, owned by different teams: `showPreHeader` on the docs instance
  * decides whether the bar exists at all, and the marketing side's own
- * `hideMarketingBanner` only suppresses the message. With the message hidden
- * the docs-owned CTAs still render, which is the point of the bar — the
- * marketing team can clear their campaign copy without taking away the docs
- * site's way back to agilitycms.com.
+ * `hideMarketingBanner` only suppresses the message.
+ *
+ * The message falls back to `fallbackMarketingMessage` on the docs header
+ * whenever the marketing instance doesn't supply one — which is the NORMAL
+ * state until the 2026 marketing site launches, not an error. Every route to
+ * "no message" lands on the same fallback: instance unconfigured or
+ * unreachable, nothing published there, the copy cleared, or their
+ * `hideMarketingBanner` switched on. Docs therefore always has something to
+ * say, and never shows an empty strip.
  */
 async function MarketingBar({ requestedLocale }: { requestedLocale: string }) {
 	const { locale, isPreview } = await getAgilityContext(requestedLocale);
@@ -81,9 +86,11 @@ async function MarketingBar({ requestedLocale }: { requestedLocale: string }) {
 
 	if (!headerData.preHeader.show) return null;
 
+	const marketingMessage = banner && !banner.hidden ? banner.html : "";
+
 	return (
 		<MarketingBanner
-			html={banner && !banner.hidden ? banner.html : undefined}
+			html={marketingMessage || headerData.preHeader.fallbackMessage}
 			ctas={headerData.preHeader.ctas}
 		/>
 	);
