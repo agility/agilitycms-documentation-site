@@ -4,7 +4,9 @@ import { GoogleTagManager } from "@next/third-parties/google";
 
 import { getAgilityContext } from "lib/cms/getAgilityContext";
 import { getHeaderData } from "lib/cms-content/getHeaderData";
+import { getMainSiteBanner } from "lib/cms/getMainSiteContent";
 import Header from "components/common/Header";
+import MarketingBanner from "components/common/MarketingBanner";
 import ClientInit from "components/common/ClientInit";
 
 export async function generateStaticParams() {
@@ -35,6 +37,14 @@ export default async function LocaleLayout({
 			<GoogleTagManager gtmId="GTM-NJW8WMX" />
 			<ClientInit />
 			<div id="Site" className="flex flex-col min-h-full">
+				{/* Reserves exactly the bar's 36px so the header doesn't jump when it
+				    streams in. It renders nothing when the bar is switched off, which
+				    costs one empty strip's worth of shift in that case only. */}
+				<Suspense
+					fallback={<div className="h-9 shrink-0 border-b border-(--border)" aria-hidden="true" />}
+				>
+					<MarketingBar requestedLocale={locale} />
+				</Suspense>
 				<Suspense
 					fallback={<div className="h-16 shrink-0 border-b border-(--border)" aria-hidden="true" />}
 				>
@@ -47,6 +57,35 @@ export default async function LocaleLayout({
 				<PreviewScripts requestedLocale={locale} />
 			</Suspense>
 		</div>
+	);
+}
+
+/**
+ * The marketing bar, in its own async boundary so a CROSS-INSTANCE fetch can
+ * never block the docs shell — that instance is not ours and has no webhook
+ * into this app (see lib/cms/getMainSiteContent).
+ *
+ * Two switches, owned by different teams: `showPreHeader` on the docs instance
+ * decides whether the bar exists at all, and the marketing side's own
+ * `hideMarketingBanner` only suppresses the message. With the message hidden
+ * the docs-owned CTAs still render, which is the point of the bar — the
+ * marketing team can clear their campaign copy without taking away the docs
+ * site's way back to agilitycms.com.
+ */
+async function MarketingBar({ requestedLocale }: { requestedLocale: string }) {
+	const { locale, isPreview } = await getAgilityContext(requestedLocale);
+	const [headerData, banner] = await Promise.all([
+		getHeaderData({ locale, preview: isPreview }),
+		getMainSiteBanner({ preview: isPreview }),
+	]);
+
+	if (!headerData.preHeader.show) return null;
+
+	return (
+		<MarketingBanner
+			html={banner && !banner.hidden ? banner.html : undefined}
+			ctas={headerData.preHeader.ctas}
+		/>
 	);
 }
 

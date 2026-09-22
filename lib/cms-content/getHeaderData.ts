@@ -2,6 +2,7 @@ import "server-only";
 
 import { gql } from "lib/cms/gql";
 import { getSitemapFlat } from "lib/cms/getSitemapFlat";
+import { toMainSiteUrl } from "lib/cms/getMainSiteContent";
 
 export interface DropdownLink {
 	text: string;
@@ -10,10 +11,18 @@ export interface DropdownLink {
 	icon?: string;
 }
 
+export interface BannerCta {
+	text: string;
+	href: string;
+	target?: string;
+}
+
 export interface HeaderData {
 	mainMenuLinks: { name: string; href: string }[];
 	primaryDropdownLinks: DropdownLink[];
 	secondaryDropdownLinks: DropdownLink[];
+	/** Marketing bar: docs-owned CTAs pointing back at the marketing site. */
+	preHeader: { show: boolean; ctas: BannerCta[] };
 }
 
 const HEADER_QUERY = `
@@ -22,16 +31,27 @@ const HEADER_QUERY = `
 		fields {
 			primaryDropdownLinks(sort: "properties.itemOrder") { fields { link { text href } icon } }
 			secondaryDropdownLinks(sort: "properties.itemOrder") { fields { link { text href } icon } }
+			showPreHeader
+			marketingCta1 { text href target }
+			marketingCta2 { text href target }
 		}
 	}
 }`;
 
 /**
  * Everything the docs topbar needs: top-nav links from the sitemap and the
- * APIs & SDKs dropdowns from the docs instance's `header` container. The
- * chrome is docs-scoped (Stripe/Vercel docs pattern) — no cross-instance
- * marketing banner. Active-nav state is computed client-side from the
- * pathname (components/common/Header.js).
+ * APIs & SDKs dropdowns from the docs instance's `header` container, plus the
+ * marketing bar's docs-owned CTAs. Active-nav state is computed client-side
+ * from the pathname (components/common/Header.js).
+ *
+ * The marketing bar's MESSAGE comes from the marketing instance
+ * (lib/cms/getMainSiteContent) but its CTAs are deliberately read from here, so
+ * the docs site decides where it links back to. Mirroring the marketing side's
+ * own CTAs would have imported its "Docs" link — a link to the page you are
+ * already on.
+ *
+ * Both the header and the marketing bar call this, from separate Suspense
+ * boundaries. That is one fetch, not two: same arguments, same `use cache` entry.
  */
 export const getHeaderData = async ({
 	locale,
@@ -57,6 +77,16 @@ export const getHeaderData = async ({
 
 	const headerFields = headerResult.header?.[0]?.fields;
 
+	// Agility Link fields come back present-but-blank when an editor hasn't
+	// filled them, so a truthy `href` AND `text` is the real "is this set" test.
+	const ctas: BannerCta[] = [headerFields?.marketingCta1, headerFields?.marketingCta2]
+		.filter((cta: any) => cta?.href && cta?.text)
+		.map((cta: any) => ({
+			text: cta.text,
+			href: toMainSiteUrl(cta.href),
+			target: cta.target || undefined,
+		}));
+
 	return {
 		mainMenuLinks,
 		primaryDropdownLinks: (headerFields?.primaryDropdownLinks || []).map(
@@ -65,5 +95,9 @@ export const getHeaderData = async ({
 		secondaryDropdownLinks: (headerFields?.secondaryDropdownLinks || []).map(
 			(l: any) => ({ ...l.fields.link, icon: l.fields.icon || undefined })
 		),
+		preHeader: {
+			show: headerFields?.showPreHeader === true || headerFields?.showPreHeader === "true",
+			ctas,
+		},
 	};
 };
