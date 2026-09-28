@@ -112,7 +112,7 @@ Markdown images render as plain `<img>` with **no URL transformation** — so th
    ![Descriptive alt text](https://cdn.aglty.io/agility-cms-docs/images/developer/tab-component-pattern.svg)
    ```
 
-SVG, PNG, JPG all work. SVGs render as-is (the `?format=auto`/`?w=` image-service params used by the EditorJS Image block in `components/common/blocks/Image.js` are **not** applied to Markdown images, so just use the plain URL). The upload token expires in ~5 minutes — re-initialize if it lapses.
+SVG, PNG, JPG all work — always reference the plain URL. Raster images get the `?format=auto&w=…` responsive ladder automatically at render time (Markdown and EditorJS alike). **SVGs are served as-is and must stay that way:** the image CDN rasterizes an SVG given those params into a broken PNG (see [lib/docs/passthroughImage.ts](../../../lib/docs/passthroughImage.ts)), so never hand-add `?format=auto` / `?w=` to an SVG URL. Diagrams must also be dual-theme — see the diagrams rules in AGENTS.md. The upload token expires in ~5 minutes — re-initialize if it lapses.
 
 ## Saving the article
 
