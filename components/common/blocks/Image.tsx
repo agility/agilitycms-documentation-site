@@ -1,5 +1,7 @@
 import React from "react";
 
+import { isPassthroughImage, isSvgImage } from "lib/docs/passthroughImage";
+
 //TODO: implement Next IMG
 const Image = ({
   id,
@@ -11,8 +13,22 @@ const Image = ({
 }: any) => {
 
 
-  if (file.url.endsWith(".gif")) {
-    //special case since gifs are not supported by the image service (TODO:once we switch to fastly io we can remove this)
+  if (isPassthroughImage(file.url)) {
+    //special case: gifs are not supported by the image service, and svgs get rasterized to a
+    //broken png (see lib/docs/passthroughImage.ts)
+    if (isSvgImage(file.url)) {
+      return (<div>
+        <img
+          className="m-auto border"
+          src={file.url}
+          alt={caption}
+          width={file?.size?.width}
+          height={file?.size?.height}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>)
+    }
     return (<div>
       <img className="m-auto border" src={file.url} alt={caption} />
     </div>)

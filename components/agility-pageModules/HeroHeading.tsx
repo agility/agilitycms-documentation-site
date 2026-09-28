@@ -1,5 +1,7 @@
 import { AgilityPic } from "@agility/nextjs";
 
+import { isSvgImage } from "lib/docs/passthroughImage";
+
 interface HeroHeadingProps {
   module: {
     contentID?: number;
@@ -27,10 +29,12 @@ export default function HeroHeading({ module }: HeroHeadingProps) {
           // wordmark). Normalize on HEIGHT so every hero reads consistently: a
           // fixed height, width auto (capped), object-contain. fallbackWidth is
           // generous so raster wordmarks stay crisp at 2× the display width.
+          // SVGs get no fallbackWidth, so AgilityPic serves the original: a
+          // `?format=auto&w=` URL makes the image service rasterize them to PNG.
           <AgilityPic
             image={fields.image}
             className="mb-8 h-12 w-auto max-w-70 object-contain sm:h-14"
-            fallbackWidth={560}
+            fallbackWidth={isSvgImage(fields.image.url) ? undefined : 560}
             data-agility-field="image"
           />
         )}
