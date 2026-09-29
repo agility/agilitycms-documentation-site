@@ -66,11 +66,14 @@ const AgilityLogoLarge = () => (
 interface PreviewBarProps {
 	isPreview?: boolean;
 	isDevelopmentMode?: boolean;
-	page?: any;
-	dynamicPageItem?: any;
+	// IDs only. This is a client component, so every prop is serialized into
+	// the page for every visitor. Passing the whole page or item shipped all of
+	// its fields, internal-only ones like NoteInternal included.
+	pageID?: number;
+	contentID?: number;
 }
 
-const PreviewBar = ({ isPreview, isDevelopmentMode, page, dynamicPageItem }: PreviewBarProps) => {
+const PreviewBar = ({ isPreview, isDevelopmentMode, pageID, contentID }: PreviewBarProps) => {
 	const [visible, setVisible] = useState(isPreview || isDevelopmentMode);
 	const [open, setOpen] = useState(false);
 	const [copied, setCopied] = useState(false);
@@ -98,13 +101,13 @@ const PreviewBar = ({ isPreview, isDevelopmentMode, page, dynamicPageItem }: Pre
 	}, [closePanel]);
 
 	const editPage = useCallback(() => {
-		const itemPath = dynamicPageItem
-			? `content/listitem-${dynamicPageItem.contentID}`
-			: `pages/page-${page?.pageID}`;
+		const itemPath = contentID
+			? `content/listitem-${contentID}`
+			: `pages/page-${pageID}`;
 		window.open(
 			`https://app.agilitycms.com/instance/${process.env.NEXT_PUBLIC_AGILITY_GUID}/en-us/${itemPath}`
 		);
-	}, [dynamicPageItem, page]);
+	}, [contentID, pageID]);
 
 	const copyLink = useCallback(() => {
 		navigator.clipboard
