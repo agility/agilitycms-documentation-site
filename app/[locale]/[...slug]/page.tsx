@@ -91,8 +91,8 @@ export default async function Page({ params }: PageProps) {
 				)}
 			</div>
 			<PreviewBar
-				page={agilityData.page}
-				dynamicPageItem={agilityData.dynamicPageItem}
+				pageID={agilityData.page?.pageID}
+				contentID={agilityData.dynamicPageItem?.contentID}
 				isPreview={isPreview && !isDevelopmentMode}
 				isDevelopmentMode={isDevelopmentMode}
 			/>
