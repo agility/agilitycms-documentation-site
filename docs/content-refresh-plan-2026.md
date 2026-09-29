@@ -12,6 +12,23 @@ Do a **complete audit** of every framework, SDK, and API doc, get it all current
 
 > **How these two fit together:** the skill *produces* the state table in §3 (it's an auditor, not an author). This plan *decides what to do* about what the skill finds. Re-run the skill, paste its report into §3, work the backlog.
 
+> **Update 2026-09-21 — endpoint facts no longer drift.** `/docs/api-reference` now
+> generates a page per REST operation (126 of them) straight from the OpenAPI snapshots,
+> so *endpoint names, parameters, types and response codes* for the Fetch and Management
+> APIs are structurally correct rather than hand-maintained. That removes the largest
+> recurring source of API-doc drift, and it changes what the audit is for: the
+> hand-written API articles are now **conceptual guides** — when to use an API, how auth
+> works, worked examples — and should be audited as prose, not as endpoint listings.
+> Anything in them that merely restates a parameter table is now duplication worth
+> deleting in favour of a link.
+>
+> Two caveats. The generated pages carry **no operation-level descriptions**, because
+> neither spec has any (0 of 130 operations) — the parameter descriptions are good, the
+> operation prose is missing, and writing it is real content work that belongs in this
+> plan's backlog. And **GraphQL has no OpenAPI spec**, so `graphql-api` and
+> `graphql-operators` remain entirely hand-maintained and still need the full audit
+> treatment.
+
 ---
 
 ## 1. How this content is modeled (context for anyone picking this up)
