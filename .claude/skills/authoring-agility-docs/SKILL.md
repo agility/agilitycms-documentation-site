@@ -158,6 +158,8 @@ After **any** create or update, give the user both links. Substitute the new `{c
   https://agilitycms-documentation-site.vercel.app/docs/developers?ContentID={contentID}&lang=en-us&agilitypreviewkey=400uJQv5qharfKX2zZv7%2fUiJ78ePiCdHsUweRrEjlsdg3IIPKjZKm22m2Oljilp6qlpQyeZj2IrRzcc%2fkBQlqQ%3d%3d&agilityts=20260615021008
   ```
   The `agilitypreviewkey` is the instance preview key (constant); `ContentID` is the article's contentID. The `/docs/developers` path segment is the preview landing route and works for any category.
+
+  Checking it from a script? Use `curl -L -c jar -b jar`. The link 307s through `/docs/api/preview`, which sets the draft-mode cookie, and without a cookie jar the cookie is dropped, so a never-published article **404s even though the link is fine**.
 - **Edit in Agility:**
   ```
   https://app.agilitycms.com/instance/67bc73e6-u/{locale}/content/list-{containerID}/listitem-{contentID}

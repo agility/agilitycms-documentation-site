@@ -27,7 +27,7 @@ Get these right once and every screenshot matches.
 
 | | |
 |---|---|
-| **Instance** | Use a demo/sandbox instance with realistic content, **not** a customer instance and not the docs instance itself. Screenshots of `Agility CMS Docs` internals confuse readers. |
+| **Instance** | Use the docs instance (`Agility CMS Docs`) by default. Set up a dedicated demo instance only when a shot needs state the docs instance doesn't have, such as extra locales or sample content. **Never** use a customer instance. |
 | **Locales** | Several shots need multiple locales configured. Minimum: `en-us` (default), `es-es`, `ja-jp`, `en-ca`. The `en-ca` one matters — it's what demonstrates same-language copy skipping translation. |
 | **Theme** | Agility UI default (light). Don't mix light and dark across a single article. |
 | **Viewport** | 1440×900, browser zoom 100%. Crop to the relevant panel plus enough surrounding chrome to orient the reader — a floating dialog with no context is hard to place. |
