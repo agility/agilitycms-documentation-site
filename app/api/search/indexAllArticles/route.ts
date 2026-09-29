@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import algoliasearch from "algoliasearch";
+import { algoliasearch } from "algoliasearch";
 import { gqlFresh } from "lib/cms/gql";
 import { defaultLocale } from "lib/i18n/config";
 import { getDynamicPageSitemapMappingREST } from "utils/sitemapUtils";
@@ -19,11 +19,11 @@ export async function GET(req: NextRequest) {
 }
 
 const indexAll = async () => {
-	const algoliaClient = algoliasearch(
+	const client = algoliasearch(
 		process.env.ALGOLIA_APP_ID!,
 		process.env.ALGOLIA_ADMIN_API_KEY!
 	);
-	const index = algoliaClient.initIndex("doc_site");
+	const indexName = "doc_site";
 
 	const startedAt = Date.now();
 
@@ -98,14 +98,18 @@ const indexAll = async () => {
 	}
 
 	//configure index settings
-	await index.setSettings({
-		searchableAttributes: ["title", "headings", "unordered(body)", "description"],
-		attributesToSnippet: ["body:30"],
+	await client.setSettings({
+		indexName,
+		indexSettings: {
+			searchableAttributes: ["title", "headings", "unordered(body)", "description"],
+			attributesToSnippet: ["body:30"],
+		},
 	});
 
 	// Atomic full rebuild: replaceAllObjects copies into a temp index and renames,
 	// so any record not in `objects` (deleted/unpublished/orphaned) is removed.
-	await index.replaceAllObjects(objects, { safe: true });
+	// In v5 it always waits for each step (the v4 `safe` option is gone).
+	await client.replaceAllObjects({ indexName, objects });
 
 	return NextResponse.json({
 		ok: true,
