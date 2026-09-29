@@ -9,10 +9,10 @@ import { readAgilityWebhook } from "lib/webhooks/readAgilityWebhook";
 /**
  * Index (or delete) a single doc article in Algolia. Wired to an Agility
  * webhook that fires on article publish/unpublish/delete. Signed with the
- * webhook's own secret once AGILITY_WEBHOOK_SECRET_INDEX is set.
+ * webhook's own secret once WH_SECRET_INDEX_ARTICLE is set.
  */
 export async function POST(req: NextRequest) {
-	const webhook = await readAgilityWebhook<any>(req, "AGILITY_WEBHOOK_SECRET_INDEX");
+	const webhook = await readAgilityWebhook<any>(req, "WH_SECRET_INDEX_ARTICLE");
 	if (!webhook.ok) return webhook.response;
 	const body = webhook.body;
 

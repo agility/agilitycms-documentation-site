@@ -32,7 +32,7 @@ interface IRevalidateRequest {
  *
  * Configure in Agility: Settings > Webhooks -> POST {site}/docs/api/revalidate
  * on publish events, with secure delivery on. Signatures are enforced once
- * AGILITY_WEBHOOK_SECRET_REVALIDATE is set.
+ * WH_SECRET_REVALIDATE is set.
  *
  * Agility sends unpublish and delete alike as state "Deleted" — there is no
  * "Unpublished" state.
@@ -40,7 +40,7 @@ interface IRevalidateRequest {
 export async function POST(req: NextRequest) {
 	const webhook = await readAgilityWebhook<IRevalidateRequest>(
 		req,
-		"AGILITY_WEBHOOK_SECRET_REVALIDATE"
+		"WH_SECRET_REVALIDATE"
 	);
 	if (!webhook.ok) return webhook.response;
 	const data = webhook.body;
