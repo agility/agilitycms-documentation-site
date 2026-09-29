@@ -23,6 +23,8 @@ import rehypeStringify from "rehype-stringify";
 import { visit } from "unist-util-visit";
 import hljs from "highlight.js";
 
+import { isGifImage, isSvgImage } from "lib/docs/passthroughImage";
+
 export interface ArticleHeading {
 	/** The anchor id — github-slugger's slug (markdown) or the EditorJS block id. */
 	id: string;
@@ -131,7 +133,10 @@ const SRCSET_STEPS: { w: number; media: string }[] = [
  * nowhere to put the pixel width, and without it the gate above cannot work. Absent a
  * width we fall back to 800, which is precisely what Image.tsx does.
  *
- * GIFs are passed through untouched: the image service does not support them.
+ * GIFs and SVGs skip the ladder (see lib/docs/passthroughImage.ts). GIFs are left
+ * untouched: the image service does not support them. SVGs keep a plain `<img>` of the
+ * original URL, plus lazy loading: the image service rasterizes them to a PNG of
+ * scrambled colour blocks, and drops the in-file dark theme.
  */
 function rehypeImage() {
 	return (tree: any) => {
@@ -140,7 +145,12 @@ function rehypeImage() {
 			if (parent.tagName === "picture") return; // already converted
 
 			const src: string = String(node.properties?.src || "");
-			if (!src || src.endsWith(".gif")) return;
+			if (!src || isGifImage(src)) return;
+
+			if (isSvgImage(src)) {
+				node.properties = { ...node.properties, loading: "lazy", decoding: "async" };
+				return;
+			}
 
 			const width = Number(node.properties?.width) || 800;
 			let url = src.replaceAll(" ", "%20");

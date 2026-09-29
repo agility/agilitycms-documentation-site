@@ -1,6 +1,8 @@
 import { AgilityPic } from "@agility/nextjs";
 import Link from "next/link";
 
+import { isSvgImage } from "lib/docs/passthroughImage";
+
 interface TextBlocksWithImagesProps {
   module: {
     fields: {
@@ -30,7 +32,7 @@ const TextBlocksWithImages = ({ module }: TextBlocksWithImagesProps) => {
               </div>
               <AgilityPic
                 image={fields.image1}
-                fallbackWidth={300}
+                fallbackWidth={isSvgImage(fields.image1?.url || "") ? undefined : 300}
                 className="pb-2 w-[300px] hidden lg:block"
               />
               <AgilityPic
@@ -59,7 +61,7 @@ const TextBlocksWithImages = ({ module }: TextBlocksWithImagesProps) => {
               </div>
               <AgilityPic
                 image={fields.image2}
-                fallbackWidth={300}
+                fallbackWidth={isSvgImage(fields.image2?.url || "") ? undefined : 300}
                 className="pb-2 w-[300px] hidden lg:block"
               />
               <AgilityPic
