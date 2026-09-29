@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import algoliasearch from "algoliasearch";
+import { algoliasearch } from "algoliasearch";
 import { gqlFresh } from "lib/cms/gql";
 import { defaultLocale } from "lib/i18n/config";
 import { getDynamicPageURL } from "@agility/nextjs/node";
@@ -24,14 +24,17 @@ export async function POST(req: NextRequest) {
 	}
 	const state = body.state;
 
-	const algoliaClient = algoliasearch(
+	const client = algoliasearch(
 		process.env.ALGOLIA_APP_ID!,
 		process.env.ALGOLIA_ADMIN_API_KEY!
 	);
-	const index = algoliaClient.initIndex("doc_site");
+	const indexName = "doc_site";
+	const deleteRecord = () => client.deleteObject({ indexName, objectID: `${contentID}` });
 
-	if (contentID && state && (state === "Deleted" || state === "Unpublished")) {
-		await index.deleteObject(`${contentID}`);
+	// Agility reports unpublish AND delete as state "Deleted" (there is no "Unpublished"
+	// state). Delete without re-fetching: the Fetch API can briefly still serve the item.
+	if (contentID && state === "Deleted") {
+		await deleteRecord();
 		return NextResponse.json({ deleted: contentID, state });
 	}
 
@@ -71,7 +74,7 @@ export async function POST(req: NextRequest) {
 	// If the article isn't returned by the published API, it's been unpublished/removed.
 	// Strip it from the index so search results stay in sync.
 	if (!article) {
-		await index.deleteObject(`${contentID}`);
+		await deleteRecord();
 		return NextResponse.json({ deleted: contentID, reason: "not-published" });
 	}
 
@@ -84,13 +87,14 @@ export async function POST(req: NextRequest) {
 	// in its container, or the loser of a duplicate slug. It has no URL to offer,
 	// so drop it from the index rather than saving a "null" one.
 	if (!url) {
-		await index.deleteObject(`${contentID}`);
+		await deleteRecord();
 		return NextResponse.json({ deleted: contentID, reason: "no-dynamic-page" });
 	}
 
 	const object = await normalizeArticle({ article, url, category: undefined });
 
-	await index.saveObject(object);
+	// The record carries its objectID, so this replaces any existing record.
+	await client.saveObject({ indexName, body: object });
 
 	return NextResponse.json({ saved: contentID });
 }

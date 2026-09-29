@@ -13,7 +13,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { SearchIcon } from "@heroicons/react/solid";
 import { ChevronRightIcon } from "@heroicons/react/outline";
-import algoliasearch from "algoliasearch/lite";
+import { liteClient as algoliasearch } from "algoliasearch/lite";
 import { renderHTML } from "@agility/nextjs";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "components/ui/dialog";
 import { track } from "lib/analytics/posthog";
@@ -149,9 +149,9 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 		}
 		const t = setTimeout(async () => {
 			try {
-				const response = await getSearchClient().search([
-					{ indexName: "doc_site", query, params: { ...SEARCH_PARAMS, page: 0 } },
-				]);
+				const response = await getSearchClient().search({
+					requests: [{ indexName: "doc_site", query, ...SEARCH_PARAMS, page: 0 }],
+				});
 				if (queryRef.current !== query) return;
 				const result = response.results[0];
 				// Stamp each hit with the queryID so a later click can be attributed
@@ -175,9 +175,9 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 		const q = queryRef.current;
 		if (!q || !hasMore) return;
 		const nextPage = page + 1;
-		const response = await getSearchClient().search([
-			{ indexName: "doc_site", query: q, params: { ...SEARCH_PARAMS, page: nextPage } },
-		]);
+		const response = await getSearchClient().search({
+			requests: [{ indexName: "doc_site", query: q, ...SEARCH_PARAMS, page: nextPage }],
+		});
 		if (queryRef.current !== q) return;
 		const result = response.results[0];
 		setHits((prev) => [

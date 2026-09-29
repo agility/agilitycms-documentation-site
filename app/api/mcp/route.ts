@@ -1,7 +1,7 @@
 // @ts-nocheck — Zod v3 + McpServer.tool() causes infinite type recursion
 import { createMcpHandler } from "mcp-handler";
 import { z } from "zod";
-import algoliasearch from "algoliasearch";
+import { algoliasearch } from "algoliasearch";
 import {
   initializeTelemetry,
   trackMcpToolCall,
@@ -16,7 +16,7 @@ const algoliaClient = algoliasearch(
   process.env.ALGOLIA_APP_ID!,
   process.env.ALGOLIA_ADMIN_API_KEY!
 );
-const index = algoliaClient.initIndex("doc_site");
+const INDEX_NAME = "doc_site";
 
 const BASE_URL = "https://agilitycms.com/docs";
 
@@ -117,19 +117,23 @@ const handler = createMcpHandler(
 
         try {
           const algoliaStart = Date.now();
-          const results = await index.search(query, {
-            page: page || 0,
-            hitsPerPage: 10,
-            attributesToSnippet: ["body:50"],
-            snippetEllipsisText: "...",
-            attributesToRetrieve: [
-              "title",
-              "url",
-              "description",
-              "category",
-              "section",
-            ],
-            attributesToHighlight: [],
+          const results: any = await algoliaClient.searchSingleIndex({
+            indexName: INDEX_NAME,
+            searchParams: {
+              query,
+              page: page || 0,
+              hitsPerPage: 10,
+              attributesToSnippet: ["body:50"],
+              snippetEllipsisText: "...",
+              attributesToRetrieve: [
+                "title",
+                "url",
+                "description",
+                "category",
+                "section",
+              ],
+              attributesToHighlight: [],
+            },
           });
           trackAlgoliaCall(
             "search",
@@ -223,7 +227,9 @@ const handler = createMcpHandler(
         const startTime = Date.now();
         try {
           const algoliaStart = Date.now();
-          const doc: any = await index.getObject(objectID, {
+          const doc: any = await algoliaClient.getObject({
+            indexName: INDEX_NAME,
+            objectID,
             attributesToRetrieve: [
               "title",
               "url",
