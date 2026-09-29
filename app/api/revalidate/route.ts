@@ -4,6 +4,7 @@ import agilitySDK from "@agility/content-fetch";
 import { defaultLocale, localizeUrl } from "lib/i18n/config";
 import { submitToIndexNow } from "lib/indexnow/submitToIndexNow";
 import { purgeNetlifyCache } from "lib/netlify/purgeNetlifyCache";
+import { readAgilityWebhook } from "lib/webhooks/readAgilityWebhook";
 
 interface IRevalidateRequest {
 	state: string;
@@ -30,13 +31,22 @@ interface IRevalidateRequest {
  *   agility-graphql-{locale}                    any GraphQL join (coarse)
  *
  * Configure in Agility: Settings > Webhooks -> POST {site}/docs/api/revalidate
- * on publish/unpublish events.
+ * on publish events, with secure delivery on. Signatures are enforced once
+ * WH_SECRET_REVALIDATE is set.
+ *
+ * Agility sends unpublish and delete alike as state "Deleted" — there is no
+ * "Unpublished" state.
  */
 export async function POST(req: NextRequest) {
-	const data = (await req.json()) as IRevalidateRequest;
+	const webhook = await readAgilityWebhook<IRevalidateRequest>(
+		req,
+		"WH_SECRET_REVALIDATE"
+	);
+	if (!webhook.ok) return webhook.response;
+	const data = webhook.body;
 
 	const isPublish = data.state === "Published";
-	const isRemoval = data.state === "Deleted" || data.state === "Unpublished";
+	const isRemoval = data.state === "Deleted";
 	const languageCode = data.languageCode || defaultLocale;
 
 	const revalidateSitemapTags = () => {

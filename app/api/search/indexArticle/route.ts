@@ -4,13 +4,17 @@ import { gqlFresh } from "lib/cms/gql";
 import { defaultLocale } from "lib/i18n/config";
 import { getDynamicPageURL } from "@agility/nextjs/node";
 import { normalizeArticle } from "utils/searchUtils";
+import { readAgilityWebhook } from "lib/webhooks/readAgilityWebhook";
 
 /**
  * Index (or delete) a single doc article in Algolia. Wired to an Agility
- * webhook that fires on article publish/unpublish/delete.
+ * webhook that fires on article publish/unpublish/delete. Signed with the
+ * webhook's own secret once WH_SECRET_INDEX_ARTICLE is set.
  */
 export async function POST(req: NextRequest) {
-	const body = await req.json();
+	const webhook = await readAgilityWebhook<any>(req, "WH_SECRET_INDEX_ARTICLE");
+	if (!webhook.ok) return webhook.response;
+	const body = webhook.body;
 
 	const referenceName = body.referenceName;
 	if (!referenceName || !/^[a-zA-Z_]+articles$/.test(referenceName)) {

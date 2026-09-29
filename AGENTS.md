@@ -79,7 +79,7 @@ All Agility reads go through cached primitives. Each takes explicit `{ locale, p
 
 Long TTLs (`cacheLife("days")`) + **instant invalidation via the publish webhook** — the model the Next docs recommend for CMSs.
 
-**Webhook**: `POST /docs/api/revalidate` ([app/api/revalidate/route.ts](app/api/revalidate/route.ts)). Configure in Agility Settings → Webhooks for publish/unpublish events. It maps the payload to `revalidateTag(tag, "max")` + `revalidatePath`:
+**Webhook**: `POST /docs/api/revalidate` ([app/api/revalidate/route.ts](app/api/revalidate/route.ts)). Configure in Agility Settings → Webhooks for publish events, with **Enable secure delivery** on. Unpublish and delete both arrive as state `Deleted`; there is no `Unpublished`. It maps the payload to `revalidateTag(tag, "max")` + `revalidatePath`:
 - content item → item tag + container list tag + coarse GraphQL tag (+ path + sitemap tags on publish)
 - page → page tag + sitemap tags + path
 - no contentID/pageID (redirect change) → `BUILD_HOOK_URL` full rebuild if configured
@@ -138,7 +138,7 @@ Nested-list containers so far: `HomeFeatureCardGroup-Cards`, `HomeRoleLinkCards`
 
 Algolia index `doc_site`; searchable: `title`, `headings`, `body`, `description`. Route handlers (still Apollo-based — the only remaining Apollo usage, isolated from the render path):
 - `POST/GET /docs/api/search/indexAllArticles` — atomic full rebuild (`replaceAllObjects`)
-- `POST /docs/api/search/indexArticle` — single article, wired to an Agility webhook; deletes on unpublish
+- `POST /docs/api/search/indexArticle` — single article, wired to an Agility webhook; deletes on unpublish (state `Deleted`, without re-fetching, because the Fetch API can briefly still serve the item)
 
 Normalization in [utils/searchUtils.ts](utils/searchUtils.ts) (EditorJS + Markdown).
 
@@ -185,6 +185,7 @@ Normalization in [utils/searchUtils.ts](utils/searchUtils.ts) (EditorJS + Markdo
 | `ROBOTS_NO_INDEX` | Force noindex meta |
 | `NETLIFY_PURGE_TOKEN` | Netlify personal access token. Lets the publish webhook purge the apex CDN ([lib/netlify/purgeNetlifyCache.ts](lib/netlify/purgeNetlifyCache.ts)) — `revalidateTag` only reaches Vercel, and agilitycms.com/docs is a Netlify proxy rewrite. **Optional:** unset = purge no-ops and the apex self-heals on `s-maxage` instead |
 | `NETLIFY_SITE_ID` | Site ID of the **apex/marketing** Netlify site — *not* this docs app. That site owns the cached proxy responses. Required alongside `NETLIFY_PURGE_TOKEN` |
+| `WH_SECRET_REVALIDATE` / `WH_SECRET_INDEX_ARTICLE` | The `whsec_…` signing secrets of the **Revalidate** and **Index Article** webhooks. Each webhook has its own. Set = that route rejects any request without a valid Standard Webhooks signature (401). Unset = unsigned requests are accepted. Both routes read the raw body and verify it in [lib/webhooks/readAgilityWebhook.ts](lib/webhooks/readAgilityWebhook.ts). The secret appears in the webhook editor once **Enable secure delivery** is ticked (Full Control). Rollout order: tick secure delivery, set the var, redeploy, then confirm Delivery History shows 2xx |
 | `NEXT_PUBLIC_POSTHOG_KEY` / `NEXT_PUBLIC_POSTHOG_HOST` | Product analytics. **Same PostHog project as the marketing site**, so a visitor is one person across agilitycms.com, /docs and app.agilitycms.com. No key = `init()` and all capture calls no-op ([lib/analytics/posthog.ts](lib/analytics/posthog.ts)). ⚠️ `NEXT_PUBLIC_*` is inlined at **build** time — setting it in Vercel needs a redeploy to take effect |
 | `AGILITY_AUTH_COOKIE_NAME` | Cookie the signed-in probe looks for ([app/api/me/route.ts](app/api/me/route.ts)). Defaults to `AgilityAuthOWIN`; override only if Classic CM renames it. The route returns `{signedIn, validated, userId?}` and **never** the cookie value, email or name |
 | `AGILITY_MANAGER_URL` | Classic CM base URL, e.g. `https://manager.agilitycms.com`. **Unset = presence-only** (a stale cookie reads as signed-in, `validated:false`). Set = the cookie is validated against `json/User/GetCurrentServerUser` once per session |
