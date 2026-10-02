@@ -1,6 +1,6 @@
 ---
 name: authoring-agility-docs
-description: Author and publish documentation articles for the Agility CMS Docs site using the Agility MCP server. Use whenever asked to write, add, or update a docs article, place it in the right section/category, embed images, or save Markdown content to the docs instance. Covers categorization across the multiple Article containers, the Markdown rendering rules this site enforces, and the image-upload workflow.
+description: Author and publish documentation articles for the Agility CMS Docs site using the Agility MCP server. Use whenever asked to write, add, or update a docs article, place it in the right section/category, embed images or videos, or save Markdown content to the docs instance. Covers categorization across the multiple Article containers, the Markdown rendering rules this site enforces, and the image-upload workflow.
 ---
 
 # Authoring Agility CMS Documentation Articles
@@ -87,8 +87,8 @@ The sidebar nav (`SideBarNav.js`) groups articles under a section by matching `a
 
 ## Markdown rendering rules (this site is specific)
 
-The renderer is a `unified` pipeline in `components/agility-pageModules/DynamicArticleDetails.js`:
-`remarkParse → remarkDisableIndentedCode → remarkGfm → remarkRehype(allowDangerousHtml) → rehypeRaw → rehypeSlug → rehypeStringify`. Author Markdown to match:
+The renderer is a server-side `unified` pipeline in `lib/docs/renderArticleBody.ts`:
+`remarkParse → remarkDisableIndentedCode → remarkGfm → remarkVideoEmbeds → remarkRehype(allowDangerousHtml) → rehypeRaw → rehypeSlug → rehypeGithubAlerts → rehypeImage → rehypeHighlightCode → rehypeStringify`. Author Markdown to match:
 
 - **Start the body with a single `# H1`.** The renderer strips the first H1 and uses it as the page title (falling back to `Title`). Don't add a second H1.
 - **GFM is on** — tables, task lists, strikethrough, autolinks all work.
@@ -96,6 +96,23 @@ The renderer is a `unified` pipeline in `components/agility-pageModules/DynamicA
 - **Indented code blocks are DISABLED.** Always use fenced blocks with a language for highlighting: ` ```jsx `, ` ```bash `, etc. (highlight.js runs on `pre code`).
 - **Headings get auto-slug IDs** (`rehypeSlug`) for anchor links.
 - Content is wrapped in Tailwind `prose prose-lg` — standard Markdown styles apply.
+
+## Videos: put the URL on its own line
+
+To embed a Vimeo or YouTube video, put its URL **alone on its own line** (a paragraph of its own). It renders as a responsive 16:9 player:
+
+```markdown
+https://vimeo.com/123456789
+
+[Creating a content model](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+```
+
+- `[Title](url)` sets the player's accessible title and adds a caption under it; a bare URL gets a generic title.
+- Any common URL shape works: `vimeo.com/<id>`, `player.vimeo.com/video/<id>`, **unlisted** `vimeo.com/<id>/<hash>` (the hash is kept), `youtube.com/watch?v=`, `youtu.be/`, `/embed/`, `/shorts/`. A start time carries over (`?t=90`, `&t=1m30s`, Vimeo `#t=90s`).
+- Players are privacy-friendly: Vimeo with Do Not Track, YouTube via `youtube-nocookie.com`. They're lazy-loaded.
+- A video link **inside a sentence or a list** stays a normal link. So does any other URL. Hand-written `<iframe>` embeds still work, but prefer the URL line.
+- Embedded videos are picked up automatically for **VideoObject JSON-LD** (`lib/cms-content/getRichSnippet.ts`), so the page can appear in Google video results. Give the video a title with `[Title](url)` to improve that.
+- Code: `lib/docs/videoEmbed.ts` (shared by the renderer and the JSON-LD scan).
 
 ## Images: upload to the instance, then reference the CDN URL
 

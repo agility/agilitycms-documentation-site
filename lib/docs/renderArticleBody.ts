@@ -24,6 +24,7 @@ import { visit } from "unist-util-visit";
 import hljs from "highlight.js";
 
 import { isGifImage, isSvgImage } from "lib/docs/passthroughImage";
+import { remarkVideoEmbeds } from "lib/docs/videoEmbed";
 
 export interface ArticleHeading {
 	/** The anchor id — github-slugger's slug (markdown) or the EditorJS block id. */
@@ -344,6 +345,8 @@ export const renderArticleBody = cache(
 				.use(remarkParse)
 				.use(remarkDisableIndentedCode)
 				.use(remarkGfm)
+				// A Vimeo/YouTube URL alone on its own line becomes a player (lib/docs/videoEmbed.ts).
+				.use(remarkVideoEmbeds)
 				.use(remarkRehype, { allowDangerousHtml: true })
 				.use(rehypeRaw)
 				.use(rehypeSlug)
