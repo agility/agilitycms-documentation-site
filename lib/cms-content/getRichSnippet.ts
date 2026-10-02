@@ -1,4 +1,5 @@
 import { cacheLife } from "next/cache";
+import { videosFromMarkdownLines, watchUrl } from "lib/docs/videoEmbed";
 
 import { AgilityPageData } from "lib/cms/getAgilityPage";
 import { getSitemapFlat } from "lib/cms/getSitemapFlat";
@@ -399,7 +400,14 @@ const extractVideos = (item: any): ExtractedVideo[] => {
 	}
 
 	const md = item.fields?.markdownContent;
-	if (typeof md === "string" && md.trim()) found.push(...videosFromHtml(md));
+	if (typeof md === "string" && md.trim()) {
+		found.push(...videosFromHtml(md));
+		// URL-on-its-own-line embeds (lib/docs/videoEmbed.ts) render as iframes but aren't iframes in the source.
+		for (const { ref, title } of videosFromMarkdownLines(md)) {
+			const v = normalizeVideoUrl(watchUrl(ref));
+			if (v) found.push({ ...v, name: title, description: title });
+		}
+	}
 
 	// Any field holding a VimeoVideo custom-field blob (a JSON string carrying
 	// both `video_id` and `thumbnail_url` — a signature EditorJS content never
