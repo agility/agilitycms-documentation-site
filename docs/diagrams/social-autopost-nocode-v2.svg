@@ -1,4 +1,4 @@
-<svg width="100%" style="max-width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="t d">
+<svg class="c-text" width="100%" style="max-width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="t d">
   <title id="t">Social autopost, no-code: publish once, post everywhere</title>
   <desc id="d">No-code social autopost pipeline: Agility publishes, automation posts to social channels. Five steps: an editor publishes in Agility, the publish webhook fires, an automation tool (Zapier, Make or n8n) catches and filters it, formats per-channel copy, and posts to LinkedIn and X via the Buffer API.</desc>
   <!-- Dual-theme (docs convention): colours live in CSS, light is the default,

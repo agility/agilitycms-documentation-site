@@ -1,4 +1,4 @@
-<svg width="100%" style="max-width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="t d">
+<svg class="c-text" width="100%" style="max-width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="t d">
   <title id="t">Social autopost, custom code: your endpoint owns the post</title>
   <desc id="d">Custom endpoint social pipeline: webhook to serverless function to Content Management API to Buffer API. Five steps: the Agility publish webhook posts to your API, your API verifies the signature and queues the item, fetches the item through the Management API, builds per-channel payloads, and dispatches them with the Buffer API createPost call.</desc>
   <!-- Dual-theme (docs convention): colours live in CSS, light is the default,
@@ -222,7 +222,7 @@
       <text class="f-text" x="20" y="72" font-size="22" font-weight="600" font-family="Inter,system-ui,sans-serif" letter-spacing="-.3">Buffer API</text>
       <g transform="translate(20,94)" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="11">
         <rect class="f-surface s-tertiary" x="0" y="0" width="200" height="90" rx="8"></rect>
-        <text class="on-yellow" x="14" y="20" font-size="12" font-weight="600">createPost</text>
+        <text class="f-text" x="14" y="20" font-size="12" font-weight="600">createPost</text>
         <text class="f-warn" x="14" y="40">OAuth2 · token</text>
         <text class="f-warn" x="14" y="58">channels: LI · X</text>
         <text class="f-warn" x="14" y="76">status: <tspan class="f-ok">scheduled</tspan></text>
