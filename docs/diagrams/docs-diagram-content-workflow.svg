@@ -51,7 +51,8 @@
   <text class="f-muted" x="84" y="102" font-family="ui-monospace, monospace" font-size="12" letter-spacing="2">EDITOR</text>
   <rect class="f-surface" x="60" y="296" width="1080" height="174" rx="2"/>
   <rect class="s-border" x="60.5" y="296.5" width="1079" height="173" rx="2"/>
-  <text class="f-muted" x="84" y="322" font-family="ui-monospace, monospace" font-size="12" letter-spacing="2">APPROVER (PUBLISHER ROLE)</text>
+  <text class="f-muted" x="84" y="322" font-family="ui-monospace, monospace" font-size="12" letter-spacing="2">APPROVER</text>
+  <text class="f-muted" x="84" y="340" font-family="ui-monospace, monospace" font-size="11" letter-spacing="1">(PUBLISHER ROLE)</text>
 
   <!-- Steps -->
   <rect class="f-raised" x="100" y="116" width="250" height="104" rx="2"/>
