@@ -122,16 +122,9 @@ async function PreviewScripts({ requestedLocale }: { requestedLocale: string }) 
 	const { isPreview } = await getAgilityContext(requestedLocale);
 	if (!isPreview) return null;
 
-	// Pinned with Subresource Integrity: this runs in editors' browsers next to
-	// their Agility session, so an unpinned `@latest` from a public CDN would let
-	// any compromised publish of the package execute there. To upgrade, change
-	// the version and regenerate the hash:
-	//   curl -s <url> | openssl dgst -sha384 -binary | base64
 	return (
 		<Script
-			src="https://unpkg.com/@agility/web-studio-sdk@1.0.26/dist/index.js"
-			integrity="sha384-WlYWfECq5DYjAHv41HURaj29ZuuDVOKcrq4V/JXiVr0h0d9TAlA9nrOpYKgAobw/"
-			crossOrigin="anonymous"
+			src="https://unpkg.com/@agility/web-studio-sdk@latest/dist/index.js"
 			strategy="afterInteractive"
 		/>
 	);
