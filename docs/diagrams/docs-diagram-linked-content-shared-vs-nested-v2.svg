@@ -158,5 +158,5 @@
   <text class="f-text2" x="360" y="786" text-anchor="middle" font-size="13">Updates should show everywhere it is used</text>
   <text class="f-primary" x="840" y="742" text-anchor="middle" font-size="14" font-weight="600">When to use nested content</text>
   <text class="f-text2" x="840" y="766" text-anchor="middle" font-size="13">Content is specific to one parent item</text>
-  <text class="f-text2" x="840" y="786" text-anchor="middle" font-size="13">Restoring the parent brings them back</text>
+  <text class="f-text2" x="840" y="786" text-anchor="middle" font-size="13">It means nothing without its parent</text>
 </svg>
