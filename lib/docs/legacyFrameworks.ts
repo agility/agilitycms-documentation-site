@@ -123,6 +123,8 @@ export const LEGACY_ENTRIES: LegacyEntry[] = [
 	  otherwise. Un-archive by deleting the entry once a starter is upgraded.
 	  SvelteKit's articles were rewritten 2026-07-29, but its starter is still on
 	  Kit 2 and SvelteKit 3 shipped 2026-10-01.
+	  TODO: once article 1736 (/developers/why-we-recommend-nextjs-and-dotnet) is
+	  published, point these successors and Nuxt's at it instead of /nextjs.
 	*/
 	...[
 		["/angular", "Angular", "The Angular starter targets Angular 18, which is out of support."],
@@ -139,6 +141,10 @@ export const LEGACY_ENTRIES: LegacyEntry[] = [
 		status: "archived" as const,
 		reason,
 		successor: { text: "See the Next.js guides", href: "/nextjs" },
+		feedback: {
+			text: `If you need ${name}, let us know`,
+			href: `mailto:support@agilitycms.com?subject=${encodeURIComponent(`${name} support in Agility CMS`)}`,
+		},
 	})),
 	{
 		// Kept on purpose (Joel, 2026-10-03): the docs stay up and indexed, with a
