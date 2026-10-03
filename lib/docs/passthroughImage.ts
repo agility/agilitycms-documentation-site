@@ -6,7 +6,9 @@
  * drift apart again. The `AgilityPic` callers (HeroHeading, TextBlocksWithImages) use
  * it too, to withhold `fallbackWidth` from SVGs.
  *
- * - **GIF:** the image service does not support them.
+ * - **GIF:** passed through by choice, not necessity. The image service does resize
+ *   them and keeps every frame (measured 2026-10-03), but `format=auto` never converts
+ *   a GIF, so the ladder would only add requests for little saving.
  * - **SVG:** the image service *rasterizes* them, badly. `?format=auto&w=800` on a
  *   6.5 KB diagram returns an 800px PNG of scrambled colour blocks. Fills set through
  *   `<style>` classes — how AGENTS.md requires diagrams to be built — are ignored,
