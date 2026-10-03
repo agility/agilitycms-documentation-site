@@ -20,6 +20,7 @@ Priority: **P1** blocks publishing or risks a wrong statement in live docs; **P2
 | 10 | P2 | Webhooks: request timeout (437 and 1634 say 30 s, no source); is `webhook-id` sent on unsigned deliveries; workflow event payload shape; egress IPs. | 1737, 437, 1634 |
 | 11 | P2 | Image CDN: is the 5-parameter allowlist (`w`, `h`, `c`, `q`, `format`) intended and the same on every plan? Official size limits? `c=1`/`c=2` size from stored dimensions, which distorted one image: bug? | 1739, 629 |
 | 12 | P2 | Fetch rate limit: per key, instance or IP? Applies to GraphQL and preview? `Retry-After` on 429? | 1742, W2-B |
+| 12b | P2 | Management API: is there a request-rate limit (per token or instance), and a recommended batch size for saves? Can SEO fields on dynamic-page items be written through the API? Is 410 Gone supported for redirections? | 1753, 1766, 1767 |
 | 13 | P2 | Is there a native Markdown field type, or is Markdown a Text field? | 1743 |
 | 14 | P2 | Web Studio: is `app.agilitycms.com` the only framing origin in every region? Which field types can't update live? Will the .NET starters get full Web Studio wiring? | 1748, 1749 |
 | 15 | P3 | Where do Favorites, next/previous, sync status and report export live in the 2026 UI? Export format? | 1745, 1339 |
