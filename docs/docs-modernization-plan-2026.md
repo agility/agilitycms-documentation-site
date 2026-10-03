@@ -43,10 +43,24 @@ Code ships in this PR. Every CMS change is saved to **Staging only**: nothing is
 | Training Guide: 3 diagrams redrawn as dual-theme SVG and swapped into 8 articles, captions updated | 1325, 1327, 1337, 1338, 1346, 1347, 1357, 1358 | Staging |
 | Concept diagrams (workflow, page structure, linked content ×2) and the 9 light-only SVGs (`-v2`) | see PR | Staging |
 | Net-new article research (40 ideas) | [content-suggestions/net-new-articles-2026.md](content-suggestions/net-new-articles-2026.md) | ✅ §7 |
+| Archive the two Pages Router era AWS guides (EC2, Amplify) and the two Next.js Commerce starter articles | `lib/docs/legacyFrameworks.ts` | ✅ code |
+| SVG diagrams only get a border when the editor asks for one | `components/common/blocks/Image.tsx` | ✅ code |
+| Agent and crawler analytics: `docs_agent_request` (pages, `.md`, `llms.txt`, MCP) and `docs_mcp_tool_call` (with zero-hit searches) sent server-side to PostHog; site search event debounced | `lib/analytics/agentTraffic.ts`, `proxy.ts`, `app/api/mcp/route.ts`, `SearchModal.tsx` | ✅ code, production only |
+| PostHog "Docs demand" dashboard | [dashboard 2166160](https://us.posthog.com/project/33241/dashboard/2166160) | ✅ live; agent tiles after merge |
+| Three autonomy levels (Assist / Approve / Autonomous) across the AI articles; governance checklist for full automation; "only unpublish and delete are flagged destructive" corrected | 1720–1728, 3 diagrams | Staging |
+| **Vibe Coding with Agility** section: why per-use-case builds beat generic starters, brief-to-site workflow, AGENTS.md template, MCP gotchas, 10 anonymized playbooks, POC to production. Evidence from 18 POCs, no customer names or code | 1729 (section), 1730–1735, 1721 moved in | Staging |
+| Next.js articles modernized (15), #985 and #480 corrected to the starter as shipped, #480/#749 samples now mirror the starter's real signatures, #749 Fetch list default is 10 | 480, 749, 985 and others | Staging |
+| Tech currency: Node 24 LTS, .NET 10, Gatsby removed from framework lists, http to https, wrong package names (`@agility/decorate`), `sudo npm -g` replaced by `npx` | ~30 articles incl. 257, 280, 285, 550, 915, 1090, 1276, 1405, 1593, 1704 | Staging |
+| **SvelteKit deploy guides: adapters pinned to the Kit 2 majors.** SvelteKit 3 (2026-10-01) makes a plain adapter install fail against the Kit 2 starter | 1211–1214 | Staging, **publish first** |
+| Security and accuracy: nonexistent `agility-cli` NuGet tool removed (squattable); `--insecure` replaced with `NODE_EXTRA_CA_CERTS`; webhook Security Key contradiction fixed (preview key vs per-webhook `whsec_` secret); `standard-webhooks` (not on npm) corrected to `standardwebhooks` | 1387, 1399, 1347, 1364 | Staging |
+| .NET Management SDK 2.0 (stable, .NET 10) documented: install, client, options, and a JS-to-.NET method map | 1608 | Staging |
+| Starter repo: Next 16.3, React 19.3, ESLint 9, Node 24, docs fixed, webhook verification explained in a comment | [agilitycms-nextjs-starter#66](https://github.com/agility/agilitycms-nextjs-starter/pull/66) | Draft PR, needs a real-instance build |
 
 **Not a problem after all:** the Blazor "broken image" is sample markup inside a code block. The `/owners-admins/null` hits don't come from any article, section, landing page or code path; most likely an old link or an off-site referrer. Watch it in PostHog rather than chase it.
 
-**New finding, needs a decision (§9, decision 6):** the published Next.js articles #480 (*How the Next.js Starter Works*) and #985 (*Caching*) say the starter uses Cache Components (`cacheComponents`, `"use cache"`, `cacheTag`). The public starter ([agility/agilitycms-nextjs-starter](https://github.com/agility/agilitycms-nextjs-starter), `main`, Next 16.0.7, last commit 2025-12-15) uses none of them: it caches with fetch tags and `revalidate: 60`. A developer who clones the starter and follows #480 finds different code. The new article 1721 was corrected to describe the starter as it is.
+**Resolved (§9, decision 6):** #480 and #985 said the starter uses Cache Components; it doesn't. Both now describe the starter as shipped, and Cache Components is presented as the upgrade path. The starter PR modernizes dependencies but deliberately doesn't add Cache Components.
+
+**Publish order:** 1211–1214 first (live guides are broken today). 1697 before or with 223. Section 1729 together with its articles, and section 1720 together with the editor AI articles, or the sidebar may not show them.
 
 ---
 
@@ -252,8 +266,12 @@ Full research: [content-suggestions/net-new-articles-2026.md](content-suggestion
 3. **Owners per category.** The Nick drafts incident ([screenshots-needed.md](screenshots-needed.md)) shows "old" doesn't mean "unowned". Name an owner per category before merging or retiring anything.
 4. **Publishing model.** Proposed: Claude drafts to Staging in batches, a named human reviews and publishes. Nothing goes live without that.
 5. **`/docs/ai` timing**: tie to the redesign launch, or publish the hub earlier on the current templates?
-6. **Next.js starter vs the docs** (see Progress): bring the starter up to Cache Components so #480/#985 become true, or correct #480/#985 to describe the starter as shipped and present Cache Components as the upgrade path? Docs are cheaper today; the starter upgrade is better long term.
+6. **Next.js starter vs the docs** (resolved for now: docs corrected, see Progress): bring the starter up to Cache Components so #480/#985 become true, or correct #480/#985 to describe the starter as shipped and present Cache Components as the upgrade path? Docs are cheaper today; the starter upgrade is better long term.
 7. **Unverified product facts** the new AI articles avoided rather than guessed: how to revoke a user's MCP OAuth grant, MCP server token/log retention, whether enforced SSO/MFA applies to MCP sign-in, whether version history marks MCP-made changes. Answers unlock article D3 ("What happens to your data").
+8. **Nuxt section:** the starter is Nuxt 2.15 with a 2021 module. Refresh (needs a Nuxt 4 starter first) or archive?
+9. **Outdated starters:** Angular (18, out of support), SvelteKit (Kit 2), Astro (4), Eleventy (0.11), Nuxt, `@agility/app-sdk` (React 18 peer) and the commercetools app. Upgrade, or archive the docs that point at them? A vibe-coding path may replace some.
+10. **Can the MCP server create sitemaps?** If yes, the workflow article drops the last "a person creates the sitemap" step.
+11. **OAuth refresh token:** 1608 still shows it in the query string; SDK 2.0 sends it in the body to keep it out of logs. Recommend the body form?
 
 
 ---
@@ -284,3 +302,4 @@ Full research: [content-suggestions/net-new-articles-2026.md](content-suggestion
 |---|---|
 | 2026-10-03 | Plan drafted from a full-corpus audit. Screenshots deferred; diagrams and AI/MCP prioritized at Joel's direction. |
 | 2026-10-03 | Executed Phase 0 and most of Phase 1 (see Progress): code fixes in PR #69, 9 new AI articles and 1 section plus 11 article edits saved to Staging, 9 new diagrams and 9 SVG conversions. Net-new research added as §7. |
+| 2026-10-03 | Phase 1 finished and much of Phase 2: autonomy levels, Vibe Coding section, Next.js and tech-currency sweeps, security fixes, .NET SDK 2.0, agent analytics, starter PR #66. Joel: the starter's revalidate route gets a comment only, and the Web Studio SDK stays on `@latest`. |
