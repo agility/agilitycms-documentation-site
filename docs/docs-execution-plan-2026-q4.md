@@ -44,7 +44,7 @@ Drafted with every verifiable fact and an explicit question list. Not publishabl
 
 | Track | Articles | Blocking questions go to |
 |---|---|---|
-| **W3-A Trust** | #30 Shared responsibility model; #31 Security review pack; #35 What happens to your data when you use AI (plan §9 decision 7); #32 Admin go-live checklist; #34 User lifecycle at scale | Security, legal, product |
+| **W3-A Trust** (staged 2026-10-03 as review drafts: section 1772 "Security and Compliance" with 1789, 1792, 1795, 1797, 1799; 38 blocking questions) | #30 Shared responsibility model; #31 Security review pack; #35 What happens to your data when you use AI (plan §9 decision 7); #32 Admin go-live checklist; #34 User lifecycle at scale | Security, legal, product |
 | **W3-B Limits** | #6 Understand your plan's limits and usage, reconciling "unlimited API requests" with the 10 uncached requests per second limit; numbers only from billing | Product, billing |
 | **W3-C Marketing claims** | One questions document for product marketing: Custom API Domain, GDPR, 30-day backups, Content Analytics, nine vs ten roles, unlimited requests, CDN naming on /security, ai12z and Conscia (document or delist), Shopify beyond the archived starter | Product marketing |
 | **W3-D Agent skills** | #36 Install Agility skills for your coding agent: confirm where skills are published before documenting an install command (never a package name that doesn't exist) | Product |
@@ -62,7 +62,7 @@ Drafted with every verifiable fact and an explicit question list. Not publishabl
 | Track | Work |
 |---|---|
 | **W5-A Glossary** | Per-term URLs (`/docs/glossary/<term>`) generated from a glossary content list, with `DefinedTerm` structured data. Pattern 13. |
-| **W5-B Agent plumbing** | "Related pages for agents" in each `.md` twin and `llms.txt` sections per audience. Pattern 11. Measured by `docs_agent_request`. |
+| **W5-B Agent plumbing** (done 2026-10-03: every `.md` twin ends with "Related pages" from its section, linking .md twins, plus the llms.txt index) | "Related pages for agents" in each `.md` twin and `llms.txt` sections per audience. Pattern 11. Measured by `docs_agent_request`. |
 | **W5-C Terminology sweep** | "Page Template" to "Page Model" and "Module" to "Component" in the 31 article bodies, run alone after Waves 1 to 4 so it never collides with another track. |
 | **W5-D Drift checks** | Run the api-spec-drift skill against everything Waves 1 to 4 touched. |
 

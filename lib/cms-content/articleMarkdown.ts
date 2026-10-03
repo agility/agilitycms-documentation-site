@@ -17,12 +17,21 @@ interface ArticleFields {
 	[key: string]: any;
 }
 
+export interface RelatedPage {
+	title: string;
+	/** Absolute URL of the page's .md twin. */
+	url: string;
+}
+
 export const articleToMarkdown = ({
 	fields,
 	canonicalUrl,
+	related = [],
 }: {
 	fields: ArticleFields;
 	canonicalUrl: string;
+	/** Other articles in the same section, for agents to follow next. */
+	related?: RelatedPage[];
 }): string => {
 	const lines: string[] = [];
 
@@ -34,8 +43,24 @@ export const articleToMarkdown = ({
 	lines.push(body.trim());
 	lines.push("");
 
+	// "Related pages for agents" (docs execution plan W5-B, the Vercel/Stripe
+	// pattern): an agent that fetched one .md twin can follow its section
+	// without crawling HTML. Links go to the .md twins, never the HTML pages.
+	lines.push("---");
+	lines.push("");
+	if (related.length > 0) {
+		lines.push("## Related pages");
+		lines.push("");
+		related.forEach((page) => lines.push(`- [${escapeLinkText(page.title)}](${page.url})`));
+		lines.push("");
+	}
+	lines.push("Index of every docs page: https://agilitycms.com/docs/llms.txt");
+	lines.push("");
+
 	return lines.join("\n");
 };
+
+const escapeLinkText = (text: string) => text.replace(/[[\]]/g, "\\$&");
 
 /** Body markdown + the H1 (stripped from the body when the source leads with one). */
 const getArticleBody = (fields: ArticleFields): { body: string; h1: string | null } => {

@@ -48,6 +48,12 @@ Filled in from the W3-A report when it lands; the existing decision 7 questions 
 |---|---|---|---|
 | 23 | P1 | How does a user revoke an MCP OAuth grant? Token and log retention for the MCP server? | 1727, #35 |
 | 24 | P1 | Do enforced SSO/MFA apply to MCP sign-in? Does version history mark MCP-made changes? | 1727, #35 |
+| 25a | P1 | Certifications: /security says SOC 2 "as of December 1, 2021" and PCI compliant; 1450 says a SOC 2 period beginning Aug 31, 2025; 633 says "PCI DSS compliant". Is trust.agilitycms.com the canonical list, and what needs an NDA? Is there a published subprocessor list and a DPA? | 1792, 1450, 633 |
+| 25b | P1 | MCP: where is it hosted and does traffic cross regions? Does it call any LLM or third party itself? Is content used for training? Can an admin disable MCP or allowlist clients? Are Knowledgebase MCP queries logged? | 1795 |
+| 25c | P1 | Editor AI features (2024-12-05 trial): do they exist today, which provider, what data and retention, admin off switch? DeepL app: whose account, retention, region? | 1795 |
+| 25d | P2 | SCIM or JIT provisioning on any plan? Org-level user suspension? Do sessions, OAuth tokens and MCP connections lose access immediately when a user is removed? Can an admin see or revoke another user's PATs? | 1799 |
+| 25e | P2 | Are login-type restrictions and MFA enforcement self-serve (MFA doc still promises a "Q1 2021" Security Centre)? How is a point-in-time restore requested? IP allowlisting, session timeouts, fixed webhook egress IPs? | 1797 |
+| 25f | P2 | Marketplace apps: who is responsible for their security, and are they reviewed before listing? | 1789 |
 | 25 | P1 | Data retention after a subscription ends; assisted export; can users, roles, workflow settings and audit logs be exported? | 1765 |
 
 ## Product marketing
