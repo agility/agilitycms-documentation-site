@@ -73,6 +73,14 @@ export const LEGACY_ENTRIES: LegacyEntry[] = [
 			"These guides date from 2021 and reference Gatsby Cloud, a service that has since shut down.",
 		successor: { text: "See the current framework guides", href: "/developers" },
 	},
+	{
+		// A single article, outside /gatsby, documenting the same dead service.
+		path: "/developers/gatsby-cloud",
+		name: "Gatsby Cloud",
+		status: "archived",
+		reason: "Gatsby Cloud shut down in 2023, so the steps on this page no longer work.",
+		successor: { text: "See the deployment guides", href: "/developers/website-deployment-checklist" },
+	},
 	// SvelteKit was `hidden` here while its articles were unwritten; Phase 2
 	// landed 2026-07-29 (all 10 articles authored + published), so it's back in
 	// the nav. See docs/content-refresh-plan-2026.md §5 Phase 2.

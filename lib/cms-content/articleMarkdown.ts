@@ -123,8 +123,16 @@ export const blocksToMarkdown = (blocks: any[]): string => {
 				break;
 			}
 			case "image": {
-				const url = data.file?.url || "";
-				if (url) out.push(`![${data.caption || ""}](${url})`);
+				// Uploaded filenames carry spaces, parentheses and even U+202F
+				// ("Screenshot … 2.01.22 PM (1).png"); left raw, any of them ends
+				// the link destination early and the image silently disappears.
+				const url = (data.file?.url || "").replace(/[\s()<>]/g, encodeURIComponent);
+				const alt = String(data.caption || "")
+					.replace(/<[^>]*>/g, "")
+					.replace(/\s+/g, " ")
+					.replace(/[[\]]/g, "\\$&")
+					.trim();
+				if (url) out.push(`![${alt}](${url})`);
 				break;
 			}
 			case "delimiter":
