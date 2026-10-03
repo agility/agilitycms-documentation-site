@@ -17,9 +17,11 @@ const Image = ({
     //special case: gifs are not supported by the image service, and svgs get rasterized to a
     //broken png (see lib/docs/passthroughImage.ts)
     if (isSvgImage(file.url)) {
+      //diagrams draw their own frame, so an SVG only gets a border when the editor asked
+      //for one. Raster screenshots keep the unconditional border they have always had.
       return (<div>
         <img
-          className="m-auto border"
+          className={withBorder ? "m-auto border" : "m-auto"}
           src={file.url}
           alt={caption}
           width={file?.size?.width}

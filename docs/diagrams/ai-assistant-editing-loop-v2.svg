@@ -1,0 +1,147 @@
+<svg width="1260" height="610" viewBox="0 0 1260 610" fill="none" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif" role="img" aria-labelledby="t d">
+<title id="t">Editing with an AI assistant: with review or fully automated</title>
+<desc id="d">Both lanes start the same way. A person asks, or a scheduled job triggers the agent. The Agility MCP server, or the Management API for unattended jobs, acts with the permissions of its Agility user, and changes are saved to Staging. With review: you review and preview the change in Agility, with approval if your workflow requires it, then you or an approver publish it. If it is not right, you ask the assistant to change it. Fully automated: automated checks run on the staged change, the agent publishes it when they pass, and a webhook logs and notifies on every publish. If something is wrong, unpublish it or restore an earlier version.</desc>
+  <style>
+    .f-bg{fill:#F1EFE9}
+    .f-border{fill:#E4E0D8}
+    .f-faint{fill:#6E685E}
+    .f-muted{fill:#5E5951}
+    .f-pdim{fill:#015B54}
+    .f-primary{fill:#027970}
+    .f-raised{fill:#FEFDF9}
+    .f-secondary{fill:#295BAC}
+    .f-surface{fill:#FBF9F3}
+    .f-tertiary{fill:#FFCB28}
+    .f-text{fill:#181716}
+    .f-text2{fill:#3B3935}
+    .f-warn{fill:#836400}
+    .s-border{stroke:#E4E0D8}
+    .s-bstrong{stroke:#CFC9BC}
+    .s-primary{stroke:#027970}
+    .s-secondary{stroke:#295BAC}
+    .s-warn{stroke:#836400}
+    .on-teal{fill:#F1EFE9}
+    @media (prefers-color-scheme: dark) {
+      .f-bg{fill:#0E0D0C}
+      .f-border{fill:#302E2B}
+      .f-faint{fill:#989289}
+      .f-muted{fill:#AAA49B}
+      .f-pdim{fill:#026F67}
+      .f-primary{fill:#028D83}
+      .f-raised{fill:#201F1D}
+      .f-secondary{fill:#5989D8}
+      .f-surface{fill:#171615}
+      .f-tertiary{fill:#FFCB28}
+      .f-text{fill:#F1EFE9}
+      .f-text2{fill:#C4BFB5}
+      .f-warn{fill:#F2C23E}
+      .s-border{stroke:#302E2B}
+      .s-bstrong{stroke:#45423E}
+      .s-primary{stroke:#028D83}
+      .s-secondary{stroke:#5989D8}
+      .s-warn{stroke:#F2C23E}
+      .on-teal{fill:#F1EFE9}
+    }
+  </style>
+<rect class="f-bg" width="1260" height="610" rx="4"/>
+<rect class="s-border" x="0.5" y="0.5" width="1259" height="609" rx="4"/>
+<text class="f-muted" x="50" y="60" font-family="ui-monospace, monospace" font-size="13" letter-spacing="4">EDITING WITH AN AI ASSISTANT</text>
+<text class="f-text2" x="50" y="98" font-size="16">Saves land in Staging. Your organization chooses who publishes: a person, or the agent.</text>
+<rect class="f-surface" x="50" y="190" width="160" height="335" rx="2"/>
+<rect class="s-border" x="50.5" y="190.5" width="159" height="334" rx="2"/>
+<rect class="f-secondary" x="50" y="190" width="160" height="3"/>
+<text class="f-faint" x="68" y="220" font-family="ui-monospace, monospace" font-size="12" letter-spacing="2">01</text>
+<text class="f-text" x="68" y="246" font-size="16" font-weight="600">Ask or trigger</text>
+<text class="f-text2" x="68" y="272" font-size="14">A person asks,</text>
+<text class="f-text2" x="68" y="292" font-size="14">or a scheduled</text>
+<text class="f-text2" x="68" y="312" font-size="14">job or event</text>
+<text class="f-text2" x="68" y="332" font-size="14">starts the agent</text>
+<rect class="f-bg" x="66" y="459" width="128" height="48" rx="2"/>
+<text class="f-muted" x="76" y="478" font-family="ui-monospace, monospace" font-size="12">&quot;Fill in missing</text>
+<text class="f-muted" x="76" y="496" font-family="ui-monospace, monospace" font-size="12">descriptions&quot;</text>
+<rect class="f-surface" x="235" y="190" width="160" height="335" rx="2"/>
+<rect class="s-border" x="235.5" y="190.5" width="159" height="334" rx="2"/>
+<rect class="f-tertiary" x="235" y="190" width="160" height="3"/>
+<text class="f-faint" x="253" y="220" font-family="ui-monospace, monospace" font-size="12" letter-spacing="2">02</text>
+<text class="f-text" x="253" y="246" font-size="16" font-weight="600">MCP server</text>
+<text class="f-text2" x="253" y="272" font-size="14">Acts with the</text>
+<text class="f-text2" x="253" y="292" font-size="14">permissions of</text>
+<text class="f-text2" x="253" y="312" font-size="14">its Agility user</text>
+<text class="f-muted" x="253" y="507" font-family="ui-monospace, monospace" font-size="12">or Management API</text>
+<rect class="f-surface" x="420" y="190" width="160" height="335" rx="2"/>
+<rect class="s-border" x="420.5" y="190.5" width="159" height="334" rx="2"/>
+<rect class="f-primary" x="420" y="190" width="160" height="3"/>
+<text class="f-faint" x="438" y="220" font-family="ui-monospace, monospace" font-size="12" letter-spacing="2">03</text>
+<text class="f-text" x="438" y="246" font-size="16" font-weight="600">In Staging</text>
+<text class="f-text2" x="438" y="272" font-size="14">Changes are</text>
+<text class="f-text2" x="438" y="292" font-size="14">saved, not yet</text>
+<text class="f-text2" x="438" y="312" font-size="14">published</text>
+<rect class="f-raised s-bstrong" x="438" y="487" width="73" height="24" rx="2"/>
+<text class="f-text2" x="474.5" y="503" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11">STAGING</text>
+<path class="s-secondary" d="M210 357 L233 357" stroke-width="2"/>
+<path class="f-secondary" d="M235 357 l-9 -6 v12 z"/>
+<path class="s-primary" d="M395 357 L418 357" stroke-width="2"/>
+<path class="f-primary" d="M420 357 l-9 -6 v12 z"/>
+<path class="s-bstrong" d="M580 357 L600 357" stroke-width="2"/>
+<path class="s-secondary" d="M600 357 L600 250 L623 250" stroke-width="2"/>
+<path class="f-secondary" d="M625 250 l-9 -6 v12 z"/>
+<path class="s-primary" d="M600 357 L600 465 L623 465" stroke-width="2"/>
+<path class="f-primary" d="M625 465 l-9 -6 v12 z"/>
+<text class="f-secondary" x="625" y="156" font-family="ui-monospace, monospace" font-size="12" letter-spacing="2">WITH REVIEW</text>
+<text class="f-primary" x="625" y="371" font-family="ui-monospace, monospace" font-size="12" letter-spacing="2">FULLY AUTOMATED</text>
+<rect class="f-surface" x="625" y="170" width="182" height="160" rx="2"/>
+<rect class="s-border" x="625.5" y="170.5" width="181" height="159" rx="2"/>
+<rect class="f-secondary" x="625" y="170" width="182" height="3"/>
+<text class="f-faint" x="643" y="200" font-family="ui-monospace, monospace" font-size="12" letter-spacing="2">04</text>
+<text class="f-text" x="643" y="226" font-size="16" font-weight="600">You review</text>
+<text class="f-text2" x="643" y="252" font-size="14">Check and preview</text>
+<text class="f-text2" x="643" y="272" font-size="14">in Agility</text>
+<rect class="f-raised s-bstrong" x="643" y="292" width="122" height="24" rx="2"/>
+<text class="f-text2" x="704.0" y="308" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11">APPROVAL IF ON</text>
+<rect class="f-surface" x="829" y="170" width="182" height="160" rx="2"/>
+<rect class="s-border" x="829.5" y="170.5" width="181" height="159" rx="2"/>
+<rect class="f-primary" x="829" y="170" width="182" height="3"/>
+<text class="f-faint" x="847" y="200" font-family="ui-monospace, monospace" font-size="12" letter-spacing="2">05</text>
+<text class="f-text" x="847" y="226" font-size="16" font-weight="600">You publish</text>
+<text class="f-text2" x="847" y="252" font-size="14">You or an approver</text>
+<text class="f-text2" x="847" y="272" font-size="14">takes it live</text>
+<rect class="f-pdim" x="847" y="292" width="52" height="24" rx="2"/>
+<text class="on-teal" x="873.0" y="308" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11">LIVE</text>
+<path class="s-secondary" d="M807 250 L827 250" stroke-width="2"/>
+<path class="f-secondary" d="M829 250 l-9 -6 v12 z"/>
+<text class="f-muted" x="1033" y="244" font-size="14">Not right? Ask the</text>
+<text class="f-muted" x="1033" y="264" font-size="14">assistant to change it.</text>
+<rect class="f-surface" x="625" y="385" width="182" height="160" rx="2"/>
+<rect class="s-border" x="625.5" y="385.5" width="181" height="159" rx="2"/>
+<rect class="f-primary" x="625" y="385" width="182" height="3"/>
+<text class="f-faint" x="643" y="415" font-family="ui-monospace, monospace" font-size="12" letter-spacing="2">04</text>
+<text class="f-text" x="643" y="441" font-size="16" font-weight="600">Automated checks</text>
+<text class="f-text2" x="643" y="467" font-size="14">Fields, links and</text>
+<text class="f-text2" x="643" y="487" font-size="14">a preview render</text>
+<rect class="f-raised s-bstrong" x="643" y="507" width="108" height="24" rx="2"/>
+<text class="f-text2" x="697.0" y="523" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11">PASS OR STOP</text>
+<rect class="f-surface" x="829" y="385" width="182" height="160" rx="2"/>
+<rect class="s-border" x="829.5" y="385.5" width="181" height="159" rx="2"/>
+<rect class="f-primary" x="829" y="385" width="182" height="3"/>
+<text class="f-faint" x="847" y="415" font-family="ui-monospace, monospace" font-size="12" letter-spacing="2">05</text>
+<text class="f-text" x="847" y="441" font-size="16" font-weight="600">Agent publishes</text>
+<text class="f-text2" x="847" y="467" font-size="14">When the checks</text>
+<text class="f-text2" x="847" y="487" font-size="14">pass</text>
+<rect class="f-pdim" x="847" y="507" width="52" height="24" rx="2"/>
+<text class="on-teal" x="873.0" y="523" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11">LIVE</text>
+<rect class="f-surface" x="1033" y="385" width="182" height="160" rx="2"/>
+<rect class="s-border" x="1033.5" y="385.5" width="181" height="159" rx="2"/>
+<rect class="f-primary" x="1033" y="385" width="182" height="3"/>
+<text class="f-faint" x="1051" y="415" font-family="ui-monospace, monospace" font-size="12" letter-spacing="2">06</text>
+<text class="f-text" x="1051" y="441" font-size="16" font-weight="600">Webhook</text>
+<text class="f-text2" x="1051" y="467" font-size="14">Logs and notifies</text>
+<text class="f-text2" x="1051" y="487" font-size="14">on every publish</text>
+<rect class="f-raised s-bstrong" x="1051" y="507" width="59" height="24" rx="2"/>
+<text class="f-text2" x="1080.5" y="523" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11">AUDIT</text>
+<path class="s-primary" d="M807 465 L827 465" stroke-width="2"/>
+<path class="f-primary" d="M829 465 l-9 -6 v12 z"/>
+<path class="s-primary" d="M1011 465 L1031 465" stroke-width="2"/>
+<path class="f-primary" d="M1033 465 l-9 -6 v12 z"/>
+<text class="f-warn" x="625" y="593" font-family="ui-monospace, monospace" font-size="12">&#8634; ROLLBACK</text>
+<text class="f-muted" x="725" y="593" font-size="14">Something wrong? Unpublish it, or restore an earlier version.</text>
+</svg>

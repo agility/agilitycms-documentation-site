@@ -81,6 +81,31 @@ export const LEGACY_ENTRIES: LegacyEntry[] = [
 		reason: "Gatsby Cloud shut down in 2023, so the steps on this page no longer work.",
 		successor: { text: "See the deployment guides", href: "/developers/website-deployment-checklist" },
 	},
+	/*
+	  Next.js guides retired 2026-10-03 (recorded as "retire" in
+	  docs/content-refresh-plan-2026.md Phase 4 on 2026-07-29). Both AWS guides
+	  are Pages Router era and pin end-of-life Node versions; Next.js Commerce,
+	  which the commerce starter is built on, is no longer maintained by Vercel.
+	*/
+	...[
+		["/nextjs/deploying-next-js-to-aws-ec2", "AWS EC2"],
+		["/nextjs/deploying-next-js-to-aws-amplify", "AWS Amplify"],
+	].map(([path, host]) => ({
+		path,
+		name: `the ${host} guide`,
+		status: "archived" as const,
+		reason: `This ${host} guide predates the Next.js App Router and pins a Node.js version that is no longer supported.`,
+		successor: { text: "See the current Next.js guides", href: "/nextjs" },
+	})),
+	...["/nextjs/using-the-next-js-commerce-starter", "/nextjs/how-the-next-js-commerce-starter-works"].map(
+		(path) => ({
+			path,
+			name: "the Next.js Commerce starter",
+			status: "archived" as const,
+			reason: "This starter is built on Next.js Commerce, which is no longer maintained.",
+			successor: { text: "See the headless commerce guide", href: "/overview/build-a-headless-ecommerce-website" },
+		})
+	),
 	// SvelteKit was `hidden` here while its articles were unwritten; Phase 2
 	// landed 2026-07-29 (all 10 articles authored + published), so it's back in
 	// the nav. See docs/content-refresh-plan-2026.md §5 Phase 2.
