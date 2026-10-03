@@ -25,7 +25,7 @@ Highest harm first. All facts come from the changelog, the API specs or the live
 | **W1-E Localization** | Whole-locale, page, selection and single-field copy; multi-locale copy and translate; Translation and Initialize APIs; a strategy chooser (field vs page vs instance localization). | Gap 10 | Localization articles | |
 | **W1-F Editor productivity and UI prose** | "Work faster in Agility" (Favorites, next/previous item, page-picker search, sync status, report export, Access Report). Prose (no screenshots) for the 2026 navigation, rail panel, side panels and modals, starting with navigation, plenum-ui and redirect testing. | Gap 4, 13 | Navigation, UI tour, reports, redirect-testing articles | |
 | **W1-G Web Studio** | Framework-agnostic Web Studio setup (script + `data-agility-*` attributes + preview route), a .NET guide, and a troubleshooting page (CSP check, fields that can't update live). | Gap 3 (revised) | Web Studio articles outside /nextjs | |
-| **W1-H Roles** | Roles and permissions matrix (role by action, teams, item-level permissions). Role design recipes for agencies, regional teams and freelancers (#33). Flags the "nine vs ten roles" mismatch for marketing. | Gap 12; #33 | user-permissions and role articles | |
+| **W1-H Roles** | Roles and permissions matrix (role by action, teams, item-level permissions). Role design recipes for agencies, regional teams and freelancers (#33). Flags the "nine vs ten roles" mismatch for marketing. | Gap 12; #33 | user-permissions and role articles | Staged 2026-10-03: new 1740 matrix, 1741 recipes; 421, 776, 769, 439 link them. 16 questions (Q1 to Q10, R1 to R7), incl. which roles the picker offers (docs name 11, marketing says 9) |
 
 ## Wave 2: evaluator, architect and migration content
 
