@@ -1,0 +1,191 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 772" font-family="system-ui, -apple-system, &#39;Segoe UI&#39;, Roboto, sans-serif" role="img" aria-labelledby="t d">
+  <title id="t">The Tab Component pattern</title>
+  <desc id="d">The Tab Component pattern: a linear list of components in the editor renders as grouped tabbed sections on the page. Each Tab component starts a new tab and carries its label.</desc>
+  <!-- Dual-theme (docs convention): colours live in CSS, light is the default,
+       the dark block wins when the page sets color-scheme: dark. -->
+  <style>
+    .f-bg{fill:#F1EFE9}
+    .f-border{fill:#E4E0D8}
+    .f-bstrong{fill:#CFC9BC}
+    .f-faint{fill:#6E685E}
+    .f-muted{fill:#5E5951}
+    .f-raised{fill:#FEFDF9}
+    .f-secondary{fill:#295BAC}
+    .f-surface{fill:#FBF9F3}
+    .f-text{fill:#181716}
+    .f-text2{fill:#3B3935}
+    .on-fill{fill:#FFFFFF}
+    .s-border{stroke:#E4E0D8}
+    .s-bstrong{stroke:#CFC9BC}
+    .s-faint{stroke:#6E685E}
+    .s-secondary{stroke:#295BAC}
+    @media (prefers-color-scheme: dark) {
+      .f-bg{fill:#0E0D0C}
+      .f-border{fill:#302E2B}
+      .f-bstrong{fill:#45423E}
+      .f-faint{fill:#989289}
+      .f-muted{fill:#AAA49B}
+      .f-raised{fill:#201F1D}
+      .f-secondary{fill:#5989D8}
+      .f-surface{fill:#171615}
+      .f-text{fill:#F1EFE9}
+      .f-text2{fill:#C4BFB5}
+      .on-fill{fill:#0E0D0C}
+      .s-border{stroke:#302E2B}
+      .s-bstrong{stroke:#45423E}
+      .s-faint{stroke:#989289}
+      .s-secondary{stroke:#5989D8}
+    }
+  </style>
+  <defs>
+    <marker id="tcArrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="f-faint" d="M0,0 L10,5 L0,10 z"></path>
+    </marker>
+  </defs>
+
+  <rect class="f-surface" width="1180" height="772"></rect>
+
+  
+  <text class="f-text" x="40" y="42" font-size="23" font-weight="700" letter-spacing="-0.3">The Tab Component pattern</text>
+  <text class="f-muted" x="40" y="66" font-size="13.5">One linear list of components in the editor → grouped tabbed sections on the rendered page.</text>
+
+  
+  <rect class="f-raised s-bstrong" x="40" y="92" width="470" height="600" rx="12"></rect>
+  <text class="f-faint" x="62" y="122" font-size="11" font-weight="700" letter-spacing="1.5">PAGE EDITOR</text>
+  <text class="f-faint" x="62" y="138" font-size="11.5">component list, top → bottom</text>
+
+  
+  <rect class="f-bg s-bstrong" x="50" y="150" width="450" height="158" rx="10" stroke-dasharray="4 4"></rect>
+  <text class="f-faint" x="486" y="167" text-anchor="end" font-size="9.5" font-weight="700" letter-spacing="1">TAB 1</text>
+
+  
+  <g transform="translate(62,172)">
+    <rect class="f-raised s-secondary" width="426" height="42" rx="7" stroke-width="1.5"></rect>
+    <rect class="f-secondary" x="0" y="0" width="5" height="42" rx="2.5"></rect>
+    <rect class="f-secondary" x="14" y="10" width="44" height="22" rx="4"></rect>
+    <text class="on-fill" x="36" y="25" text-anchor="middle" font-size="11" font-weight="700">TAB</text>
+    <text class="f-secondary" x="70" y="26" font-size="14" font-weight="600">Overview</text>
+    <rect class="f-surface s-secondary" x="346" y="10" width="72" height="22" rx="11"></rect>
+    <text class="f-secondary" x="382" y="25" text-anchor="middle" font-size="10">Label field</text>
+  </g>
+  
+  <g transform="translate(62,222)">
+    <rect class="f-raised s-border" width="426" height="34" rx="6"></rect>
+    <rect class="f-border" x="12" y="8" width="18" height="18" rx="3"></rect>
+    <text class="f-text2" x="40" y="22" font-size="12.5" font-weight="600">Rich Text</text>
+    <rect class="f-border" x="300" y="14" width="114" height="6" rx="3"></rect>
+  </g>
+  <g transform="translate(62,264)">
+    <rect class="f-raised s-border" width="426" height="34" rx="6"></rect>
+    <rect class="f-border" x="12" y="8" width="18" height="18" rx="3"></rect>
+    <text class="f-text2" x="40" y="22" font-size="12.5" font-weight="600">Image</text>
+    <rect class="f-border" x="300" y="14" width="114" height="6" rx="3"></rect>
+  </g>
+
+  
+  <rect class="f-bg s-bstrong" x="50" y="320" width="450" height="158" rx="10" stroke-dasharray="4 4"></rect>
+  <text class="f-faint" x="486" y="337" text-anchor="end" font-size="9.5" font-weight="700" letter-spacing="1">TAB 2</text>
+
+  <g transform="translate(62,342)">
+    <rect class="f-raised s-secondary" width="426" height="42" rx="7" stroke-width="1.5"></rect>
+    <rect class="f-secondary" x="0" y="0" width="5" height="42" rx="2.5"></rect>
+    <rect class="f-secondary" x="14" y="10" width="44" height="22" rx="4"></rect>
+    <text class="on-fill" x="36" y="25" text-anchor="middle" font-size="11" font-weight="700">TAB</text>
+    <text class="f-secondary" x="70" y="26" font-size="14" font-weight="600">Details</text>
+    <rect class="f-surface s-secondary" x="346" y="10" width="72" height="22" rx="11"></rect>
+    <text class="f-secondary" x="382" y="25" text-anchor="middle" font-size="10">Label field</text>
+  </g>
+  <g transform="translate(62,392)">
+    <rect class="f-raised s-border" width="426" height="34" rx="6"></rect>
+    <rect class="f-border" x="12" y="8" width="18" height="18" rx="3"></rect>
+    <text class="f-text2" x="40" y="22" font-size="12.5" font-weight="600">Rich Text</text>
+    <rect class="f-border" x="300" y="14" width="114" height="6" rx="3"></rect>
+  </g>
+  <g transform="translate(62,434)">
+    <rect class="f-raised s-border" width="426" height="34" rx="6"></rect>
+    <rect class="f-border" x="12" y="8" width="18" height="18" rx="3"></rect>
+    <text class="f-text2" x="40" y="22" font-size="12.5" font-weight="600">Card</text>
+    <rect class="f-border" x="300" y="14" width="114" height="6" rx="3"></rect>
+  </g>
+
+  
+  <rect class="f-bg s-bstrong" x="50" y="490" width="450" height="108" rx="10" stroke-dasharray="4 4"></rect>
+  <text class="f-faint" x="486" y="507" text-anchor="end" font-size="9.5" font-weight="700" letter-spacing="1">TAB 3</text>
+
+  <g transform="translate(62,512)">
+    <rect class="f-raised s-secondary" width="426" height="42" rx="7" stroke-width="1.5"></rect>
+    <rect class="f-secondary" x="0" y="0" width="5" height="42" rx="2.5"></rect>
+    <rect class="f-secondary" x="14" y="10" width="44" height="22" rx="4"></rect>
+    <text class="on-fill" x="36" y="25" text-anchor="middle" font-size="11" font-weight="700">TAB</text>
+    <text class="f-secondary" x="70" y="26" font-size="14" font-weight="600">FAQ</text>
+    <rect class="f-surface s-secondary" x="346" y="10" width="72" height="22" rx="11"></rect>
+    <text class="f-secondary" x="382" y="25" text-anchor="middle" font-size="10">Label field</text>
+  </g>
+  <g transform="translate(62,562)">
+    <rect class="f-raised s-border" width="426" height="34" rx="6"></rect>
+    <rect class="f-border" x="12" y="8" width="18" height="18" rx="3"></rect>
+    <text class="f-text2" x="40" y="22" font-size="12.5" font-weight="600">Accordion</text>
+    <rect class="f-border" x="300" y="14" width="114" height="6" rx="3"></rect>
+  </g>
+
+  
+  <g transform="translate(62,614)">
+    <rect class="f-raised s-bstrong" width="426" height="40" rx="7" stroke-dasharray="5 4"></rect>
+    <text class="f-muted" x="213" y="25" text-anchor="middle" font-size="11.5">+  Add another Tab component to start the next tab</text>
+  </g>
+
+  
+  <g transform="translate(0,0)">
+    <line class="s-faint" x1="514" y1="372" x2="556" y2="372" stroke-width="1.6" marker-end="url(#tcArrow)"></line>
+    <text class="f-muted" x="535" y="360" text-anchor="middle" font-size="11" font-weight="600">renders as</text>
+  </g>
+
+  
+  <rect class="f-raised s-bstrong" x="572" y="92" width="568" height="600" rx="12"></rect>
+  <text class="f-faint" x="594" y="122" font-size="11" font-weight="700" letter-spacing="1.5">RENDERED PAGE</text>
+  <text class="f-faint" x="1118" y="122" text-anchor="end" font-size="11">one tab per Tab component</text>
+
+  
+  <rect class="f-surface s-border" x="594" y="140" width="524" height="50" rx="9"></rect>
+  <rect class="f-secondary" x="604" y="148" width="150" height="34" rx="7"></rect>
+  <text class="on-fill" x="679" y="170" text-anchor="middle" font-size="13" font-weight="600">Overview</text>
+  <rect class="f-raised s-bstrong" x="762" y="148" width="120" height="34" rx="7"></rect>
+  <text class="f-muted" x="822" y="170" text-anchor="middle" font-size="13" font-weight="600">Details</text>
+  <rect class="f-raised s-bstrong" x="890" y="148" width="90" height="34" rx="7"></rect>
+  <text class="f-muted" x="935" y="170" text-anchor="middle" font-size="13" font-weight="600">FAQ</text>
+
+  
+  <rect class="f-raised s-border" x="594" y="204" width="524" height="470" rx="9"></rect>
+  <rect class="f-secondary" x="594" y="204" width="524" height="4" rx="2"></rect>
+
+  
+  <rect class="f-bstrong" x="618" y="234" width="280" height="16" rx="3"></rect>
+  <rect class="f-border" x="618" y="266" width="476" height="8" rx="4"></rect>
+  <rect class="f-border" x="618" y="284" width="476" height="8" rx="4"></rect>
+  <rect class="f-border" x="618" y="302" width="476" height="8" rx="4"></rect>
+  <rect class="f-border" x="618" y="320" width="360" height="8" rx="4"></rect>
+
+  
+  <rect class="f-bg s-border" x="618" y="356" width="232" height="150" rx="6"></rect>
+  <circle class="f-bstrong" cx="668" cy="402" r="14"></circle>
+  <path class="f-bstrong" d="M636 484 L692 432 L724 464 L760 424 L832 484 Z"></path>
+  <text class="f-faint" x="734" y="498" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing="0.5">IMAGE</text>
+
+  
+  <rect class="f-raised s-border" x="870" y="356" width="224" height="150" rx="6"></rect>
+  <rect class="f-border" x="888" y="374" width="22" height="22" rx="4"></rect>
+  <rect class="f-bstrong" x="888" y="408" width="150" height="10" rx="4"></rect>
+  <rect class="f-border" x="888" y="428" width="188" height="7" rx="3.5"></rect>
+  <rect class="f-border" x="888" y="442" width="188" height="7" rx="3.5"></rect>
+  <rect class="f-secondary" x="888" y="468" width="80" height="22" rx="11"></rect>
+  <text class="on-fill" x="928" y="483" text-anchor="middle" font-size="10.5" font-weight="600">Button</text>
+
+  
+  <rect class="f-surface s-border" x="618" y="534" width="476" height="34" rx="6"></rect>
+  <text class="f-faint" x="634" y="555" font-size="11.5">Components keep stacking until the next Tab component appears.</text>
+
+  
+  <rect class="f-surface s-border" x="40" y="708" width="1100" height="48" rx="9"></rect>
+  <text class="f-text2" x="62" y="729" font-size="12.5"><tspan font-weight="700">How it works:</tspan> a Tab component marks the start of a tab and carries its label. Everything added after it — until the next Tab component — becomes that tab&#39;s content.</text>
+  <text class="f-muted" x="62" y="747" font-size="12.5">The same pattern builds accordions and other grouped, collapsible sections — just swap the wrapper the frontend renders.</text>
+</svg>
