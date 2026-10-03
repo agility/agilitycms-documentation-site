@@ -21,6 +21,7 @@ Priority: **P1** blocks publishing or risks a wrong statement in live docs; **P2
 | 11 | P2 | Image CDN: is the 5-parameter allowlist (`w`, `h`, `c`, `q`, `format`) intended and the same on every plan? Official size limits? `c=1`/`c=2` size from stored dimensions, which distorted one image: bug? | 1739, 629 |
 | 12 | P2 | Fetch rate limit: per key, instance or IP? Applies to GraphQL and preview? `Retry-After` on 429? | 1742, W2-B |
 | 12b | P2 | Management API: is there a request-rate limit (per token or instance), and a recommended batch size for saves? Can SEO fields on dynamic-page items be written through the API? Is 410 Gone supported for redirections? | 1753, 1766, 1767 |
+| 12c | P2 | Modeling: is deleting a parent still orphaning nested items (2024 changelog)? Is required/length/regex validation enforced on API and MCP saves? Does renaming a field change its API name? Native tagging (`allowTagging` in the spec)? `[contains]` filter semantics on comma-separated IDs? GraphQL pages/sitemaps support (changelog says yes, article 265 says no)? | 1773, 1777, 1283, 1785, 265 |
 | 13 | P2 | Is there a native Markdown field type, or is Markdown a Text field? | 1743 |
 | 14 | P2 | Web Studio: is `app.agilitycms.com` the only framing origin in every region? Which field types can't update live? Will the .NET starters get full Web Studio wiring? | 1748, 1749 |
 | 15 | P3 | Where do Favorites, next/previous, sync status and report export live in the 2026 UI? Export format? | 1745, 1339 |
