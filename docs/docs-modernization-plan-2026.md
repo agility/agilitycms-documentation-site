@@ -268,10 +268,10 @@ Full research: [content-suggestions/net-new-articles-2026.md](content-suggestion
 5. **`/docs/ai` timing**: tie to the redesign launch, or publish the hub earlier on the current templates?
 6. **Next.js starter vs the docs** (resolved for now: docs corrected, see Progress): bring the starter up to Cache Components so #480/#985 become true, or correct #480/#985 to describe the starter as shipped and present Cache Components as the upgrade path? Docs are cheaper today; the starter upgrade is better long term.
 7. **Unverified product facts** the new AI articles avoided rather than guessed: how to revoke a user's MCP OAuth grant, MCP server token/log retention, whether enforced SSO/MFA applies to MCP sign-in, whether version history marks MCP-made changes. Answers unlock article D3 ("What happens to your data").
-8. **Nuxt section:** the starter is Nuxt 2.15 with a 2021 module. Refresh (needs a Nuxt 4 starter first) or archive?
-9. **Outdated starters:** Angular (18, out of support), SvelteKit (Kit 2), Astro (4), Eleventy (0.11), Nuxt, `@agility/app-sdk` (React 18 peer) and the commercetools app. Upgrade, or archive the docs that point at them? A vibe-coding path may replace some.
-10. **Can the MCP server create sitemaps?** If yes, the workflow article drops the last "a person creates the sitemap" step.
-11. **OAuth refresh token:** 1608 still shows it in the query string; SDK 2.0 sends it in the body to keep it out of logs. Recommend the body form?
+8. **Nuxt section:** decided 2026-10-03: keep it, under a new `outdated` banner that says it covers Nuxt 2, recommends Next.js, and asks readers who need Nuxt to tell us. Stays indexed and in the nav.
+9. **Outdated starters:** decided 2026-10-03: archive unless traffic says otherwise. Angular, Astro, Eleventy and SvelteKit each drew single-digit page views (2026-09-14 to 2026-10-03; Next.js 88), so all four are archived. A new "Why we recommend Next.js and .NET" article explains the choice and invites requests. Still open: `@agility/app-sdk` (React 18 peer) and the commercetools app, which are apps, not site starters.
+10. **Can the MCP server create sitemaps?** No, not at this time (Joel, 2026-10-03). The workflow article's "a person creates the sitemap" step stays.
+11. **OAuth refresh token:** 1608 shows it in the query string, which is also the only form the Management API OpenAPI spec documents (`POST /oauth/refresh?refresh_token=`). SDK 2.0 sends it in the body. Proposed: keep the docs matching the spec, recommend the SDK helper, and ask the API team to document the body form; switch the docs once the spec does.
 
 
 ---
