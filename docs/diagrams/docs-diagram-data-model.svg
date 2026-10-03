@@ -1,0 +1,152 @@
+<svg width="1200" height="580" viewBox="0 0 1200 580" fill="none" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif" role="img" aria-labelledby="t d">
+  <title id="t">The Agility CMS data model</title>
+  <desc id="d">Models define structure: a page model defines content zones, a component model such as PostDetails defines how a post is displayed, and a content model such as Post defines its fields. Each model defines the instances below it. The sitemap maps the URL /blog/first-post to page 4 and content item 6. Page 4 has a content zone that uses a PostDetails component, the component shows Post 6, and the post links to an Author content item.</desc>
+  <!-- Dual-theme, same convention as docs-diagram-headless-architecture.svg. -->
+  <style>
+    .f-bg{fill:#F1EFE9}
+    .f-muted{fill:#5E5951}
+    .f-primary{fill:#027970}
+    .f-raised{fill:#FEFDF9}
+    .f-secondary{fill:#295BAC}
+    .f-surface{fill:#FBF9F3}
+    .f-tertiary{fill:#FFCB28}
+    .f-text{fill:#181716}
+    .f-text2{fill:#3B3935}
+    .s-border{stroke:#E4E0D8}
+    .s-bstrong{stroke:#CFC9BC}
+    .s-primary{stroke:#027970}
+    .s-secondary{stroke:#295BAC}
+    .s-muted{stroke:#5E5951}
+    @media (prefers-color-scheme: dark) {
+      .f-bg{fill:#0E0D0C}
+      .f-muted{fill:#AAA49B}
+      .f-primary{fill:#028D83}
+      .f-raised{fill:#201F1D}
+      .f-secondary{fill:#5989D8}
+      .f-surface{fill:#171615}
+      .f-tertiary{fill:#FFCB28}
+      .f-text{fill:#F1EFE9}
+      .f-text2{fill:#C4BFB5}
+      .s-border{stroke:#302E2B}
+      .s-bstrong{stroke:#45423E}
+      .s-primary{stroke:#028D83}
+      .s-secondary{stroke:#5989D8}
+      .s-muted{stroke:#AAA49B}
+    }
+  </style>
+  <rect class="f-bg" width="1200" height="580" rx="4"/>
+  <rect class="s-border" x="0.5" y="0.5" width="1199" height="579" rx="4"/>
+
+  <text class="f-muted" x="60" y="44" font-family="ui-monospace, monospace" font-size="13" letter-spacing="4">DATA MODEL: MODELS, INSTANCES AND REFERENCES</text>
+
+  <!-- Sitemap -->
+  <rect class="f-surface" x="60" y="90" width="240" height="340" rx="2"/>
+  <rect class="s-bstrong" x="60.5" y="90.5" width="239" height="339" rx="2"/>
+  <rect class="f-primary" x="60" y="90" width="240" height="3"/>
+  <text class="f-text" x="80" y="126" font-size="18" font-weight="600">Sitemap</text>
+  <text class="f-text2" x="80" y="150" font-size="13">Maps each URL to a page</text>
+
+  <rect class="f-raised" x="80" y="170" width="200" height="50" rx="2"/>
+  <rect class="s-border" x="80.5" y="170.5" width="199" height="49" rx="2"/>
+  <text class="f-text" x="96" y="191" font-family="ui-monospace, monospace" font-size="13">/home</text>
+  <text class="f-text2" x="96" y="209" font-size="12">Page 1</text>
+
+  <rect class="f-raised" x="80" y="230" width="200" height="50" rx="2"/>
+  <rect class="s-border" x="80.5" y="230.5" width="199" height="49" rx="2"/>
+  <text class="f-text" x="96" y="251" font-family="ui-monospace, monospace" font-size="13">/about-us</text>
+  <text class="f-text2" x="96" y="269" font-size="12">Page 2</text>
+
+  <rect class="f-raised" x="80" y="290" width="200" height="50" rx="2"/>
+  <rect class="s-border" x="80.5" y="290.5" width="199" height="49" rx="2"/>
+  <text class="f-text" x="96" y="311" font-family="ui-monospace, monospace" font-size="13">/blog</text>
+  <text class="f-text2" x="96" y="329" font-size="12">Page 3</text>
+
+  <rect class="f-raised" x="80" y="350" width="200" height="50" rx="2"/>
+  <rect class="s-primary" x="80.75" y="350.75" width="198.5" height="48.5" rx="2" stroke-width="1.5"/>
+  <text class="f-text" x="96" y="371" font-family="ui-monospace, monospace" font-size="13">/blog/first-post</text>
+  <text class="f-text2" x="96" y="389" font-size="12">Page 4 · content item 6</text>
+
+  <!-- Models row -->
+  <rect class="f-surface" x="350" y="90" width="230" height="90" rx="2"/>
+  <rect class="s-border" x="350.5" y="90.5" width="229" height="89" rx="2"/>
+  <rect class="f-secondary" x="350" y="90" width="230" height="3"/>
+  <text class="f-text" x="370" y="124" font-size="16" font-weight="600">Page model</text>
+  <text class="f-text2" x="370" y="148" font-size="13">Content zones and layout</text>
+  <text class="f-text2" x="370" y="167" font-size="13">Where components can go</text>
+
+  <rect class="f-surface" x="630" y="90" width="230" height="90" rx="2"/>
+  <rect class="s-border" x="630.5" y="90.5" width="229" height="89" rx="2"/>
+  <rect class="f-secondary" x="630" y="90" width="230" height="3"/>
+  <text class="f-text" x="650" y="124" font-size="16" font-weight="600">Component model</text>
+  <text class="f-text2" x="650" y="148" font-size="13">PostDetails</text>
+  <text class="f-text2" x="650" y="167" font-size="13">How a post is displayed</text>
+
+  <rect class="f-surface" x="910" y="90" width="230" height="90" rx="2"/>
+  <rect class="s-border" x="910.5" y="90.5" width="229" height="89" rx="2"/>
+  <rect class="f-secondary" x="910" y="90" width="230" height="3"/>
+  <text class="f-text" x="930" y="124" font-size="16" font-weight="600">Content model</text>
+  <text class="f-text2" x="930" y="148" font-size="13">Post</text>
+  <text class="f-text2" x="930" y="167" font-size="13">Title · date · author · content</text>
+
+  <!-- Models define instances -->
+  <path class="s-secondary" d="M465 180 V232 M745 180 V232 M1025 180 V232" stroke-width="2"/>
+  <path class="f-secondary" d="M465 240 l-6 -10 h12 z M745 240 l-6 -10 h12 z M1025 240 l-6 -10 h12 z"/>
+  <text class="f-muted" x="475" y="214" font-family="ui-monospace, monospace" font-size="11">DEFINES</text>
+  <text class="f-muted" x="755" y="214" font-family="ui-monospace, monospace" font-size="11">DEFINES</text>
+  <text class="f-muted" x="1035" y="214" font-family="ui-monospace, monospace" font-size="11">DEFINES</text>
+
+  <!-- Instances row -->
+  <rect class="f-raised" x="350" y="240" width="230" height="190" rx="2"/>
+  <rect class="s-border" x="350.5" y="240.5" width="229" height="189" rx="2"/>
+  <rect class="f-primary" x="350" y="240" width="230" height="3"/>
+  <text class="f-text" x="370" y="274" font-size="16" font-weight="600">Page 4</text>
+  <text class="f-text2" x="370" y="298" font-size="13">Title · path · description</text>
+  <rect class="f-surface" x="370" y="316" width="190" height="94" rx="2"/>
+  <rect class="s-border" x="370.5" y="316.5" width="189" height="93" rx="2"/>
+  <text class="f-muted" x="384" y="338" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1">MAIN CONTENT ZONE</text>
+  <rect class="f-raised" x="384" y="352" width="162" height="40" rx="2"/>
+  <rect class="s-primary" x="384.75" y="352.75" width="160.5" height="38.5" rx="2" stroke-width="1.5"/>
+  <text class="f-text" x="465" y="377" text-anchor="middle" font-size="13">PostDetails</text>
+
+  <rect class="f-raised" x="630" y="240" width="230" height="100" rx="2"/>
+  <rect class="s-border" x="630.5" y="240.5" width="229" height="99" rx="2"/>
+  <rect class="f-primary" x="630" y="240" width="230" height="3"/>
+  <text class="f-text" x="650" y="274" font-size="16" font-weight="600">Component</text>
+  <text class="f-text2" x="650" y="298" font-size="13">PostDetails on page 4</text>
+  <text class="f-text2" x="650" y="318" font-size="13">Displays Post 6</text>
+
+  <rect class="f-raised" x="910" y="240" width="230" height="100" rx="2"/>
+  <rect class="s-border" x="910.5" y="240.5" width="229" height="99" rx="2"/>
+  <rect class="f-primary" x="910" y="240" width="230" height="3"/>
+  <text class="f-text" x="930" y="274" font-size="16" font-weight="600">Content item 6</text>
+  <text class="f-text2" x="930" y="298" font-size="13">Post: "First Post"</text>
+  <text class="f-text2" x="930" y="318" font-size="13">Title · date · author · content</text>
+
+  <rect class="f-raised" x="910" y="400" width="230" height="70" rx="2"/>
+  <rect class="s-border" x="910.5" y="400.5" width="229" height="69" rx="2"/>
+  <rect class="f-primary" x="910" y="400" width="3" height="70"/>
+  <text class="f-text" x="930" y="430" font-size="16" font-weight="600">Content item</text>
+  <text class="f-text2" x="930" y="453" font-size="13">Author, linked from the post</text>
+
+  <!-- References -->
+  <path class="s-primary" d="M280 375 H342" stroke-width="2"/>
+  <path class="f-primary" d="M350 375 l-10 -6 v12 z"/>
+  <rect class="f-bg" x="303" y="353" width="44" height="14"/>
+  <text class="f-muted" x="325" y="364" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10">URL</text>
+
+  <path class="s-primary" d="M546 372 H612 V290 H622" stroke-width="2" stroke-linejoin="round"/>
+  <path class="f-primary" d="M630 290 l-10 -6 v12 z"/>
+  <text class="f-muted" x="596" y="390" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10">USES</text>
+
+  <path class="s-primary" d="M860 290 H902" stroke-width="2"/>
+  <path class="f-primary" d="M910 290 l-10 -6 v12 z"/>
+  <text class="f-muted" x="885" y="280" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10">SHOWS</text>
+
+  <path class="s-primary" d="M1025 340 V392" stroke-width="2"/>
+  <path class="f-primary" d="M1025 400 l-6 -10 h12 z"/>
+  <text class="f-muted" x="1035" y="374" font-family="ui-monospace, monospace" font-size="11">LINKS TO</text>
+
+  <!-- How to read it -->
+  <text class="f-text2" x="60" y="516" font-size="13">Models (blue) define structure. Instances (teal) hold the actual data. References connect them: the sitemap maps a URL to a page,</text>
+  <text class="f-text2" x="60" y="538" font-size="13">the page's content zone uses components, components display content items, and content items can link to other content items.</text>
+</svg>

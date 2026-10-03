@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import agility from "@agility/content-fetch";
 import nextConfig from "next.config";
 import { defaultLocale, getLocaleFromPathname } from "lib/i18n/config";
 import { apiReferencePaths } from "lib/api-specs/loadSpec";
 import { isDevMode } from "lib/cms/isDevMode";
+import { reportAgentRequest } from "lib/analytics/agentTraffic";
 
 /**
  * Proxy (Next 16's renamed middleware — the middleware.ts convention is
@@ -326,9 +327,16 @@ const notFoundResponse = async (request: NextRequest) => {
 	});
 };
 
-export async function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest, event: NextFetchEvent) {
 	const { nextUrl } = request;
 	const pathname = nextUrl.pathname;
+
+	// Agent and crawler analytics (lib/analytics/agentTraffic.ts). First, so
+	// every outcome below is counted, and handed to waitUntil so it never
+	// delays the response. Production-only and a no-op without a PostHog key.
+	event.waitUntil(
+		reportAgentRequest({ pathname, userAgent: request.headers.get("user-agent"), method: request.method })
+	);
 
 	// 0. IndexNow key verification file. Served at /docs/{key}.txt (pathname
 	//    excludes the basePath) so search engines can verify ownership before

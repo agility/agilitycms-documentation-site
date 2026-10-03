@@ -1,0 +1,188 @@
+<svg width="1200" height="740" viewBox="0 0 1200 740" fill="none" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif" role="img" aria-labelledby="t d">
+  <title id="t">Linked Content field options</title>
+  <desc id="d">A Linked Content field stores the reference name of a content list. Choose Shared content when the content already exists in a list, or Nested content to create a new list owned by each item. Shared content links either the entire list (choose a specific list or let the editor select one, show an embedded view or a link, pick visible columns, and set the sort to default, by field or manual) or specific items from a list (choose a dropdown list, checkbox list or search list box, choose the list, pick the visible column, and save the selected text and content IDs to fields; a checkbox list also sets a column count). Nested content picks a content model, then a list or a single item; a list can show an embedded view, visible columns and a sort.</desc>
+  <!-- Dual-theme, same convention as docs-diagram-headless-architecture.svg: colours live in CSS,
+       light is the default, the dark block wins when the page sets color-scheme: dark. -->
+  <style>
+    .f-bg{fill:#F1EFE9}
+    .f-muted{fill:#5E5951}
+    .f-primary{fill:#027970}
+    .f-raised{fill:#FEFDF9}
+    .f-secondary{fill:#295BAC}
+    .f-surface{fill:#FBF9F3}
+    .f-tertiary{fill:#FFCB28}
+    .f-text{fill:#181716}
+    .f-text2{fill:#3B3935}
+    .s-border{stroke:#E4E0D8}
+    .s-bstrong{stroke:#CFC9BC}
+    .s-primary{stroke:#027970}
+    .s-secondary{stroke:#295BAC}
+    .s-tertiary{stroke:#FFCB28}
+    .s-muted{stroke:#5E5951}
+    .on-fill{fill:#FEFDF9}
+    .s-onfill{stroke:#FEFDF9}
+    @media (prefers-color-scheme: dark) {
+      .f-bg{fill:#0E0D0C}
+      .f-muted{fill:#AAA49B}
+      .f-primary{fill:#028D83}
+      .f-raised{fill:#201F1D}
+      .f-secondary{fill:#5989D8}
+      .f-surface{fill:#171615}
+      .f-tertiary{fill:#FFCB28}
+      .f-text{fill:#F1EFE9}
+      .f-text2{fill:#C4BFB5}
+      .s-border{stroke:#302E2B}
+      .s-bstrong{stroke:#45423E}
+      .s-primary{stroke:#028D83}
+      .s-secondary{stroke:#5989D8}
+      .s-tertiary{stroke:#FFCB28}
+      .s-muted{stroke:#AAA49B}
+      .on-fill{fill:#0E0D0C}
+      .s-onfill{stroke:#0E0D0C}
+    }
+  </style>
+  <rect class="f-bg" width="1200" height="740" rx="4"/>
+  <rect class="s-border" x="0.5" y="0.5" width="1199" height="739" rx="4"/>
+  <text class="f-muted" x="60" y="44" font-family="ui-monospace, monospace" font-size="13" letter-spacing="4">LINKED CONTENT: THE CHOICES YOU MAKE</text>
+
+  <!-- Root -->
+  <rect class="f-raised" x="440" y="70" width="320" height="68" rx="2"/>
+  <rect class="s-bstrong" x="440.5" y="70.5" width="319" height="67" rx="2"/>
+  <rect class="f-primary" x="440" y="70" width="320" height="3"/>
+  <text class="f-text" x="600" y="100" text-anchor="middle" font-size="17" font-weight="600">Linked Content field</text>
+  <text class="f-text2" x="600" y="122" text-anchor="middle" font-size="13">Stores a content list's reference name</text>
+
+  <!-- Branches -->
+  <path class="s-secondary" d="M560 138 V172 H230 V220" stroke-width="2"/>
+  <path class="s-secondary" d="M560 172 H600 V220" stroke-width="2"/>
+  <path class="f-secondary" d="M230 230 l-6 -10 h12 z"/>
+  <path class="f-secondary" d="M600 230 l-6 -10 h12 z"/>
+  <path class="s-primary" d="M640 138 V172 H980 V220" stroke-width="2"/>
+  <path class="f-primary" d="M980 230 l-6 -10 h12 z"/>
+
+  <!-- Group labels -->
+  <text class="f-secondary" x="244" y="204" font-family="ui-monospace, monospace" font-size="12" font-weight="600" letter-spacing="2">SHARED CONTENT</text>
+  <text class="f-primary" x="994" y="204" font-family="ui-monospace, monospace" font-size="12" font-weight="600" letter-spacing="2">NESTED CONTENT</text>
+
+  <!-- Shared: entire list -->
+  <rect class="f-surface" x="60" y="230" width="340" height="470" rx="2"/>
+  <rect class="s-border" x="60.5" y="230.5" width="339" height="469" rx="2"/>
+  <rect class="f-secondary" x="60" y="230" width="340" height="3"/>
+  <text class="f-text" x="82" y="264" font-size="17" font-weight="600">Entire list</text>
+  <text class="f-text2" x="82" y="288" font-size="13">Link to a whole list that</text>
+  <text class="f-text2" x="82" y="306" font-size="13">already exists</text>
+  <text class="f-muted" x="82" y="350" font-family="ui-monospace, monospace" font-size="11">1</text>
+  <text class="f-muted" x="100" y="350" font-family="ui-monospace, monospace" font-size="11" letter-spacing="1">WHICH LIST?</text>
+  <rect class="f-raised" x="82" y="360" width="161" height="28" rx="14"/>
+  <rect class="s-bstrong" x="82.5" y="360.5" width="160" height="27" rx="13.5"/>
+  <text class="f-text" x="162.5625" y="379" text-anchor="middle" font-size="12.5">Specific content list</text>
+  <rect class="f-raised" x="251.125" y="360" width="121" height="28" rx="14"/>
+  <rect class="s-bstrong" x="251.625" y="360.5" width="120" height="27" rx="13.5"/>
+  <text class="f-text" x="311.8125" y="379" text-anchor="middle" font-size="12.5">User selectable</text>
+  <text class="f-muted" x="82" y="420" font-family="ui-monospace, monospace" font-size="11">2</text>
+  <text class="f-muted" x="100" y="420" font-family="ui-monospace, monospace" font-size="11" letter-spacing="1">HOW IT SHOWS</text>
+  <rect class="f-raised" x="82" y="430" width="141" height="28" rx="14"/>
+  <rect class="s-bstrong" x="82.5" y="430.5" width="140" height="27" rx="13.5"/>
+  <text class="f-text" x="152.625" y="449" text-anchor="middle" font-size="12.5">Embedded list view</text>
+  <rect class="f-raised" x="231.25" y="430" width="128" height="28" rx="14"/>
+  <rect class="s-bstrong" x="231.75" y="430.5" width="127" height="27" rx="13.5"/>
+  <text class="f-text" x="295.25" y="449" text-anchor="middle" font-size="12.5">Link to the list</text>
+  <text class="f-muted" x="82" y="490" font-family="ui-monospace, monospace" font-size="11">3</text>
+  <text class="f-muted" x="100" y="490" font-family="ui-monospace, monospace" font-size="11" letter-spacing="1">VISIBLE COLUMNS</text>
+  <rect class="f-raised" x="82" y="500" width="194" height="28" rx="14"/>
+  <rect class="s-bstrong" x="82.5" y="500.5" width="193" height="27" rx="13.5"/>
+  <text class="f-text" x="179.125" y="519" text-anchor="middle" font-size="12.5">Fields to show in the grid</text>
+  <text class="f-muted" x="82" y="560" font-family="ui-monospace, monospace" font-size="11">4</text>
+  <text class="f-muted" x="100" y="560" font-family="ui-monospace, monospace" font-size="11" letter-spacing="1">SORT</text>
+  <rect class="f-raised" x="82" y="570" width="102" height="28" rx="14"/>
+  <rect class="s-bstrong" x="82.5" y="570.5" width="100" height="27" rx="13.5"/>
+  <text class="f-text" x="132.75" y="589" text-anchor="middle" font-size="12.5">Default sort</text>
+  <rect class="f-raised" x="191.5" y="570" width="75" height="28" rx="14"/>
+  <rect class="s-bstrong" x="192.0" y="570.5" width="74" height="27" rx="13.5"/>
+  <text class="f-text" x="229.0" y="589" text-anchor="middle" font-size="12.5">By field</text>
+  <rect class="f-raised" x="274.5" y="570" width="75" height="28" rx="14"/>
+  <rect class="s-bstrong" x="275.0" y="570.5" width="74" height="27" rx="13.5"/>
+  <text class="f-text" x="312.0" y="589" text-anchor="middle" font-size="12.5">Manually</text>
+
+  <!-- Shared: specific items -->
+  <rect class="f-surface" x="420" y="230" width="360" height="470" rx="2"/>
+  <rect class="s-border" x="420.5" y="230.5" width="359" height="469" rx="2"/>
+  <rect class="f-secondary" x="420" y="230" width="360" height="3"/>
+  <text class="f-text" x="442" y="264" font-size="17" font-weight="600">Specific items from a list</text>
+  <text class="f-text2" x="442" y="288" font-size="13">Pick existing items; their content IDs</text>
+  <text class="f-text2" x="442" y="306" font-size="13">are stored in a field on this item</text>
+  <text class="f-muted" x="442" y="350" font-family="ui-monospace, monospace" font-size="11">1</text>
+  <text class="f-muted" x="460" y="350" font-family="ui-monospace, monospace" font-size="11" letter-spacing="1">RENDER UI</text>
+  <rect class="f-raised" x="442" y="360" width="108" height="28" rx="14"/>
+  <rect class="s-bstrong" x="442.5" y="360.5" width="107" height="27" rx="13.5"/>
+  <text class="f-text" x="496.0625" y="379" text-anchor="middle" font-size="12.5">Dropdown list</text>
+  <rect class="f-raised" x="558.125" y="360" width="108" height="28" rx="14"/>
+  <rect class="s-bstrong" x="558.625" y="360.5" width="107" height="27" rx="13.5"/>
+  <text class="f-text" x="612.1875" y="379" text-anchor="middle" font-size="12.5">Checkbox list</text>
+  <rect class="f-raised" x="442" y="396" width="121" height="28" rx="14"/>
+  <rect class="s-bstrong" x="442.5" y="396.5" width="120" height="27" rx="13.5"/>
+  <text class="f-text" x="502.6875" y="415" text-anchor="middle" font-size="12.5">Search list box</text>
+  <text class="f-muted" x="442" y="442" font-size="12">Dropdown: one item. Checkbox and search: many.</text>
+  <text class="f-muted" x="442" y="476" font-family="ui-monospace, monospace" font-size="11">2</text>
+  <text class="f-muted" x="460" y="476" font-family="ui-monospace, monospace" font-size="11" letter-spacing="1">WHICH LIST?</text>
+  <rect class="f-raised" x="442" y="486" width="161" height="28" rx="14"/>
+  <rect class="s-bstrong" x="442.5" y="486.5" width="160" height="27" rx="13.5"/>
+  <text class="f-text" x="522.5625" y="505" text-anchor="middle" font-size="12.5">Specific content list</text>
+  <rect class="f-raised" x="611.125" y="486" width="121" height="28" rx="14"/>
+  <rect class="s-bstrong" x="611.625" y="486.5" width="120" height="27" rx="13.5"/>
+  <text class="f-text" x="671.8125" y="505" text-anchor="middle" font-size="12.5">User selectable</text>
+  <text class="f-muted" x="442" y="546" font-family="ui-monospace, monospace" font-size="11">3</text>
+  <text class="f-muted" x="460" y="546" font-family="ui-monospace, monospace" font-size="11" letter-spacing="1">VISIBLE COLUMN</text>
+  <rect class="f-raised" x="442" y="556" width="188" height="28" rx="14"/>
+  <rect class="s-bstrong" x="442.5" y="556.5" width="187" height="27" rx="13.5"/>
+  <text class="f-text" x="535.8125" y="575" text-anchor="middle" font-size="12.5">Field shown for each item</text>
+  <text class="f-muted" x="442" y="616" font-family="ui-monospace, monospace" font-size="11">4</text>
+  <text class="f-muted" x="460" y="616" font-family="ui-monospace, monospace" font-size="11" letter-spacing="1">SAVE SELECTION TO FIELDS</text>
+  <rect class="f-raised" x="442" y="626" width="141" height="28" rx="14"/>
+  <rect class="s-bstrong" x="442.5" y="626.5" width="140" height="27" rx="13.5"/>
+  <text class="f-text" x="512.625" y="645" text-anchor="middle" font-size="12.5">Save Text to Field</text>
+  <rect class="f-raised" x="591.25" y="626" width="148" height="28" rx="14"/>
+  <rect class="s-bstrong" x="591.75" y="626.5" width="147" height="27" rx="13.5"/>
+  <text class="f-text" x="665.1875" y="645" text-anchor="middle" font-size="12.5">Save Value to Field</text>
+  <text class="f-muted" x="442" y="672" font-size="12">A checkbox list also sets its column count.</text>
+
+  <!-- Nested -->
+  <rect class="f-surface" x="820" y="230" width="320" height="470" rx="2"/>
+  <rect class="s-border" x="820.5" y="230.5" width="319" height="469" rx="2"/>
+  <rect class="f-primary" x="820" y="230" width="320" height="3"/>
+  <text class="f-text" x="842" y="264" font-size="17" font-weight="600">Child / nested list</text>
+  <text class="f-text2" x="842" y="288" font-size="13">Create a new list that belongs</text>
+  <text class="f-text2" x="842" y="306" font-size="13">only to this item</text>
+  <text class="f-muted" x="842" y="350" font-family="ui-monospace, monospace" font-size="11">1</text>
+  <text class="f-muted" x="860" y="350" font-family="ui-monospace, monospace" font-size="11" letter-spacing="1">CONTENT MODEL</text>
+  <rect class="f-raised" x="842" y="360" width="188" height="28" rx="14"/>
+  <rect class="s-bstrong" x="842.5" y="360.5" width="187" height="27" rx="13.5"/>
+  <text class="f-text" x="935.8125" y="379" text-anchor="middle" font-size="12.5">Model for the child items</text>
+  <text class="f-muted" x="842" y="420" font-family="ui-monospace, monospace" font-size="11">2</text>
+  <text class="f-muted" x="860" y="420" font-family="ui-monospace, monospace" font-size="11" letter-spacing="1">LIST OR ITEM?</text>
+  <rect class="f-raised" x="842" y="430" width="48" height="28" rx="14"/>
+  <rect class="s-bstrong" x="842.5" y="430.5" width="48" height="27" rx="13.5"/>
+  <text class="f-text" x="866.25" y="449" text-anchor="middle" font-size="12.5">List</text>
+  <rect class="f-raised" x="898.5" y="430" width="48" height="28" rx="14"/>
+  <rect class="s-bstrong" x="899.0" y="430.5" width="48" height="27" rx="13.5"/>
+  <text class="f-text" x="922.75" y="449" text-anchor="middle" font-size="12.5">Item</text>
+  <text class="f-muted" x="842" y="490" font-family="ui-monospace, monospace" font-size="11">3</text>
+  <text class="f-muted" x="860" y="490" font-family="ui-monospace, monospace" font-size="11" letter-spacing="1">FOR A LIST</text>
+  <rect class="f-raised" x="842" y="500" width="141" height="28" rx="14"/>
+  <rect class="s-bstrong" x="842.5" y="500.5" width="140" height="27" rx="13.5"/>
+  <text class="f-text" x="912.625" y="519" text-anchor="middle" font-size="12.5">Embedded list view</text>
+  <rect class="f-raised" x="991.25" y="500" width="121" height="28" rx="14"/>
+  <rect class="s-bstrong" x="991.75" y="500.5" width="120" height="27" rx="13.5"/>
+  <text class="f-text" x="1051.9375" y="519" text-anchor="middle" font-size="12.5">Visible columns</text>
+  <text class="f-muted" x="842" y="560" font-family="ui-monospace, monospace" font-size="11">4</text>
+  <text class="f-muted" x="860" y="560" font-family="ui-monospace, monospace" font-size="11" letter-spacing="1">SORT</text>
+  <rect class="f-raised" x="842" y="570" width="102" height="28" rx="14"/>
+  <rect class="s-bstrong" x="842.5" y="570.5" width="100" height="27" rx="13.5"/>
+  <text class="f-text" x="892.75" y="589" text-anchor="middle" font-size="12.5">Default sort</text>
+  <rect class="f-raised" x="951.5" y="570" width="75" height="28" rx="14"/>
+  <rect class="s-bstrong" x="952.0" y="570.5" width="74" height="27" rx="13.5"/>
+  <text class="f-text" x="989.0" y="589" text-anchor="middle" font-size="12.5">By field</text>
+  <rect class="f-raised" x="1034.5" y="570" width="75" height="28" rx="14"/>
+  <rect class="s-bstrong" x="1035.0" y="570.5" width="74" height="27" rx="13.5"/>
+  <text class="f-text" x="1072.0" y="589" text-anchor="middle" font-size="12.5">Manually</text>
+</svg>

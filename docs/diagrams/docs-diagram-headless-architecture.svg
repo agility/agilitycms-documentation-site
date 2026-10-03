@@ -1,0 +1,139 @@
+<svg width="1200" height="600" viewBox="0 0 1200 600" fill="none" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif" role="img" aria-labelledby="t d">
+  <title id="t">How content flows through Agility CMS</title>
+  <desc id="d">Agility CMS holds content, pages and media. Publishing makes content available through the Content Fetch API and images through the Asset CDN, which your website and other apps read. A publish webhook tells your site to revalidate. Writes go the other way: AI agents connect through the MCP server, and scripts and CI use the SDKs and CLI, all through the Management API.</desc>
+  <!-- Dual-theme, same convention as docs-diagram-ai-mcp.svg: colours live in CSS,
+       light is the default, the dark block wins when the page sets color-scheme: dark. -->
+  <style>
+    .f-bg{fill:#F1EFE9}
+    .f-muted{fill:#5E5951}
+    .f-primary{fill:#027970}
+    .f-raised{fill:#FEFDF9}
+    .f-secondary{fill:#295BAC}
+    .f-surface{fill:#FBF9F3}
+    .f-tertiary{fill:#FFCB28}
+    .f-text{fill:#181716}
+    .f-text2{fill:#3B3935}
+    .s-border{stroke:#E4E0D8}
+    .s-bstrong{stroke:#CFC9BC}
+    .s-primary{stroke:#027970}
+    .s-secondary{stroke:#295BAC}
+    .s-muted{stroke:#5E5951}
+    @media (prefers-color-scheme: dark) {
+      .f-bg{fill:#0E0D0C}
+      .f-muted{fill:#AAA49B}
+      .f-primary{fill:#028D83}
+      .f-raised{fill:#201F1D}
+      .f-secondary{fill:#5989D8}
+      .f-surface{fill:#171615}
+      .f-tertiary{fill:#FFCB28}
+      .f-text{fill:#F1EFE9}
+      .f-text2{fill:#C4BFB5}
+      .s-border{stroke:#302E2B}
+      .s-bstrong{stroke:#45423E}
+      .s-primary{stroke:#028D83}
+      .s-secondary{stroke:#5989D8}
+      .s-muted{stroke:#AAA49B}
+    }
+  </style>
+  <rect class="f-bg" width="1200" height="600" rx="4"/>
+  <rect class="s-border" x="0.5" y="0.5" width="1199" height="599" rx="4"/>
+
+  <text class="f-muted" x="60" y="44" font-family="ui-monospace, monospace" font-size="13" letter-spacing="4">HEADLESS ARCHITECTURE: HOW CONTENT FLOWS</text>
+
+  <!-- Publish webhook (dashed, over the top) -->
+  <path class="s-muted" d="M200 110 V88 H990 V130" stroke-width="1.5" stroke-dasharray="5 5"/>
+  <path class="f-muted" d="M990 130 l-6 -10 h12 z"/>
+  <rect class="f-bg" x="455" y="76" width="290" height="24"/>
+  <text class="f-muted" x="600" y="93" text-anchor="middle" font-family="ui-monospace, monospace" font-size="12">PUBLISH WEBHOOK → SITE REVALIDATES</text>
+
+  <!-- Column 1: Agility CMS -->
+  <rect class="f-surface" x="60" y="110" width="280" height="430" rx="2"/>
+  <rect class="s-bstrong" x="60.5" y="110.5" width="279" height="429" rx="2"/>
+  <rect class="f-primary" x="60" y="110" width="280" height="3"/>
+  <text class="f-text" x="84" y="150" font-size="18" font-weight="600">Agility CMS</text>
+
+  <rect class="f-raised" x="84" y="170" width="232" height="100" rx="2"/>
+  <rect class="s-border" x="84.5" y="170.5" width="231" height="99" rx="2"/>
+  <text class="f-text" x="104" y="206" font-size="15" font-weight="600">Content &amp; pages</text>
+  <text class="f-text2" x="104" y="230" font-size="12">Models · components · sitemaps</text>
+  <text class="f-text2" x="104" y="249" font-size="12">Locales · workflow · scheduling</text>
+
+  <rect class="f-raised" x="84" y="290" width="232" height="100" rx="2"/>
+  <rect class="s-border" x="84.5" y="290.5" width="231" height="99" rx="2"/>
+  <text class="f-text" x="104" y="326" font-size="15" font-weight="600">Media library</text>
+  <text class="f-text2" x="104" y="350" font-size="12">Images · files · galleries</text>
+
+  <rect class="f-raised" x="84" y="410" width="232" height="100" rx="2"/>
+  <rect class="s-border" x="84.5" y="410.5" width="231" height="99" rx="2"/>
+  <text class="f-text" x="104" y="446" font-size="15" font-weight="600">Web Studio</text>
+  <text class="f-text2" x="104" y="470" font-size="12">Visual editing on your live site</text>
+  <text class="f-text2" x="104" y="489" font-size="12">Preview before you publish</text>
+
+  <!-- Column 2: APIs -->
+  <rect class="f-surface" x="440" y="130" width="300" height="100" rx="2"/>
+  <rect class="s-border" x="440.5" y="130.5" width="299" height="99" rx="2"/>
+  <rect class="f-secondary" x="440" y="130" width="300" height="3"/>
+  <text class="f-text" x="460" y="166" font-size="16" font-weight="600">Content Fetch API</text>
+  <text class="f-text2" x="460" y="190" font-size="13">Published + preview content</text>
+  <text class="f-text2" x="460" y="210" font-size="13">REST &amp; GraphQL · CDN-cached</text>
+
+  <rect class="f-surface" x="440" y="260" width="300" height="80" rx="2"/>
+  <rect class="s-border" x="440.5" y="260.5" width="299" height="79" rx="2"/>
+  <rect class="f-secondary" x="440" y="260" width="300" height="3"/>
+  <text class="f-text" x="460" y="294" font-size="16" font-weight="600">Asset CDN</text>
+  <text class="f-text2" x="460" y="318" font-size="13">On-the-fly image transforms</text>
+
+  <rect class="f-surface" x="440" y="430" width="300" height="120" rx="2"/>
+  <rect class="s-bstrong" x="440.5" y="430.5" width="299" height="119" rx="2"/>
+  <rect class="f-tertiary" x="440" y="430" width="300" height="3"/>
+  <text class="f-text" x="460" y="466" font-size="16" font-weight="600">Management API</text>
+  <text class="f-text2" x="460" y="490" font-size="13">Create · update · publish · delete</text>
+  <text class="f-text2" x="460" y="510" font-size="13">Runs with the caller's permissions</text>
+
+  <!-- Column 3: consumers -->
+  <rect class="f-raised" x="840" y="130" width="300" height="80" rx="2"/>
+  <rect class="s-border" x="840.5" y="130.5" width="299" height="79" rx="2"/>
+  <text class="f-text" x="860" y="164" font-size="16" font-weight="600">Your website</text>
+  <text class="f-text2" x="860" y="188" font-size="13">Next.js · Astro · .NET · and more</text>
+
+  <rect class="f-raised" x="840" y="230" width="300" height="80" rx="2"/>
+  <rect class="s-border" x="840.5" y="230.5" width="299" height="79" rx="2"/>
+  <text class="f-text" x="860" y="264" font-size="16" font-weight="600">Apps &amp; channels</text>
+  <text class="f-text2" x="860" y="288" font-size="13">Mobile · search · other services</text>
+
+  <rect class="f-raised" x="840" y="410" width="300" height="70" rx="2"/>
+  <rect class="s-border" x="840.5" y="410.5" width="299" height="69" rx="2"/>
+  <rect class="f-secondary" x="840" y="410" width="3" height="70"/>
+  <text class="f-text" x="860" y="440" font-size="16" font-weight="600">AI agents</text>
+  <text class="f-text2" x="860" y="463" font-size="13">Claude · ChatGPT · Copilot · Cursor</text>
+
+  <rect class="f-raised" x="840" y="500" width="300" height="60" rx="2"/>
+  <rect class="s-border" x="840.5" y="500.5" width="299" height="59" rx="2"/>
+  <text class="f-text" x="860" y="526" font-size="16" font-weight="600">Scripts &amp; CI</text>
+  <text class="f-text2" x="860" y="547" font-size="13">JS &amp; .NET SDKs · CLI · migrations</text>
+
+  <!-- Read path: CMS → APIs -->
+  <path class="s-primary" d="M340 180 H432" stroke-width="2"/>
+  <path class="f-primary" d="M440 180 l-10 -6 v12 z"/>
+  <text class="f-muted" x="390" y="170" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11">PUBLISH</text>
+  <path class="s-primary" d="M316 300 H432" stroke-width="2"/>
+  <path class="f-primary" d="M440 300 l-10 -6 v12 z"/>
+
+  <!-- Read path: APIs → consumers, via a bus -->
+  <path class="s-secondary" d="M740 180 H790 M740 300 H790 M790 170 V300" stroke-width="2"/>
+  <path class="s-secondary" d="M790 170 H832 M790 270 H832" stroke-width="2"/>
+  <path class="f-secondary" d="M840 170 l-10 -6 v12 z"/>
+  <path class="f-secondary" d="M840 270 l-10 -6 v12 z"/>
+  <text class="f-muted" x="815" y="162" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11">READ</text>
+
+  <!-- Write path: consumers → Management API → CMS -->
+  <path class="s-secondary" d="M840 445 H748" stroke-width="2"/>
+  <path class="f-secondary" d="M740 445 l10 -6 v12 z"/>
+  <rect class="f-bg s-secondary" x="752" y="418" width="76" height="22" rx="11"/>
+  <text class="f-secondary" x="790" y="433" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11">MCP</text>
+  <path class="s-muted" d="M840 530 H748" stroke-width="2"/>
+  <path class="f-muted" d="M740 530 l10 -6 v12 z"/>
+  <path class="s-muted" d="M440 490 H348" stroke-width="2"/>
+  <path class="f-muted" d="M340 490 l10 -6 v12 z"/>
+  <text class="f-muted" x="390" y="480" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11">WRITE</text>
+</svg>

@@ -105,7 +105,9 @@ export async function GET() {
 		const sectionNode = sitemap[sectionPath];
 		const sectionTitle = sectionNode?.title || sectionNode?.menuText || sectionPath.slice(1);
 		out.push(`## ${sectionTitle} articles`, "");
-		children.forEach((p) => out.push(line(p, sitemap[p], true)));
+		// Only article pages have a .md twin; a nested landing page (e.g.
+		// /javascript/management-sdk) has no contentID, and its .md 404s.
+		children.forEach((p) => out.push(line(p, sitemap[p], (sitemap[p].contentID ?? 0) > 0)));
 		out.push("");
 	}
 

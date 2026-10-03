@@ -12,6 +12,7 @@ package that does not exist.
 Ground truth here is the published packages:
   - JavaScript: @agility/management-sdk (npm)  -> parse the shipped .d.ts files
   - .NET:       Agility.Management.SDK (NuGet) -> read the assembly metadata
+                (newest stable by default; 2.x ships lib/net10.0 only)
 
 Read-only. Reports; never edits, publishes, or deletes.
 
@@ -19,6 +20,7 @@ Usage:
     python3 .claude/skills/api-spec-drift/check_sdk_drift.py
     python3 .claude/skills/api-spec-drift/check_sdk_drift.py --matrix
     python3 .claude/skills/api-spec-drift/check_sdk_drift.py --json report.json
+    python3 .claude/skills/api-spec-drift/check_sdk_drift.py --dotnet-version 1.0.12-beta
 
 .NET parsing needs `dnfile` (pip install dnfile). Without it the script still runs
 and still checks everything JavaScript-side, but it will say so rather than
@@ -46,10 +48,11 @@ CACHE = ROOT / ".spec-cache"
 NPM_PKG = "@agility/management-sdk"
 NUGET_PKG = "Agility.Management.SDK"
 
-# The package name the docs currently tell .NET users to install. The assembly
-# inside the package is management.api.sdk.dll, which is where the wrong name
+# The package name the docs once told .NET users to install. The 1.x assembly
+# inside the package was management.api.sdk.dll, which is where the wrong name
 # came from; the *package* id is different, and `dotnet add package
-# management.api.sdk` fails outright.
+# management.api.sdk` fails outright. 2.x renamed the assembly and namespace to
+# Agility.Management.Sdk, so the old name also marks 1.x-era `using` lines.
 NUGET_ASSEMBLY_NAME = "management.api.sdk"
 
 DOC_CONTAINERS = ["ManagementSDKArticles"]
@@ -94,8 +97,19 @@ def strip_alternative(text: str) -> str:
     return text[: m.start()] if m else text
 
 
+def fold(name: str) -> str:
+    """Comparison key for a method name across both SDKs.
+
+    The SDKs differ by convention: camelCase in JavaScript, PascalCase in .NET,
+    and .NET 2.x adds an `Async` suffix to every call (`GetContainerListAsync`).
+    Docs write all three forms, so they must compare equal.
+    """
+    low = name.lower()
+    return low[: -len("async")] if low.endswith("async") and len(low) > 5 else low
+
+
 def _known(names: set[str], js_fold: set[str], net_fold: set[str]) -> set[str]:
-    return {n for n in names if n.lower() in js_fold or n.lower() in net_fold}
+    return {n for n in names if fold(n) in js_fold or fold(n) in net_fold}
 
 
 def candidates(text: str) -> set[str]:
@@ -177,24 +191,37 @@ def parse_js_surface(dist: Path) -> dict[str, dict[str, str]]:
 # ---------------------------------------------------------------------- .NET
 
 
-def fetch_dotnet_sdk(offline: bool = False) -> tuple[Path | None, str | None]:
+def pick_version(versions: list[str]) -> str:
+    """Newest stable version; newest prerelease only when nothing stable exists.
+
+    The flat-container index is sorted oldest to newest and includes prereleases.
+    1.x only ever shipped -beta builds; 2.0.0 was the first stable release.
+    """
+    stable = [v for v in versions if "-" not in v]
+    return (stable or versions)[-1]
+
+
+def fetch_dotnet_sdk(
+    offline: bool = False, version: str | None = None
+) -> tuple[Path | None, str | None]:
     dest = CACHE / "dotnet-sdk"
     if offline:
         dll = next(dest.rglob("*.dll"), None) if dest.is_dir() else None
-        return dll, "cached"
+        stamp = dest / ".version"
+        return dll, (stamp.read_text().strip() if stamp.is_file() else "cached")
 
-    # Flat-container index lists every version, prerelease included. This package
-    # has only ever shipped -beta versions, which is itself worth reporting.
-    try:
-        idx = json.loads(
-            http_get(
-                f"https://api.nuget.org/v3-flatcontainer/{NUGET_PKG.lower()}/index.json"
+    if version is None:
+        # Flat-container index lists every version, prerelease included.
+        try:
+            idx = json.loads(
+                http_get(
+                    f"https://api.nuget.org/v3-flatcontainer/{NUGET_PKG.lower()}/index.json"
+                )
             )
-        )
-    except urllib.error.HTTPError as e:
-        log(f"  !! NuGet lookup for {NUGET_PKG} failed: {e}")
-        return None, None
-    version = idx["versions"][-1]
+        except urllib.error.HTTPError as e:
+            log(f"  !! NuGet lookup for {NUGET_PKG} failed: {e}")
+            return None, None
+        version = pick_version(idx["versions"])
 
     stamp = dest / ".version"
     if stamp.is_file() and stamp.read_text().strip() == version:
@@ -225,7 +252,14 @@ def fetch_dotnet_sdk(offline: bool = False) -> tuple[Path | None, str | None]:
 
 
 def parse_dotnet_surface(dll: Path) -> dict[str, list[str]] | None:
-    """{'ContainerMethods': ['GetContainerList', ...]} or None if dnfile absent.
+    """{'Containers': ['GetContainerListAsync', ...]} or None if dnfile absent.
+
+    2.x (Agility.Management.Sdk.dll): one public `*Client` class per group in
+    the `Agility.Management.Sdk.Clients` namespace, reached through a property
+    on `AgilityManagementClient` (`client.Containers`). Groups are named after
+    that property. 1.x (management.api.sdk.dll): one `*Methods` class per group.
+    The 1.x branch stays so `--dotnet-version 1.0.12-beta` still works for
+    articles that target .NET 6-9, which cannot use 2.x.
 
     Deliberately NOT done with `strings`: the ECMA-335 #Strings heap lets one
     name be stored as a suffix of another, so `strings` never emits
@@ -239,11 +273,9 @@ def parse_dotnet_surface(dll: Path) -> dict[str, list[str]] | None:
 
     d = dnfile.dnPE(str(dll))
     S = lambda h: (h.value if hasattr(h, "value") else str(h)) if h is not None else ""
-    surface: dict[str, list[str]] = {}
-    for t in d.net.mdtables.TypeDef.rows:
-        tn = S(t.TypeName)
-        if not tn.endswith("Methods"):
-            continue
+    types = list(d.net.mdtables.TypeDef.rows)
+
+    def public_methods(t) -> set[str]:
         names = set()
         for m in t.MethodList:
             r = getattr(m, "row", None)
@@ -253,10 +285,37 @@ def parse_dotnet_surface(dll: Path) -> dict[str, list[str]] | None:
             if nm in (".ctor", ".cctor"):
                 continue
             flags = r.Flags
+            # Property getters/setters are special names, not calls.
+            if getattr(flags, "mdSpecialName", False):
+                continue
             if getattr(flags, "mdPublic", True):
                 names.add(nm)
+        return names
+
+    # The group properties on the root client: get_Containers -> "Containers".
+    root_props = {
+        S(m.row.Name)[len("get_"):]
+        for t in types
+        if S(t.TypeName) == "AgilityManagementClient"
+        for m in t.MethodList
+        if getattr(m, "row", None) is not None and S(m.row.Name).startswith("get_")
+    }
+
+    surface: dict[str, list[str]] = {}
+    for t in types:
+        ns, tn = S(t.TypeNamespace), S(t.TypeName)
+        if ns.endswith(".Clients") and tn.endswith("Client"):
+            if not getattr(t.Flags, "tdPublic", True):
+                continue
+            prop = tn[: -len("Client")]
+            group = prop if prop in root_props else tn
+        elif tn.endswith("Methods"):
+            group = tn
+        else:
+            continue
+        names = public_methods(t)
         if names:
-            surface[tn] = sorted(names)
+            surface[group] = sorted(names)
     return surface
 
 
@@ -315,8 +374,9 @@ def check(articles, js, net, net_version, findings):
     js_all = {m for g in js.values() for m in g}
     net_all = {m for g in (net or {}).values() for m in g} if net else set()
     # Case-folded lookup: the two SDKs differ only by convention (camel vs Pascal).
-    js_fold = {m.lower() for m in js_all}
-    net_fold = {m.lower() for m in net_all}
+    js_fold = {fold(m) for m in js_all}
+    net_fold = {fold(m) for m in net_all}
+    net_stable = bool(net_version) and "-" not in net_version and net_version != "cached"
 
     for art in articles:
         f = art.get("fields", {})
@@ -336,7 +396,7 @@ def check(articles, js, net, net_version, findings):
                     kind="bad-package-name",
                     detail=(
                         f"Documents `dotnet add package {NUGET_ASSEMBLY_NAME}`. That is the "
-                        f"assembly name, not the NuGet package id — it 404s. The package is "
+                        f"1.x assembly name, not the NuGet package id, so it 404s. The package is "
                         f"`{NUGET_PKG}`"
                         + (
                             f", and every published version is prerelease "
@@ -345,6 +405,45 @@ def check(articles, js, net, net_version, findings):
                             if net_version and "-" in net_version
                             else "."
                         )
+                    ),
+                )
+            )
+
+        # 1b. Prerelease-era install guidance once a stable release exists.
+        #     `--prerelease` still installs something, so this is not broken,
+        #     but it reads as "this SDK is beta" and hides the 2.x / net10.0
+        #     split. An article that deliberately pins 1.x for .NET 6-9 is fine.
+        if net_stable and re.search(
+            rf"dotnet add package\s+{re.escape(NUGET_PKG)}\b[^\n`]*--prerelease",
+            body,
+            re.IGNORECASE,
+        ):
+            findings.append(
+                dict(
+                    grade="MEDIUM",
+                    article=where,
+                    kind="stale-prerelease-install",
+                    detail=(
+                        f"Tells readers to install `{NUGET_PKG}` with --prerelease, but "
+                        f"{net_version} is stable. 2.x targets net10.0 only; .NET 6-9 "
+                        f"projects stay on 1.x (`--version 1.0.12-beta`). Say which one "
+                        f"the article means."
+                    ),
+                )
+            )
+        if net_stable and re.search(
+            rf"using\s+{re.escape(NUGET_ASSEMBLY_NAME)}\b", body
+        ):
+            findings.append(
+                dict(
+                    grade="MEDIUM",
+                    article=where,
+                    kind="1x-namespace",
+                    detail=(
+                        f"Uses `using {NUGET_ASSEMBLY_NAME}`, the 1.x namespace. "
+                        f"{NUGET_PKG} {net_version} is `Agility.Management.Sdk` with "
+                        f"`AgilityManagementClient`. Correct only if the article "
+                        f"targets 1.x (.NET 6-9)."
                     ),
                 )
             )
@@ -397,9 +496,9 @@ def check(articles, js, net, net_version, findings):
             if len(named) != 1:
                 continue
             for meth in sorted(named):
-                low = meth.lower()
+                low = fold(meth)
                 if claims_js_missing and low in js_fold:
-                    actual = next(m for m in js_all if m.lower() == low)
+                    actual = next(m for m in js_all if fold(m) == low)
                     findings.append(
                         dict(
                             grade="HIGH",
@@ -412,7 +511,7 @@ def check(articles, js, net, net_version, findings):
                         )
                     )
                 if claims_net_missing and net is not None and low in net_fold:
-                    actual = next(m for m in net_all if m.lower() == low)
+                    actual = next(m for m in net_all if fold(m) == low)
                     findings.append(
                         dict(
                             grade="HIGH",
@@ -439,8 +538,8 @@ def check(articles, js, net, net_version, findings):
             # "**Signature:**". `Task<` is unambiguously C#, so it settles the
             # plain case without guessing from position.
             is_dotnet = ".NET" in which or "Task<" in sig
-            if is_dotnet and net is not None and name.lower() not in net_fold:
-                if name.lower() in js_fold:
+            if is_dotnet and net is not None and fold(name) not in net_fold:
+                if fold(name) in js_fold:
                     findings.append(
                         dict(
                             grade="HIGH",
@@ -485,7 +584,7 @@ def check(articles, js, net, net_version, findings):
 
         # 5. Method names documented that exist in neither SDK.
         for meth in sorted(set(BACKTICK_METHOD.findall(body))):
-            if meth.lower() in js_fold or meth.lower() in net_fold:
+            if fold(meth) in js_fold or fold(meth) in net_fold:
                 continue
             # Skip plain JS/helper calls that are obviously not SDK surface.
             if meth in {
@@ -515,18 +614,24 @@ def print_matrix(js, net):
     if net is None:
         log("> .NET column unavailable (dnfile not installed) — JavaScript only.")
         log()
-    net_all = {m.lower(): m for g in (net or {}).values() for m in g} if net else {}
+    if net:
+        log("| .NET group | Methods |")
+        log("|---|---|")
+        for group in sorted(net):
+            log(f"| `{group}` | {len(net[group])} |")
+        log()
+    net_all = {fold(m): m for g in (net or {}).values() for m in g} if net else {}
     log("| Group | JavaScript | .NET |")
     log("|---|---|---|")
     for group in sorted(js):
         for name in sorted(js[group]):
-            hit = net_all.get(name.lower())
+            hit = net_all.get(fold(name))
             log(f"| {group} | `{name}` | {'`' + hit + '`' if hit else '—'} |")
     if net:
-        js_fold = {m.lower() for g in js.values() for m in g}
+        js_fold = {fold(m) for g in js.values() for m in g}
         for group in sorted(net):
             for name in sorted(net[group]):
-                if name.lower() not in js_fold:
+                if fold(name) not in js_fold:
                     log(f"| {group} | — | `{name}` |")
 
 
@@ -536,6 +641,12 @@ def main() -> int:
     ap.add_argument("--matrix", action="store_true", help="print the cross-SDK matrix")
     ap.add_argument("--json", metavar="PATH", help="write findings as JSON")
     ap.add_argument("--containers", default=",".join(DOC_CONTAINERS))
+    ap.add_argument(
+        "--dotnet-version",
+        metavar="VER",
+        help="check against this NuGet version instead of the newest stable "
+        "(e.g. 1.0.12-beta for articles that target .NET 6-9)",
+    )
     args = ap.parse_args()
 
     CACHE.mkdir(exist_ok=True)
@@ -545,10 +656,16 @@ def main() -> int:
     js = parse_js_surface(dist)
     log(f"  JavaScript: {sum(len(v) for v in js.values())} methods in {len(js)} groups")
 
-    dll, net_version = fetch_dotnet_sdk(args.offline)
+    dll, net_version = fetch_dotnet_sdk(args.offline, args.dotnet_version)
     net = parse_dotnet_surface(dll) if dll else None
     if net is None:
         log("  .NET: NOT PARSED — install dnfile (pip install dnfile) for the .NET half.")
+    elif not net:
+        # A parse that finds nothing is a layout change, not a clean SDK. Saying
+        # "0 methods" and carrying on is how this check went blind on 2.0.0.
+        log(f"  .NET: 0 methods found in {dll.name}. The assembly layout is not one "
+            f"this script knows; treat the .NET half as NOT CHECKED.")
+        net = None
     else:
         log(f"  .NET: {sum(len(v) for v in net.values())} methods in {len(net)} groups")
     log()

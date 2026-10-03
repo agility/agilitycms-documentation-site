@@ -1,0 +1,110 @@
+<svg width="1200" height="520" viewBox="0 0 1200 520" fill="none" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif" role="img" aria-labelledby="t d">
+  <title id="t">Approval workflow in Agility CMS</title>
+  <desc id="d">An editor makes changes, which save to Staging, then requests approval. A user with the Publisher role gets a task alert and reviews the changes. If changes are needed, the item goes back to the editor with notes and the editor requests approval again. Once approved, the editor publishes and the changes go live.</desc>
+  <!-- Dual-theme, same convention as docs-diagram-headless-architecture.svg: colours live in CSS,
+       light is the default, the dark block wins when the page sets color-scheme: dark. -->
+  <style>
+    .f-bg{fill:#F1EFE9}
+    .f-muted{fill:#5E5951}
+    .f-primary{fill:#027970}
+    .f-raised{fill:#FEFDF9}
+    .f-secondary{fill:#295BAC}
+    .f-surface{fill:#FBF9F3}
+    .f-tertiary{fill:#FFCB28}
+    .f-text{fill:#181716}
+    .f-text2{fill:#3B3935}
+    .s-border{stroke:#E4E0D8}
+    .s-bstrong{stroke:#CFC9BC}
+    .s-primary{stroke:#027970}
+    .s-secondary{stroke:#295BAC}
+    .s-tertiary{stroke:#FFCB28}
+    .s-muted{stroke:#5E5951}
+    .on-fill{fill:#FEFDF9}
+    .s-onfill{stroke:#FEFDF9}
+    @media (prefers-color-scheme: dark) {
+      .f-bg{fill:#0E0D0C}
+      .f-muted{fill:#AAA49B}
+      .f-primary{fill:#028D83}
+      .f-raised{fill:#201F1D}
+      .f-secondary{fill:#5989D8}
+      .f-surface{fill:#171615}
+      .f-tertiary{fill:#FFCB28}
+      .f-text{fill:#F1EFE9}
+      .f-text2{fill:#C4BFB5}
+      .s-border{stroke:#302E2B}
+      .s-bstrong{stroke:#45423E}
+      .s-primary{stroke:#028D83}
+      .s-secondary{stroke:#5989D8}
+      .s-tertiary{stroke:#FFCB28}
+      .s-muted{stroke:#AAA49B}
+      .on-fill{fill:#0E0D0C}
+      .s-onfill{stroke:#0E0D0C}
+    }
+  </style>
+  <rect class="f-bg" width="1200" height="520" rx="4"/>
+  <rect class="s-border" x="0.5" y="0.5" width="1199" height="519" rx="4"/>
+  <text class="f-muted" x="60" y="44" font-family="ui-monospace, monospace" font-size="13" letter-spacing="4">APPROVALS: FROM EDIT TO PUBLISHED</text>
+
+  <!-- Swim lanes -->
+  <rect class="f-surface" x="60" y="76" width="1080" height="174" rx="2"/>
+  <rect class="s-border" x="60.5" y="76.5" width="1079" height="173" rx="2"/>
+  <text class="f-muted" x="84" y="102" font-family="ui-monospace, monospace" font-size="12" letter-spacing="2">EDITOR</text>
+  <rect class="f-surface" x="60" y="296" width="1080" height="174" rx="2"/>
+  <rect class="s-border" x="60.5" y="296.5" width="1079" height="173" rx="2"/>
+  <text class="f-muted" x="84" y="322" font-family="ui-monospace, monospace" font-size="12" letter-spacing="2">APPROVER</text>
+  <text class="f-muted" x="84" y="340" font-family="ui-monospace, monospace" font-size="11" letter-spacing="1">(PUBLISHER ROLE)</text>
+
+  <!-- Steps -->
+  <rect class="f-raised" x="100" y="116" width="250" height="104" rx="2"/>
+  <rect class="s-bstrong" x="100.5" y="116.5" width="249" height="103" rx="2"/>
+  <rect class="f-secondary" x="100" y="116" width="250" height="3"/>
+  <text class="f-muted" x="120" y="146" font-family="ui-monospace, monospace" font-size="11">01</text>
+  <text class="f-text" x="148" y="146" font-size="16" font-weight="600">Edit content</text>
+  <text class="f-text2" x="120" y="172" font-size="13">Changes save to Staging</text>
+  <text class="f-text2" x="120" y="191" font-size="13">Request approval when ready</text>
+  <rect class="f-raised" x="390" y="340" width="270" height="104" rx="2"/>
+  <rect class="s-bstrong" x="390.5" y="340.5" width="269" height="103" rx="2"/>
+  <rect class="f-tertiary" x="390" y="340" width="270" height="3"/>
+  <text class="f-muted" x="410" y="370" font-family="ui-monospace, monospace" font-size="11">02</text>
+  <text class="f-text" x="438" y="370" font-size="16" font-weight="600">Review</text>
+  <text class="f-text2" x="410" y="396" font-size="13">Publisher gets a task alert</text>
+  <text class="f-text2" x="410" y="415" font-size="13">Approves, or sends it back</text>
+  <text class="f-text2" x="410" y="434" font-size="13">to the editor with notes</text>
+  <rect class="f-raised" x="700" y="116" width="220" height="104" rx="2"/>
+  <rect class="s-bstrong" x="700.5" y="116.5" width="219" height="103" rx="2"/>
+  <rect class="f-secondary" x="700" y="116" width="220" height="3"/>
+  <text class="f-muted" x="720" y="146" font-family="ui-monospace, monospace" font-size="11">03</text>
+  <text class="f-text" x="748" y="146" font-size="16" font-weight="600">Publish</text>
+  <text class="f-text2" x="720" y="172" font-size="13">Editor publishes the</text>
+  <text class="f-text2" x="720" y="191" font-size="13">approved changes</text>
+  <rect class="f-surface" x="960" y="116" width="160" height="104" rx="2"/>
+  <rect class="s-primary" x="960.5" y="116.5" width="159" height="103" rx="2"/>
+  <rect class="f-primary" x="960" y="116" width="160" height="3"/>
+  <circle class="f-primary" cx="990" cy="146" r="12"/>
+  <path class="s-onfill" d="M984 146 l4 4 l8 -8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text class="f-text" x="1010" y="152" font-size="16" font-weight="600">Published</text>
+  <text class="f-text2" x="980" y="182" font-size="13">Changes are live</text>
+  <text class="f-text2" x="980" y="201" font-size="13">on your site</text>
+
+  <!-- Request approval: editor -> approver -->
+  <path class="s-secondary" d="M290 220 V390 H380" stroke-width="2"/>
+  <path class="f-secondary" d="M390 390 l-10 -6 v12 z"/>
+  <text class="f-muted" x="302" y="278" font-family="ui-monospace, monospace" font-size="11">REQUEST APPROVAL</text>
+
+  <!-- Needs changes: approver -> editor (dashed) -->
+  <path class="s-muted" d="M525 340 V168 H360" stroke-width="1.5" stroke-dasharray="5 5"/>
+  <path class="f-muted" d="M350 168 l10 -6 v12 z"/>
+  <text class="f-muted" x="537" y="278" font-family="ui-monospace, monospace" font-size="11">NEEDS CHANGES + NOTES</text>
+
+  <!-- Approved: approver -> editor publishes -->
+  <path class="s-primary" d="M660 390 H810 V230" stroke-width="2"/>
+  <path class="f-primary" d="M810 220 l-6 10 h12 z"/>
+  <text class="f-muted" x="822" y="278" font-family="ui-monospace, monospace" font-size="11">APPROVED</text>
+
+  <!-- Publish -> live -->
+  <path class="s-primary" d="M920 168 H950" stroke-width="2"/>
+  <path class="f-primary" d="M960 168 l-10 -6 v12 z"/>
+
+  <!-- Footnote -->
+  <text class="f-muted" x="60" y="500" font-size="12">Turn on approvals per page (Requires Approval) or per content list (Enable Approval Workflow).</text>
+</svg>

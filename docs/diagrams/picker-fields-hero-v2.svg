@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-labelledby="t d">
+  <title id="t">Picker Fields: icon and color pickers for Agility CMS</title>
+  <desc id="d">The Picker Fields app icon above the name Picker Fields and the tagline Icon and color pickers for Agility CMS, with the six field types listed as pills: Lucide, Heroicons, Font Awesome, Simple Icons, Hex color and Named color.</desc>
+  <!-- Dual-theme (docs convention): colours live in CSS, light is the default,
+       the dark block wins when the page sets color-scheme: dark. -->
+  <style>
+    .f-lit-0f172a{fill:#0F172A}
+    .f-lit-ffffff{fill:#FFFFFF}
+    .f-muted{fill:#5E5951}
+    .f-text{fill:#181716}
+    .f-text2{fill:#3B3935}
+    .s-lit-ffffff{stroke:#FFFFFF}
+    .sc-bg{stop-color:#F1EFE9}
+    .sc-lit-0f172a{stop-color:#0F172A}
+    .sc-lit-334155{stop-color:#334155}
+    .sc-surface{stop-color:#FBF9F3}
+    @media (prefers-color-scheme: dark) {
+      .f-muted{fill:#AAA49B}
+      .f-text{fill:#F1EFE9}
+      .f-text2{fill:#C4BFB5}
+      .sc-bg{stop-color:#0E0D0C}
+      .sc-surface{stop-color:#171615}
+    }
+  </style>
+  <!-- The app icon keeps its own literal artwork colours in both themes (same artwork as public/app-icon.svg). -->
+
+	<defs>
+		<linearGradient id="bg" x1="0" y1="0" x2="0.4" y2="1">
+			<stop class="sc-surface" offset="0" />
+			<stop class="sc-bg" offset="1" />
+		</linearGradient>
+		<linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+			<stop class="sc-lit-334155" offset="0" />
+			<stop class="sc-lit-0f172a" offset="1" />
+		</linearGradient>
+	</defs>
+
+	<rect width="1600" height="900" fill="url(#bg)" />
+
+	<!-- app icon, same artwork as public/app-icon.svg -->
+	<g transform="translate(640 150) scale(0.625)">
+		<rect width="512" height="512" rx="114" fill="url(#tile)" />
+		<rect class="f-lit-ffffff" x="78" y="70" width="150" height="150" rx="38" opacity=".55" />
+		<rect class="f-lit-ffffff" x="264" y="70" width="150" height="150" rx="38" opacity=".30" />
+		<rect class="f-lit-ffffff" x="78" y="256" width="150" height="150" rx="38" opacity=".30" />
+		<rect class="f-lit-ffffff" x="264" y="256" width="150" height="150" rx="38" />
+		<g transform="translate(300 268) scale(5.6)">
+			<path class="f-lit-0f172a s-lit-ffffff" d="M0 0 L0 18.6 L4.35 14.35 L7.45 21.2 L11 19.6 L7.9 13 L13.5 12.55 Z"
+			 stroke-width="2.1" stroke-linejoin="round" />
+		</g>
+	</g>
+
+	<g font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', ui-sans-serif, system-ui, sans-serif" text-anchor="middle">
+		<text class="f-text" x="800" y="570" font-size="86" font-weight="700" letter-spacing="-2">Picker Fields</text>
+		<text class="f-muted" x="800" y="632" font-size="31" font-weight="400">Icon and color pickers for Agility CMS</text>
+	</g>
+
+	<!-- the six field types -->
+	<g class="f-text2" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', ui-sans-serif, system-ui, sans-serif"
+		font-size="21" font-weight="500" text-anchor="middle">
+		<g>
+			<rect class="f-text" x="341" y="712" width="176" height="54" rx="27" opacity=".08" />
+			<text x="429" y="746">Lucide</text>
+		</g>
+		<g>
+			<rect class="f-text" x="533" y="712" width="200" height="54" rx="27" opacity=".08" />
+			<text x="633" y="746">Heroicons</text>
+		</g>
+		<g>
+			<rect class="f-text" x="749" y="712" width="248" height="54" rx="27" opacity=".08" />
+			<text x="873" y="746">Font Awesome</text>
+		</g>
+		<g>
+			<rect class="f-text" x="1013" y="712" width="230" height="54" rx="27" opacity=".08" />
+			<text x="1128" y="746">Simple Icons</text>
+		</g>
+	</g>
+	<g class="f-text2" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', ui-sans-serif, system-ui, sans-serif"
+		font-size="21" font-weight="500" text-anchor="middle">
+		<g>
+			<rect class="f-text" x="620" y="782" width="158" height="54" rx="27" opacity=".08" />
+			<text x="699" y="816">Hex color</text>
+		</g>
+		<g>
+			<rect class="f-text" x="794" y="782" width="186" height="54" rx="27" opacity=".08" />
+			<text x="887" y="816">Named color</text>
+		</g>
+	</g>
+</svg>
