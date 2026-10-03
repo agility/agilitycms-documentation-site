@@ -75,3 +75,4 @@ Waves run in order, tracks within a wave run in parallel. Each track reports a t
 | Date | Entry |
 |---|---|
 | 2026-10-03 | Plan written. Wave 1 started. |
+| 2026-10-03 | Framework decision applied: 1736 "Why We Recommend Next.js and .NET" staged; 250, 114, 445, 280, 446, 1346, 1364 now recommend Next.js or .NET and link 1736 and the Vibe Coding section. **Publish chain:** section 1729 and 1730 to 1735, then 1736, then those seven. Leftovers for W5-C: 446 still links the archived Next.js AWS guides; 445's Next.js Commerce section describes the archived starter; 1348 and 257 (ClassicContent) still show Gatsby install lines. |
