@@ -21,7 +21,8 @@ class of error the specs structurally cannot see:
 
 - `dotnet add package management.api.sdk` — the **assembly** name, not the NuGet
   package id. The command 404s, so the .NET quickstart failed at step one. (The
-  package is `Agility.Management.SDK`, and it only ships prereleases.)
+  package is `Agility.Management.SDK`. At the time it only shipped prereleases;
+  2.0.0 is the first stable release.)
 - Four methods documented as "not available in the JavaScript SDK yet" that the
   JavaScript SDK exports.
 - A whole "Get containers (paged)" section presented as .NET, complete with a
@@ -53,11 +54,20 @@ Regional Management hosts follow the instance GUID suffix (`-u` → `mgmt.aglty.
 | SDK | Package | Ground truth read from |
 |---|---|---|
 | JavaScript | `@agility/management-sdk` (npm, `latest`) | the shipped `dist/apiMethods/*.d.ts` |
-| .NET | `Agility.Management.SDK` (NuGet, newest incl. prerelease) | assembly metadata |
+| .NET | `Agility.Management.SDK` (NuGet, newest stable; prerelease only if no stable exists) | assembly metadata |
 
-The .NET **assembly** is `management.api.sdk.dll` — a different string from the
-package id, and the source of the broken install command. The `using` statement is
-`management.api.sdk`; the `dotnet add package` argument is `Agility.Management.SDK`.
+The .NET package has two incompatible lines:
+
+| Line | Status | Targets | Assembly / namespace | Entry point |
+|---|---|---|---|---|
+| 2.x (2.0.0+) | stable, the default the script checks | `net10.0` only | `Agility.Management.Sdk.dll` / `Agility.Management.Sdk` | `AgilityManagementClient`, with one property per group (`client.Content`, `client.Models`, `client.Containers`, `client.Pages`, `client.Assets`, `client.Batches`, `client.Webhooks`, ...) and `...Async` methods |
+| 1.x (`1.0.x-beta`) | prerelease only | `net6.0` (runs on .NET 6-9) | `management.api.sdk.dll` / `management.api.sdk` | one `*Methods` class per group |
+
+.NET 6-9 projects cannot use 2.x and stay on 1.x (`dotnet add package
+Agility.Management.SDK --version 1.0.12-beta`). Check an article written for 1.x
+with `--dotnet-version 1.0.12-beta`. Either way the `dotnet add package` argument is
+the package id `Agility.Management.SDK`, never the assembly name; the 1.x assembly
+name `management.api.sdk` is what produced the broken install command.
 
 ## Run it
 
@@ -76,10 +86,20 @@ unpublished edits count, and exit non-zero on a HIGH finding.
 `ManagementSDKArticles,JavaScriptArticles,dotNetArticles,DeveloperArticles`),
 `--json report.json`.
 
-`check_sdk_drift.py` options: `--offline`, `--containers`, `--json`, and
-`--matrix` — which prints a verified JavaScript ⇄ .NET method matrix generated from
-the packages. Use `--matrix` when writing or reviewing any cross-SDK availability
-table; it is the only trustworthy source for those columns.
+`check_sdk_drift.py` options: `--offline`, `--containers`, `--json`,
+`--dotnet-version VER` (check a specific NuGet version, e.g. `1.0.12-beta` for a
+1.x article, instead of the newest stable), and `--matrix`, which prints the .NET
+method count per group and a verified JavaScript ⇄ .NET method matrix generated
+from the packages. Use `--matrix` when writing or reviewing any cross-SDK
+availability table; it is the only trustworthy source for those columns. Names are
+compared case-insensitively with the 2.x `Async` suffix ignored, so
+`getContainerList`, `GetContainerList` and `GetContainerListAsync` all match.
+Genuine renames (JavaScript `publishContent` vs .NET 2.x `PublishContentItemAsync`)
+show as two unmatched rows; read those pairs by hand.
+
+If the .NET line reads `0 methods`, the assembly layout changed again (that is
+what happened on 2.0.0). The script then treats the .NET half as not checked;
+fix the parser before trusting a run.
 
 ### After changing either checker, run the control suite
 
@@ -87,7 +107,7 @@ table; it is the only trustworthy source for those columns.
 python3 .claude/skills/api-spec-drift/test_checks.py
 ```
 
-19 cases pinning **both** directions: known-bad wording must flag, known-good
+29 cases pinning **both** directions: known-bad wording must flag, known-good
 wording must stay quiet. It exists because tuning for precision is how a checker
 goes silent — one pass here reported 28 findings that were almost all scoping
 artifacts, and every loosening risked the opposite failure. The flag-cases use the
@@ -170,6 +190,11 @@ Be explicit about these when reporting, so nobody reads a clean run as proof:
 - **.NET argument order and full signatures.** The assembly gives reliable method
   *names*; the articles' `Task<...>` signature lines are not machine-checked beyond
   the method name. Verify those by hand or against the .NET repo.
+- **Which .NET line an article targets.** A run checks one package version. With
+  the 2.x default, 1.x method names in an article written for .NET 6-9 show up as
+  MEDIUM `unknown-dotnet-method`, and `using management.api.sdk` as MEDIUM
+  `1x-namespace`. Decide which line the article means, then re-run with
+  `--dotnet-version` if it is 1.x.
 - **The preview Fetch API is CDN-cached and lags behind a save by minutes.** Both
   scripts read articles through it, so a very recent edit — or a revert — may not be
   reflected. On 2026-07-31 it reported an article still carrying changes that had
@@ -181,8 +206,9 @@ Be explicit about these when reporting, so nobody reads a clean run as proof:
 
 1. **Run both scripts.** Note the spec path/schema counts and the SDK method counts
    — if they change a lot between runs, the API or an SDK moved and a broader review
-   is due. Also note the .NET package version: it has only ever shipped prereleases,
-   so a jump there is worth a full pass over the cross-SDK tables.
+   is due. Also note the .NET package version: 2.0.0 was the first stable release
+   (net10.0 only, new namespace and client), so any major or minor jump there is
+   worth a full pass over the cross-SDK tables and the install instructions.
 2. **Verify every HIGH** by opening the article (`get_content_item`) and reading the
    claim in context. Confirm against the spec before writing it up.
 3. **Triage MEDIUMs** against the false-positive list above.
