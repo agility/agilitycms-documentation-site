@@ -53,8 +53,8 @@ Drafted with every verifiable fact and an explicit question list. Not publishabl
 
 | Track | Articles |
 |---|---|
-| **W4-A Content ops** | #25 Content operations playbook; #26 Writing for structured content; #27 Accessible content checklist; #28 Editorial calendar with scheduling and approvals; #29 Measure what you publish |
-| **W4-B AI practice** | #37 Writing good requests to an AI assistant in Agility; #38 When to use AI and when not to |
+| **W4-A Content ops** (staged 2026-10-03: section 1771 with 1788, 1790, 1791, 1793, 1794) | #25 Content operations playbook; #26 Writing for structured content; #27 Accessible content checklist; #28 Editorial calendar with scheduling and approvals; #29 Measure what you publish |
+| **W4-B AI practice** (staged 2026-10-03 in section 1720: 1796, 1798) | #37 Writing good requests to an AI assistant in Agility; #38 When to use AI and when not to |
 | **W4-C Developer quality** | #24 Test your Agility integration in CI; one page per CLI command (gap: Storyblok has 31) |
 
 ## Wave 5: site features and sweeps (code in this repo)
