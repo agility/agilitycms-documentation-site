@@ -2,6 +2,7 @@ import { getSitemapFlat, SitemapNode } from "lib/cms/getSitemapFlat";
 import { defaultLocale } from "lib/i18n/config";
 import { API_LIST } from "lib/api-specs/registry";
 import { getOperations } from "lib/api-specs/loadSpec";
+import { isNoIndexPath } from "lib/docs/legacyFrameworks";
 
 /**
  * llms.txt (rebuild plan T7) — a machine-readable index of the docs for AI
@@ -41,6 +42,11 @@ export async function GET() {
 		if (node.redirect || node.isFolder) return false;
 		if (node.visible && node.visible.sitemap === false) return false;
 		if (EXCLUDED_PATHS.has(path)) return false;
+		// Archived and superseded pages are noindex for search engines; an agent
+		// index that still lists them sends agents to unmaintained tooling and to
+		// duplicate copies of current guides (lib/docs/legacyFrameworks.ts). The
+		// URLs keep working; they just aren't advertised.
+		if (isNoIndexPath(path)) return false;
 		return true;
 	});
 

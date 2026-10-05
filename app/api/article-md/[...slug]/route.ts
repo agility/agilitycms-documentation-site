@@ -5,6 +5,7 @@ import { getContentItem } from "lib/cms/getContentItem";
 import { articleToMarkdown, type RelatedPage } from "lib/cms-content/articleMarkdown";
 import { gql } from "lib/cms/gql";
 import type { SitemapFlat } from "lib/cms/getSitemapFlat";
+import { isNoIndexPath } from "lib/docs/legacyFrameworks";
 import { defaultLocale, getLocaleFromPathname } from "lib/i18n/config";
 import { isDevMode } from "lib/cms/isDevMode";
 
@@ -113,7 +114,8 @@ const getRelatedPages = async ({
 		return (data?.articles || [])
 			.filter((a: any) => String(a.fields?.section_ValueField) === sectionID)
 			.map((a: any) => ({ title: a.fields?.title, path: pathByContentID.get(a.contentID) }))
-			.filter((a: any) => a.title && a.path && a.path !== path)
+			// Same rule as llms.txt: don't point agents at archived or superseded pages.
+			.filter((a: any) => a.title && a.path && a.path !== path && !isNoIndexPath(a.path))
 			.map((a: any) => ({ title: a.title, url: `https://agilitycms.com/docs${localePrefix}${a.path}.md` }));
 	} catch (error) {
 		console.error("article-md: related pages unavailable", path, error);
