@@ -63,7 +63,7 @@ Drafted with every verifiable fact and an explicit question list. Not publishabl
 |---|---|
 | **W5-A Glossary** | Per-term URLs (`/docs/glossary/<term>`) generated from a glossary content list, with `DefinedTerm` structured data. Pattern 13. |
 | **W5-B Agent plumbing** (done 2026-10-03: every `.md` twin ends with "Related pages" from its section, linking .md twins, plus the llms.txt index) | "Related pages for agents" in each `.md` twin and `llms.txt` sections per audience. Pattern 11. Measured by `docs_agent_request`. |
-| **W5-C Terminology sweep** | "Page Template" to "Page Model" and "Module" to "Component" in the 31 article bodies, run alone after Waves 1 to 4 so it never collides with another track. |
+| **W5-C Terminology sweep** (staged 2026-10-05: 43 articles, 156 replacements; plus fixes in 1333, 1363, 1348, 583, 446, 445, 1059, 1403. Anchors changed in 1615 and 480. Too large to re-send, edit by hand: 257, 624, 204, 1285, 512. 959's label is on the section item; 861 needs its GA screenshot re-checked) | "Page Template" to "Page Model" and "Module" to "Component" in the 31 article bodies, run alone after Waves 1 to 4 so it never collides with another track. |
 | **W5-D Drift checks** | Run the api-spec-drift skill against everything Waves 1 to 4 touched. |
 
 ## Order and capacity
