@@ -331,7 +331,7 @@ const handler = createMcpHandler(
 
 const CORS_HEADERS: Record<string, string> = {
   "access-control-allow-origin": "*",
-  "access-control-allow-methods": "GET, POST, DELETE, OPTIONS",
+  "access-control-allow-methods": "POST, DELETE, OPTIONS",
   "access-control-allow-headers":
     "content-type, accept, authorization, mcp-protocol-version, mcp-session-id",
   "access-control-expose-headers": "mcp-session-id",
@@ -389,7 +389,20 @@ function withMcpHeaders(fn: (req: Request) => Promise<Response>) {
   };
 }
 
-export const GET = withMcpHeaders(handler);
+// GET would open the optional server-to-client event stream. This server is
+// stateless and never pushes messages, and withMcpHeaders buffers event-stream
+// bodies with res.text(), which never finishes on an open stream: GET used to
+// hang and end in a 500. The MCP Streamable HTTP spec lets a server that
+// doesn't offer the stream answer 405, which clients treat as "no stream".
+export function GET(req: Request) {
+  after(() =>
+    reportAgentRequest({ pathname: "/api/mcp", userAgent: req.headers.get("user-agent"), method: req.method })
+  );
+  return new Response("Method Not Allowed. Send JSON-RPC requests with POST.", {
+    status: 405,
+    headers: { ...CORS_HEADERS, allow: "POST, DELETE, OPTIONS" },
+  });
+}
 export const POST = withMcpHeaders(handler);
 export const DELETE = withMcpHeaders(handler);
 

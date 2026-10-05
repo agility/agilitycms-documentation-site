@@ -65,6 +65,15 @@ Filled in from the W3-A report when it lands; the existing decision 7 questions 
 | 35 | P1 | Will Agility publish an official skills package, through which channel (npm, GitHub repo for `npx skills add`, `.well-known/skills`, MCP)? **Reserve `@agility/skills`, `@agility/agent-skills` and a public `agility/skills` repo now**: all free today and squattable. | 1808 |
 | 36 | P3 | Are the public-repo skills (e.g. `agility/nextjs-demo-site-2026` create-blog-post) meant for customers? Is docs.agilitycms.com the long-term host for the Knowledgebase MCP? | 1808 |
 
+## CLI (`@agility/cli` 1.1.0)
+
+| # | Pri | Question | Blocks |
+|---|---|---|---|
+| 37 | P1 | `workflows` with no or an unknown operation **publishes**. Intended? It also acts only on the first locale passed, and its error says `--locale` (the option is `--locales`). | 1804 |
+| 38 | P1 | Unknown flags are silently ignored, so a mistyped `--preflight` runs a real sync. Reject unknown options? | 1802 |
+| 39 | P2 | `pull`, `workflows` and `login` exit 0 when sign-in or validation fails (push/sync were fixed). Intended? | 1800 |
+| 40 | P2 | Only `AGILITY_GUID`, `AGILITY_TARGET_GUID`, `AGILITY_LOCALES`, `AGILITY_TOKEN` from `.env` take effect; other `AGILITY_*` keys are overwritten by defaults. Bug or doc issue? README sync-token paths and `--contentIDs` placement are also wrong; `--help` mentions nonexistent `workflowOperation` and `genenv` commands. | 1800, 1276, 1399 |
+
 ## Product marketing
 
 | # | Pri | Question | Blocks |
