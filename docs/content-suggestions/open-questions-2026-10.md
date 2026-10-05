@@ -74,6 +74,13 @@ Filled in from the W3-A report when it lands; the existing decision 7 questions 
 | 39 | P2 | `pull`, `workflows` and `login` exit 0 when sign-in or validation fails (push/sync were fixed). Intended? | 1800 |
 | 40 | P2 | Only `AGILITY_GUID`, `AGILITY_TARGET_GUID`, `AGILITY_LOCALES`, `AGILITY_TOKEN` from `.env` take effect; other `AGILITY_*` keys are overwritten by defaults. Bug or doc issue? README sync-token paths and `--contentIDs` placement are also wrong; `--help` mentions nonexistent `workflowOperation` and `genenv` commands. | 1800, 1276, 1399 |
 
+## Management SDK and API (from the drift fixes)
+
+| # | Pri | Question | Blocks |
+|---|---|---|---|
+| 41 | P2 | .NET 2.0 `InstanceRole` has both `Role` and `Name`: which one holds "Editor" when saving a user? The 2.0 docs say the instance-user endpoints refuse Personal Access Tokens: confirm, so the docs can say so. | 1612, 1799 |
+| 42 | P2 | Webhook delivery history retention (1617 said 90 days, no source). | 1617, 1737 |
+
 ## Product marketing
 
 | # | Pri | Question | Blocks |
