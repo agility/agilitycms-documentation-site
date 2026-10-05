@@ -329,7 +329,7 @@ const handler = createMcpHandler(
 
 const CORS_HEADERS: Record<string, string> = {
   "access-control-allow-origin": "*",
-  "access-control-allow-methods": "GET, POST, DELETE, OPTIONS",
+  "access-control-allow-methods": "POST, DELETE, OPTIONS",
   "access-control-allow-headers":
     "content-type, accept, authorization, mcp-protocol-version, mcp-session-id",
   "access-control-expose-headers": "mcp-session-id",
@@ -351,7 +351,12 @@ function withMcpHeaders(fn: (req: Request) => Promise<Response>) {
     if (!hasJson || !hasSse) {
       const headers = new Headers(req.headers);
       headers.set("accept", "application/json, text/event-stream");
-      req = new Request(req, { headers });
+      // Rebuild from the buffered body rather than wrapping the original
+      // request: `new Request(req, { headers })` failed in production, so every
+      // POST without both Accept types (no header, `application/json` alone,
+      // `*/*`) got a 500. JSON-RPC bodies are small, so buffering is fine.
+      const body = req.method === "GET" || req.method === "HEAD" ? undefined : await req.text();
+      req = new Request(req.url, { method: req.method, headers, body });
     }
 
     const res = await fn(req);
@@ -382,7 +387,17 @@ function withMcpHeaders(fn: (req: Request) => Promise<Response>) {
   };
 }
 
-export const GET = withMcpHeaders(handler);
+// GET would open the optional server-to-client event stream. This server is
+// stateless and never pushes messages, and withMcpHeaders buffers event-stream
+// bodies with res.text(), which never finishes on an open stream: GET used to
+// hang and end in a 500. The MCP Streamable HTTP spec lets a server that
+// doesn't offer the stream answer 405, which clients treat as "no stream".
+export function GET() {
+  return new Response("Method Not Allowed. Send JSON-RPC requests with POST.", {
+    status: 405,
+    headers: { ...CORS_HEADERS, allow: "POST, DELETE, OPTIONS" },
+  });
+}
 export const POST = withMcpHeaders(handler);
 export const DELETE = withMcpHeaders(handler);
 
