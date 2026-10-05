@@ -123,8 +123,8 @@ export const LEGACY_ENTRIES: LegacyEntry[] = [
 	  otherwise. Un-archive by deleting the entry once a starter is upgraded.
 	  SvelteKit's articles were rewritten 2026-07-29, but its starter is still on
 	  Kit 2 and SvelteKit 3 shipped 2026-10-01.
-	  TODO: once article 1736 (/developers/why-we-recommend-nextjs-and-dotnet) is
-	  published, point these successors and Nuxt's at it instead of /nextjs.
+	  Successors point at article 1736 (published 2026-10-05), which explains the
+	  recommendation and invites requests for other frameworks.
 	*/
 	...[
 		["/angular", "Angular", "The Angular starter targets Angular 18, which is out of support."],
@@ -140,7 +140,7 @@ export const LEGACY_ENTRIES: LegacyEntry[] = [
 		name,
 		status: "archived" as const,
 		reason,
-		successor: { text: "See the Next.js guides", href: "/nextjs" },
+		successor: { text: "See why we recommend Next.js and .NET", href: "/developers/why-we-recommend-nextjs-and-dotnet" },
 		feedback: {
 			text: `If you need ${name}, let us know`,
 			href: `mailto:support@agilitycms.com?subject=${encodeURIComponent(`${name} support in Agility CMS`)}`,
@@ -154,7 +154,7 @@ export const LEGACY_ENTRIES: LegacyEntry[] = [
 		status: "outdated",
 		reason:
 			"These guides and the starter they describe cover Nuxt 2; the current release is Nuxt 4. For new projects we recommend Next.js.",
-		successor: { text: "See the Next.js guides", href: "/nextjs" },
+		successor: { text: "See why we recommend Next.js and .NET", href: "/developers/why-we-recommend-nextjs-and-dotnet" },
 		feedback: {
 			text: "If you need Nuxt, let us know",
 			href: "mailto:support@agilitycms.com?subject=Nuxt%20support%20in%20Agility%20CMS",

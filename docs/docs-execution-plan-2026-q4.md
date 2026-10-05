@@ -70,6 +70,16 @@ Drafted with every verifiable fact and an explicit question list. Not publishabl
 
 Waves run in order, tracks within a wave run in parallel. Each track reports a table of content IDs, what changed, and what it could not verify; those reports update the Status column here and the Progress table in the modernization plan. Publishing stays with Joel or a named reviewer, in this order: Wave 1 first (it corrects live behavior), then sections together with their articles.
 
+## Publish status (2026-10-05)
+
+Joel authorized publishing on 2026-10-05. Published in dependency order (each group only after everything it links to returned 200 on agilitycms.com), computed from a link graph of all 287 pending items:
+
+- **Live:** 262 items, including all eight new sections (AI Assistants, Vibe Coding, Migrating to Agility, Evaluating Agility, Architecture, Content Operations, Glossary; Security and Compliance excepted), every reference article, the Glossary (1810 to 1845), the CLI reference, and all corrections to existing articles. 257's leaked preview key is gone from the live page.
+- **Link check after publishing:** 256 article `.md` twins and 324 unique internal links crawled; all 200 except one pre-existing dead link in archived 536 (fix in progress) and four README-relative links in 479.
+- **Held, review drafts (blocking questions open):** 1761, 1782, 1787, 1789, 1792, 1795, 1797, 1799, 1806, 1808 and section 1772. Links to 1761, 1782 and 1787 were turned into plain text in 1757, 1762, 1763, 1768 and 1774; restore them when the drafts publish (each item's NoteInternal says so; the Related bullets in 1762, 1763 and 1768 were removed and need re-adding).
+- **Not ours, left alone:** 109, 858, 908 (section edits), 131, 441, 1064 (old never-published pages), 1672 (test page), 1251 (/codefeature), 1285, 887, 861, 265, 1703. 1807's link to 1703 is plain text until 1703 is reviewed.
+- **Other live keys found in articles** (not the 257 key; probably demo instances, rotation is the owner's call): 213, 217, 241, 259, 280, 283, 1090.
+
 ## Log
 
 | Date | Entry |
