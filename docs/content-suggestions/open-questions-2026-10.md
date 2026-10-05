@@ -56,6 +56,15 @@ Filled in from the W3-A report when it lands; the existing decision 7 questions 
 | 25f | P2 | Marketplace apps: who is responsible for their security, and are they reviewed before listing? | 1789 |
 | 25 | P1 | Data retention after a subscription ends; assisted export; can users, roles, workflow settings and audit logs be exported? | 1765 |
 
+## Product: limits and agent skills
+
+| # | Pri | Question | Blocks |
+|---|---|---|---|
+| 33 | P1 | Exact sentence reconciling "Unlimited API requests" (pricing) with the documented 10 uncached requests/s. Do CDN-cached responses count toward bandwidth? Preview traffic? | 1806 |
+| 34 | P1 | What happens when an instance exceeds a plan limit: overage charge, throttling, notification, hard stop? Do any technical limits differ by plan? | 1806 |
+| 35 | P1 | Will Agility publish an official skills package, through which channel (npm, GitHub repo for `npx skills add`, `.well-known/skills`, MCP)? **Reserve `@agility/skills`, `@agility/agent-skills` and a public `agility/skills` repo now**: all free today and squattable. | 1808 |
+| 36 | P3 | Are the public-repo skills (e.g. `agility/nextjs-demo-site-2026` create-blog-post) meant for customers? Is docs.agilitycms.com the long-term host for the Knowledgebase MCP? | 1808 |
+
 ## Product marketing
 
 | # | Pri | Question | Blocks |
