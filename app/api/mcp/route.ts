@@ -358,10 +358,10 @@ function withMcpHeaders(fn: (req: Request) => Promise<Response>) {
     if (!hasJson || !hasSse) {
       const headers = new Headers(req.headers);
       headers.set("accept", "application/json, text/event-stream");
-      // Rebuild from the buffered body: `new Request(req, { headers })` on a
-      // request with a streamed body throws in Node unless `duplex: "half"`
-      // is set, which turned every such POST into a 500 (production, until
-      // 2026-10-05). JSON-RPC bodies are small, so buffering is fine.
+      // Rebuild from the buffered body rather than wrapping the original
+      // request: `new Request(req, { headers })` failed in production, so every
+      // POST without both Accept types (no header, `application/json` alone,
+      // `*/*`) got a 500. JSON-RPC bodies are small, so buffering is fine.
       const body = req.method === "GET" || req.method === "HEAD" ? undefined : await req.text();
       req = new Request(req.url, { method: req.method, headers, body });
     }
