@@ -125,6 +125,15 @@ const handler = createMcpHandler(
               query,
               page: page || 0,
               hitsPerPage: 10,
+              // Agents ask in sentences ("how do I schedule content to publish
+              // later"), and by default every word must match, so most such
+              // questions returned 0 hits. Drop filler words, fold plurals, and
+              // when the full query still matches nothing, let Algolia relax
+              // words instead of returning an empty result.
+              queryLanguages: ["en"],
+              removeStopWords: true,
+              ignorePlurals: true,
+              removeWordsIfNoResults: "allOptional",
               attributesToSnippet: ["body:50"],
               snippetEllipsisText: "...",
               attributesToRetrieve: [
