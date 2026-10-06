@@ -1,0 +1,272 @@
+<svg class="c-text" width="100%" style="max-width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="t d">
+  <title id="t">Social autopost, no-code: publish once, post everywhere</title>
+  <desc id="d">No-code social autopost pipeline: Agility publishes, automation posts to social channels. Five steps: an editor publishes in Agility, the publish webhook fires, an automation tool (Zapier, Make or n8n) catches and filters it, formats per-channel copy, and posts to LinkedIn and X via the Buffer API.</desc>
+  <!-- Dual-theme (docs convention): colours live in CSS, light is the default,
+       the dark block wins when the page sets color-scheme: dark. -->
+  <style>
+    :root{--k-agility:#FFCB28;--k-code:#295BAC;--k-idle:#3B3935;--k-social:#181716;}
+    .c-secondary{color:#295BAC}
+    .c-tertiary{color:#FFCB28}
+    .c-text{color:#181716}
+    .f-bg{fill:#F1EFE9}
+    .f-border{fill:#E4E0D8}
+    .f-bstrong{fill:#CFC9BC}
+    .f-muted{fill:#5E5951}
+    .f-ok{fill:#1A6E36}
+    .f-raised{fill:#FEFDF9}
+    .f-secondary{fill:#295BAC}
+    .f-surface{fill:#FBF9F3}
+    .f-tertiary{fill:#FFCB28}
+    .f-text{fill:#181716}
+    .f-text2{fill:#3B3935}
+    .f-warn{fill:#836400}
+    .fl-lit-000{flood-color:#000}
+    .on-fill{fill:#FFFFFF}
+    .on-yellow{fill:#0E0D0C}
+    .s-border{stroke:#E4E0D8}
+    .s-bstrong{stroke:#CFC9BC}
+    .s-onfill{stroke:#FFFFFF}
+    .s-secondary{stroke:#295BAC}
+    .s-tertiary{stroke:#FFCB28}
+    .s-text{stroke:#181716}
+    @media (prefers-color-scheme: dark) {
+      :root{--k-agility:#FFCB28;--k-code:#5989D8;--k-idle:#C4BFB5;--k-social:#F1EFE9;}
+      .c-secondary{color:#5989D8}
+      .c-tertiary{color:#FFCB28}
+      .c-text{color:#F1EFE9}
+      .f-bg{fill:#0E0D0C}
+      .f-border{fill:#302E2B}
+      .f-bstrong{fill:#45423E}
+      .f-muted{fill:#AAA49B}
+      .f-ok{fill:#79C06B}
+      .f-raised{fill:#201F1D}
+      .f-secondary{fill:#5989D8}
+      .f-surface{fill:#171615}
+      .f-tertiary{fill:#FFCB28}
+      .f-text{fill:#F1EFE9}
+      .f-text2{fill:#C4BFB5}
+      .f-warn{fill:#F2C23E}
+      .on-fill{fill:#0E0D0C}
+      .on-yellow{fill:#0E0D0C}
+      .s-border{stroke:#302E2B}
+      .s-bstrong{stroke:#45423E}
+      .s-onfill{stroke:#0E0D0C}
+      .s-secondary{stroke:#5989D8}
+      .s-tertiary{stroke:#FFCB28}
+      .s-text{stroke:#F1EFE9}
+    }
+  </style>
+<style>
+@keyframes s1-caret { 0%,50%{opacity:1} 51%,100%{opacity:0} }
+@keyframes s1-upload { 0%{width:0} 60%{width:200px} 100%{width:200px} }
+@keyframes s1-ping { 0%{r:3.5;opacity:1} 70%{r:10;opacity:0} 100%{r:3.5;opacity:0} }
+@keyframes s1-arr-1 { 0%,5%{opacity:0} 15%{opacity:1} 30%,100%{opacity:0} }
+@keyframes s1-arr-2 { 0%,25%{opacity:0} 35%{opacity:1} 50%,100%{opacity:0} }
+@keyframes s1-arr-3 { 0%,45%{opacity:0} 55%{opacity:1} 70%,100%{opacity:0} }
+@keyframes s1-arr-4 { 0%,65%{opacity:0} 75%{opacity:1} 90%,100%{opacity:0} }
+@keyframes s1-stage1 { 0%,5%{opacity:.45;stroke:var(--k-idle);stroke-width:2} 10%,22%{opacity:1;stroke:var(--k-agility);stroke-width:4} 30%,100%{opacity:.45;stroke:var(--k-idle);stroke-width:2} }
+@keyframes s1-stage2 { 0%,25%{opacity:.45;stroke:var(--k-idle);stroke-width:2} 30%,42%{opacity:1;stroke:var(--k-agility);stroke-width:4} 50%,100%{opacity:.45;stroke:var(--k-idle);stroke-width:2} }
+@keyframes s1-stage3 { 0%,45%{opacity:.45;stroke:var(--k-idle);stroke-width:2} 50%,62%{opacity:1;stroke:var(--k-code);stroke-width:4} 70%,100%{opacity:.45;stroke:var(--k-idle);stroke-width:2} }
+@keyframes s1-stage4 { 0%,65%{opacity:.45;stroke:var(--k-idle);stroke-width:2} 72%,84%{opacity:1;stroke:var(--k-code);stroke-width:4} 92%,100%{opacity:.45;stroke:var(--k-idle);stroke-width:2} }
+@keyframes s1-stage5 { 0%,85%{opacity:.45;stroke:var(--k-idle);stroke-width:2} 92%,100%{opacity:1;stroke:var(--k-social);stroke-width:4} }
+.s1-caret { animation: s1-caret 1s infinite; }
+.s1-upload { animation: s1-upload 5s linear infinite; }
+.s1-ping { animation: s1-ping 1.4s ease-out infinite; transform-origin:center; }
+.s1-arr-1 { animation: s1-arr-1 5s linear infinite; }
+.s1-arr-2 { animation: s1-arr-2 5s linear infinite; }
+.s1-arr-3 { animation: s1-arr-3 5s linear infinite; }
+.s1-arr-4 { animation: s1-arr-4 5s linear infinite; }
+.s1-stage-1 { animation: s1-stage1 5s linear infinite; stroke:var(--k-idle); opacity:.15; }
+.s1-stage-2 { animation: s1-stage2 5s linear infinite; stroke:var(--k-idle); opacity:.15; }
+.s1-stage-3 { animation: s1-stage3 5s linear infinite; stroke:var(--k-idle); opacity:.15; }
+.s1-stage-4 { animation: s1-stage4 5s linear infinite; stroke:var(--k-idle); opacity:.15; }
+.s1-stage-5 { animation: s1-stage5 5s linear infinite; stroke:var(--k-idle); opacity:.15; }
+</style>
+
+  <defs>
+    <pattern id="s1-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="currentColor" stroke-opacity="0.18" stroke-width="1"></path>
+    </pattern>
+    <pattern id="s1-dots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="currentColor" fill-opacity="0.28"></circle>
+    </pattern>
+    <filter id="s1-cardShadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow class="fl-lit-000" dx="0" dy="2" stdDeviation="3" flood-opacity=".06"></feDropShadow>
+    </filter>
+    <symbol id="s1-card" viewBox="0 0 240 230" overflow="visible">
+      <rect class="f-raised s-border" x="0" y="0" width="240" height="230" rx="16" stroke-width="1.5"></rect>
+      <rect class="f-surface" x="0" y="0" width="240" height="36" rx="16"></rect>
+      <rect class="f-surface" x="0" y="20" width="240" height="16"></rect>
+      <rect class="f-border" x="0" y="35" width="240" height="1"></rect>
+      <circle class="f-bstrong" cx="16" cy="18" r="3"></circle>
+      <circle class="f-bstrong" cx="26" cy="18" r="3"></circle>
+      <circle class="f-bstrong" cx="36" cy="18" r="3"></circle>
+    </symbol>
+    <marker id="s1-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 8 5 L 0 10 z" fill="currentColor"></path>
+    </marker>
+  </defs>
+
+  <g class="c-text">
+    <rect x="0" y="0" width="1600" height="900" fill="url(#s1-grid)"></rect>
+    <rect x="0" y="0" width="1600" height="900" fill="url(#s1-dots)"></rect>
+  </g>
+
+  <g font-family="Inter, system-ui, sans-serif">
+    <text class="f-text" x="80" y="92" font-size="14" font-weight="600" letter-spacing="2">01 / SOCIAL AUTOPOST · NO-CODE</text>
+    <text class="f-text" x="80" y="138" font-size="40" font-weight="600" letter-spacing="-.5">Publish once, post everywhere.</text>
+    <text class="f-text2" x="80" y="172" font-size="16" font-family="'JetBrains Mono', ui-monospace, monospace">publish → webhook → automate → format → post</text>
+  </g>
+
+  <g font-family="'JetBrains Mono', ui-monospace, monospace" font-size="12" letter-spacing="1.5">
+    <g transform="translate(1090,92)">
+      <rect class="s-text" x="-6" y="-16" width="180" height="28" rx="14" fill="none" stroke-width="1.2"></rect>
+      <g transform="translate(10,-2)"><path class="f-tertiary" d="M 0 5 L 7 -7 L 14 5 Z"></path></g>
+      <text class="f-text" x="30" y="2">AGILITY · CMS</text>
+    </g>
+    <g transform="translate(1290,92)">
+      <rect class="s-text" x="-6" y="-16" width="210" height="28" rx="14" fill="none" stroke-width="1.2"></rect>
+      <circle class="f-text s-secondary" cx="10" cy="-2" r="6" stroke-width="1.5"></circle>
+      <circle class="f-secondary" cx="10" cy="-2" r="2.5"></circle>
+      <text class="f-text" x="26" y="2">ZAPIER · MAKE · n8n</text>
+    </g>
+  </g>
+
+  <g transform="translate(80,380)">
+    <line class="s-bstrong" x1="0" y1="150" x2="1440" y2="150" stroke-width="1" stroke-dasharray="2 6"></line>
+    <g stroke-width="2" fill="none">
+      <path class="s-text" d="M 290 100 H 340"></path>
+      <path class="s-text" d="M 580 100 H 630"></path>
+      <path class="s-text" d="M 870 100 H 920"></path>
+      <path class="s-text" d="M 1160 100 H 1210"></path>
+      <path class="s1-arr-1 s-tertiary c-tertiary" d="M 290 100 H 340" marker-end="url(#s1-arrow)"></path>
+      <path class="s1-arr-2 s-secondary c-secondary" d="M 580 100 H 630" marker-end="url(#s1-arrow)"></path>
+      <path class="s1-arr-3 s-secondary c-secondary" d="M 870 100 H 920" marker-end="url(#s1-arrow)"></path>
+      <path class="s1-arr-4 s-text c-text" d="M 1160 100 H 1210" marker-end="url(#s1-arrow)"></path>
+    </g>
+
+    <g transform="translate(50,0)" filter="url(#s1-cardShadow)">
+      <use href="#s1-card" width="240" height="230"></use>
+      <text class="f-text2" x="20" y="22" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="12" font-weight="700" letter-spacing="1.8">01 · PUBLISH</text>
+      <text class="f-text" x="20" y="72" font-size="22" font-weight="600" font-family="Inter,system-ui,sans-serif" letter-spacing="-.3">Editor hits Publish</text>
+      <g class="f-text2" transform="translate(20,96)" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="11">
+        <rect class="f-bg s-border" x="0" y="0" width="200" height="26" rx="6"></rect>
+        <circle class="f-bstrong" cx="14" cy="13" r="4"></circle>
+        <text x="26" y="17">Blog: AI-first CMS</text>
+        <rect class="f-bg s-border" x="0" y="34" width="200" height="26" rx="6"></rect>
+        <circle class="f-bstrong" cx="14" cy="47" r="4"></circle>
+        <text x="26" y="51">channels: LI, X</text>
+        <text x="0" y="84">state: <tspan class="f-ok">published</tspan></text>
+      </g>
+      <g transform="translate(20,218)">
+        <rect class="f-tertiary" x="0" y="-14" width="78" height="18" rx="9"></rect>
+        <text class="on-yellow" x="39" y="-1" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10">AGILITY</text>
+      </g>
+    </g>
+
+    <g transform="translate(340,0)" filter="url(#s1-cardShadow)">
+      <use href="#s1-card" width="240" height="230"></use>
+      <text class="f-text2" x="20" y="22" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="12" font-weight="700" letter-spacing="1.8">02 · WEBHOOK</text>
+      <text class="f-text" x="20" y="72" font-size="22" font-weight="600" font-family="Inter,system-ui,sans-serif" letter-spacing="-.3">Publish event fires</text>
+      <g class="f-text2" transform="translate(20,92)" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10">
+        <rect class="f-surface s-border" x="0" y="0" width="200" height="98" rx="6"></rect>
+        <text class="f-muted" x="10" y="18">POST /hook  <tspan class="f-ok">200</tspan></text>
+        <text class="f-muted" x="10" y="36">{</text>
+        <text class="f-text" x="20" y="52">state: <tspan class="f-warn">"Published"</tspan></text>
+        <text class="f-text" x="20" y="68">contentID: <tspan class="f-warn">128</tspan></text>
+        <text class="f-text" x="20" y="84">refName: <tspan class="f-warn">"posts"</tspan></text>
+        <text class="f-muted" x="10" y="96">}</text>
+      </g>
+      <g transform="translate(20,218)">
+        <rect class="f-tertiary" x="0" y="-14" width="78" height="18" rx="9"></rect>
+        <text class="on-yellow" x="39" y="-1" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10">AGILITY</text>
+      </g>
+    </g>
+
+    <g transform="translate(630,0)" filter="url(#s1-cardShadow)">
+      <use href="#s1-card" width="240" height="230"></use>
+      <text class="f-text2" x="20" y="22" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="12" font-weight="700" letter-spacing="1.8">03 · AUTOMATE</text>
+      <text class="f-text" x="20" y="72" font-size="22" font-weight="600" font-family="Inter,system-ui,sans-serif" letter-spacing="-.3">Catch + branch</text>
+      <g transform="translate(20,92)" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="11">
+        <rect class="f-surface s-secondary" x="0" y="0" width="200" height="24" rx="6"></rect>
+        <text class="f-secondary" x="10" y="16">TRIGGER · webhook</text>
+        <path class="s-secondary c-secondary" d="M 100 24 V 36" stroke-width="1.5" marker-end="url(#s1-arrow)"></path>
+        <rect class="f-bg s-border" x="0" y="38" width="200" height="22" rx="6"></rect>
+        <text class="f-text2" x="10" y="53">filter: published?</text>
+        <rect class="f-bg s-border" x="0" y="66" width="200" height="22" rx="6"></rect>
+        <text class="f-text2" x="10" y="81">queue + retry ✓</text>
+      </g>
+      <g transform="translate(20,218)">
+        <rect class="f-secondary" x="0" y="-14" width="90" height="18" rx="9"></rect>
+        <text class="on-fill" x="45" y="-1" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10">AUTOMATION</text>
+      </g>
+    </g>
+
+    <g transform="translate(920,0)" filter="url(#s1-cardShadow)">
+      <use href="#s1-card" width="240" height="230"></use>
+      <text class="f-text2" x="20" y="22" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="12" font-weight="700" letter-spacing="1.8">04 · FORMAT</text>
+      <text class="f-text" x="20" y="72" font-size="22" font-weight="600" font-family="Inter,system-ui,sans-serif" letter-spacing="-.3">Per-channel copy</text>
+      <g class="f-text2" transform="translate(20,94)" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10">
+        <rect class="f-bg s-border" x="0" y="0" width="200" height="30" rx="6"></rect>
+        <text class="f-muted" x="10" y="13">LinkedIn</text>
+        <text class="f-text" x="10" y="25">title + link + img</text>
+        <rect class="f-bg s-border" x="0" y="36" width="200" height="30" rx="6"></rect>
+        <text class="f-muted" x="10" y="49">X / Twitter</text>
+        <text class="f-text" x="10" y="61">≤ 280 chars</text>
+        <text class="f-muted" x="0" y="86">maps fields → payload</text>
+      </g>
+      <g transform="translate(20,218)">
+        <rect class="f-secondary" x="0" y="-14" width="90" height="18" rx="9"></rect>
+        <text class="on-fill" x="45" y="-1" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10">AUTOMATION</text>
+      </g>
+    </g>
+
+    <g transform="translate(1210,0)" filter="url(#s1-cardShadow)">
+      <use href="#s1-card" width="240" height="230"></use>
+      <text class="f-text2" x="20" y="22" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="12" font-weight="700" letter-spacing="1.8">05 · POST</text>
+      <text class="f-text" x="20" y="72" font-size="22" font-weight="600" font-family="Inter,system-ui,sans-serif" letter-spacing="-.3">Channels live</text>
+      <g class="f-text2" transform="translate(20,92)" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="11">
+        <rect class="f-surface s-border" x="0" y="0" width="200" height="24" rx="6"></rect>
+        <text x="10" y="16">LinkedIn</text>
+        <g transform="translate(182,12)"><circle class="f-ok" r="8"></circle><path class="s-onfill" d="M -3.5 0 L -1 2.5 L 3.5 -2.5" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></g>
+        <rect class="f-surface s-border" x="0" y="30" width="200" height="24" rx="6"></rect>
+        <text x="10" y="46">X / Twitter</text>
+        <g transform="translate(182,42)"><circle class="f-ok" r="8"></circle><path class="s-onfill" d="M -3.5 0 L -1 2.5 L 3.5 -2.5" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></g>
+        <rect class="f-surface s-tertiary" x="0" y="60" width="200" height="24" rx="6"></rect>
+        <text class="f-warn" x="10" y="76">via Buffer API</text>
+        <circle class="s1-ping f-tertiary" cx="182" cy="72" r="4"></circle>
+      </g>
+      <g transform="translate(20,218)">
+        <rect class="f-text" x="0" y="-14" width="84" height="18" rx="9"></rect>
+        <text class="on-fill" x="42" y="-1" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10">SOCIAL</text>
+      </g>
+    </g>
+
+    <g class="f-text" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="9" text-anchor="middle" letter-spacing="1">
+      <text x="315" y="126">EVENT</text>
+      <text x="605" y="126">CATCH</text>
+      <text x="895" y="126">MAP</text>
+      <text x="1185" y="126">SEND</text>
+    </g>
+  </g>
+
+  <g transform="translate(80,380)" fill="none" stroke-width="4">
+    <rect class="s1-stage-1" x="50" y="-2" width="240" height="234" rx="18" stroke-width="2.5"></rect>
+    <rect class="s1-stage-2" x="340" y="-2" width="240" height="234" rx="18" stroke-width="2.5"></rect>
+    <rect class="s1-stage-3" x="630" y="-2" width="240" height="234" rx="18" stroke-width="2.5"></rect>
+    <rect class="s1-stage-4" x="920" y="-2" width="240" height="234" rx="18" stroke-width="2.5"></rect>
+    <rect class="s1-stage-5" x="1210" y="-2" width="240" height="234" rx="18" stroke-width="2.5"></rect>
+  </g>
+
+  <g font-family="'JetBrains Mono',ui-monospace,monospace" font-size="11" letter-spacing="1">
+    <g transform="translate(80,820)">
+      <rect class="f-tertiary" x="0" y="-10" width="12" height="12" rx="2"></rect>
+      <text class="f-text" x="20" y="0">AGILITY CMS</text>
+      <rect class="f-secondary" x="170" y="-10" width="12" height="12" rx="2"></rect>
+      <text class="f-text" x="190" y="0">AUTOMATION LAYER</text>
+      <rect class="f-text" x="420" y="-10" width="12" height="12" rx="2"></rect>
+      <text class="f-text" x="440" y="0">SOCIAL CHANNELS</text>
+    </g>
+    <text class="f-text" x="1520" y="820" text-anchor="end">NO-CODE · v1.0</text>
+  </g>
+</svg>

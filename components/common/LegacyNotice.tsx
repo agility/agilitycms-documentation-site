@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { LegacyEntry } from "lib/docs/legacyFrameworks";
 
 /**
- * Notice banner at the top of an archived or superseded article (content refresh
+ * Notice banner at the top of an archived, superseded or outdated article (content refresh
  * plan §4). Styled to match the ocean CalloutBlock's `caution` variant (--warn)
  * so it reads as part of the design system rather than a bolted-on warning.
  *
@@ -40,7 +40,9 @@ const LegacyNotice = ({ entry }: { entry: LegacyEntry }) => (
 			<b className="font-extrabold" style={{ color: "var(--text)" }}>
 				{entry.status === "superseded"
 					? `This page has moved — ${entry.name} is now documented elsewhere. `
-					: `Legacy — ${entry.name} docs are no longer actively maintained. `}
+					: entry.status === "outdated"
+						? `Needs an update: these ${entry.name} docs are behind the current release. `
+						: `Legacy — ${entry.name} docs are no longer actively maintained. `}
 			</b>
 			{entry.reason}
 			{entry.successor && (
@@ -53,6 +55,19 @@ const LegacyNotice = ({ entry }: { entry: LegacyEntry }) => (
 					>
 						{entry.successor.text}
 					</Link>
+					.
+				</>
+			)}
+			{entry.feedback && (
+				<>
+					{" "}
+					<a
+						href={entry.feedback.href}
+						className="underline underline-offset-2"
+						style={{ color: "var(--primary-text)" }}
+					>
+						{entry.feedback.text}
+					</a>
 					.
 				</>
 			)}

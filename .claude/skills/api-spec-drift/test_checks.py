@@ -13,7 +13,9 @@ Run it after touching either checker:
     python3 .claude/skills/api-spec-drift/test_checks.py
 
 Needs the caches populated (run either checker once without --offline first) and
-`dnfile` for the SDK half. No network, no CMS access, no credentials.
+`dnfile` for the SDK half. The SDK cases assume the cached .NET package is the
+default pick (newest stable, 2.x), not a `--dotnet-version` override. No network,
+no CMS access, no credentials.
 """
 
 from __future__ import annotations
@@ -93,14 +95,28 @@ def run_spec() -> list[str]:
 
 # ----------------------------------------------------------------- SDK checker
 
-# Verbatim wording from the articles as they were published before the 2026-07-30
-# corrections. If any of these stops flagging, the SDK checker has gone blind.
+# Mostly verbatim wording from the articles as they were published before the
+# 2026-07-30 corrections. If any of these stops flagging, the SDK checker has gone
+# blind. A fourth element overrides the NuGet version passed to check(); the
+# default is whatever the cache holds.
+#
+# The original "paged listing attributed to .NET" case (GetContainerListPaged)
+# was right to flag against 1.x, but 2.0.0 added GetContainerListPagedAsync, so
+# it is now a precision guard for the Async suffix instead. The wrong-SDK case
+# uses a method that is still JavaScript-only.
 SDK_CASES = [
     (FLAG, "install command naming the assembly",
      "```bash\ndotnet add package management.api.sdk\n```"),
-    (FLAG, "paged listing attributed to .NET",
+    (FLAG, "JavaScript-only method attributed to .NET",
+     "### Get notifications\n\n"
+     "**Signature:** `Task<List<Notification>?> GetNotificationList(string guid, int containerId)`\n\n"
+     "> Not available in the JavaScript SDK yet.\n"),
+    (PASS, "2.x Async method that both SDKs have",
      "### Get containers (paged)\n\n"
-     "**Signature:** `Task<PagedResult<Container>?> GetContainerListPaged(string guid)`\n\n"
+     "**.NET signature:** `Task<ContentContainerPagedResult?> GetContainerListPagedAsync(string guid)`\n"),
+    (FLAG, "2.x Async method wrongly called missing from JavaScript",
+     "### Get containers by model\n\n"
+     "**.NET signature:** `Task<List<ContentContainer>?> GetContainersByModelAsync(int modelId)`\n\n"
      "> Not available in the JavaScript SDK yet.\n"),
     (FLAG, "method wrongly called missing from JavaScript",
      "### Get containers by model\n\n"
@@ -108,9 +124,21 @@ SDK_CASES = [
      "> Not available in the JavaScript SDK yet.\n"),
     (FLAG, "parameter wrongly called .NET only",
      "| `otherLocale` | .NET only — the source locale when copying. |"),
+    # Install guidance across the 1.x (prerelease) / 2.x (stable) boundary.
+    (FLAG, "--prerelease install once a stable release exists",
+     "```bash\ndotnet add package Agility.Management.SDK --prerelease\n```", "2.0.0"),
+    (PASS, "--prerelease install while only prereleases exist",
+     "```bash\ndotnet add package Agility.Management.SDK --prerelease\n```", "1.0.12-beta"),
+    (FLAG, "1.x namespace once 2.x is stable",
+     "```csharp\nusing management.api.sdk;\n```", "2.0.0"),
     # Precision guards: these are correct statements and must stay quiet.
     (PASS, "correct install command",
-     "```bash\ndotnet add package Agility.Management.SDK --prerelease\n```"),
+     "```bash\ndotnet add package Agility.Management.SDK\n```"),
+    (PASS, "explicit 1.x pin for .NET 6-9",
+     "```bash\ndotnet add package Agility.Management.SDK --version 1.0.12-beta\n```", "2.0.0"),
+    (PASS, "2.x namespace",
+     "```csharp\nusing Agility.Management.Sdk;\nvar client = new AgilityManagementClient(options);\n```",
+     "2.0.0"),
     (PASS, "genuinely JavaScript-only method, with a REST fallback",
      "## Page history\n\n"
      "```ts\nawait apiClient.pageMethods.getPageHistory(locale, guid, pageID);\n```\n\n"
@@ -122,8 +150,23 @@ SDK_CASES = [
 ]
 
 
+# Default NuGet pick: newest stable, prerelease only when nothing is stable.
+VERSION_CASES = [
+    ("2.0.0", ["1.0.0-beta", "1.0.12-beta", "2.0.0"]),
+    ("1.0.12-beta", ["1.0.0-beta", "1.0.11-beta", "1.0.12-beta"]),
+    ("2.0.0", ["1.0.12-beta", "2.0.0", "2.1.0-rc1"]),
+]
+
+
 def run_sdk() -> list[str]:
     failures = []
+    for want, versions in VERSION_CASES:
+        got = SDK.pick_version(versions)
+        ok = got == want
+        print(f"  {'OK ' if ok else 'BAD'} version/{versions[-1]}: want={want} got={got}")
+        if not ok:
+            failures.append(f"version/{versions[-1]}")
+
     try:
         dist = SDK.fetch_js_sdk(offline=True)
     except SystemExit as e:
@@ -131,17 +174,25 @@ def run_sdk() -> list[str]:
         return ["sdk/js-surface-missing"]
     js = SDK.parse_js_surface(dist)
 
-    dll, _ = SDK.fetch_dotnet_sdk(offline=True)
+    dll, cached_version = SDK.fetch_dotnet_sdk(offline=True)
     net = SDK.parse_dotnet_surface(dll) if dll else None
     if net is None:
         print("  SKIP .NET surface unavailable (install dnfile) — half the suite is inert")
         failures.append("sdk/dotnet-surface-missing")
+    elif not net:
+        # 2.0.0 shipped a new assembly layout and the parser silently found
+        # nothing. An empty surface must fail loudly, never pass as "clean".
+        print(f"  BAD .NET surface empty for {dll.name} ({cached_version})")
+        failures.append("sdk/dotnet-surface-empty")
+        net = None
+    else:
+        print(f"  .NET {cached_version}: {sum(map(len, net.values()))} methods in {len(net)} groups")
 
-    for want, label, body in SDK_CASES:
+    for want, label, body, *version in SDK_CASES:
         found: list[dict] = []
         SDK.check(
             [{"contentID": 0, "fields": {"title": label, "markdownContent": body}}],
-            js, net, "1.0.11-beta", found,
+            js, net, version[0] if version else cached_version, found,
         )
         got = FLAG if found else PASS
         ok = got == want
@@ -162,7 +213,8 @@ def main() -> int:
     if failures:
         print(f"FAILED — {len(failures)} case(s): {', '.join(failures)}")
         return 1
-    print(f"PASSED — {len(ENDPOINT_CASES) + len(REQUIRED_CASES) + len(SDK_CASES)} cases")
+    total = len(ENDPOINT_CASES) + len(REQUIRED_CASES) + len(SDK_CASES) + len(VERSION_CASES)
+    print(f"PASSED: {total} cases")
     return 0
 
 

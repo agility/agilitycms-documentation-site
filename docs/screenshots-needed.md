@@ -121,3 +121,29 @@ have to tear down to get it.
 4. **Publish** only when the author says the article is ready — a save lands in
    Staging, and publishing is outward-facing. Not a passer-by's call.
 5. Delete the row from this file.
+
+## 2026 UI refresh backlog (logged 2026-10-03)
+
+The August 2026 navigation redesign and the 2026 slide-out-to-modal changes made these screenshots out of date. The prose around them was rewritten to neutral wording (W1-F and W1-F2 in [docs-execution-plan-2026-q4.md](docs-execution-plan-2026-q4.md)) and captions now say "earlier version of the interface" where needed. Capture order follows traffic: start with the editor basics.
+
+| Article | Screenshots |
+|---|---|
+| 46 Introduction to Agility | Content Dashboard, Assets Dashboard, Welcome to Pages, Web Studio; video "Navigating Your Dashboard" |
+| 1339 Navigating the Interface (training) | 01-dashboard-home, 02-content-section-overview, 08-pages-section, 09-sitemap-view, 10-components-section, 11-assets-section |
+| 1627 Your account menu | account-menu-20260826.png |
+| 223 Introduction to Assets | Assets, Edit Folder, Folder Security, Folder Security Roles |
+| 612 Deleting and Restoring | 9 "Refresh - Delete/Restore" images, two 2023 recycle bin screenshots |
+| 130 Approvals and Workflows | Layout Approval, Content Approval, Edit User, Edit User Details |
+| 52 Scheduling | "Schedule Slide Out" (upload the new one under a new filename) |
+| 203 Batch Content Publishing | video predates March 2026 multi-select publishing |
+| 450 Accessing Reports | Reports, Recent Changes Bulk, Ready to Publish, User Activity, Custom Reports |
+| 48 URL Redirections / 201 Testing Redirections | URL Redirect, Add Redirect, Redirect Settings, 3-dot menu, Redirect Test, Redirect Test Slideout; video |
+| 57 Managing SEO | Layout SEO |
+| 59 Restore a Previous Page Version | seven 2021 screenshots (or retire the article; it duplicates Activity Feed and Versioning) |
+| 221 Importing and Exporting | Postimportflyout, ImportFormats, ExportComplete |
+| 284 Sitemaps | Layouts Dash, Sitemaps, Setup Deployment, Custom Deployment |
+| 437 Webhooks | six 2021 screenshots (also predate signing, retries, History) |
+| 581, 582, 583 Model and field tutorials | all 2021 editorarticles/1 to 6 screenshots |
+| 769 Teams | instance selector gear, org Teams (two), Team Access |
+| 778 plenum-ui | 2022 beta screenshots and video (probably retire with the article) |
+| 1745 Work Faster in Agility | new: one per section once control locations are confirmed |

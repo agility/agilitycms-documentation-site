@@ -125,6 +125,31 @@ export const getRichSnippet = async ({
 			dateModified: dynamicPageItem.properties.modified,
 		});
 
+		// Glossary (docs execution plan W5-A, the Stripe/Twilio pattern): the hub
+		// at /overview/glossary is a DefinedTermSet and each /overview/glossary-*
+		// page is a DefinedTerm in it, so a crawler can read the definition as a
+		// definition rather than as an article. Keyed off the URL because the
+		// glossary is ordinary DocArticles, not a model of its own.
+		const termSetId = `${SITE_URL}/overview/glossary#termset`;
+		if (sitemapNode.path === "/overview/glossary") {
+			nodes.push({
+				"@type": "DefinedTermSet",
+				"@id": termSetId,
+				name: dynamicPageItem.fields.title,
+				description: dynamicPageItem.fields.description || undefined,
+				url: pageUrl,
+			});
+		} else if (sitemapNode.path.startsWith("/overview/glossary-")) {
+			nodes.push({
+				"@type": "DefinedTerm",
+				"@id": `${pageUrl}#term`,
+				name: String(dynamicPageItem.fields.title || "").replace(/^Glossary:\s*/i, ""),
+				description: dynamicPageItem.fields.description || undefined,
+				url: pageUrl,
+				inDefinedTermSet: ref(termSetId),
+			});
+		}
+
 		// One VideoObject per video embedded in the article body, so pages that
 		// carry a video are eligible for video rich results / the Video tab.
 		// YouTube ids yield a derivable thumbnail; Vimeo embeds are enriched with

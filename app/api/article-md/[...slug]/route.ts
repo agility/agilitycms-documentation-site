@@ -2,7 +2,10 @@ import { NextRequest } from "next/server";
 import { draftMode } from "next/headers";
 import { getSitemapFlat } from "lib/cms/getSitemapFlat";
 import { getContentItem } from "lib/cms/getContentItem";
-import { articleToMarkdown } from "lib/cms-content/articleMarkdown";
+import { articleToMarkdown, type RelatedPage } from "lib/cms-content/articleMarkdown";
+import { gql } from "lib/cms/gql";
+import type { SitemapFlat } from "lib/cms/getSitemapFlat";
+import { isNoIndexPath } from "lib/docs/legacyFrameworks";
 import { defaultLocale, getLocaleFromPathname } from "lib/i18n/config";
 import { isDevMode } from "lib/cms/isDevMode";
 
@@ -51,9 +54,12 @@ export async function GET(
 		});
 		if (!article?.fields) return new Response("Not found", { status: 404 });
 
+		const related = await getRelatedPages({ article, sitemap, path, locale, preview });
+
 		const markdown = articleToMarkdown({
 			fields: article.fields,
 			canonicalUrl: `https://agilitycms.com/docs${path}`,
+			related,
 		});
 
 		return new Response(markdown, {
@@ -67,3 +73,52 @@ export async function GET(
 		return new Response("Error generating markdown", { status: 500 });
 	}
 }
+
+/**
+ * The other articles in this article's section, in sidebar order, as links to
+ * their .md twins. Uses the same GraphQL shape as SideBarNav (container lists
+ * are exposed lowercased with non-alphanumerics folded to `_`; lists default
+ * to 50, so `take: 250`). Best effort: any failure just omits the list.
+ */
+const getRelatedPages = async ({
+	article,
+	sitemap,
+	path,
+	locale,
+	preview,
+}: {
+	article: any;
+	sitemap: SitemapFlat;
+	path: string;
+	locale: string;
+	preview: boolean;
+}): Promise<RelatedPage[]> => {
+	const container: string | undefined = article.properties?.referenceName;
+	const sectionID = String(article.fields?.section_ValueField ?? article.fields?.section?.contentID ?? "");
+	if (!container || !sectionID) return [];
+
+	try {
+		const field = container.toLowerCase().replace(/[^a-z0-9_]/g, "_");
+		const data = await gql({
+			query: `{ articles: ${field} (take: 250, sort: "properties.itemOrder") { contentID fields { title section_ValueField } } }`,
+			locale,
+			preview,
+		});
+
+		const pathByContentID = new Map<number, string>();
+		Object.values(sitemap).forEach((node) => {
+			if (node.contentID && node.contentID > 0) pathByContentID.set(node.contentID, node.path);
+		});
+
+		const localePrefix = locale === defaultLocale ? "" : `/${locale}`;
+		return (data?.articles || [])
+			.filter((a: any) => String(a.fields?.section_ValueField) === sectionID)
+			.map((a: any) => ({ title: a.fields?.title, path: pathByContentID.get(a.contentID) }))
+			// Same rule as llms.txt: don't point agents at archived or superseded pages.
+			.filter((a: any) => a.title && a.path && a.path !== path && !isNoIndexPath(a.path))
+			.map((a: any) => ({ title: a.title, url: `https://agilitycms.com/docs${localePrefix}${a.path}.md` }));
+	} catch (error) {
+		console.error("article-md: related pages unavailable", path, error);
+		return [];
+	}
+};

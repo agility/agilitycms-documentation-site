@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" role="img" aria-labelledby="t d">
+  <title id="t">The icon field on a content model, with a value set and empty</title>
+  <desc id="d">A Feature Card content item form with a Title text field and two Icon fields. The first shows a selected star icon from Font Awesome Free (Solid) with Change and Clear buttons. The second is empty and prompts Choose a Lucide icon, noting that it stores the icon name. A caption notes that every field stores a plain text value.</desc>
+  <!-- Dual-theme (docs convention): colours live in CSS, light is the default,
+       the dark block wins when the page sets color-scheme: dark. -->
+  <style>
+    .f-bg{fill:#F1EFE9}
+    .f-faint{fill:#6E685E}
+    .f-muted{fill:#5E5951}
+    .f-raised{fill:#FEFDF9}
+    .f-surface{fill:#FBF9F3}
+    .f-text{fill:#181716}
+    .f-text2{fill:#3B3935}
+    .s-border{stroke:#E4E0D8}
+    .s-bstrong{stroke:#CFC9BC}
+    .s-faint{stroke:#6E685E}
+    @media (prefers-color-scheme: dark) {
+      .f-bg{fill:#0E0D0C}
+      .f-faint{fill:#989289}
+      .f-muted{fill:#AAA49B}
+      .f-raised{fill:#201F1D}
+      .f-surface{fill:#171615}
+      .f-text{fill:#F1EFE9}
+      .f-text2{fill:#C4BFB5}
+      .s-border{stroke:#302E2B}
+      .s-bstrong{stroke:#45423E}
+      .s-faint{stroke:#989289}
+    }
+  </style>
+
+	<style>
+		.ui { font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', ui-sans-serif, system-ui, sans-serif; }
+		.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+		.lbl { font-size: 24px; font-weight: 500; }
+		.val { font-size: 29px; font-weight: 500; }
+		.sub { font-size: 23px; }
+		.btn { font-size: 23px; font-weight: 500; }
+	</style>
+
+	<rect class="f-bg" width="1600" height="1000" />
+
+	<!-- the content form -->
+	<rect class="f-raised s-border" x="200" y="110" width="1200" height="780" rx="20" stroke-width="2" />
+
+	<g class="ui">
+		<text class="f-text" x="264" y="186" font-size="32" font-weight="700">Feature Card</text>
+		<text class="f-faint" x="264" y="222" font-size="22">Content Item</text>
+
+		<!-- an ordinary text field, for context -->
+		<text x="264" y="292" class="lbl f-text2">Title</text>
+		<rect class="f-raised s-bstrong" x="264" y="310" width="1072" height="80" rx="12" stroke-width="2" />
+		<text class="f-text" x="292" y="358" font-size="27">Fast, everywhere</text>
+
+		<!-- the icon field, with a value -->
+		<text x="264" y="452" class="lbl f-text2">Icon</text>
+		<rect class="f-raised s-border" x="264" y="470" width="1072" height="128" rx="16" stroke-width="2" />
+
+		<rect class="f-surface s-border" x="284" y="490" width="88" height="88" rx="12" stroke-width="2" />
+		<g transform="translate(304 510) scale(2)">
+			<path class="f-text" d="M12 2l2.9 6.26L22 9.27l-5.2 4.87L18.2 21 12 17.6 5.8 21l1.4-6.86L2 9.27l7.1-1.01z" />
+		</g>
+
+		<text x="396" y="524" class="val f-text">star</text>
+		<rect class="f-bg" x="396" y="540" width="84" height="34" rx="7" />
+		<text class="f-text2" x="438" y="564" font-size="21" font-weight="500" text-anchor="middle">Solid</text>
+		<text x="496" y="564" class="sub f-muted">Font Awesome Free</text>
+
+		<rect class="f-raised s-bstrong" x="1094" y="512" width="116" height="52" rx="10" stroke-width="2" />
+		<text x="1152" y="545" class="btn f-text2" text-anchor="middle">Change</text>
+		<text x="1268" y="545" class="btn f-muted" text-anchor="middle">Clear</text>
+
+		<!-- the icon field, empty -->
+		<text x="264" y="668" class="lbl f-text2">Icon</text>
+		<rect class="f-raised s-bstrong" x="264" y="686" width="1072" height="128" rx="16"
+		 stroke-width="2" stroke-dasharray="10 8" />
+
+		<rect class="f-raised s-bstrong" x="284" y="706" width="88" height="88" rx="12"
+		 stroke-width="2" stroke-dasharray="8 6" />
+		<g class="s-faint" transform="translate(308 730) scale(1.7)" stroke-width="1.6" stroke-linecap="round" fill="none">
+			<path d="M12 5v14M5 12h14" />
+		</g>
+
+		<text class="f-text2" x="396" y="740" font-size="28" font-weight="500">Choose a Lucide icon</text>
+		<text x="396" y="778" class="sub f-muted">Stores the icon name, e.g. arrow-right</text>
+	</g>
+
+	<text x="800" y="948" class="ui f-muted" font-size="25" text-anchor="middle">
+		Every field stores a plain text value — no JSON, no migration.
+	</text>
+</svg>

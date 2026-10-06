@@ -1,0 +1,267 @@
+<svg class="c-text" width="100%" style="max-width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="t d">
+  <title id="t">Social autopost, custom code: your endpoint owns the post</title>
+  <desc id="d">Custom endpoint social pipeline: webhook to serverless function to Content Management API to Buffer API. Five steps: the Agility publish webhook posts to your API, your API verifies the signature and queues the item, fetches the item through the Management API, builds per-channel payloads, and dispatches them with the Buffer API createPost call.</desc>
+  <!-- Dual-theme (docs convention): colours live in CSS, light is the default,
+       the dark block wins when the page sets color-scheme: dark. -->
+  <style>
+    :root{--k-agility:#FFCB28;--k-code:#295BAC;--k-idle:#3B3935;--k-social:#181716;}
+    .c-secondary{color:#295BAC}
+    .c-tertiary{color:#FFCB28}
+    .c-text{color:#181716}
+    .f-border{fill:#E4E0D8}
+    .f-bstrong{fill:#CFC9BC}
+    .f-muted{fill:#5E5951}
+    .f-ok{fill:#1A6E36}
+    .f-raised{fill:#FEFDF9}
+    .f-secondary{fill:#295BAC}
+    .f-surface{fill:#FBF9F3}
+    .f-tertiary{fill:#FFCB28}
+    .f-text{fill:#181716}
+    .f-text2{fill:#3B3935}
+    .f-warn{fill:#836400}
+    .fl-lit-000{flood-color:#000}
+    .on-fill{fill:#FFFFFF}
+    .on-yellow{fill:#0E0D0C}
+    .s-border{stroke:#E4E0D8}
+    .s-bstrong{stroke:#CFC9BC}
+    .s-onfill{stroke:#FFFFFF}
+    .s-secondary{stroke:#295BAC}
+    .s-tertiary{stroke:#FFCB28}
+    .s-text{stroke:#181716}
+    @media (prefers-color-scheme: dark) {
+      :root{--k-agility:#FFCB28;--k-code:#5989D8;--k-idle:#C4BFB5;--k-social:#F1EFE9;}
+      .c-secondary{color:#5989D8}
+      .c-tertiary{color:#FFCB28}
+      .c-text{color:#F1EFE9}
+      .f-border{fill:#302E2B}
+      .f-bstrong{fill:#45423E}
+      .f-muted{fill:#AAA49B}
+      .f-ok{fill:#79C06B}
+      .f-raised{fill:#201F1D}
+      .f-secondary{fill:#5989D8}
+      .f-surface{fill:#171615}
+      .f-tertiary{fill:#FFCB28}
+      .f-text{fill:#F1EFE9}
+      .f-text2{fill:#C4BFB5}
+      .f-warn{fill:#F2C23E}
+      .on-fill{fill:#0E0D0C}
+      .on-yellow{fill:#0E0D0C}
+      .s-border{stroke:#302E2B}
+      .s-bstrong{stroke:#45423E}
+      .s-onfill{stroke:#0E0D0C}
+      .s-secondary{stroke:#5989D8}
+      .s-tertiary{stroke:#FFCB28}
+      .s-text{stroke:#F1EFE9}
+    }
+  </style>
+<style>
+@keyframes s2-scan { 0%{transform:translateY(0)} 50%{transform:translateY(72px)} 100%{transform:translateY(0)} }
+@keyframes s2-ping { 0%{r:3.5;opacity:1} 70%{r:10;opacity:0} 100%{r:3.5;opacity:0} }
+@keyframes s2-check { 0%,88%{transform:scale(1)} 95%{transform:scale(1.3)} 100%{transform:scale(1)} }
+@keyframes s2-arr-1 { 0%,5%{opacity:0} 15%{opacity:1} 30%,100%{opacity:0} }
+@keyframes s2-arr-2 { 0%,25%{opacity:0} 35%{opacity:1} 50%,100%{opacity:0} }
+@keyframes s2-arr-3 { 0%,45%{opacity:0} 55%{opacity:1} 70%,100%{opacity:0} }
+@keyframes s2-arr-4 { 0%,65%{opacity:0} 75%{opacity:1} 90%,100%{opacity:0} }
+@keyframes s2-s1 { 0%,5%{opacity:.45;stroke:var(--k-idle);stroke-width:2} 10%,22%{opacity:1;stroke:var(--k-agility);stroke-width:4} 30%,100%{opacity:.45;stroke:var(--k-idle);stroke-width:2} }
+@keyframes s2-s2 { 0%,22%{opacity:.45;stroke:var(--k-idle);stroke-width:2} 30%,46%{opacity:1;stroke:var(--k-code);stroke-width:4} 54%,100%{opacity:.45;stroke:var(--k-idle);stroke-width:2} }
+@keyframes s2-s3 { 0%,46%{opacity:.45;stroke:var(--k-idle);stroke-width:2} 56%,68%{opacity:1;stroke:var(--k-agility);stroke-width:4} 76%,100%{opacity:.45;stroke:var(--k-idle);stroke-width:2} }
+@keyframes s2-s4 { 0%,68%{opacity:.45;stroke:var(--k-idle);stroke-width:2} 78%,88%{opacity:1;stroke:var(--k-code);stroke-width:4} 96%,100%{opacity:.45;stroke:var(--k-idle);stroke-width:2} }
+@keyframes s2-s5 { 0%,88%{opacity:.45;stroke:var(--k-idle);stroke-width:2} 95%,100%{opacity:1;stroke:var(--k-social);stroke-width:4} }
+.s2-scan { animation: s2-scan 5s ease-in-out infinite; }
+.s2-ping { animation: s2-ping 1.4s ease-out infinite; transform-origin:center; }
+.s2-check { animation: s2-check 5s linear infinite; transform-origin:176px 18px; transform-box:fill-box; }
+.s2-arr-1 { animation: s2-arr-1 5s linear infinite; }
+.s2-arr-2 { animation: s2-arr-2 5s linear infinite; }
+.s2-arr-3 { animation: s2-arr-3 5s linear infinite; }
+.s2-arr-4 { animation: s2-arr-4 5s linear infinite; }
+.s2-s1 { animation: s2-s1 5s linear infinite; stroke:var(--k-idle); opacity:.15; }
+.s2-s2 { animation: s2-s2 5s linear infinite; stroke:var(--k-idle); opacity:.15; }
+.s2-s3 { animation: s2-s3 5s linear infinite; stroke:var(--k-idle); opacity:.15; }
+.s2-s4 { animation: s2-s4 5s linear infinite; stroke:var(--k-idle); opacity:.15; }
+.s2-s5 { animation: s2-s5 5s linear infinite; stroke:var(--k-idle); opacity:.15; }
+</style>
+
+  <defs>
+    <pattern id="s2-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="currentColor" stroke-opacity="0.18" stroke-width="1"></path>
+    </pattern>
+    <pattern id="s2-dots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="currentColor" fill-opacity="0.28"></circle>
+    </pattern>
+    <filter id="s2-cardShadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow class="fl-lit-000" dx="0" dy="2" stdDeviation="3" flood-opacity=".06"></feDropShadow>
+    </filter>
+    <symbol id="s2-card" viewBox="0 0 240 230" overflow="visible">
+      <rect class="f-raised s-border" x="0" y="0" width="240" height="230" rx="16" stroke-width="1.5"></rect>
+      <rect class="f-surface" x="0" y="0" width="240" height="36" rx="16"></rect>
+      <rect class="f-surface" x="0" y="20" width="240" height="16"></rect>
+      <rect class="f-border" x="0" y="35" width="240" height="1"></rect>
+      <circle class="f-bstrong" cx="16" cy="18" r="3"></circle>
+      <circle class="f-bstrong" cx="26" cy="18" r="3"></circle>
+      <circle class="f-bstrong" cx="36" cy="18" r="3"></circle>
+    </symbol>
+    <marker id="s2-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 8 5 L 0 10 z" fill="currentColor"></path>
+    </marker>
+  </defs>
+
+  <g class="c-text">
+    <rect x="0" y="0" width="1600" height="900" fill="url(#s2-grid)"></rect>
+    <rect x="0" y="0" width="1600" height="900" fill="url(#s2-dots)"></rect>
+  </g>
+
+  <g font-family="Inter, system-ui, sans-serif">
+    <text class="f-text" x="80" y="92" font-size="14" font-weight="600" letter-spacing="2">02 / SOCIAL AUTOPOST · CUSTOM CODE</text>
+    <text class="f-text" x="80" y="138" font-size="40" font-weight="600" letter-spacing="-.5">Your endpoint owns the post.</text>
+    <text class="f-text2" x="80" y="172" font-size="16" font-family="'JetBrains Mono', ui-monospace, monospace">event → verify → fetch → format → dispatch</text>
+  </g>
+
+  <g font-family="'JetBrains Mono', ui-monospace, monospace" font-size="12" letter-spacing="1.5">
+    <g transform="translate(1050,92)">
+      <rect class="s-text" x="-6" y="-16" width="190" height="28" rx="14" fill="none" stroke-width="1.2"></rect>
+      <g transform="translate(10,-2)"><path class="f-tertiary" d="M 0 5 L 7 -7 L 14 5 Z"></path></g>
+      <text class="f-text" x="30" y="2">AGILITY · WEBHOOK</text>
+    </g>
+    <g transform="translate(1260,92)">
+      <rect class="s-text" x="-6" y="-16" width="240" height="28" rx="14" fill="none" stroke-width="1.2"></rect>
+      <rect class="f-text s-secondary" x="6" y="-8" width="10" height="10" rx="2" stroke-width="2.5"></rect>
+      <text class="f-text" x="28" y="2">YOUR API + BUFFER</text>
+    </g>
+  </g>
+
+  <g transform="translate(80,380)">
+    <line class="s-bstrong" x1="0" y1="150" x2="1440" y2="150" stroke-width="1" stroke-dasharray="2 6"></line>
+    <g fill="none" stroke-linecap="round">
+      <path class="s-text" d="M 290 100 H 340" stroke-width="2"></path>
+      <path class="s-text" d="M 580 100 H 630" stroke-width="2"></path>
+      <path class="s-text" d="M 870 100 H 920" stroke-width="2"></path>
+      <path class="s-text" d="M 1160 100 H 1210" stroke-width="2"></path>
+      <path class="s2-arr-1 s-tertiary c-tertiary" d="M 290 100 H 340" stroke-width="2" marker-end="url(#s2-arrow)"></path>
+      <path class="s2-arr-2 s-secondary c-secondary" d="M 580 100 H 630" stroke-width="2" marker-end="url(#s2-arrow)"></path>
+      <path class="s2-arr-3 s-tertiary c-tertiary" d="M 870 100 H 920" stroke-width="2" marker-end="url(#s2-arrow)"></path>
+      <path class="s2-arr-4 s-text c-text" d="M 1160 100 H 1210" stroke-width="2" marker-end="url(#s2-arrow)"></path>
+    </g>
+
+    <g transform="translate(50,0)" filter="url(#s2-cardShadow)">
+      <use href="#s2-card" width="240" height="230"></use>
+      <text class="f-text2" x="20" y="22" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="12" font-weight="700" letter-spacing="1.8">01 · EVENT</text>
+      <text class="f-text" x="20" y="72" font-size="22" font-weight="600" font-family="Inter,system-ui,sans-serif" letter-spacing="-.3">Publish webhook</text>
+      <g class="f-text2" transform="translate(20,92)" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10">
+        <rect class="f-surface s-border" x="0" y="0" width="200" height="98" rx="6"></rect>
+        <text class="f-muted" x="10" y="18">Content Publish Event</text>
+        <text class="f-text" x="10" y="38">POST → /api/social</text>
+        <text class="f-muted" x="10" y="58">x-agility-signature</text>
+        <text class="f-secondary" x="10" y="78">fire &amp; forget · no retry</text>
+        <text class="f-muted" x="10" y="92">contentID · state</text>
+      </g>
+      <g transform="translate(20,218)">
+        <rect class="f-tertiary" x="0" y="-14" width="78" height="18" rx="9"></rect>
+        <text class="on-yellow" x="39" y="-1" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10">AGILITY</text>
+      </g>
+    </g>
+
+    <g transform="translate(340,0)" filter="url(#s2-cardShadow)">
+      <use href="#s2-card" width="240" height="230"></use>
+      <text class="f-text2" x="20" y="22" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="12" font-weight="700" letter-spacing="1.8">02 · VERIFY</text>
+      <text class="f-text" x="20" y="72" font-size="22" font-weight="600" font-family="Inter,system-ui,sans-serif" letter-spacing="-.3">Ack fast, queue</text>
+      <g class="f-text2" transform="translate(20,90)" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10">
+        <rect class="f-surface s-border" x="0" y="0" width="200" height="98" rx="6"></rect>
+        <text class="f-muted" x="10" y="18">verify signature</text>
+        <text class="f-text" x="10" y="36">if state != Published</text>
+        <text class="f-secondary" x="20" y="52">return 200</text>
+        <text class="f-text" x="10" y="72">enqueue(contentID)</text>
+        <text class="f-ok" x="10" y="90">res.status(200)</text>
+        <rect class="s2-scan f-secondary" x="0" y="0" width="200" height="2" opacity=".7"></rect>
+      </g>
+      <g transform="translate(20,218)">
+        <rect class="f-secondary" x="0" y="-14" width="84" height="18" rx="9"></rect>
+        <text class="on-fill" x="42" y="-1" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10">YOUR API</text>
+      </g>
+    </g>
+
+    <g transform="translate(630,0)" filter="url(#s2-cardShadow)">
+      <use href="#s2-card" width="240" height="230"></use>
+      <text class="f-text2" x="20" y="22" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="12" font-weight="700" letter-spacing="1.8">03 · FETCH</text>
+      <text class="f-text" x="20" y="72" font-size="22" font-weight="600" font-family="Inter,system-ui,sans-serif" letter-spacing="-.3">Management API</text>
+      <g transform="translate(20,94)" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="11">
+        <rect class="f-surface" x="0" y="0" width="200" height="20" rx="4"></rect>
+        <text class="f-text2" x="10" y="14">GET item 128</text>
+        <rect class="f-surface" x="0" y="24" width="200" height="20" rx="4"></rect>
+        <text class="f-text2" x="10" y="38">title · body · hero</text>
+        <rect class="f-surface s-tertiary" x="0" y="48" width="200" height="20" rx="4"></rect>
+        <text class="f-warn" x="10" y="62">channels: [LI, X]</text>
+        <rect class="f-surface" x="0" y="72" width="200" height="20" rx="4"></rect>
+        <text class="f-text2" x="10" y="86">canonical URL</text>
+      </g>
+      <g transform="translate(20,218)">
+        <rect class="f-tertiary" x="0" y="-14" width="78" height="18" rx="9"></rect>
+        <text class="on-yellow" x="39" y="-1" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10">AGILITY</text>
+      </g>
+    </g>
+
+    <g transform="translate(920,0)" filter="url(#s2-cardShadow)">
+      <use href="#s2-card" width="240" height="230"></use>
+      <text class="f-text2" x="20" y="22" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="12" font-weight="700" letter-spacing="1.8">04 · FORMAT</text>
+      <text class="f-text" x="20" y="72" font-size="22" font-weight="600" font-family="Inter,system-ui,sans-serif" letter-spacing="-.3">Build payloads</text>
+      <g transform="translate(20,94)" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10">
+        <g><text class="f-muted" x="0" y="12">text</text><path class="s-secondary" d="M 40 9 H 96" stroke-width="1"></path><text class="f-text" x="104" y="12">per channel</text></g>
+        <g><text class="f-muted" x="0" y="30">media</text><path class="s-secondary" d="M 40 27 H 96" stroke-width="1"></path><text class="f-text" x="104" y="30">CDN url</text></g>
+        <g><text class="f-muted" x="0" y="48">limit</text><path class="s-secondary" d="M 40 45 H 96" stroke-width="1"></path><text class="f-text" x="104" y="48">trim 280</text></g>
+        <g><text class="f-muted" x="0" y="66">dueAt</text><path class="s-secondary" d="M 40 63 H 96" stroke-width="1"></path><text class="f-text" x="104" y="66">ISO 8601</text></g>
+        <g><text class="f-muted" x="0" y="84">tags</text><path class="s-secondary" d="M 40 81 H 96" stroke-width="1"></path><text class="f-text" x="104" y="84">utm + #</text></g>
+      </g>
+      <g transform="translate(20,218)">
+        <rect class="f-secondary" x="0" y="-14" width="84" height="18" rx="9"></rect>
+        <text class="on-fill" x="42" y="-1" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10">YOUR API</text>
+      </g>
+    </g>
+
+    <g transform="translate(1210,0)" filter="url(#s2-cardShadow)">
+      <use href="#s2-card" width="240" height="230"></use>
+      <text class="f-text2" x="20" y="22" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="12" font-weight="700" letter-spacing="1.8">05 · DISPATCH</text>
+      <text class="f-text" x="20" y="72" font-size="22" font-weight="600" font-family="Inter,system-ui,sans-serif" letter-spacing="-.3">Buffer API</text>
+      <g transform="translate(20,94)" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="11">
+        <rect class="f-surface s-tertiary" x="0" y="0" width="200" height="90" rx="8"></rect>
+        <text class="f-text" x="14" y="20" font-size="12" font-weight="600">createPost</text>
+        <text class="f-warn" x="14" y="40">OAuth2 · token</text>
+        <text class="f-warn" x="14" y="58">channels: LI · X</text>
+        <text class="f-warn" x="14" y="76">status: <tspan class="f-ok">scheduled</tspan></text>
+        <g class="s2-check" transform="translate(176,18)">
+          <circle class="f-text" r="9"></circle>
+          <path class="s-onfill" d="M -4 0 L -1 3 L 4 -3" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+        </g>
+      </g>
+      <g transform="translate(20,218)">
+        <rect class="f-text" x="0" y="-14" width="84" height="18" rx="9"></rect>
+        <text class="on-fill" x="42" y="-1" text-anchor="middle" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10">SOCIAL</text>
+      </g>
+    </g>
+
+    <g class="f-text" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="9" text-anchor="middle" letter-spacing="1">
+      <text x="315" y="126">HOOK</text>
+      <text x="605" y="126">ACK</text>
+      <text x="895" y="126">ENRICH</text>
+      <text x="1185" y="126">SEND</text>
+    </g>
+
+    <g fill="none" stroke-width="2">
+      <rect class="s2-s1" x="50" y="-2" width="240" height="234" rx="18" stroke-width="2.5"></rect>
+      <rect class="s2-s2" x="340" y="-2" width="240" height="234" rx="18" stroke-width="2.5"></rect>
+      <rect class="s2-s3" x="630" y="-2" width="240" height="234" rx="18" stroke-width="2.5"></rect>
+      <rect class="s2-s4" x="920" y="-2" width="240" height="234" rx="18" stroke-width="2.5"></rect>
+      <rect class="s2-s5" x="1210" y="-2" width="240" height="234" rx="18" stroke-width="2.5"></rect>
+    </g>
+  </g>
+
+  <g font-family="'JetBrains Mono',ui-monospace,monospace" font-size="11" letter-spacing="1">
+    <g transform="translate(80,820)">
+      <rect class="f-tertiary" x="0" y="-10" width="12" height="12" rx="2"></rect>
+      <text class="f-text" x="20" y="0">AGILITY CMS</text>
+      <rect class="f-secondary" x="170" y="-10" width="12" height="12" rx="2"></rect>
+      <text class="f-text" x="190" y="0">YOUR SERVERLESS CODE</text>
+      <rect class="f-text" x="450" y="-10" width="12" height="12" rx="2"></rect>
+      <text class="f-text" x="470" y="0">BUFFER · SOCIAL</text>
+    </g>
+    <text class="f-text" x="1520" y="820" text-anchor="end">CUSTOM CODE · v1.0</text>
+  </g>
+</svg>

@@ -63,7 +63,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					}}
 				/>
 			</head>
-			<body className="h-full">
+			{/* data-agility-guid: the Web Studio SDK reads the instance GUID from
+			    <body> and ignores editor messages for any other instance, so
+			    without it click-to-edit never responds. The GUID is an identifier,
+			    not a credential (the official Next.js starter renders it the same
+			    way), and the SDK itself only loads in preview (PreviewScripts). */}
+			<body className="h-full" data-agility-guid={process.env.AGILITY_GUID}>
 				<main
 					className={classNames(
 						// min-h (not h): the window scrolls, so the chain must be able

@@ -1,4 +1,6 @@
 import * as appInsights from "applicationinsights";
+import { after } from "next/server";
+import { reportMcpToolCall } from "./analytics/agentTraffic";
 
 let telemetryClient: appInsights.TelemetryClient | null = null;
 let initialized = false;
@@ -59,6 +61,14 @@ export function trackMcpToolCall(
   success: boolean,
   error?: Error
 ) {
+  // PostHog copy for demand reporting, independent of App Insights being
+  // configured. after() keeps it alive past the response on serverless.
+  try {
+    after(() => reportMcpToolCall({ tool: toolName, args, success, durationMs: duration }));
+  } catch {
+    // Called outside a request scope: nothing to report against.
+  }
+
   if (!telemetryClient) return;
 
   const properties: Record<string, string> = {

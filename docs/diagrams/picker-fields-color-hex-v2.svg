@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" role="img" aria-labelledby="t d">
+  <title id="t">The hex color field with its picker open</title>
+  <desc id="d">An Accent color field showing a blue swatch and the value #0F62FE, an eyedropper button, Clear and Done. Below it, a saturation and value square and a hue slider. A note says the field always stores the 6-digit form. The swatch, gradients and slider show real colours and stay the same in both themes.</desc>
+  <!-- Dual-theme (docs convention): colours live in CSS, light is the default,
+       the dark block wins when the page sets color-scheme: dark. -->
+  <style>
+    .f-bg{fill:#F1EFE9}
+    .f-faint{fill:#6E685E}
+    .f-lit-0055ff{fill:#0055FF}
+    .f-lit-0f62fe{fill:#0F62FE}
+    .f-muted{fill:#5E5951}
+    .f-raised{fill:#FEFDF9}
+    .f-text{fill:#181716}
+    .f-text2{fill:#3B3935}
+    .s-border{stroke:#E4E0D8}
+    .s-bstrong{stroke:#CFC9BC}
+    .s-lit-ffffff{stroke:#FFFFFF}
+    .s-text2{stroke:#3B3935}
+    .sc-lit-000000{stop-color:#000000}
+    .sc-lit-0000ff{stop-color:#0000FF}
+    .sc-lit-00ff00{stop-color:#00FF00}
+    .sc-lit-00ffff{stop-color:#00FFFF}
+    .sc-lit-ff0000{stop-color:#FF0000}
+    .sc-lit-ff00ff{stop-color:#FF00FF}
+    .sc-lit-ffff00{stop-color:#FFFF00}
+    .sc-lit-ffffff{stop-color:#FFFFFF}
+    @media (prefers-color-scheme: dark) {
+      .f-bg{fill:#0E0D0C}
+      .f-faint{fill:#989289}
+      .f-muted{fill:#AAA49B}
+      .f-raised{fill:#201F1D}
+      .f-text{fill:#F1EFE9}
+      .f-text2{fill:#C4BFB5}
+      .s-border{stroke:#302E2B}
+      .s-bstrong{stroke:#45423E}
+      .s-text2{stroke:#C4BFB5}
+    }
+  </style>
+  <!-- Colour swatches, the saturation/value square and the hue slider are the content: they keep literal values in both themes. -->
+
+	<style>
+		.ui { font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', ui-sans-serif, system-ui, sans-serif; }
+		.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+	</style>
+
+	<defs>
+		<linearGradient id="sat" x1="0" y1="0" x2="1" y2="0">
+			<stop class="sc-lit-ffffff" offset="0" />
+			<stop class="sc-lit-ffffff" offset="1" stop-opacity="0" />
+		</linearGradient>
+		<linearGradient id="val" x1="0" y1="0" x2="0" y2="1">
+			<stop class="sc-lit-000000" offset="0" stop-opacity="0" />
+			<stop class="sc-lit-000000" offset="1" />
+		</linearGradient>
+		<linearGradient id="hue" x1="0" y1="0" x2="1" y2="0">
+			<stop class="sc-lit-ff0000" offset="0%" /><stop class="sc-lit-ffff00" offset="17%" />
+			<stop class="sc-lit-00ff00" offset="33%" /><stop class="sc-lit-00ffff" offset="50%" />
+			<stop class="sc-lit-0000ff" offset="67%" /><stop class="sc-lit-ff00ff" offset="83%" />
+			<stop class="sc-lit-ff0000" offset="100%" />
+		</linearGradient>
+	</defs>
+
+	<rect class="f-bg" width="1600" height="1000" />
+	<rect class="f-raised s-border" x="420" y="80" width="760" height="840" rx="20" stroke-width="2" />
+
+	<g class="ui">
+		<text class="f-text2" x="460" y="152" font-size="24" font-weight="500">Accent color</text>
+
+		<rect class="f-raised s-border" x="460" y="172" width="680" height="600" rx="16" stroke-width="2" />
+
+		<!-- the collapsed row -->
+		<rect class="f-lit-0f62fe s-bstrong" x="484" y="196" width="72" height="72" rx="10" stroke-width="2" />
+		<rect class="f-raised s-bstrong" x="576" y="206" width="200" height="52" rx="10" stroke-width="2" />
+		<text x="598" y="241" class="mono f-text" font-size="26">#0F62FE</text>
+
+		<!-- eyedropper -->
+		<rect class="f-raised s-bstrong" x="906" y="206" width="52" height="52" rx="10" stroke-width="2" />
+		<g class="s-text2" transform="translate(920 220)" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+			<path d="m16 4 4 4M18 6 8.5 15.5 5 19l-1 1 1 1 1-1 3.5-3.5L19 7" />
+		</g>
+
+		<text class="f-muted" x="1000" y="241" font-size="24" font-weight="500" text-anchor="middle">Clear</text>
+		<rect class="f-raised s-bstrong" x="1044" y="206" width="76" height="52" rx="10" stroke-width="2" />
+		<text class="f-text2" x="1082" y="241" font-size="24" font-weight="500" text-anchor="middle">Done</text>
+
+		<line class="s-border" x1="460" y1="292" x2="1140" y2="292" stroke-width="2" />
+
+		<!-- saturation / value square -->
+		<g>
+			<rect class="f-lit-0055ff" x="484" y="320" width="632" height="280" rx="10" />
+			<rect x="484" y="320" width="632" height="280" rx="10" fill="url(#sat)" />
+			<rect x="484" y="320" width="632" height="280" rx="10" fill="url(#val)" />
+			<circle class="f-lit-0f62fe s-lit-ffffff" cx="1078" cy="327" r="11" stroke-width="3.5" />
+		</g>
+
+		<!-- hue slider -->
+		<rect x="484" y="634" width="632" height="26" rx="13" fill="url(#hue)" />
+		<circle class="f-lit-0055ff s-lit-ffffff" cx="865" cy="647" r="14" stroke-width="3.5" />
+
+		<text class="f-faint" x="484" y="722" font-size="22">Always stores the 6-digit form — never 8-digit #RRGGBBAA.</text>
+	</g>
+
+	<text x="800" y="868" class="ui f-muted" font-size="25" text-anchor="middle">
+		Drag, type, paste, or pick a color from anywhere on screen.
+	</text>
+</svg>

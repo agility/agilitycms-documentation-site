@@ -122,6 +122,18 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 	const listRef = useRef<HTMLDivElement>(null);
 	const sentinelRef = useRef<HTMLLIElement>(null);
 	const queryRef = useRef("");
+	// The search a reader settled on, waiting to be reported (see below).
+	const pendingSearch = useRef<{ query: string; results: number } | null>(null);
+	const searchTrackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const flushSearch = useCallback(() => {
+		if (searchTrackTimer.current) clearTimeout(searchTrackTimer.current);
+		searchTrackTimer.current = null;
+		if (pendingSearch.current) track("docs_search", pendingSearch.current);
+		pendingSearch.current = null;
+	}, []);
+	// Closing the palette or navigating away still reports the last query, so
+	// "searched and gave up" isn't lost to the settle delay.
+	useEffect(() => flushSearch, [flushSearch]);
 	const [query, setQuery] = useState("");
 	const [hits, setHits] = useState<any[]>([]);
 	const [totalHits, setTotalHits] = useState(0);
@@ -162,14 +174,20 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 				setHasMore(result.nbPages > 1);
 				setActiveIndex(0);
 				if (query.trim().length >= 2) {
-					track("docs_search", { query, results: result.nbHits });
+					// Results stay instant (150ms), but analytics waits for the query
+					// to sit still for a second, so typing "webhook" reports one search
+					// instead of "we", "web", "webh"… Those fragments were swamping the
+					// search and zero-results reports.
+					pendingSearch.current = { query, results: result.nbHits };
+					if (searchTrackTimer.current) clearTimeout(searchTrackTimer.current);
+					searchTrackTimer.current = setTimeout(flushSearch, 1000);
 				}
 			} catch (e) {
 				// network hiccup — keep the previous results on screen
 			}
 		}, 150);
 		return () => clearTimeout(t);
-	}, [query]);
+	}, [query, flushSearch]);
 
 	const loadMore = useCallback(async () => {
 		const q = queryRef.current;

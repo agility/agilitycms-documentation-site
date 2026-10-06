@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import agility from "@agility/content-fetch";
 import nextConfig from "next.config";
 import { defaultLocale, getLocaleFromPathname } from "lib/i18n/config";
 import { apiReferencePaths } from "lib/api-specs/loadSpec";
 import { isDevMode } from "lib/cms/isDevMode";
+import { reportAgentRequest } from "lib/analytics/agentTraffic";
 
 /**
  * Proxy (Next 16's renamed middleware — the middleware.ts convention is
@@ -306,6 +307,14 @@ const loadNotFoundHtml = (origin: string): Promise<string | null> => {
 	return notFoundInFlight;
 };
 
+/** Dotted paths the app serves itself: public/ files, the llms.txt route, and API routes. */
+const isServedDottedPath = (pathname: string): boolean =>
+	pathname.startsWith("/_next/") ||
+	pathname.startsWith("/api/") ||
+	pathname.startsWith("/assets/") ||
+	pathname === "/custom-fields.js" ||
+	pathname === "/llms.txt";
+
 const notFoundResponse = async (request: NextRequest) => {
 	const html = notFoundHtml || (await loadNotFoundHtml(request.nextUrl.origin));
 
@@ -326,9 +335,16 @@ const notFoundResponse = async (request: NextRequest) => {
 	});
 };
 
-export async function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest, event: NextFetchEvent) {
 	const { nextUrl } = request;
 	const pathname = nextUrl.pathname;
+
+	// Agent and crawler analytics (lib/analytics/agentTraffic.ts). First, so
+	// every outcome below is counted, and handed to waitUntil so it never
+	// delays the response. Production-only and a no-op without a PostHog key.
+	event.waitUntil(
+		reportAgentRequest({ pathname, userAgent: request.headers.get("user-agent"), method: request.method })
+	);
 
 	// 0. IndexNow key verification file. Served at /docs/{key}.txt (pathname
 	//    excludes the basePath) so search engines can verify ownership before
@@ -380,6 +396,18 @@ export async function proxy(request: NextRequest) {
 		const url = nextUrl.clone();
 		url.pathname = `/api/article-md${pathname.slice(0, -3)}`;
 		return NextResponse.rewrite(url);
+	}
+
+	// 4b. A dotted path that isn't one of the files this app really serves gets
+	//     a real 404. Without this, "has a dot" skips the published-path check
+	//     below and Next renders the not-found UI under /[locale] with a 200 (a
+	//     soft 404: /docs/foo.json, /docs/.well-known/*). No published page path
+	//     contains a dot (checked against sitemap.xml 2026-10-05), so the list
+	//     is just the app's own files. Add to it when adding a dotted route.
+	//     /_next, /assets, favicon.ico, sitemap.xml and robots.txt never reach
+	//     here (see `matcher`); the IndexNow key and .md twins are handled above.
+	if (pathname.includes(".") && !isDevMode() && !isServedDottedPath(pathname)) {
+		return await notFoundResponse(request);
 	}
 
 	const isStaticFile = pathname.includes(".") || pathname.startsWith("/_next");

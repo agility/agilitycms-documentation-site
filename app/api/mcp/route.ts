@@ -1,5 +1,7 @@
 // @ts-nocheck — Zod v3 + McpServer.tool() causes infinite type recursion
 import { createMcpHandler } from "mcp-handler";
+import { after } from "next/server";
+import { reportAgentRequest } from "../../../lib/analytics/agentTraffic";
 import { z } from "zod";
 import { algoliasearch } from "algoliasearch";
 import {
@@ -173,7 +175,7 @@ const handler = createMcpHandler(
 
           trackMcpToolCall(
             "search_docs",
-            { query, page: page || 0 },
+            { query, page: page || 0, hits: results.nbHits },
             Date.now() - startTime,
             true
           );
@@ -345,6 +347,11 @@ const CORS_HEADERS: Record<string, string> = {
 // browser-based MCP clients can connect.
 function withMcpHeaders(fn: (req: Request) => Promise<Response>) {
   return async (req: Request) => {
+    // Agent analytics (lib/analytics/agentTraffic.ts): /api/* skips proxy.ts,
+    // so MCP traffic is reported here, after the response is sent.
+    after(() =>
+      reportAgentRequest({ pathname: "/api/mcp", userAgent: req.headers.get("user-agent"), method: req.method })
+    );
     const accept = req.headers.get("accept") || "";
     const hasJson = accept.includes("application/json");
     const hasSse = accept.includes("text/event-stream");
@@ -392,7 +399,10 @@ function withMcpHeaders(fn: (req: Request) => Promise<Response>) {
 // bodies with res.text(), which never finishes on an open stream: GET used to
 // hang and end in a 500. The MCP Streamable HTTP spec lets a server that
 // doesn't offer the stream answer 405, which clients treat as "no stream".
-export function GET() {
+export function GET(req: Request) {
+  after(() =>
+    reportAgentRequest({ pathname: "/api/mcp", userAgent: req.headers.get("user-agent"), method: req.method })
+  );
   return new Response("Method Not Allowed. Send JSON-RPC requests with POST.", {
     status: 405,
     headers: { ...CORS_HEADERS, allow: "POST, DELETE, OPTIONS" },
