@@ -30,8 +30,8 @@ const toPath = (u) =>
 
 const distinct = (paths) => [...new Set(paths)].slice(0, K);
 
-async function algolia(q) {
-	const res = await fetch(`https://${env("ALGOLIA_APP_ID")}-dsn.algolia.net/1/indexes/doc_site/query`, {
+const algolia = (index) => async (q) => {
+	const res = await fetch(`https://${env("ALGOLIA_APP_ID")}-dsn.algolia.net/1/indexes/${index}/query`, {
 		method: "POST",
 		headers: {
 			"X-Algolia-Application-Id": env("ALGOLIA_APP_ID"),
@@ -52,15 +52,15 @@ async function algolia(q) {
 	const j = await res.json();
 	if (!j.hits) throw new Error(`algolia: ${JSON.stringify(j).slice(0, 200)}`);
 	return { pages: distinct(j.hits.map((h) => toPath(h.url))), top: null };
-}
+};
 
 function azure(mode) {
 	return async (q) => {
 		const body = { search: q, select: "url", top: 50 };
-		if (mode !== "keyword") body.vectorQueries = [{ kind: "text", text: q, fields: "contentVector", k: 50 }];
+		if (mode !== "keyword") body.vectorQueries = [{ kind: "text", text: q, fields: env("AZURE_VECTOR_FIELD") || "bodyVector", k: 50 }];
 		if (mode === "semantic") Object.assign(body, { queryType: "semantic", semanticConfiguration: "docs-semantic" });
 		const res = await fetch(
-			`https://${env("AZURE_SEARCH_NAME")}.search.windows.net/indexes/agility-docs/docs/search?api-version=2024-07-01`,
+			`https://${env("AZURE_SEARCH_NAME")}.search.windows.net/indexes/${env("AZURE_SEARCH_INDEX") || "agility-docs-sections"}/docs/search?api-version=2024-07-01`,
 			{ method: "POST", headers: { "api-key": env("AZURE_SEARCH_KEY"), "content-type": "application/json" }, body: JSON.stringify(body) }
 		);
 		const j = await res.json();
@@ -73,7 +73,8 @@ function azure(mode) {
 }
 
 const engines = {
-	"algolia (mcp settings)": algolia,
+	"algolia per article": algolia("doc_site"),
+	"algolia per section": algolia("doc_site_sections"),
 	"azure keyword": azure("keyword"),
 	"azure hybrid": azure("hybrid"),
 	"azure hybrid + semantic": azure("semantic"),
