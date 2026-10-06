@@ -66,7 +66,7 @@ const indexAll = async (req: NextRequest) => {
 					fields {
 						title
 						subTitle
-						articles {
+						articles(take: 250) {
 							properties {
 								itemOrder
 							}
@@ -93,6 +93,17 @@ const indexAll = async (req: NextRequest) => {
 			}
 		`,
 	});
+
+	// GraphQL lists default to 50 items, which silently cut the Overview,
+	// Editors and Developers categories short. Since this is a full replace, a
+	// short list would DELETE the missing articles from search. Refuse instead.
+	const capped = data.doccategories.filter((c: any) => (c.fields.articles?.length || 0) >= 250);
+	if (capped.length) {
+		return NextResponse.json(
+			{ error: "A category hit the 250-article list limit; paginate before reindexing", categories: capped.map((c: any) => c.fields.title) },
+			{ status: 500 }
+		);
+	}
 
 	const articleUrls = await getDynamicPageSitemapMappingREST();
 
