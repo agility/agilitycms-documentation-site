@@ -9,20 +9,24 @@ Source material for the docs articles on search and AI assistants. Every number 
 - Azure ranking: keyword (BM25, `en.microsoft` analyzer) + vector, fused, then the semantic ranker (`queryType: semantic`).
 - Test set: 52 questions (real customer searches, pages AI agents fetch, most-read pages, agent-style phrasing, one question the docs cannot answer). Expected answers were committed to git before any engine was scored.
 
-## Results (51 answerable questions)
+## Results (51 answerable questions, run 2, 2026-10-06)
 | Engine | Right page first | In top 3 | In top 5 | MRR@10 | Missed |
 |---|---|---|---|---|---|
 | Algolia, one record per article | 25 | 33 | 36 | 0.577 | 15 |
-| Azure, keyword only, per section | 30 | 40 | 42 | 0.691 | 7 |
-| Azure, keyword + vector | 36 | 43 | 48 | 0.795 | 2 |
-| Azure, keyword + vector + semantic ranker | 35 | 47 | 49 | 0.810 | 1 |
+| Algolia, one record per section (same settings) | 25 | 32 | 35 | 0.573 | 14 |
+| Azure, keyword only, per section | 27 | 40 | 42 | 0.668 | 6 |
+| Azure, keyword + vector | 36 | 44 | 47 | 0.801 | 2 |
+| Azure, keyword + vector + semantic ranker | 37 | 47 | 49 | 0.830 | 1 |
+
+Run 1 had no Algolia section index and slightly different Azure numbers (keyword 0.691, hybrid 0.795, semantic 0.810) from an earlier splitter; run 2 is the one to quote.
 
 ## Lessons (these are the points the articles should teach)
-1. **How you split content matters as much as the engine.** Keyword search alone over heading-level sections beat Algolia over whole articles (MRR 0.691 vs 0.577). About half the improvement came from indexing sections instead of whole articles; the other half came from vectors plus the semantic ranker. Index one record per section (split at H2/H3), keep a parent id, and collapse results to one per page when showing them.
+1. **Splitting into sections did not change Algolia's ranking.** One record per section scored the same as one per article (MRR 0.573 vs 0.577). Run 1 suggested "half the gap is how content is split"; run 2 measured it directly and that was wrong. The gain came from how results are ranked: keyword ranking that weighs rare words (BM25 in Azure) beat Algolia's tie-breaking ranking on question-style queries (0.668 vs 0.577), vectors added the most (0.801), and the semantic ranker added a little more (0.830). Sections are still worth it for other reasons: the hit lands on the passage that answers the question (better snippets, and a chatbot can quote it), long articles are not cut off, and code stays in.
 2. **Keep code blocks.** Developer questions are often answered by code. Stripping code makes snippets prettier but loses answers.
 3. **Don't cap the body.** A 5,000-character cap silently drops the end of long articles. Sections remove the need for a cap.
+3a. **Check that a full reindex sees everything.** The docs' full reindex read categories through GraphQL without `take`, and GraphQL lists default to 50, so three categories came back with exactly 50 articles and 89 of 437 articles were missing. Because the reindex replaces the whole index, it would have deleted them from live search. Pass an explicit `take`, and refuse to replace an index when a list comes back at the limit.
 4. **Agents and chatbots ask in sentences.** With Algolia's defaults every word must match, so "can I schedule content to publish later" returned 0 results. Four query settings fixed zero-result questions for agent traffic: `queryLanguages: ["en"]`, `removeStopWords: true`, `ignorePlurals: true`, `removeWordsIfNoResults: "allOptional"`. Use them for agent and chatbot queries; they also help people.
-5. **Vectors fix vocabulary mismatch; the semantic ranker fixes ordering.** "Does agility support multiple languages" found nothing by keyword (the docs say "locales"); vectors found it. The semantic ranker moved the right page into the top 3 more often (43 to 47 of 51).
+5. **Vectors fix vocabulary mismatch; the semantic ranker fixes ordering.** "Does agility support multiple languages" found nothing by keyword (the docs say "locales"); vectors found it. The semantic ranker moved the right page into the top 3 more often (44 to 47 of 51).
 6. **Some misses are content gaps, not engine problems.** "How do I let editors click on the page to edit it" ranked poorly everywhere because the docs never use that phrase. Search analytics (zero-result and low-click queries) tell you which words to add to your content.
 7. **A confidence score can tell a chatbot when to say "I don't know".** On the semantic ranker (0 to 4), every answerable question's top result scored at least 2.16; the question with no answer scored 1.94. That suggests a refusal threshold around 2.0, but it was one probe: calibrate on your own content with several no-answer questions before relying on it.
 8. **Evaluate before you choose.** Write the questions and their correct pages first and commit them, then score each engine on hit@1/3/5 and MRR. Call the engine directly when testing so test runs don't pollute production analytics.
