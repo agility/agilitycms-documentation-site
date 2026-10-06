@@ -4,6 +4,7 @@ import { after } from "next/server";
 import { reportAgentRequest } from "../../../lib/analytics/agentTraffic";
 import { z } from "zod";
 import { algoliasearch } from "algoliasearch";
+import { docUrl, searchDocs } from "../../../lib/search/docsSearch";
 import {
   initializeTelemetry,
   trackMcpToolCall,
@@ -119,72 +120,45 @@ const handler = createMcpHandler(
 
         try {
           const algoliaStart = Date.now();
-          const results: any = await algoliaClient.searchSingleIndex({
-            indexName: INDEX_NAME,
-            searchParams: {
-              query,
-              page: page || 0,
-              hitsPerPage: 10,
-              // Agents ask in sentences ("how do I schedule content to publish
-              // later"), and by default every word must match, so most such
-              // questions returned 0 hits. Drop filler words, fold plurals, and
-              // when the full query still matches nothing, let Algolia relax
-              // words instead of returning an empty result.
-              queryLanguages: ["en"],
-              removeStopWords: true,
-              ignorePlurals: true,
-              removeWordsIfNoResults: "allOptional",
-              attributesToSnippet: ["body:50"],
-              snippetEllipsisText: "...",
-              attributesToRetrieve: [
-                "title",
-                "url",
-                "description",
-                "category",
-                "section",
-              ],
-              attributesToHighlight: [],
-            },
-          });
+          const results = await searchDocs(query, page || 0);
           trackAlgoliaCall(
             "search",
             query,
             Date.now() - algoliaStart,
             true,
-            results.nbHits
+            results.total
           );
 
           const lines: string[] = [
             `# Search Results: "${query}"`,
-            `Found ${results.nbHits} results (page ${results.page + 1} of ${results.nbPages})`,
+            `Found ${results.total} results (page ${results.page + 1} of ${results.pages})`,
             "",
           ];
 
-          results.hits.forEach((hit: any, i: number) => {
+          results.hits.forEach((hit, i) => {
             const url = fullUrl(hit.url);
-            const snippet = stripHtml(
-              hit._snippetResult?.body?.value || ""
-            );
             lines.push(`## ${i + 1}. ${hit.title}`);
             if (url) lines.push(`**URL:** ${url}`);
             if (hit.category || hit.section)
               lines.push(
                 `**Category:** ${hit.category || ""}${hit.section ? ` > ${hit.section}` : ""}`
               );
+            if (hit.heading) lines.push(`**Best match in section:** ${hit.heading}`);
             if (hit.description) lines.push(`> ${hit.description}`);
-            if (snippet) lines.push(`\n${snippet}`);
-            lines.push(`\n*objectID: ${hit.objectID} — use with fetch_doc for full content*`);
+            if (hit.snippet) lines.push(`\n${hit.snippet}`);
+            if (hit.score !== null) lines.push(`\n*Relevance: ${hit.score.toFixed(2)} of 4*`);
+            lines.push(`\n*objectID: ${hit.articleId} — use with fetch_doc for full content*`);
             lines.push("");
           });
 
-          if (results.nbPages > (results.page + 1)) {
+          if (results.pages > (results.page + 1)) {
             lines.push(`---`);
             lines.push(`*More results available — use page: ${results.page + 1} to see the next page*`);
           }
 
           trackMcpToolCall(
             "search_docs",
-            { query, page: page || 0, hits: results.nbHits },
+            { query, page: page || 0, hits: results.total, engine: results.engine },
             Date.now() - startTime,
             true
           );
@@ -237,6 +211,18 @@ const handler = createMcpHandler(
       async ({ objectID }: { objectID: string }) => {
         const startTime = Date.now();
         try {
+          // The full article as Markdown, code included, from the same .md
+          // twin agents can fetch directly. The search record's body is capped
+          // and has code stripped, so it is only the fallback.
+          const lookupStart = Date.now();
+          const path = await docUrl(objectID);
+          trackAlgoliaCall("getObject", objectID, Date.now() - lookupStart, true, path ? 1 : 0);
+          const twin = path ? await fetch(`${BASE_URL}${path}.md`, { cache: "no-store" }) : null;
+          if (twin?.ok) {
+            trackMcpToolCall("fetch_doc", { objectID }, Date.now() - startTime, true);
+            return { content: [{ type: "text" as const, text: await twin.text() }] };
+          }
+
           const algoliaStart = Date.now();
           const doc: any = await algoliaClient.getObject({
             indexName: INDEX_NAME,
