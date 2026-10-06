@@ -3,22 +3,52 @@ import { algoliasearch } from "algoliasearch";
 import { gqlFresh } from "lib/cms/gql";
 import { defaultLocale } from "lib/i18n/config";
 import { getDynamicPageSitemapMappingREST } from "utils/sitemapUtils";
-import { normalizeArticle } from "utils/searchUtils";
+import { normalizeArticle, normalizeArticleSections, type SectionRecord } from "utils/searchUtils";
+import { ALGOLIA_SECTIONS_INDEX, configureSectionsIndex } from "lib/search/algoliaSections";
+import { azureIndexingConfigured, replaceAllAzure } from "lib/search/azure";
 
 /**
- * Bulk re-index every published doc article into Algolia (index `doc_site`).
- * Uses an uncached GraphQL fetch — indexing must never read
- * stale content. Triggered manually or from CI, not from page renders.
+ * Bulk re-index every published doc article. Uses an uncached GraphQL fetch —
+ * indexing must never read stale content. Triggered manually or from CI, not
+ * from page renders.
+ *
+ * Targets (`?targets=`, comma-separated, default `algolia,sections`):
+ *   algolia   the legacy `doc_site` index, one record per article
+ *   sections  the `doc_site_sections` index, one record per heading section
+ *   azure     the Azure AI Search index (embeds every section, so it costs
+ *             money and takes a few minutes; never runs by default)
+ *
+ * When SEARCH_REINDEX_SECRET is set, every call needs `Authorization: Bearer
+ * <secret>`. The azure target always needs it: an open endpoint that spends
+ * embedding credits on each request is an invitation.
  */
+export const maxDuration = 300;
+
 export async function POST(req: NextRequest) {
-	return indexAll();
+	return indexAll(req);
 }
 
 export async function GET(req: NextRequest) {
-	return indexAll();
+	return indexAll(req);
 }
 
-const indexAll = async () => {
+const TARGETS = ["algolia", "sections", "azure"] as const;
+type Target = (typeof TARGETS)[number];
+
+const indexAll = async (req: NextRequest) => {
+	const targets = (req.nextUrl.searchParams.get("targets") || "algolia,sections")
+		.split(",")
+		.map((t) => t.trim())
+		.filter((t): t is Target => (TARGETS as readonly string[]).includes(t));
+	const secret = process.env.SEARCH_REINDEX_SECRET;
+	const authorized = Boolean(secret) && req.headers.get("authorization") === `Bearer ${secret}`;
+	if ((secret || targets.includes("azure")) && !authorized) {
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	}
+	if (targets.includes("azure") && !azureIndexingConfigured()) {
+		return NextResponse.json({ error: "Azure indexing is not configured" }, { status: 400 });
+	}
+
 	const client = algoliasearch(
 		process.env.ALGOLIA_APP_ID!,
 		process.env.ALGOLIA_ADMIN_API_KEY!
@@ -36,7 +66,7 @@ const indexAll = async () => {
 					fields {
 						title
 						subTitle
-						articles {
+						articles(take: 250) {
 							properties {
 								itemOrder
 							}
@@ -64,9 +94,21 @@ const indexAll = async () => {
 		`,
 	});
 
+	// GraphQL lists default to 50 items, which silently cut the Overview,
+	// Editors and Developers categories short. Since this is a full replace, a
+	// short list would DELETE the missing articles from search. Refuse instead.
+	const capped = data.doccategories.filter((c: any) => (c.fields.articles?.length || 0) >= 250);
+	if (capped.length) {
+		return NextResponse.json(
+			{ error: "A category hit the 250-article list limit; paginate before reindexing", categories: capped.map((c: any) => c.fields.title) },
+			{ status: 500 }
+		);
+	}
+
 	const articleUrls = await getDynamicPageSitemapMappingREST();
 
 	let objects: any[] = [];
+	const sections: SectionRecord[] = [];
 	const skipped: any[] = [];
 	const categoryBreakdown: any[] = [];
 	for (const cat of data.doccategories) {
@@ -94,26 +136,43 @@ const indexAll = async () => {
 
 			const object = await normalizeArticle({ article, url, category: cat });
 			objects.push(object);
+			sections.push(...(await normalizeArticleSections({ article, url, category: cat })));
 		}
 	}
 
-	//configure index settings
-	await client.setSettings({
-		indexName,
-		indexSettings: {
-			searchableAttributes: ["title", "headings", "unordered(body)", "description"],
-			attributesToSnippet: ["body:30"],
-		},
-	});
+	const results: Record<string, unknown> = {};
 
-	// Atomic full rebuild: replaceAllObjects copies into a temp index and renames,
-	// so any record not in `objects` (deleted/unpublished/orphaned) is removed.
-	// In v5 it always waits for each step (the v4 `safe` option is gone).
-	await client.replaceAllObjects({ indexName, objects });
+	if (targets.includes("algolia")) {
+		await client.setSettings({
+			indexName,
+			indexSettings: {
+				searchableAttributes: ["title", "headings", "unordered(body)", "description"],
+				attributesToSnippet: ["body:30"],
+			},
+		});
+		// Atomic full rebuild: replaceAllObjects copies into a temp index and renames,
+		// so any record not in `objects` (deleted/unpublished/orphaned) is removed.
+		// In v5 it always waits for each step (the v4 `safe` option is gone).
+		await client.replaceAllObjects({ indexName, objects });
+		results.algolia = { index: indexName, records: objects.length };
+	}
+
+	if (targets.includes("sections")) {
+		// replaceAllObjects copies the old index's settings onto the new one, but
+		// the first run has no old index, so configure after the swap as well.
+		await client.replaceAllObjects({ indexName: ALGOLIA_SECTIONS_INDEX, objects: sections });
+		await configureSectionsIndex(client);
+		results.sections = { index: ALGOLIA_SECTIONS_INDEX, records: sections.length };
+	}
+
+	if (targets.includes("azure")) {
+		results.azure = await replaceAllAzure(sections);
+	}
 
 	return NextResponse.json({
 		ok: true,
-		index: "doc_site",
+		targets,
+		results,
 		indexed: objects.length,
 		skipped,
 		categories: categoryBreakdown.length,

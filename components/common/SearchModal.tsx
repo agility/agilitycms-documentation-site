@@ -35,6 +35,10 @@ const getSearchClient = () => {
 
 const HITS_PER_PAGE = 15;
 
+// One record per article (`doc_site`) or per section (`doc_site_sections`,
+// collapsed to one hit per article by the index's distinct setting).
+const SEARCH_INDEX = process.env.NEXT_PUBLIC_ALGOLIA_INDEX || "doc_site";
+
 const SEARCH_PARAMS = {
 	hitsPerPage: HITS_PER_PAGE,
 	highlightPreTag: "<mark>",
@@ -162,7 +166,7 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 		const t = setTimeout(async () => {
 			try {
 				const response = await getSearchClient().search({
-					requests: [{ indexName: "doc_site", query, ...SEARCH_PARAMS, page: 0 }],
+					requests: [{ indexName: SEARCH_INDEX, query, ...SEARCH_PARAMS, page: 0 }],
 				});
 				if (queryRef.current !== query) return;
 				const result = response.results[0];
@@ -194,7 +198,7 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 		if (!q || !hasMore) return;
 		const nextPage = page + 1;
 		const response = await getSearchClient().search({
-			requests: [{ indexName: "doc_site", query: q, ...SEARCH_PARAMS, page: nextPage }],
+			requests: [{ indexName: SEARCH_INDEX, query: q, ...SEARCH_PARAMS, page: nextPage }],
 		});
 		if (queryRef.current !== q) return;
 		const result = response.results[0];
