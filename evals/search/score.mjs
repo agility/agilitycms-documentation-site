@@ -78,9 +78,10 @@ const typeAhead = (q) => {
 
 function azure(mode) {
 	return async (q) => {
-		const body = { search: mode === "prefix" ? typeAhead(q) : q, select: "url", top: 50 };
-		if (mode === "prefix") body.queryType = "full";
-		if (mode !== "keyword") body.vectorQueries = [{ kind: "text", text: q, fields: env("AZURE_VECTOR_FIELD") || "bodyVector", k: 50 }];
+		const fuzzy = mode === "prefix" || mode === "hybrid-prefix";
+		const body = { search: fuzzy ? typeAhead(q) : q, select: "url", top: 50 };
+		if (fuzzy) body.queryType = "full";
+		if (mode !== "keyword" && mode !== "prefix") body.vectorQueries = [{ kind: "text", text: q, fields: env("AZURE_VECTOR_FIELD") || "bodyVector", k: 50 }];
 		if (mode === "semantic") Object.assign(body, { queryType: "semantic", semanticConfiguration: "docs-semantic" });
 		const res = await fetch(
 			`https://${env("AZURE_SEARCH_NAME")}.search.windows.net/indexes/${env("AZURE_SEARCH_INDEX") || "agility-docs-sections"}/docs/search?api-version=2024-07-01`,
@@ -102,6 +103,7 @@ const allEngines = {
 	"azure keyword": azure("keyword"),
 	"azure keyword + prefix": azure("prefix"),
 	"azure hybrid": azure("hybrid"),
+	"azure hybrid + prefix": azure("hybrid-prefix"),
 	"azure hybrid + semantic": azure("semantic"),
 };
 const engines = arg("--engines")
