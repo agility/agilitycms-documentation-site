@@ -47,6 +47,8 @@ const algolia = (index) => async (q) => {
 			removeStopWords: true,
 			ignorePlurals: true,
 			removeWordsIfNoResults: "allOptional",
+			analytics: false,
+			clickAnalytics: false,
 		}),
 	});
 	const j = await res.json();
