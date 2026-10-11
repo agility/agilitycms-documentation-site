@@ -22,8 +22,8 @@ const normalizeArticle = async ({ article, category, url }: { article: any; cate
     let body = '';
 
     if(article.fields.markdownContent) {
-        headings = getMarkdownHeadings(article.fields.markdownContent);
-        body = cleanMarkdown(article.fields.markdownContent);
+        headings = getMarkdownHeadings(sourceMarkdown(article));
+        body = cleanMarkdown(sourceMarkdown(article));
     } else if(article.fields.content) {
         try {
             const parsed = JSON.parse(article.fields.content);
@@ -169,6 +169,14 @@ const blocksToPlainText = (blocks: any[]): string => {
 }
 
 /**
+ * The article's Markdown field with line endings normalized. Over half the
+ * articles are saved with CRLF, and `.` in a regex doesn't match `\r`, so every
+ * heading pattern below (`^#{2,3}\s+(.+)$`) silently failed on them: no
+ * headings indexed, and sections cut by length instead of at headings.
+ */
+const sourceMarkdown = (article: any): string => (article.fields.markdownContent || '').replace(/\r\n?/g, '\n');
+
+/**
  * Extract headings from markdown content
  */
 const getMarkdownHeadings = (markdown: string): string[] => {
@@ -275,7 +283,7 @@ const normalizeArticleSections = async ({ article, category, url }: { article: a
  * blocks converted, with headers as ## headings and code blocks fenced.
  */
 const articleMarkdown = (article: any): string => {
-    if(article.fields.markdownContent) return article.fields.markdownContent;
+    if(article.fields.markdownContent) return sourceMarkdown(article);
     if(!article.fields.content) return '';
     let blocks: any[] = [];
     try {
