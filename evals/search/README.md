@@ -1,11 +1,40 @@
 # Docs search evaluation
 
-A fixed test set for comparing docs search engines, and later for checking the docs chatbot's answers.
+Fixed test sets for comparing docs search engines, and later for checking the docs chatbot's answers. The dated story of how these results came about, dead ends included, is in `JOURNAL.md`.
 
-- `questions.json`: 52 questions, each listing every docs page that counts as a correct answer. Committed (d3846da) before any engine was scored. Sources: real docs searches (staff excluded), pages AI agents fetch, the most-read pages, agent-style phrasing, and one gap probe with no correct page.
-- `score.mjs`: runs every question against each engine and reports hit@1/3/5 (the first correct page appears in the top 1, 3 or 5 distinct pages) and MRR@10. Read-only. Algolia is called directly with the docs MCP's settings, so runs never reach production analytics or alerts.
+- `questions.json`: 52 agent-style questions, each listing every docs page that counts as a correct answer. Committed (d3846da) before any engine was scored. Sources: real docs searches (staff excluded), pages AI agents fetch, the most-read pages, agent-style phrasing, and one gap probe with no correct page.
+- `searchbox.json`: 36 search-box queries: 28 copied as typed from 90 days of Algolia analytics (typos and half-typed words included), 8 real queries cut off mid-word. Committed (ca8a134) before scoring.
+- `probes.json`: 8 questions the docs don't answer, checked against the full indexed text, for calibrating a chatbot's "not covered" threshold. Committed (97f963e) before scoring.
+- `score.mjs`: runs a set against each engine and reports hit@1/3/5 (the first correct page is in the top 1, 3 or 5 distinct pages), MRR@10 and p50/p95 latency. Read-only, and sends `analytics: false` so runs stay out of Algolia's search analytics.
 
-## Run 2 (2026-10-06, current)
+```
+ALGOLIA_APP_ID=… ALGOLIA_SEARCH_KEY=… AZURE_SEARCH_NAME=… AZURE_SEARCH_KEY=… AZURE_SEARCH_INDEX=… \
+node evals/search/score.mjs [--set searchbox.json] [--engines "azure hybrid,algolia search box"] \
+  [--exclude developers/ai-search-explained,…] [--json out.json]
+```
+
+Engines: `algolia search box` (exactly what the ⌘K modal sends), `algolia per article` / `algolia per section` (the MCP's sentence settings from #71), `azure keyword`, `azure keyword + prefix` (Lucene: one typo per word, prefix on the last), `azure hybrid` (keyword + vector), `azure hybrid + prefix`, `azure hybrid + semantic`.
+
+**Exclude the pages written about this evaluation.** `developers/ai-search-explained`, `developers/algolia`, `developers/azure-ai-search`, `developers/indexing-content-for-search` and `developers/build-an-mcp-server-for-your-content` quote test questions verbatim; pass them to `--exclude`.
+
+## Run 7 (2026-10-11, current)
+
+Azure index `agility-docs-preview`: built from the CMS by the site's reindex route on a preview deploy, 451 articles in 4,877 sections, with the CRLF heading fix. The five pages above excluded.
+
+| Engine | Agent set MRR@10 (51) | hit@1 | Missed | Search-box MRR@10 (36) | Missed | p50 ms |
+|---|---|---|---|---|---|---|
+| Algolia, search-box settings | 0.291 | 13 | 33 | **0.886** | 0 | 46–53 |
+| Algolia `doc_site`, MCP settings | 0.587 | 25 | 13 | 0.821 | 2 | 53 |
+| Algolia `doc_site_sections` | 0.594 | 25 | 12 | 0.872 | 2 | 45 |
+| Azure keyword | 0.762 | 32 | 3 | 0.718 | 9 | 60–67 |
+| Azure keyword + prefix | 0.741 | 30 | 2 | 0.884 | 1 | 72–117 |
+| Azure hybrid | **0.853** | 40 | 2 | 0.824 | 1 | 224–266 |
+| Azure hybrid + prefix | 0.859 | 40 | 2 | 0.911 | 0 | 263–311 |
+| Azure hybrid + semantic | 0.796 | 34 | 2 | (not rerun) | | 330 |
+
+Per-question bootstrap intervals: Azure hybrid beats Algolia for agents (+0.28 MRR, 95% CI +0.16 to +0.40). The semantic ranker gives no ranking gain over hybrid (−0.07, CI −0.16 to +0.02). On search-box queries, Algolia and Azure with prefix rewriting are tied; plain Azure keyword is clearly worse. Details, and the refusal-threshold results from `probes.json`, in `JOURNAL.md`.
+
+## Run 2 (2026-10-06, superseded)
 
 | Engine | hit@1 | hit@3 | hit@5 | MRR@10 | Missed |
 |---|---|---|---|---|---|
@@ -14,6 +43,8 @@ A fixed test set for comparing docs search engines, and later for checking the d
 | Azure `agility-docs-sections`, keyword only | 27 | 40 | 42 | 0.668 | 6 |
 | Azure, keyword + vector | 36 | 44 | 47 | 0.801 | 2 |
 | Azure, keyword + vector + semantic ranker | 37 | 47 | 49 | 0.830 | 1 |
+
+Note (2026-10-11): runs 1 and 2 were measured while 211 of 451 articles weren't split at their headings at all (a CRLF line-ending bug), and before the docs articles about this work put three test questions into the corpus. Run 7 re-measures both.
 
 Splitting by section left Algolia's ranking unchanged, which disproves run 1's guess that half the gap came from splitting. The difference is the ranking method. The Algolia section index was built by the PR's own reindex route from the CMS (437 articles, 2,355 sections) after fixing a 50-article GraphQL cap that had dropped 89 articles.
 

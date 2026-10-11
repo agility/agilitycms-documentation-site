@@ -2,7 +2,7 @@
 //
 //   ALGOLIA_APP_ID=… ALGOLIA_SEARCH_KEY=… \
 //   AZURE_SEARCH_NAME=… AZURE_SEARCH_KEY=… \
-//   node evals/search/score.mjs [--set searchbox.json] [--engines a,b] [--json results.json]
+//   node evals/search/score.mjs [--set searchbox.json] [--engines a,b] [--exclude page,page] [--json results.json]
 //
 // Algolia is queried directly with the same parameters as the docs MCP
 // search_docs tool (app/api/mcp/route.ts), not through the MCP endpoint, so
@@ -32,7 +32,11 @@ const toPath = (u) =>
 		.replace(/[?#].*$/, "")
 		.replace(/\/$/, "");
 
-const distinct = (paths) => [...new Set(paths)].slice(0, K);
+// --exclude a,b drops pages from every engine's results before ranking. Use it
+// for pages that quote the test questions verbatim (articles written about
+// this evaluation), which would otherwise answer the exam with the exam.
+const excluded = new Set((arg("--exclude") || "").split(",").filter(Boolean).map(toPath));
+const distinct = (paths) => [...new Set(paths)].filter((p) => !excluded.has(p)).slice(0, K);
 
 // The MCP's settings for sentence-style questions (PR #71). The search box
 // sends none of these, so `box: true` scores Algolia exactly as ⌘K calls it.
@@ -53,7 +57,7 @@ const algolia = (index, { box = false } = {}) => async (q) => {
 		},
 		body: JSON.stringify({
 			query: q,
-			hitsPerPage: K,
+			hitsPerPage: K + excluded.size, // room for excluded pages
 			attributesToRetrieve: ["url"],
 			attributesToHighlight: [],
 			...(box ? {} : MCP_PARAMS),
