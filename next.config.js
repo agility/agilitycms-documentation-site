@@ -17,6 +17,31 @@ module.exports = {
             { protocol: 'https', hostname: 'cdn.aglty.io' },
         ],
     },
+    async redirects() {
+        return [
+            {
+                // docs.agilitycms.com serves this app straight from Vercel, so
+                // its ROOT /robots.txt sits outside basePath and used to 404,
+                // leaving the whole duplicate host crawlable. Send that one
+                // request to a route that disallows everything.
+                //
+                // - `has` pins it to the docs.agilitycms.com host. The apex
+                //   agilitycms.com/robots.txt belongs to the marketing site,
+                //   which only proxies /docs/* here, so it can't be affected.
+                // - `basePath: false` lets it match the root path.
+                // - A redirect, not a rewrite: Next only allows a basePath:false
+                //   rewrite to an external URL. Crawlers follow redirects for
+                //   robots.txt (RFC 9309 asks for at least five hops).
+                //
+                // See app/api/robots/subdomain/route.ts and HOSTING.md.
+                source: '/robots.txt',
+                destination: '/docs/api/robots/subdomain',
+                basePath: false,
+                permanent: false,
+                has: [{ type: 'host', value: 'docs.agilitycms.com' }]
+            }
+        ];
+    },
     async rewrites() {
         return [
             {
