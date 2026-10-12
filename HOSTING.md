@@ -81,7 +81,8 @@ Anything configured in a provider dashboard (not in this repo) MUST be recorded 
 | `NETLIFY_PURGE_TOKEN` | Vercel project settings (this app) | Netlify personal access token, for the purge API |
 | `NETLIFY_SITE_ID` | Vercel project settings (this app) | Site ID of the **apex/marketing** Netlify site (the one holding the cached proxy responses) — *not* this docs app |
 | Environment variables | Vercel project settings | Keys listed in [AGENTS.md](AGENTS.md) §Environment Variables (`AGILITY_*`, `ALGOLIA_*`, `NEXT_PUBLIC_ALGOLIA_*`) |
-| Production domain / deployment protection | Vercel project settings | ⚠️ TODO (owner): document |
+| Production domain / deployment protection | Vercel project settings | ⚠️ TODO (owner): document deployment protection |
+| `docs.agilitycms.com` custom domain | Vercel project settings (Vercel DNS) | Serves this app **directly, with no Netlify proxy**, so the whole docs site is reachable there as a duplicate of `agilitycms.com/docs`. Pages canonicalize to the apex. It is the **published Knowledgebase MCP address** (`https://docs.agilitycms.com/docs/api/mcp`), so the MCP does not depend on the apex. Its root `/robots.txt` 307s to `/docs/api/robots/subdomain` (`Disallow: /`) via a host-gated `basePath: false` redirect in `next.config.js`; that rule cannot match the apex, whose `/robots.txt` is the marketing site's |
 | CMS webhooks (search indexing, revalidation) | Agility instance settings (67bc73e6-u) | Point at `/docs/api/search/indexArticle` etc. |
 
 ## Lock-in register
