@@ -12,6 +12,11 @@ import {
   trackException,
 } from "../../../lib/telemetry";
 
+// Words that make a query read as a sentence rather than a keyword list.
+const FUNCTION_WORDS = new Set(
+  "a an the is are am was do does did can could should would will i me my we our you your it its this that these those to in on at of for with and or if when where what which who whom why how".split(" ")
+);
+
 // Initialize telemetry on module load (safe to call multiple times)
 initializeTelemetry();
 
@@ -87,12 +92,16 @@ const handler = createMcpHandler(
         // Steer callers away from keyword-stuffed queries before they
         // burn an Algolia call. Semantic search is recall-poor on long
         // bundles; multiple short queries return better results.
-        const wordCount = query.trim().split(/\s+/).filter(Boolean).length;
+        const words = query.trim().split(/\s+/).filter(Boolean);
+        const wordCount = words.length;
         // Azure's hybrid search handles a full question well (evals/search:
-        // 13-word questions ranked the right page first), so it only blocks
-        // what is clearly a keyword bundle; Algolia keeps the tighter limit.
-        const MAX_QUERY_WORDS = docsSearchEngine() === "azure" ? 20 : 12;
-        if (wordCount > MAX_QUERY_WORDS) {
+        // two 13-word questions both ranked the right page first), so on
+        // Azure a 13-20 word query passes if it reads as a sentence. A keyword
+        // bundle has almost no function words; a question has several.
+        const functionWords = words.filter((w) => FUNCTION_WORDS.has(w.toLowerCase())).length;
+        const readsAsQuestion = docsSearchEngine() === "azure" && wordCount <= 20 && functionWords >= 3;
+        const MAX_QUERY_WORDS = 12;
+        if (wordCount > MAX_QUERY_WORDS && !readsAsQuestion) {
           const hint = [
             `This query is too broad (${wordCount} words). Semantic search works best with short focused queries.`,
             "",
