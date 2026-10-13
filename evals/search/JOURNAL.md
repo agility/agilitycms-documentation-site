@@ -298,14 +298,33 @@ Order, chosen so search never pointed at an index that didn't exist yet:
 
 The ⌘K search box stays on Algolia; nothing about it changed.
 
+## 2026-10-13: the docs catch up, and the first real publish through Azure
+
+The two published search articles still described the first, contaminated run. They now match what shipped:
+
+- **AI Search Explained** (1846) and **Azure AI Search** (1699) were rewritten around run 7. They no longer quote any test question verbatim; a script checked every question in all three sets against the new text, and their internal links.
+- **New: Search for People and for AI Agents** (1865), the use-case article: why the search box and the agent tools want different engines, with the numbers and a diagram.
+- **Smaller corrections** to four pages that described the old setup: the Knowledgebase MCP page, Build an MCP Server, Build a Chatbot, and the indexing guide. The existing Azure diagram named the wrong embedding model; its label now reads `text-embedding-3-large`.
+
+Gotcha: the Agility MCP's `save_content_items` sends `seo: null` and wipes an article's SEO fields. The articles with SEO set were edited through the Management API instead, using a token minted in a signed-in browser tab and cleared afterwards.
+
+**The publish was the webhook test** that the open items were waiting on. Publishing fires the same Index Article webhook as before, which now also writes to Azure. Minutes later:
+
+- 1865 was in `agility-docs-production` as **11 sections**, each with its heading. 1846's sections carried the new text. The index went from 4,890 to 4,930 sections.
+- Through the public MCP, "should agents and the search box use different search engines" returned the new article first, then AI Search Explained and Build an MCP Server.
+
+Nobody had to reindex anything: publishing in the CMS is enough to keep both engines current.
+
+Housekeeping: the scorer's default Azure index is now `agility-docs-production`, because the test indexes it pointed at are going away.
+
 ## Open items
 
 - [x] Merge the CRLF fix and the scorer changes, then reindex the live `doc_site` (done 2026-10-13, above).
 - [x] Code: hybrid without the semantic ranker, 402 fallback, Algolia fallback (done 2026-10-13, above).
 - [ ] Decide what replaces the zero-result alert on Azure.
 - [x] Production switch (done 2026-10-13, above).
-- [ ] Watch the next real publish: the Index Article webhook should update `agility-docs-production` too (Azure failures there are logged and never block Algolia).
-- [ ] Update the two published search articles with the corrected findings.
+- [x] Watch the next real publish: the Index Article webhook should update `agility-docs-production` too (confirmed 2026-10-13, above).
+- [x] Update the two published search articles with the corrected findings (done 2026-10-13, plus a new use-case article).
 - [ ] Have someone other than the author review the expected answers in all three test sets.
 - [ ] Clean up: index `agility-docs-preview` and the 9 Preview env vars scoped to `test/azure-search-preview` (keep while previews are useful for testing); the superseded test indexes `agility-docs` and `agility-docs-sections`.
 - [ ] Production depends on the **dev** subscription's search service (Basic, one replica, no SLA for a single replica). Decide whether that's acceptable or move it.
