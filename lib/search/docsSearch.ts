@@ -109,8 +109,10 @@ export async function searchDocs(query: string, page = 0): Promise<DocsSearchRes
 /** The page path (e.g. "/editors/scheduling") for an article id, or null. */
 export async function docUrl(articleId: string): Promise<string | null> {
 	if (docsSearchEngine() === "azure") {
+		// Not found in Azure (or Azure failed): Algolia may still know it.
 		try {
-			return await azureArticleUrl(articleId);
+			const url = await azureArticleUrl(articleId);
+			if (url) return url;
 		} catch (err) {
 			console.error("Azure article lookup failed; trying Algolia", err);
 		}

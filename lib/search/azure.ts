@@ -276,6 +276,10 @@ export async function searchAzure(query: string, page: number, pageSize: number)
 		}
 	}
 	res ??= await azure(path, { method: "POST", body: hybrid });
+	// azure() maps 404 to null (fine for deletes). For a search it means the
+	// index doesn't exist, so throw and let the caller fall back to Algolia
+	// rather than report "no results".
+	if (!res) throw Object.assign(new Error(`Azure AI Search index "${config().index}" not found`), { status: 404 });
 	const byArticle = new Map<string, AzureHit>();
 	for (const hit of (res?.value || []) as AzureHit[]) if (!byArticle.has(hit.articleId)) byArticle.set(hit.articleId, hit);
 	const all = Array.from(byArticle.values());
