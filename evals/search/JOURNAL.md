@@ -253,9 +253,24 @@ Two previews of the same code: the first build (made before the env vars existed
 2. Run 2's "splitting doesn't help Algolia" was measured with splitting broken for 211 of 451 articles. Re-measured with it fixed, it still doesn't help ranking (8 wins, 9 losses).
 3. The published articles `developers/ai-search-explained` and `developers/azure-ai-search` quote run 2's numbers ("387 articles became 2,049 sections", the semantic ranker "fixed ordering"). They need updating, and they're also why three test questions are now in the corpus.
 
+## 2026-10-13: shipping the line-ending fix to live search
+
+- PR #74 merged (`90e59da`). Vercel's GitHub integration never built the merge: no deployment, no commit status, while the commit before it deployed normally. Production was started from the project's deploy hook for `main` instead. Lesson: after merging, check that the deploy actually happened before running anything that depends on it.
+- Reindexed from the production deployment (`?targets=algolia,sections`, called on the deployment URL rather than through the apex domain's proxy): **19 s**, 451 articles to `doc_site`, 4,890 sections to `doc_site_sections`, nothing skipped.
+- Live `doc_site` records with empty `headings`: **285 → 14**. The SLA page now has "Two SLAs, two purposes" and its other headings indexed.
+- Search quality before and after, same scorer, same exclusions:
+
+| Engine | Search-box set MRR, before → after | Agent set MRR, before → after |
+|---|---|---|
+| Algolia, search-box settings (⌘K) | 0.886 → 0.886 (no question changed) | 0.310 → 0.310 (one better, one worse) |
+| Algolia `doc_site`, MCP settings | 0.821 → 0.821 (no question changed) | 0.606 → 0.602 (two each down one rank) |
+
+- **Honest result: restoring the headings didn't measurably change ranking on these test sets.** The fix was still right (the records were missing data, and headings now show in results and match heading-only phrasing), but if the post makes the case for the fix, the case is data quality, not a ranking gain. It's the same pattern as chunking in run 7: correct structure, no score change.
+- A Firefox check of ⌘K on production after the deploy ("web studio": 47 results, the right pages first) showed nothing search-related in the console. The console did show marketing-tag noise (blocked trackers, rejected cookies) and 11 images plus 3 fonts preloaded on `/docs` but not used within a few seconds.
+
 ## Open items
 
-- [ ] Merge the CRLF fix and the scorer changes (`test/azure-search-preview`), then reindex the live `doc_site` so the ⌘K box gets its headings back.
+- [x] Merge the CRLF fix and the scorer changes, then reindex the live `doc_site` (done 2026-10-13, above).
 - [ ] Code: let `searchAzure` run hybrid without the semantic ranker (or fall back to hybrid on a 402) before switching the MCP.
 - [ ] Production switch: Azure env vars in Production, build a production index from the CMS (`agility-docs-sections` was built from `.md` twins with the CRLF bug), then `DOCS_SEARCH_ENGINE=azure`.
 - [ ] Test the publish webhook → Azure path once production has the env vars.
