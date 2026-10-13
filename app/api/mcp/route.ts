@@ -4,7 +4,7 @@ import { after } from "next/server";
 import { reportAgentRequest } from "../../../lib/analytics/agentTraffic";
 import { z } from "zod";
 import { algoliasearch } from "algoliasearch";
-import { docUrl, searchDocs } from "../../../lib/search/docsSearch";
+import { docUrl, docsSearchEngine, searchDocs } from "../../../lib/search/docsSearch";
 import {
   initializeTelemetry,
   trackMcpToolCall,
@@ -88,7 +88,10 @@ const handler = createMcpHandler(
         // burn an Algolia call. Semantic search is recall-poor on long
         // bundles; multiple short queries return better results.
         const wordCount = query.trim().split(/\s+/).filter(Boolean).length;
-        const MAX_QUERY_WORDS = 12;
+        // Azure's hybrid search handles a full question well (evals/search:
+        // 13-word questions ranked the right page first), so it only blocks
+        // what is clearly a keyword bundle; Algolia keeps the tighter limit.
+        const MAX_QUERY_WORDS = docsSearchEngine() === "azure" ? 20 : 12;
         if (wordCount > MAX_QUERY_WORDS) {
           const hint = [
             `This query is too broad (${wordCount} words). Semantic search works best with short focused queries.`,
