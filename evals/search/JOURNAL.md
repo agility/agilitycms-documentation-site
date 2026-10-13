@@ -286,13 +286,26 @@ Side effect to know before switching: hybrid search always returns *something* (
 
 Docs: `AGENTS.md`'s search section and env-var table updated (they predated #72). Azure resources and their cost are recorded in the `agility-internal-ops` README (PR #54 there): the search service bills $100.79 CAD/month (September actual) and is shared with two other projects' indexes.
 
+## 2026-10-13: the MCP goes live on Azure
+
+Order, chosen so search never pointed at an index that didn't exist yet:
+
+1. **One more fix first.** `azure()` maps HTTP 404 to `null` (right for deletes), so a search against a missing index looked like "no results" instead of an error, and wouldn't fall back. Search now throws on a missing index, and the article lookup tries Algolia when Azure doesn't know the article. Checked locally against a non-existent index: Algolia answered, with the reason recorded.
+2. **Production env vars** (everything except the switch): endpoint, index `agility-docs-production`, a **dedicated query key named `docs-site-production`** (revocable without touching anything else), admin key, Azure OpenAI endpoint/key/deployment, and a new `SEARCH_REINDEX_SECRET`. Nothing called the reindex route unauthenticated (checked CI and scripts), so locking it was safe; it now answers 401 without the bearer.
+3. **Redeploy, then build the production index** through the production deployment: 451 articles, **4,890 sections, all embedded, 126 s**. Scored with the eval: MRR 0.853, the same as the preview index.
+4. **Merge #75, set `DOCS_SEARCH_ENGINE=azure`, redeploy.** Gotcha: Vercel started building the merge a few seconds *before* the variable was set, and a deployment snapshots env vars when it starts, so that build still served Algolia. It showed because it rejected a 13-word question that only the Azure path lets through. A second deploy picked the variable up.
+5. **Verified through the public endpoint** (`agilitycms.com/docs/api/mcp`): the 13-word question returns "Real-Time Co-Authoring & Conflict Handling"; answers match direct Azure queries exactly (so it isn't silently falling back); `fetch_doc` returns full Markdown; the 14-word keyword bundle is still refused. Latency through the agilitycms.com proxy: 0.6–0.8 s per search after a 2.9 s cold start.
+
+The ⌘K search box stays on Algolia; nothing about it changed.
+
 ## Open items
 
 - [x] Merge the CRLF fix and the scorer changes, then reindex the live `doc_site` (done 2026-10-13, above).
 - [x] Code: hybrid without the semantic ranker, 402 fallback, Algolia fallback (done 2026-10-13, above).
 - [ ] Decide what replaces the zero-result alert on Azure.
-- [ ] Production switch: Azure env vars in Production, build a production index from the CMS (`agility-docs-sections` was built from `.md` twins with the CRLF bug), then `DOCS_SEARCH_ENGINE=azure`.
-- [ ] Test the publish webhook → Azure path once production has the env vars.
+- [x] Production switch (done 2026-10-13, above).
+- [ ] Watch the next real publish: the Index Article webhook should update `agility-docs-production` too (Azure failures there are logged and never block Algolia).
 - [ ] Update the two published search articles with the corrected findings.
 - [ ] Have someone other than the author review the expected answers in all three test sets.
-- [ ] Clean up when done: index `agility-docs-preview`, and the 9 Preview env vars scoped to `test/azure-search-preview`.
+- [ ] Clean up: index `agility-docs-preview` and the 9 Preview env vars scoped to `test/azure-search-preview` (keep while previews are useful for testing); the superseded test indexes `agility-docs` and `agility-docs-sections`.
+- [ ] Production depends on the **dev** subscription's search service (Basic, one replica, no SLA for a single replica). Decide whether that's acceptable or move it.
