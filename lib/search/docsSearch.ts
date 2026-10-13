@@ -11,9 +11,10 @@ import { azureArticleUrl, azureSearchConfigured, searchAzure } from "./azure";
                          record per article; "doc_site_sections" is one per
                          section, collapsed to one hit per article)
 
-  An Azure engine that isn't configured falls back to Algolia, so a missing
-  env var degrades search instead of breaking it. Ids returned to callers are
-  always the Agility content ID, whatever the engine.
+  An Azure engine that isn't configured, or that fails on a request, falls
+  back to Algolia, so a missing env var or an Azure outage degrades search
+  instead of breaking it. Ids returned to callers are always the Agility
+  content ID, whatever the engine.
 */
 
 export type DocsHit = {
@@ -30,6 +31,8 @@ export type DocsHit = {
 
 export type DocsSearchResult = {
 	engine: "algolia" | "azure";
+	/** Set when Azure was asked for but failed and Algolia answered instead. */
+	fallback?: string;
 	total: number;
 	page: number;
 	pages: number;
@@ -91,13 +94,27 @@ async function searchAlgolia(query: string, page: number): Promise<DocsSearchRes
 	};
 }
 
+const message = (err: unknown) => (err instanceof Error ? err.message : String(err)).slice(0, 200);
+
 export async function searchDocs(query: string, page = 0): Promise<DocsSearchResult> {
-	return docsSearchEngine() === "azure" ? searchAzure(query, page, PAGE_SIZE) : searchAlgolia(query, page);
+	if (docsSearchEngine() !== "azure") return searchAlgolia(query, page);
+	try {
+		return await searchAzure(query, page, PAGE_SIZE);
+	} catch (err) {
+		console.error("Azure docs search failed; answering from Algolia", err);
+		return { ...(await searchAlgolia(query, page)), fallback: message(err) };
+	}
 }
 
 /** The page path (e.g. "/editors/scheduling") for an article id, or null. */
 export async function docUrl(articleId: string): Promise<string | null> {
-	if (docsSearchEngine() === "azure") return azureArticleUrl(articleId);
+	if (docsSearchEngine() === "azure") {
+		try {
+			return await azureArticleUrl(articleId);
+		} catch (err) {
+			console.error("Azure article lookup failed; trying Algolia", err);
+		}
+	}
 	const objectID = isSectionIndex() ? `${articleId}-0` : articleId;
 	try {
 		const doc: any = await algolia().getObject({ indexName: algoliaIndex(), objectID, attributesToRetrieve: ["url"] });

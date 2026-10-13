@@ -44,7 +44,8 @@ async function azure(path: string, init: { method?: string; body?: unknown; admi
 		cache: "no-store",
 	});
 	if (!res.ok && res.status !== 404) {
-		throw new Error(`Azure AI Search ${init.method || "GET"} ${path.split("?")[0]}: ${res.status} ${(await res.text()).slice(0, 300)}`);
+		const error = new Error(`Azure AI Search ${init.method || "GET"} ${path.split("?")[0]}: ${res.status} ${(await res.text()).slice(0, 300)}`);
+		throw Object.assign(error, { status: res.status });
 	}
 	return res.status === 204 || res.status === 404 ? null : res.json();
 }
@@ -233,26 +234,48 @@ export async function replaceAllAzure(records: SectionRecord[]) {
 type AzureHit = SectionRecord & {
 	"@search.rerankerScore"?: number;
 	"@search.captions"?: { text?: string }[];
+	"@search.highlights"?: { body?: string[] };
 };
 
+/*
+  The semantic ranker re-orders the top 50 and scores each 0 to 4. On these
+  docs it ranked no better than plain hybrid (evals/search, run 7: MRR 0.796 vs
+  0.853), adds latency, is billed per query, and on the free plan answers 402
+  once the monthly allowance is used. So it's off unless
+  AZURE_SEMANTIC_RANKER=on (worth it for its score, e.g. a chatbot deciding
+  when to say "the docs don't cover this"), and a 402 falls back to hybrid.
+*/
+const semanticRankerOn = () => env("AZURE_SEMANTIC_RANKER") === "on";
+
 /**
- * Hybrid (keyword + vector) search with the semantic ranker, collapsed to one
- * result per article. `score` is the semantic reranker score of the best
- * section (0 to 4); low scores mean the docs likely don't answer the query.
+ * Hybrid (keyword + vector) search, collapsed to one result per article.
+ * With the semantic ranker on, `score` is its 0–4 score for the best section
+ * (low means the docs likely don't answer the query); otherwise null, since
+ * hybrid scores aren't on a meaningful scale.
  */
 export async function searchAzure(query: string, page: number, pageSize: number): Promise<DocsSearchResult> {
-	const res = await azure(`/indexes/${config().index}/docs/search`, {
-		method: "POST",
-		body: {
-			search: query,
-			queryType: "semantic",
-			semanticConfiguration: SEMANTIC_CONFIG,
-			captions: "extractive",
-			vectorQueries: [{ kind: "text", text: query, fields: "bodyVector", k: 50 }],
-			select: "articleId,title,heading,description,body,section,category,url",
-			top: 50,
-		},
-	});
+	const path = `/indexes/${config().index}/docs/search`;
+	const hybrid = {
+		search: query,
+		vectorQueries: [{ kind: "text", text: query, fields: "bodyVector", k: 50 }],
+		select: "articleId,title,heading,description,body,section,category,url",
+		top: 50,
+		// The keyword match in the body, for the snippet when there's no caption.
+		highlight: "body",
+	};
+	let res: { value?: AzureHit[] } | null = null;
+	if (semanticRankerOn()) {
+		try {
+			res = await azure(path, {
+				method: "POST",
+				body: { ...hybrid, queryType: "semantic", semanticConfiguration: SEMANTIC_CONFIG, captions: "extractive" },
+			});
+		} catch (err) {
+			if ((err as { status?: number }).status !== 402) throw err;
+			console.warn("Azure semantic ranker quota used up (402); searching without it");
+		}
+	}
+	res ??= await azure(path, { method: "POST", body: hybrid });
 	const byArticle = new Map<string, AzureHit>();
 	for (const hit of (res?.value || []) as AzureHit[]) if (!byArticle.has(hit.articleId)) byArticle.set(hit.articleId, hit);
 	const all = Array.from(byArticle.values());
@@ -269,7 +292,10 @@ export async function searchAzure(query: string, page: number, pageSize: number)
 			section: h.section,
 			description: h.description,
 			heading: h.heading || null,
-			snippet: h["@search.captions"]?.[0]?.text || h.body.slice(0, 300),
+			snippet:
+				h["@search.captions"]?.[0]?.text ||
+				h["@search.highlights"]?.body?.[0]?.replace(/<\/?em>/g, "") ||
+				h.body.slice(0, 300),
 			score: h["@search.rerankerScore"] ?? null,
 		})),
 	};

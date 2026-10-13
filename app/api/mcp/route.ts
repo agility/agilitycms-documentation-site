@@ -158,7 +158,7 @@ const handler = createMcpHandler(
 
           trackMcpToolCall(
             "search_docs",
-            { query, page: page || 0, hits: results.total, engine: results.engine },
+            { query, page: page || 0, hits: results.total, engine: results.engine, fallback: results.fallback },
             Date.now() - startTime,
             true
           );
