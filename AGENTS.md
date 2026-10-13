@@ -136,11 +136,18 @@ Nested-list containers so far: `HomeFeatureCardGroup-Cards`, `HomeRoleLinkCards`
 
 ## Search Indexing
 
-Algolia index `doc_site`; searchable: `title`, `headings`, `body`, `description`. Route handlers (still Apollo-based — the only remaining Apollo usage, isolated from the render path):
-- `POST/GET /docs/api/search/indexAllArticles` — atomic full rebuild (`replaceAllObjects`)
-- `POST /docs/api/search/indexArticle` — single article, wired to an Agility webhook; deletes on unpublish (state `Deleted`, without re-fetching, because the Fetch API can briefly still serve the item)
+Three indexes, all built from the CMS by the same routes:
+- **Algolia `doc_site`**: one record per article; searchable `title`, `headings`, `body`, `description`. Backs the ⌘K search box (and the MCP by default).
+- **Algolia `doc_site_sections`**: one record per H2/H3 section, `distinct` per article. Not read by anything live (opt in with `ALGOLIA_DOCS_INDEX` / `NEXT_PUBLIC_ALGOLIA_INDEX`).
+- **Azure AI Search** (`AZURE_SEARCH_INDEX`): the same sections with `text-embedding-3-large` vectors, searched hybrid (keyword + vector). Only written when the Azure vars are set.
 
-Normalization in [utils/searchUtils.ts](utils/searchUtils.ts) (EditorJS + Markdown).
+Routes (GraphQL via `gqlFresh`, uncached):
+- `POST/GET /docs/api/search/indexAllArticles?targets=algolia,sections,azure`: full rebuild (default `algolia,sections`). Needs `Authorization: Bearer $SEARCH_REINDEX_SECRET` when that var is set; the `azure` target always needs it. Azure rebuilds embed only sections whose text changed.
+- `POST /docs/api/search/indexArticle`: single article, wired to an Agility webhook; updates every configured index; deletes on unpublish (state `Deleted`, without re-fetching, because the Fetch API can briefly still serve the item).
+
+Normalization in [utils/searchUtils.ts](utils/searchUtils.ts) (EditorJS + Markdown). **Markdown line endings are normalized first**: over half the articles are saved with CRLF, and `.` in a regex doesn't match `\r`, so heading patterns silently failed on them until #74.
+
+**The MCP's engine** ([lib/search/docsSearch.ts](lib/search/docsSearch.ts)): `DOCS_SEARCH_ENGINE=azure` switches `search_docs`/`fetch_doc` to Azure; any Azure failure answers from Algolia instead. Why Azure for agents and Algolia for the search box, with the measurements: [evals/search/JOURNAL.md](evals/search/JOURNAL.md). Run [evals/search/score.mjs](evals/search/score.mjs) before changing ranking.
 
 ## API Routes (all under `/docs/api/…`)
 
@@ -182,6 +189,11 @@ Normalization in [utils/searchUtils.ts](utils/searchUtils.ts) (EditorJS + Markdo
 | `FORCE_PUBLISHED` | `1` = dev behaves like production (published content) |
 | `ALGOLIA_APP_ID` / `ALGOLIA_ADMIN_API_KEY` / `NEXT_PUBLIC_ALGOLIA_APP_ID` / `NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY` | Search |
 | `AZURE_APP_INSIGHTS_CONNECTION_STRING` | MCP telemetry (never initialized during build — see gotchas) |
+| `DOCS_SEARCH_ENGINE` | `algolia` (default) or `azure`: the engine behind the MCP's `search_docs`/`fetch_doc`. `azure` without the Azure vars falls back to Algolia. `ALGOLIA_DOCS_INDEX` picks the Algolia index (default `doc_site`) |
+| `AZURE_SEARCH_ENDPOINT` / `AZURE_SEARCH_INDEX` / `AZURE_SEARCH_QUERY_KEY` / `AZURE_SEARCH_ADMIN_KEY` | Azure AI Search. Searching needs the query key; indexing needs the admin key. Resources and cost: `agility-internal-ops` README, "Docs AI search" |
+| `AZURE_OPENAI_ENDPOINT` / `AZURE_OPENAI_API_KEY` / `AZURE_OPENAI_EMBEDDING_DEPLOYMENT` | Embeddings for indexing (`text-embedding-3-large`); queries are embedded by the index's own vectorizer |
+| `AZURE_SEMANTIC_RANKER` | `on` = use Azure's semantic ranker for its 0–4 relevance score. **Off by default**: it didn't improve ranking on these docs, is billed per query, and the free plan answers 402 past its monthly allowance (searches then retry without it) |
+| `SEARCH_REINDEX_SECRET` | Bearer secret for `/docs/api/search/indexAllArticles`. Unset = the Algolia targets are open; the `azure` target always requires it |
 | `ROBOTS_NO_INDEX` | Force noindex meta |
 | `NETLIFY_PURGE_TOKEN` | Netlify personal access token. Lets the publish webhook purge the apex CDN ([lib/netlify/purgeNetlifyCache.ts](lib/netlify/purgeNetlifyCache.ts)) — `revalidateTag` only reaches Vercel, and agilitycms.com/docs is a Netlify proxy rewrite. **Optional:** unset = purge no-ops and the apex self-heals on `s-maxage` instead |
 | `NETLIFY_SITE_ID` | Site ID of the **apex/marketing** Netlify site — *not* this docs app. That site owns the cached proxy responses. Required alongside `NETLIFY_PURGE_TOKEN` |
