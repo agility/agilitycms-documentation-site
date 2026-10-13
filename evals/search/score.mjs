@@ -2,7 +2,7 @@
 //
 //   ALGOLIA_APP_ID=… ALGOLIA_SEARCH_KEY=… \
 //   AZURE_SEARCH_NAME=… AZURE_SEARCH_KEY=… \
-//   node evals/search/score.mjs [--json results.json]
+//   node evals/search/score.mjs [--set searchbox.json] [--engines a,b] [--exclude page,page] [--json results.json]
 //
 // Algolia is queried directly with the same parameters as the docs MCP
 // search_docs tool (app/api/mcp/route.ts), not through the MCP endpoint, so
@@ -14,7 +14,11 @@
 
 import { readFileSync, writeFileSync } from "node:fs";
 
-const { questions } = JSON.parse(readFileSync(new URL("./questions.json", import.meta.url), "utf8"));
+const arg = (name) => {
+	const i = process.argv.indexOf(name);
+	return i === -1 ? null : process.argv[i + 1];
+};
+const { questions } = JSON.parse(readFileSync(new URL(`./${arg("--set") || "questions.json"}`, import.meta.url), "utf8"));
 const env = (k) => process.env[k] || "";
 const K = 10;
 
@@ -28,9 +32,22 @@ const toPath = (u) =>
 		.replace(/[?#].*$/, "")
 		.replace(/\/$/, "");
 
-const distinct = (paths) => [...new Set(paths)].slice(0, K);
+// --exclude a,b drops pages from every engine's results before ranking. Use it
+// for pages that quote the test questions verbatim (articles written about
+// this evaluation), which would otherwise answer the exam with the exam.
+const excluded = new Set((arg("--exclude") || "").split(",").filter(Boolean).map(toPath));
+const distinct = (paths) => [...new Set(paths)].filter((p) => !excluded.has(p)).slice(0, K);
 
-const algolia = (index) => async (q) => {
+// The MCP's settings for sentence-style questions (PR #71). The search box
+// sends none of these, so `box: true` scores Algolia exactly as ⌘K calls it.
+const MCP_PARAMS = {
+	queryLanguages: ["en"],
+	removeStopWords: true,
+	ignorePlurals: true,
+	removeWordsIfNoResults: "allOptional",
+};
+
+const algolia = (index, { box = false } = {}) => async (q) => {
 	const res = await fetch(`https://${env("ALGOLIA_APP_ID")}-dsn.algolia.net/1/indexes/${index}/query`, {
 		method: "POST",
 		headers: {
@@ -40,13 +57,12 @@ const algolia = (index) => async (q) => {
 		},
 		body: JSON.stringify({
 			query: q,
-			hitsPerPage: K,
+			hitsPerPage: K + excluded.size, // room for excluded pages
 			attributesToRetrieve: ["url"],
 			attributesToHighlight: [],
-			queryLanguages: ["en"],
-			removeStopWords: true,
-			ignorePlurals: true,
-			removeWordsIfNoResults: "allOptional",
+			...(box ? {} : MCP_PARAMS),
+			analytics: false,
+			clickAnalytics: false,
 		}),
 	});
 	const j = await res.json();
@@ -54,10 +70,22 @@ const algolia = (index) => async (q) => {
 	return { pages: distinct(j.hits.map((h) => toPath(h.url))), top: null };
 };
 
+// Azure matches whole words only. For a search box, rewrite the query in
+// Lucene syntax: every word may have one typo, and the last word (the one
+// still being typed) may also be a prefix. "multi-fac" -> "multi~1 (fac* OR fac~1)".
+const typeAhead = (q) => {
+	const words = q.toLowerCase().split(/[^a-z0-9.]+/).filter(Boolean);
+	return words
+		.map((w, i) => (i === words.length - 1 ? `(${w}* OR ${w}~1)` : `${w}~1`))
+		.join(" ");
+};
+
 function azure(mode) {
 	return async (q) => {
-		const body = { search: q, select: "url", top: 50 };
-		if (mode !== "keyword") body.vectorQueries = [{ kind: "text", text: q, fields: env("AZURE_VECTOR_FIELD") || "bodyVector", k: 50 }];
+		const fuzzy = mode === "prefix" || mode === "hybrid-prefix";
+		const body = { search: fuzzy ? typeAhead(q) : q, select: "url", top: 50 };
+		if (fuzzy) body.queryType = "full";
+		if (mode !== "keyword" && mode !== "prefix") body.vectorQueries = [{ kind: "text", text: q, fields: env("AZURE_VECTOR_FIELD") || "bodyVector", k: 50 }];
 		if (mode === "semantic") Object.assign(body, { queryType: "semantic", semanticConfiguration: "docs-semantic" });
 		const res = await fetch(
 			`https://${env("AZURE_SEARCH_NAME")}.search.windows.net/indexes/${env("AZURE_SEARCH_INDEX") || "agility-docs-sections"}/docs/search?api-version=2024-07-01`,
@@ -72,13 +100,19 @@ function azure(mode) {
 	};
 }
 
-const engines = {
+const allEngines = {
+	"algolia search box": algolia("doc_site", { box: true }),
 	"algolia per article": algolia("doc_site"),
 	"algolia per section": algolia("doc_site_sections"),
 	"azure keyword": azure("keyword"),
+	"azure keyword + prefix": azure("prefix"),
 	"azure hybrid": azure("hybrid"),
+	"azure hybrid + prefix": azure("hybrid-prefix"),
 	"azure hybrid + semantic": azure("semantic"),
 };
+const engines = arg("--engines")
+	? Object.fromEntries(arg("--engines").split(",").map((n) => [n, allEngines[n]]))
+	: allEngines;
 
 const rankOf = (pages, expect) => {
 	const i = pages.findIndex((p) => expect.includes(p));
@@ -89,21 +123,25 @@ const rows = [];
 for (const q of questions) {
 	const row = { id: q.id, q: q.q, source: q.source, expect: q.expect, engines: {} };
 	for (const [name, run] of Object.entries(engines)) {
+		const t0 = performance.now();
 		const r = await run(q.q);
-		row.engines[name] = { rank: rankOf(r.pages, q.expect), top3: r.pages.slice(0, 3), topScore: r.top };
+		const ms = performance.now() - t0;
+		row.engines[name] = { rank: rankOf(r.pages, q.expect), top3: r.pages.slice(0, 3), topScore: r.top, ms };
 	}
 	rows.push(row);
 }
 
 const answerable = rows.filter((r) => r.expect.length);
 console.log(`\n${answerable.length} answerable questions (${rows.length - answerable.length} gap probe)\n`);
-console.log("engine                     hit@1  hit@3  hit@5  MRR@10  missed");
+const pct = (xs, p) => [...xs].sort((a, b) => a - b)[Math.min(xs.length - 1, Math.floor(p * xs.length))];
+console.log("engine                     hit@1  hit@3  hit@5  MRR@10  missed  p50 ms  p95 ms");
 for (const name of Object.keys(engines)) {
 	const ranks = answerable.map((r) => r.engines[name].rank);
 	const at = (n) => ranks.filter((x) => x && x <= n).length;
 	const mrr = ranks.reduce((s, x) => s + (x ? 1 / x : 0), 0) / ranks.length;
+	const ms = rows.map((r) => r.engines[name].ms);
 	console.log(
-		`${name.padEnd(26)} ${String(at(1)).padStart(5)}  ${String(at(3)).padStart(5)}  ${String(at(5)).padStart(5)}  ${mrr.toFixed(3).padStart(6)}  ${ranks.filter((x) => !x).length}`
+		`${name.padEnd(26)} ${String(at(1)).padStart(5)}  ${String(at(3)).padStart(5)}  ${String(at(5)).padStart(5)}  ${mrr.toFixed(3).padStart(6)}  ${String(ranks.filter((x) => !x).length).padStart(6)}  ${pct(ms, 0.5).toFixed(0).padStart(6)}  ${pct(ms, 0.95).toFixed(0).padStart(6)}`
 	);
 }
 
@@ -119,5 +157,4 @@ for (const r of rows.filter((r) => !r.expect.length)) {
 		console.log(`  ${n}: ${e.top3.join(" | ") || "(nothing)"}${e.topScore != null ? `  (reranker ${e.topScore.toFixed(2)} of 4)` : ""}`);
 }
 
-const out = process.argv.indexOf("--json");
-if (out !== -1) writeFileSync(process.argv[out + 1], JSON.stringify(rows, null, 2));
+if (arg("--json")) writeFileSync(arg("--json"), JSON.stringify(rows, null, 2));

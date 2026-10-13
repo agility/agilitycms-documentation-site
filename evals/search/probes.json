@@ -1,0 +1,13 @@
+{
+	"about": "Gap probes: questions the docs do not answer, for calibrating a chatbot's 'the docs don't cover this' threshold. Written 2026-10-11, committed before scoring. Each was checked against the full text of all 4,877 indexed sections (2026-10-11): the topic is absent, or appears only in an unrelated sense. Two are deliberate near-misses: the docs cover editor comments (not reader comments on a site) and billing credit cards (not taking payments on a site). Candidates the docs did answer were dropped: on-premises installs (answered: SaaS only) and Kubernetes (answered: AKS deployment).",
+	"questions": [
+		{ "id": 101, "q": "can I install wordpress plugins in agility", "expect": [] },
+		{ "id": 102, "q": "how do readers leave comments on my blog posts", "expect": [] },
+		{ "id": 103, "q": "is there a spell checker in the content editor", "expect": [] },
+		{ "id": 104, "q": "how do I take credit card payments on my website", "expect": [] },
+		{ "id": 105, "q": "does the agility content manager have a dark mode", "expect": [] },
+		{ "id": 106, "q": "how do I host a community forum on my site", "expect": [] },
+		{ "id": 107, "q": "is there an agility browser extension", "expect": [] },
+		{ "id": 108, "q": "can I edit content offline without an internet connection", "expect": [] }
+	]
+}
