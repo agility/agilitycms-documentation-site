@@ -74,6 +74,9 @@ async function searchAlgolia(query: string, page: number): Promise<DocsSearchRes
 			removeStopWords: true,
 			ignorePlurals: true,
 			removeWordsIfNoResults: "allOptional",
+			// Separates agent searches from the search box (and the main
+			// website) in Algolia's analytics for the shared index.
+			analyticsTags: ["mcp"],
 			attributesToSnippet: ["body:50"],
 			snippetEllipsisText: "...",
 			attributesToRetrieve: ["articleId", "title", "url", "description", "category", "section", "heading"],
