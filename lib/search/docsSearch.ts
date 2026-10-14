@@ -33,6 +33,11 @@ export type DocsSearchResult = {
 	engine: "algolia" | "azure";
 	/** Set when Azure was asked for but failed and Algolia answered instead. */
 	fallback?: string;
+	/**
+	 * Azure's semantic ranker score (0–4) for the best result, or null when the
+	 * ranker didn't run. Below ~2.3 the docs likely don't answer the query.
+	 */
+	topScore?: number | null;
 	total: number;
 	page: number;
 	pages: number;

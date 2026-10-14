@@ -317,11 +317,26 @@ Nobody had to reindex anything: publishing in the CMS is enough to keep both eng
 
 Housekeeping: the scorer's default Azure index is now `agility-docs-production`, because the test indexes it pointed at are going away.
 
+## 2026-10-14: replacing the zero-result alert
+
+On Algolia, an MCP search with zero hits was the content-gap signal, and a PostHog alert mailed each one. Hybrid search always finds a nearest neighbour, so on Azure that alert went quiet. Three candidate replacements, tested against the production index:
+
+- **No keyword match** (no result has a highlighted keyword). Dead: all 8 unanswerable probe questions still matched keywords in 9 or 10 of their top 10 results, just like real questions. Ordinary words like "editor" and "content" are everywhere in these docs.
+- **The hybrid score.** Dead: the probes' best scores (0.030–0.033) sit in the same narrow band as answerable questions. RRF scores rank; they don't measure.
+- **Agents rephrasing a failed search.** Impossible here: every MCP call is logged under one anonymous ID (by design, for privacy), so there's no conversation to follow.
+
+That leaves the **semantic ranker's 0–4 score**, the one signal that separated them in run 7 (below 2.3: 7 of 9 unanswerable, 1 of 51 answerable). But the ranker's *order* was worse than hybrid (MRR 0.796 vs 0.853), so it now runs for its score only:
+
+- New default `AZURE_SEMANTIC_RANKER=score`: one semantic query, then results are re-sorted by `@search.score`, which is still the hybrid score. Checked: identical order to a hybrid-only query on every test query.
+- Each search's best reranker score goes to PostHog as `top_score` on `docs_mcp_tool_call`, with `engine` and `fallback`, which until now only reached App Insights.
+- Local check against production: same order as before, and the scores match run 7 (a spell checker 1.96, taking card payments 2.16, WordPress plugins 2.62: the known miss). Latency per search ranged from 30 ms faster to 240 ms slower.
+- Cost: about 70–100 MCP searches a week, inside the free 1,000 ranker requests a month. Eval runs of the `azure semantic` engine share that allowance, as does local testing through the site (set `AZURE_SEMANTIC_RANKER=off` for that). When it runs out, searches answer unscored (402 → plain hybrid), so the alerts count unscored searches separately: silence must not look like "no gaps".
+
 ## Open items
 
 - [x] Merge the CRLF fix and the scorer changes, then reindex the live `doc_site` (done 2026-10-13, above).
 - [x] Code: hybrid without the semantic ranker, 402 fallback, Algolia fallback (done 2026-10-13, above).
-- [ ] Decide what replaces the zero-result alert on Azure.
+- [x] Decide what replaces the zero-result alert on Azure (2026-10-14, above: semantic ranker score, keeping hybrid order).
 - [x] Production switch (done 2026-10-13, above).
 - [x] Watch the next real publish: the Index Article webhook should update `agility-docs-production` too (confirmed 2026-10-13, above).
 - [x] Update the two published search articles with the corrected findings (done 2026-10-13, plus a new use-case article).
