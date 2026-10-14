@@ -125,13 +125,13 @@ If you use Algolia, its own analytics also has a "searches without results" repo
 
 ## What happened when we tried it
 
-The volume is small, and I want to be honest about that. Our PostHog search events start on 17 September 2026. From then to 14 October, the docs search box logged 79 searches from 15 people, with between 6 and 32 searches a week. Agent searches through the MCP server started being logged on 6 October; in their first full week there were 76.
+The volume is small, and I want to be honest about that. Our PostHog search events start on 17 September 2026. From then to 14 October, the docs search box logged 79 searches from 15 people (by PostHog's count, our own team included), with between 6 and 32 searches a week. Agent searches through the MCP server started being logged on 6 October; in that first week there were 76.
 
 **The search box: five zero-result searches, three buckets.** Only five searches in that period found nothing:
 
 - "ugc". A **content gap**. User-generated content is not something our docs cover. We already knew that: it is the one question in our 52-question test set that is deliberately unanswerable. A real reader asking it is a reason to write a short page that says so and points somewhere useful.
-- "push pullcli". A **search problem**. Two words typed together with no space. The CLI push and pull pages exist; the engine just could not split "pullcli".
-- "ckl", "cklui" and "imn". **Noise.** Two of them are fragments of the same typing session on the same day, from before we added the one-second settle delay. That delay exists because fragments like these were swamping the report.
+- "push pullcli". A **search problem**. Two words typed together with no space. If the reader meant the CLI's push and pull commands, the engine could not split "pullcli" to find them, and a typo is not the reader's fault.
+- "ckl", "cklui" and "imn". **Noise.** "ckl" and "cklui" were logged on the same day, one the start of the other: fragments of someone typing, from before we added the one-second settle delay. That delay exists because fragments like these were swamping the report.
 
 Five is not a content plan. But one real content gap and one fixable search problem out of five is a better hit rate than most planning meetings.
 

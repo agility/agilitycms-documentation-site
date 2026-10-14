@@ -12,7 +12,7 @@ TODO(data): rerun the probes with about 15 no-answer questions and report the th
 Decide before publishing: is the docs chatbot live yet? This draft teaches the pattern without a live demo.
 -->
 
-Ask our docs search "can I install WordPress plugins in Agility?" and it comes back with a confident first result: our guide to migrating from WordPress, which mentions plugins.
+When we asked our docs search "can I install WordPress plugins in Agility?", it came back with a confident first result: our guide to migrating from WordPress, which mentions plugins.
 
 The docs do not answer that question. There is no plugin system to install WordPress plugins into. But the search engine found the closest thing it had, and if a chatbot had been sitting on top of it, the chatbot would have had a page to quote. A helpful-sounding wrong answer, with a real link, is the worst kind.
 
@@ -54,9 +54,11 @@ Add one more for anything contractual: pricing, contracts, security claims. Rout
 
 Our docs run on Agility CMS, which I co-founded. The search behind our MCP server (the two-tool server from post 6) is Azure AI Search, with embeddings from Azure OpenAI.
 
-Azure's **semantic ranker** is a second model that reads the query and each of the top 50 results together and scores how well the passage answers it, from 0 to 4. Unlike a hybrid score, that number is on a fixed scale, so a threshold can mean something. Standalone reranking models do the same job in front of other engines.
+First, plainly: **our default setup gives no calibrated confidence signal.** The MCP runs Azure hybrid search (keyword plus vector) without a reranker, because that ranked best on our test set (MRR 0.853, against 0.796 with the reranker; MRR is the average of 1 divided by the rank of the right page). Hybrid scores are fusion scores of around 0.03 that only rank results against each other, so our code does not even pass them on. What the default gives a model is the order of the results, the snippets, and the full pages it can fetch and read. That is enough to answer well. It is not enough to refuse in code.
 
-Here is how our code asks for it, and what it does when it cannot have it:
+A calibrated score is an **option that costs a reranker call.** Azure's **semantic ranker** is a second model that reads the query and each of the top 50 results together and scores how well the passage answers it, from 0 to 4. That number is on a fixed scale, so a threshold can mean something. It is billed per query and adds about 60 milliseconds. Standalone reranking models do the same job in front of other engines, with the same trade.
+
+Here is how our code makes it opt-in, and what it does when the quota runs out:
 
 ```ts
 // lib/search/azure.ts
@@ -86,11 +88,11 @@ const semanticRankerOn = () => env("AZURE_SEMANTIC_RANKER") === "on";
 			score: h["@search.rerankerScore"] ?? null,
 ```
 
-Two things to notice. The score is `null` whenever the ranker is off, and our Algolia path always returns `score: null` too. A gate has to handle "no score" as its own case, not as zero. And the ranker is kept for its score, not its ordering, which is the opposite of why most people turn it on.
+Two things to notice. The score is `null` whenever the ranker is off, which is the default, and our Algolia path always returns `score: null` too. A gate has to handle "no score" as its own case, not as zero. And if we turn the ranker on, it will be for its score, not its ordering, which is the opposite of why most people turn it on.
 
 ### Report the score, gate in the assistant
 
-Our MCP server does not refuse anything. It serves many different assistants, and the refusal policy belongs to whoever is answering the person. So `search_docs` prints the score next to each result and lets the calling model weigh it:
+Our MCP server does not refuse anything. It serves many different assistants, and the refusal policy belongs to whoever is answering the person. When the ranker is on, `search_docs` prints the score next to each result and lets the calling model weigh it. With the default setup the score is `null`, so the line is simply left out:
 
 ```ts
 // app/api/mcp/route.ts
@@ -104,7 +106,7 @@ results.hits.forEach((hit, i) => {
 });
 ```
 
-Every result carries its URL, so citing is easy, and the tool description already tells the model to retry with shorter queries "before concluding that no documentation exists".
+Either way, every result carries its URL, so citing is easy, and the tool description already tells the model to retry with shorter queries "before concluding that no documentation exists".
 
 A chatbot we own should go further and gate in code. We have not built it yet, so this is a **sketch, not code from our repo**, using the real `searchDocs` function from post 6:
 
@@ -152,11 +154,11 @@ The note was right. We wrote eight more no-answer questions, checked each agains
 
 The 2.0 we nearly adopted would have caught one of nine. The highest-scoring miss, at 2.62, was the WordPress plugins question from the top of this post. The answerable question wrongly refused at 2.3 was "what is your uptime SLA", which scored 2.28 even though the right page ranked first.
 
-So the score is a signal, not a gate on its own. A threshold around 2.3 plus a model that reads the page and admits when it does not answer is the plan. **It is still not settled.** Nine is better than one, but we want about 15 no-answer questions before we let a number refuse real people.
+So the score is a signal, not a gate on its own. If we pay for the reranker in a chatbot, a threshold around 2.3 plus a model that reads the page and admits when it does not answer is the plan. Without the reranker, the model's own reading of the fetched page is the only check, and the system prompt has to carry all of it. **None of this is settled.** Nine is better than one, but we want about 15 no-answer questions before we let a number refuse real people.
 
 TODO(data): rerun with about 15 no-answer questions and report the threshold.
 
-**Two costs we did not expect.** The semantic ranker did not improve ordering on our full content (MRR, the average of 1 divided by the rank of the right page, was 0.796 with it against 0.853 without), so we pay for it only for the score. And the free semantic plan allows 1,000 queries a month, after which Azure answers HTTP 402. Our evaluation runs used about half of that in one day. A public chatbot needs the paid plan, and code that falls back when the quota runs out.
+**Two costs we did not expect.** Our first test run said the semantic ranker improved ordering a little. Once the full content was indexed, it made ordering worse, so we switched it off for the MCP and would pay for it only for the score. And the free semantic plan allows 1,000 queries a month, after which Azure answers HTTP 402. Our evaluation runs used about half of that in one day. A public chatbot needs the paid plan, and code that falls back when the quota runs out.
 
 **What we have not done yet:** our PostHog `docs_mcp_tool_call` event records each query and its hit count, which made zero-result searches a content-gap list. On hybrid search that list is empty. The top score should replace it, and we do not log it yet.
 

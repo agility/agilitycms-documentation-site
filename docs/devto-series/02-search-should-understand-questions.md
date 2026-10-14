@@ -88,7 +88,7 @@ async function searchAlgolia(query: string, page: number): Promise<DocsSearchRes
 
 Those are query parameters, so you can set them per request without touching the index. Other engines have their own versions of the fourth setting: Meilisearch has `matchingStrategy`, Typesense has `drop_tokens_threshold`, and Elasticsearch has `minimum_should_match` on a match query.
 
-We applied these to the agent search only. The ⌘K search box on the site still uses Algolia's defaults, on purpose. People in a search box type one to three words, often half a word at a time. When we tested the box separately on queries copied from our search logs, the defaults did well, tying the best Azure setup on quality while Azure hybrid was about 5 times slower per keystroke (53 ms against 263 ms). Different readers, different settings. Test both.
+We applied these to the agent search only. The ⌘K search box on the site still uses Algolia's defaults, on purpose. People in a search box type one to three words, often half a word at a time. When we tested the box separately on queries copied from our search logs, Algolia's defaults scored 0.886 (better than Azure hybrid's 0.824) at about 50 ms per keystroke, against about 250 ms for Azure hybrid. Different readers, different settings. Test both.
 
 ### Layer 2: add meaning, not just more keywords
 
@@ -147,7 +147,7 @@ That let us switch engines without changing the tools agents call, and it means 
 
 That third one matters. The settings fixed zero results. They did not fix ranking.
 
-**Vectors fixed ranking, and vocabulary.** We wrote 52 test questions with their correct pages (51 answerable, one deliberately not) and scored each setup on how often the right page came first. Our Algolia setup, with the four settings, put the right page first for 25 of 51. Azure hybrid, keyword plus vectors, put it first for 36. The summary score we tracked, MRR (mean reciprocal rank: 1 point if the right page is first, half if second, a third if third, and so on, averaged over all questions), went from 0.577 to 0.801. "Does Agility support multiple languages" found nothing by keyword, because the docs say "locales". Vectors found it. Post 4 covers how we measured all of this.
+**Vectors fixed ranking, and vocabulary.** We wrote 52 test questions with their correct pages (51 answerable, one deliberately not) and scored each setup on how often the right page came first. On the full set of 451 articles, our Algolia setup, with the four settings, put the right page first for 25 of 51. Azure hybrid, keyword plus vectors, put it first for 40. The summary score we tracked, MRR (mean reciprocal rank: 1 point if the right page is first, half if second, a third if third, and so on, averaged over all questions), went from 0.587 to 0.853. A third layer, Azure's semantic reranker, made ranking worse on our content (0.796), so we run hybrid without it. "Does Agility support multiple languages" found nothing by keyword, because the docs say "locales". Vectors found it. Post 4 covers how we measured all of this.
 
 **Splitting content did not help keyword search.** We also built a second Algolia index with one record per section instead of one per article, collapsed back to one hit per page:
 
@@ -161,9 +161,9 @@ indexSettings: {
 },
 ```
 
-I expected it to close half the gap. It scored 0.573 against 0.577 for one record per article: no difference. The gain came from ranking, not from how we cut up the content. Sections still earn their place in Azure, because a hit lands on the passage that answers the question, but they were not the fix I thought they were.
+An early run convinced me that splitting explained half the gap, and I wrote that down. Measured directly, it did not: 0.594 per section against 0.587 per article, the same 25 questions right first. No real difference. The gain came from ranking, not from how we cut up the content. Sections still earn their place in Azure, because a hit lands on the passage that answers the question, but they were not the fix I thought they were.
 
-**What we got wrong: a guard that refused questions.** Earlier, we had added a guard to the agent tool that rejected queries over 12 words, because some agents sent long bundles of keywords that keyword search handled badly. After moving to Azure, we scored the full production-sized index twice: once by calling the engine directly (MRR 0.853), and once end to end through the real MCP endpoint (0.813). The cause was two questions that got no results at all: "what happens when two people edit the same item at the same time" and "where is my data stored and can I keep it in the EU". Both are 13 words. The engine ranked both correctly. Our own guard never let them through.
+**What we got wrong: a guard that refused questions.** Earlier, we had added a guard to the agent tool that rejected queries over 12 words, because some agents sent long bundles of keywords that keyword search handled badly. After moving to Azure, we scored it twice: once by calling the engine directly (MRR 0.853), and once end to end through the real MCP endpoint (0.813). The cause was two questions that got no results at all: "what happens when two people edit the same item at the same time" and "where is my data stored and can I keep it in the EU". Both are 13 words. The engine ranked both correctly. Our own guard never let them through.
 
 Our first fix was to raise the limit to 20 words. That also let through the guard's own example of what to block. The second fix asks a better question: does this read like a sentence or a keyword list?
 
