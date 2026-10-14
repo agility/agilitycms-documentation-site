@@ -211,6 +211,7 @@ AI agents and crawlers never run the browser tracker, so [lib/analytics/agentTra
 - **`docs_mcp_tool_call`**: one per Knowledgebase MCP tool call, from `trackMcpToolCall` in [lib/telemetry.ts](lib/telemetry.ts) (independent of App Insights being configured). `query`, `hits` and `zero_results` make zero-hit agent searches a direct content-gap list.
 - One fixed `distinct_id` per agent (`agent:GPTBot`), `$process_person_profile: false`, no IP or cookies. Production only (`VERCEL_ENV`), and a no-op without `NEXT_PUBLIC_POSTHOG_KEY`.
 - ⚠️ **HTML counts are a floor.** The apex Netlify site caches docs HTML for up to an hour, so repeat bot reads inside that window never reach this app. The agent endpoints are edge-cached for 60 seconds and MCP is uncached, so their coverage is close to complete. Netlify traffic logs would see everything, but Log Drains need the Enterprise plan and the apex site's team is on Pro (checked 2026-10-03).
+- **Reporting** on these events, the browser search events and Algolia analytics lives in the internal `agility-internal-ops` repo (`product-reporting/`). This repo owns the instrumentation; tell the hub if an event name or property changes.
 - ⚠️ **Keep `agentTraffic.ts` dependency-free.** proxy.ts imports it, and the App Insights gotcha below is about exactly this: anything that drags `applicationinsights` into the proxy or a page route breaks prerendering.
 
 ## Running Locally
