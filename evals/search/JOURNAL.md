@@ -298,14 +298,48 @@ Order, chosen so search never pointed at an index that didn't exist yet:
 
 The ⌘K search box stays on Algolia; nothing about it changed.
 
+## 2026-10-13: the docs catch up, and the first real publish through Azure
+
+The two published search articles still described the first, contaminated run. They now match what shipped:
+
+- **AI Search Explained** (1846) and **Azure AI Search** (1699) were rewritten around run 7. They no longer quote any test question verbatim; a script checked every question in all three sets against the new text, and their internal links.
+- **New: Search for People and for AI Agents** (1865), the use-case article: why the search box and the agent tools want different engines, with the numbers and a diagram.
+- **Smaller corrections** to four pages that described the old setup: the Knowledgebase MCP page, Build an MCP Server, Build a Chatbot, and the indexing guide. The existing Azure diagram named the wrong embedding model; its label now reads `text-embedding-3-large`.
+
+Gotcha: the Agility MCP's `save_content_items` sends `seo: null` and wipes an article's SEO fields. The articles with SEO set were edited through the Management API instead, using a token minted in a signed-in browser tab and cleared afterwards.
+
+**The publish was the webhook test** that the open items were waiting on. Publishing fires the same Index Article webhook as before, which now also writes to Azure. Minutes later:
+
+- 1865 was in `agility-docs-production` as **11 sections**, each with its heading. 1846's sections carried the new text. The index went from 4,890 to 4,930 sections.
+- Through the public MCP, "should agents and the search box use different search engines" returned the new article first, then AI Search Explained and Build an MCP Server.
+
+Nobody had to reindex anything: publishing in the CMS is enough to keep both engines current.
+
+Housekeeping: the scorer's default Azure index is now `agility-docs-production`, because the test indexes it pointed at are going away.
+
+## 2026-10-14: replacing the zero-result alert
+
+On Algolia, an MCP search with zero hits was the content-gap signal, and a PostHog alert mailed each one. Hybrid search always finds a nearest neighbour, so on Azure that alert went quiet. Three candidate replacements, tested against the production index:
+
+- **No keyword match** (no result has a highlighted keyword). Dead: all 8 unanswerable probe questions still matched keywords in 9 or 10 of their top 10 results, just like real questions. Ordinary words like "editor" and "content" are everywhere in these docs.
+- **The hybrid score.** Dead: the probes' best scores (0.030–0.033) sit in the same narrow band as answerable questions. RRF scores rank; they don't measure.
+- **Agents rephrasing a failed search.** Impossible here: every MCP call is logged under one anonymous ID (by design, for privacy), so there's no conversation to follow.
+
+That leaves the **semantic ranker's 0–4 score**, the one signal that separated them in run 7 (below 2.3: 7 of 9 unanswerable, 1 of 51 answerable). But the ranker's *order* was worse than hybrid (MRR 0.796 vs 0.853), so it now runs for its score only:
+
+- New default `AZURE_SEMANTIC_RANKER=score`: one semantic query, then results are re-sorted by `@search.score`, which is still the hybrid score. Checked: identical order to a hybrid-only query on every test query.
+- Each search's best reranker score goes to PostHog as `top_score` on `docs_mcp_tool_call`, with `engine` and `fallback`, which until now only reached App Insights.
+- Local check against production: same order as before, and the scores match run 7 (a spell checker 1.96, taking card payments 2.16, WordPress plugins 2.62: the known miss). Latency per search ranged from 30 ms faster to 240 ms slower.
+- Cost: about 70–100 MCP searches a week, inside the free 1,000 ranker requests a month. Eval runs of the `azure semantic` engine share that allowance, as does local testing through the site (set `AZURE_SEMANTIC_RANKER=off` for that). When it runs out, searches answer unscored (402 → plain hybrid), so the alerts count unscored searches separately: silence must not look like "no gaps".
+
 ## Open items
 
 - [x] Merge the CRLF fix and the scorer changes, then reindex the live `doc_site` (done 2026-10-13, above).
 - [x] Code: hybrid without the semantic ranker, 402 fallback, Algolia fallback (done 2026-10-13, above).
-- [ ] Decide what replaces the zero-result alert on Azure.
+- [x] Decide what replaces the zero-result alert on Azure (2026-10-14, above: semantic ranker score, keeping hybrid order).
 - [x] Production switch (done 2026-10-13, above).
-- [ ] Watch the next real publish: the Index Article webhook should update `agility-docs-production` too (Azure failures there are logged and never block Algolia).
-- [ ] Update the two published search articles with the corrected findings.
+- [x] Watch the next real publish: the Index Article webhook should update `agility-docs-production` too (confirmed 2026-10-13, above).
+- [x] Update the two published search articles with the corrected findings (done 2026-10-13, plus a new use-case article).
 - [ ] Have someone other than the author review the expected answers in all three test sets.
 - [ ] Clean up: index `agility-docs-preview` and the 9 Preview env vars scoped to `test/azure-search-preview` (keep while previews are useful for testing); the superseded test indexes `agility-docs` and `agility-docs-sections`.
 - [ ] Production depends on the **dev** subscription's search service (Basic, one replica, no SLA for a single replica). Decide whether that's acceptable or move it.
