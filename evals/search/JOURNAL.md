@@ -332,6 +332,29 @@ That leaves the **semantic ranker's 0–4 score**, the one signal that separated
 - Local check against production: same order as before, and the scores match run 7 (a spell checker 1.96, taking card payments 2.16, WordPress plugins 2.62: the known miss). Latency per search ranged from 30 ms faster to 240 ms slower.
 - Cost: about 70–100 MCP searches a week, inside the free 1,000 ranker requests a month. Eval runs of the `azure semantic` engine share that allowance, as does local testing through the site (set `AZURE_SEMANTIC_RANKER=off` for that). When it runs out, searches answer unscored (402 → plain hybrid), so the alerts count unscored searches separately: silence must not look like "no gaps".
 
+### Live (#80, deployed 2026-10-14 17:01 UTC)
+
+- Five searches through the public MCP, a minute after the deploy:
+
+  | Question | Best score | Below 2.3? |
+  |---|---|---|
+  | how do I schedule content to publish later | 2.87 | no |
+  | what is a content model | 3.63 | no |
+  | is there a spell checker in the content editor | 1.96 | yes |
+  | how do I take credit card payments on my website | 2.16 | yes |
+  | does the agility content manager have a dark mode | 2.15 | yes |
+
+  The three below 2.3 are the deliberately unanswerable probes, and the two above are real questions. All five arrived in PostHog with `engine: azure`, a `top_score` and no fallback. Agents also now see "Relevance: x of 4" on each result.
+- PostHog (project 33241) replaces the zero-result tile and alert with three insights:
+  - `zRbf28AZ`: the low-confidence questions, one row each with its score.
+  - `Dgj438Zf`: the weekly count.
+  - `tZHZw9Xb`: per day, fallbacks to Algolia, unscored Azure searches and scored searches.
+- Alerts to Joel at 08:00 UTC:
+  - Low-confidence questions, **weekly**. At ~10 agent searches a day, a daily alert would fire most days and get ignored.
+  - Fallback to Algolia, daily.
+  - Unscored searches, daily. A weekly check would look at only one day, a Sunday, and could miss the allowance running out.
+- Gotcha for anyone measuring from this: events before 17:01 UTC have no `engine`/`top_score`/`fallback`, and the five test searches above are in the data. The internal reporting hub (agility-internal-ops) uses the same definitions, starting the week of 19 October.
+
 ## Open items
 
 - [x] Merge the CRLF fix and the scorer changes, then reindex the live `doc_site` (done 2026-10-13, above).
@@ -341,5 +364,6 @@ That leaves the **semantic ranker's 0–4 score**, the one signal that separated
 - [x] Watch the next real publish: the Index Article webhook should update `agility-docs-production` too (confirmed 2026-10-13, above).
 - [x] Update the two published search articles with the corrected findings (done 2026-10-13, plus a new use-case article).
 - [ ] Have someone other than the author review the expected answers in all three test sets.
-- [ ] Clean up: index `agility-docs-preview` and the 9 Preview env vars scoped to `test/azure-search-preview` (keep while previews are useful for testing); the superseded test indexes `agility-docs` and `agility-docs-sections`.
+- [x] Clean up: index `agility-docs-preview`, the 9 Preview env vars scoped to `test/azure-search-preview`, that branch, and the superseded test indexes `agility-docs` and `agility-docs-sections` (all removed 2026-10-14; `agility-docs-production` is the only docs index left).
+- [ ] Watch the scores for a few weeks: is 2.3 the right line on real agent traffic, how much does the ranker add to latency, and how much of the 1,000-a-month allowance gets used?
 - [ ] Production depends on the **dev** subscription's search service (Basic, one replica, no SLA for a single replica). Decide whether that's acceptable or move it.
