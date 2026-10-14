@@ -58,7 +58,7 @@ const algolia = () =>
 
 const stripHtml = (text: string) => text.replace(/<[^>]*>/g, "");
 
-async function searchAlgolia(query: string, page: number): Promise<DocsSearchResult> {
+async function searchAlgolia(query: string, page: number, test = false): Promise<DocsSearchResult> {
 	const res: any = await algolia().searchSingleIndex({
 		indexName: algoliaIndex(),
 		searchParams: {
@@ -75,8 +75,10 @@ async function searchAlgolia(query: string, page: number): Promise<DocsSearchRes
 			ignorePlurals: true,
 			removeWordsIfNoResults: "allOptional",
 			// Separates agent searches from the search box (and the main
-			// website) in Algolia's analytics for the shared index.
-			analyticsTags: ["mcp"],
+			// website) in Algolia's analytics for the shared index. Scripted
+			// tests get "test" instead of "mcp", because Algolia's analytics
+			// can combine tags but not exclude one.
+			analyticsTags: [test ? "test" : "mcp"],
 			attributesToSnippet: ["body:50"],
 			snippetEllipsisText: "...",
 			attributesToRetrieve: ["articleId", "title", "url", "description", "category", "section", "heading"],
@@ -104,13 +106,13 @@ async function searchAlgolia(query: string, page: number): Promise<DocsSearchRes
 
 const message = (err: unknown) => (err instanceof Error ? err.message : String(err)).slice(0, 200);
 
-export async function searchDocs(query: string, page = 0): Promise<DocsSearchResult> {
-	if (docsSearchEngine() !== "azure") return searchAlgolia(query, page);
+export async function searchDocs(query: string, page = 0, { test = false } = {}): Promise<DocsSearchResult> {
+	if (docsSearchEngine() !== "azure") return searchAlgolia(query, page, test);
 	try {
 		return await searchAzure(query, page, PAGE_SIZE);
 	} catch (err) {
 		console.error("Azure docs search failed; answering from Algolia", err);
-		return { ...(await searchAlgolia(query, page)), fallback: message(err) };
+		return { ...(await searchAlgolia(query, page, test)), fallback: message(err) };
 	}
 }
 
