@@ -187,8 +187,9 @@ export async function reportAgentRequest(input: {
 
 /**
  * Report one Knowledgebase MCP tool call as a `docs_mcp_tool_call` event.
- * The query is what an agent searched the docs for, so zero-hit searches are
- * a direct list of content gaps. Same no-throw, production-only contract as
+ * The query is what an agent searched the docs for, so zero-hit searches
+ * (Algolia) and low top_score searches (Azure) are a direct list of content
+ * gaps. Same no-throw, production-only contract as
  * reportAgentRequest.
  */
 export async function reportMcpToolCall(input: {
@@ -201,7 +202,7 @@ export async function reportMcpToolCall(input: {
 		const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 		if (!key || !isProduction()) return;
 
-		const { query, objectID, hits, blocked } = input.args as Record<string, unknown>;
+		const { query, objectID, hits, blocked, engine, fallback, topScore } = input.args as Record<string, unknown>;
 		await fetch(`${posthogHost()}/i/v0/e/`, {
 			method: "POST",
 			headers: { "content-type": "application/json" },
@@ -216,6 +217,13 @@ export async function reportMcpToolCall(input: {
 					hits: typeof hits === "number" ? hits : null,
 					zero_results: hits === 0,
 					blocked: typeof blocked === "string" ? blocked : null,
+					// Searches only. On Azure, hybrid search always finds something,
+					// so top_score (the semantic ranker's 0–4, null when it didn't
+					// run) is the content-gap signal; fallback means Azure failed and
+					// Algolia answered.
+					engine: typeof engine === "string" ? engine : null,
+					fallback: typeof fallback === "string" ? fallback : null,
+					top_score: typeof topScore === "number" ? Math.round(topScore * 100) / 100 : null,
 					success: input.success,
 					duration_ms: Math.round(input.durationMs),
 					$process_person_profile: false,

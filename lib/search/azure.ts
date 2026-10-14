@@ -232,26 +232,35 @@ export async function replaceAllAzure(records: SectionRecord[]) {
 }
 
 type AzureHit = SectionRecord & {
+	"@search.score": number;
 	"@search.rerankerScore"?: number;
 	"@search.captions"?: { text?: string }[];
 	"@search.highlights"?: { body?: string[] };
 };
 
 /*
-  The semantic ranker re-orders the top 50 and scores each 0 to 4. On these
-  docs it ranked no better than plain hybrid (evals/search, run 7: MRR 0.796 vs
-  0.853), adds latency, is billed per query, and on the free plan answers 402
-  once the monthly allowance is used. So it's off unless
-  AZURE_SEMANTIC_RANKER=on (worth it for its score, e.g. a chatbot deciding
-  when to say "the docs don't cover this"), and a 402 falls back to hybrid.
+  The semantic ranker re-orders the top 50 and scores each 0 to 4. As an
+  order it ranked no better than plain hybrid (evals/search, run 7: MRR 0.796
+  vs 0.853), but its score is the one signal we found that the docs don't
+  answer a query (below 2.3 caught 7 of 9 unanswerable test questions and 1 of
+  51 answerable ones). AZURE_SEMANTIC_RANKER:
+  - unset or "score": run it for the score, keep the hybrid order
+  - "on": use its order too
+  - "off": don't run it
+  It adds ~0.2 s, is billed per query, and on the free plan answers 402 once
+  the monthly allowance is used; a 402 falls back to hybrid with no score.
 */
-const semanticRankerOn = () => env("AZURE_SEMANTIC_RANKER") === "on";
+const semanticRanker = (): "off" | "score" | "on" => {
+	const mode = env("AZURE_SEMANTIC_RANKER");
+	return mode === "on" || mode === "off" ? mode : "score";
+};
 
 /**
  * Hybrid (keyword + vector) search, collapsed to one result per article.
- * With the semantic ranker on, `score` is its 0–4 score for the best section
- * (low means the docs likely don't answer the query); otherwise null, since
- * hybrid scores aren't on a meaningful scale.
+ * When the semantic ranker ran, `score` is its 0–4 score for the best section
+ * and `topScore` the best across all results (low means the docs likely don't
+ * answer the query); otherwise null, since hybrid scores aren't on a
+ * meaningful scale.
  */
 export async function searchAzure(query: string, page: number, pageSize: number): Promise<DocsSearchResult> {
 	const path = `/indexes/${config().index}/docs/search`;
@@ -263,8 +272,9 @@ export async function searchAzure(query: string, page: number, pageSize: number)
 		// The keyword match in the body, for the snippet when there's no caption.
 		highlight: "body",
 	};
+	const ranker = semanticRanker();
 	let res: { value?: AzureHit[] } | null = null;
-	if (semanticRankerOn()) {
+	if (ranker !== "off") {
 		try {
 			res = await azure(path, {
 				method: "POST",
@@ -280,11 +290,17 @@ export async function searchAzure(query: string, page: number, pageSize: number)
 	// index doesn't exist, so throw and let the caller fall back to Algolia
 	// rather than report "no results".
 	if (!res) throw Object.assign(new Error(`Azure AI Search index "${config().index}" not found`), { status: 404 });
+	let sections = res.value || [];
+	const scores = sections.map((h) => h["@search.rerankerScore"]).filter((s): s is number => typeof s === "number");
+	// @search.score is still the hybrid score, so sorting by it restores the
+	// hybrid order (checked: identical to a hybrid-only query).
+	if (ranker === "score") sections = [...sections].sort((a, b) => b["@search.score"] - a["@search.score"]);
 	const byArticle = new Map<string, AzureHit>();
-	for (const hit of (res?.value || []) as AzureHit[]) if (!byArticle.has(hit.articleId)) byArticle.set(hit.articleId, hit);
+	for (const hit of sections) if (!byArticle.has(hit.articleId)) byArticle.set(hit.articleId, hit);
 	const all = Array.from(byArticle.values());
 	return {
 		engine: "azure",
+		topScore: scores.length ? Math.max(...scores) : null,
 		total: all.length,
 		page,
 		pages: Math.max(1, Math.ceil(all.length / pageSize)),
