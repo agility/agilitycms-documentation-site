@@ -27,13 +27,13 @@ Your website now has two kinds of readers: people, and the AI agents and assista
 | # | File | Standard | Status |
 |---|---|---|---|
 | 1 | [01-two-kinds-of-readers.md](01-two-kinds-of-readers.md) | Your site should work for people and for the agents reading on their behalf | Full draft |
-| 2 | [02-search-should-understand-questions.md](02-search-should-understand-questions.md) | Your search should understand a question, not just keywords | Outline |
-| 3 | [03-no-results-is-feedback.md](03-no-results-is-feedback.md) | "No results" is feedback, so collect it | Outline |
-| 4 | [04-measure-search-before-changing-it.md](04-measure-search-before-changing-it.md) | Measure your search before you change it | Outline |
-| 5 | [05-builds-should-not-delete-content.md](05-builds-should-not-delete-content.md) | Your build should not be able to quietly delete content | Outline |
-| 6 | [06-every-page-machine-readable.md](06-every-page-machine-readable.md) | Every page should be readable by a machine, without a second site | Outline |
-| 7 | [07-assistants-should-say-i-dont-know.md](07-assistants-should-say-i-dont-know.md) | An assistant on your site should know when to say "I don't know" | Outline |
-| 8 | [08-fast-accessible-everywhere.md](08-fast-accessible-everywhere.md) | Fast, accessible and working in every browser, measured not assumed | Outline |
+| 2 | [02-search-should-understand-questions.md](02-search-should-understand-questions.md) | Your search should understand a question, not just keywords | Full draft |
+| 3 | [03-no-results-is-feedback.md](03-no-results-is-feedback.md) | "No results" is feedback, so collect it | Full draft |
+| 4 | [04-measure-search-before-changing-it.md](04-measure-search-before-changing-it.md) | Measure your search before you change it | Full draft |
+| 5 | [05-builds-should-not-delete-content.md](05-builds-should-not-delete-content.md) | Your build should not be able to quietly delete content | Full draft |
+| 6 | [06-every-page-machine-readable.md](06-every-page-machine-readable.md) | Every page should be readable by a machine, without a second site | Full draft |
+| 7 | [07-assistants-should-say-i-dont-know.md](07-assistants-should-say-i-dont-know.md) | An assistant on your site should know when to say "I don't know" | Full draft |
+| 8 | [08-fast-accessible-everywhere.md](08-fast-accessible-everywhere.md) | Fast, accessible and working in every browser, measured not assumed | Full draft |
 
 ## Publishing notes
 
@@ -51,6 +51,7 @@ Your website now has two kinds of readers: people, and the AI agents and assista
   - AI assistant requests: 1,720. AI search requests: 3,981. Together that is 5,701, which is the number post 1 uses.
   - Also counted: AI training 6,842, search engines 5,351, SEO tools 1,058, scripts and SDKs 3,916 (this includes our own test runs), unidentified 4,853, other bots 14,083, MCP tool calls 132.
   - Re-pull these the week post 1 is published.
+- [ ] Every remaining `TODO(data)` in the posts (`grep -n "TODO" 0*.md`). Posts 3, 5, 6, 7 and 8 have them. Post 7's no-answer probes (about 15) and post 8's Firefox replays are the two that change what a post says.
 - [ ] Zero-result searches per week, before and after the query-setting change (PostHog `docs_search` with `results = 0`, plus Algolia analytics). Post 3.
 - [ ] Search click-through: share of searches followed by a result click (`docs_search_result_click`). Posts 3 and 8.
 - [ ] Core Web Vitals for docs pages (PostHog web vitals). Post 8.
