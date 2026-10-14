@@ -202,7 +202,7 @@ export async function reportMcpToolCall(input: {
 		const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 		if (!key || !isProduction()) return;
 
-		const { query, objectID, hits, blocked, engine, fallback, topScore } = input.args as Record<string, unknown>;
+		const { query, objectID, hits, blocked, engine, fallback, topScore, test } = input.args as Record<string, unknown>;
 		await fetch(`${posthogHost()}/i/v0/e/`, {
 			method: "POST",
 			headers: { "content-type": "application/json" },
@@ -224,6 +224,9 @@ export async function reportMcpToolCall(input: {
 					engine: typeof engine === "string" ? engine : null,
 					fallback: typeof fallback === "string" ? fallback : null,
 					top_score: typeof topScore === "number" ? Math.round(topScore * 100) / 100 : null,
+					// A scripted test (X-Docs-Test: 1). Only present when true, so
+					// reports filter with "test is not set".
+					...(test === true && { test: true }),
 					success: input.success,
 					duration_ms: Math.round(input.durationMs),
 					$process_person_profile: false,
