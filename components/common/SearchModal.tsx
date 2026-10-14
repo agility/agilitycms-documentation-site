@@ -48,6 +48,9 @@ const SEARCH_PARAMS = {
 	// Returns a queryID with each response so result clicks can be attributed
 	// in Algolia's click analytics (see lib/analytics/algoliaInsights.ts).
 	clickAnalytics: true,
+	// The doc_site index is also searched by the MCP and the main website;
+	// the tag lets Algolia's reports be filtered to this search box.
+	analyticsTags: ["search-box"],
 };
 
 // Shown before the user types — the front doors of the docs.
