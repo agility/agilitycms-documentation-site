@@ -58,7 +58,15 @@ Then:
 ## Facts you may use (all verified)
 
 - 52 test questions, 51 with a correct page, committed before scoring.
-- Run 2 scores (hit@1 / hit@3 / hit@5 / MRR@10):
+- **Run 7 (2026-10-11) is the current result and supersedes run 2.** Agent question set, MRR@10 and hit@1:
+  - Algolia `doc_site`: 0.587, 25.
+  - Algolia per section: 0.594, 25.
+  - Azure keyword: 0.762, 32.
+  - Azure hybrid: 0.853, 40.
+  - Azure hybrid + semantic: 0.796, 34. The reranker made ranking worse once the full corpus was indexed, so the docs MCP now uses hybrid without it.
+
+  On 36 search-box queries, Algolia's default settings scored 0.886 at about 46 to 53 ms, while Azure hybrid took about 224 to 266 ms. Source: `evals/search/README.md`. Use run 7 for headline claims. Run 2 can appear only as history, in the story of a wrong conclusion.
+- Run 2 scores (history; hit@1 / hit@3 / hit@5 / MRR@10):
   - Algolia per article: 25 / 33 / 36 / 0.577.
   - Algolia per section: 25 / 32 / 35 / 0.573.
   - Azure keyword (BM25): 27 / 40 / 42 / 0.668.

@@ -66,7 +66,7 @@ Nobody decides to build a site that agents cannot read. It happens through defau
 
 The rest of the series takes each of these in turn, with code. In order of effort:
 
-1. **Make site search tolerant of sentences** (post 2). With Algolia, four query settings did most of the work for us. Adding meaning-based search with Azure AI Search did the rest.
+1. **Make site search tolerant of sentences** (post 2). With Algolia, four query settings stopped questions returning nothing. Adding meaning-based search with Azure AI Search put the right page first far more often.
 2. **Log searches that find nothing and read the list every week** (post 3). We send a PostHog event for every search, with the result count, from the site and from our agent endpoint.
 3. **Measure your search before you change it** (post 4). Fifty questions and a scoring script will tell you more than a month of opinions.
 4. **Make sure your build cannot quietly delete content** (post 5). Ours did.
@@ -81,7 +81,7 @@ None of this is specific to our stack, and I will point out the equivalents as w
 - **Next.js 16** (App Router, with Cache Components) and **React** for the site, hosted on **Vercel**.
 - **Agility CMS** for content. I co-founded it, so take my enthusiasm with a pinch of salt. Editors write in the CMS; the site reads it over GraphQL and the Fetch API.
 - **Algolia** for site search.
-- **Azure AI Search**, with embeddings from **Azure OpenAI**, for hybrid and semantic search.
+- **Azure AI Search**, with embeddings from **Azure OpenAI**, for hybrid (keyword plus vector) search for AI agents.
 - **PostHog** for product analytics, alerts and session replay, including server-side events for agent traffic.
 - An **MCP server** (Model Context Protocol, the standard way to give an AI assistant tools) so assistants can search and read the docs directly.
 
@@ -133,9 +133,9 @@ Two honest caveats about our numbers:
 
 We worked through every item above over a few weeks, with a lot of help from an AI coding agent, and measured as we went. Two results stood out.
 
-**Search mattered more than anything else.** We wrote 52 real questions, each with its correct page, and scored our search on them. Our original Algolia setup put the right page first for 25 of the 51 questions that have an answer. Azure AI Search, combining keyword and meaning-based search with a semantic reranker, put it first for 37. For an agent, that is the difference between quoting the right page and quoting the wrong one.
+**Search mattered more than anything else.** We wrote 52 real questions, each with its correct page, and scored our search on them. Our Algolia setup put the right page first for 25 of the 51 questions that have an answer. Azure AI Search, combining keyword and meaning-based (vector) search, put it first for 40. For an agent, that is the difference between quoting the right page and quoting the wrong one.
 
-**Our first theory was wrong.** After the first run we wrote down that "about half the improvement comes from splitting long articles into sections". It sounded right. Then we measured it directly: splitting made no difference to the ranking at all. The gain came from how results were ranked. If we had not tested the theory, we would have published confident advice that was simply false. That lesson, measure before you believe, runs through the rest of the series.
+**We were wrong twice.** After the first run we wrote down that "about half the improvement comes from splitting long articles into sections". It sounded right. Then we measured it directly: splitting made no difference to the ranking at all. Later, once every article was indexed properly, the expensive extra step we had been most excited about, a semantic reranker that re-reads the top results, turned out to make the ranking slightly worse. If we had not kept measuring, we would have published confident advice that was simply false, twice. That lesson, measure before you believe, runs through the rest of the series.
 
 ## For people, too
 
