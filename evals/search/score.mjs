@@ -88,7 +88,7 @@ function azure(mode) {
 		if (mode !== "keyword" && mode !== "prefix") body.vectorQueries = [{ kind: "text", text: q, fields: env("AZURE_VECTOR_FIELD") || "bodyVector", k: 50 }];
 		if (mode === "semantic") Object.assign(body, { queryType: "semantic", semanticConfiguration: "docs-semantic" });
 		const res = await fetch(
-			`https://${env("AZURE_SEARCH_NAME")}.search.windows.net/indexes/${env("AZURE_SEARCH_INDEX") || "agility-docs-sections"}/docs/search?api-version=2024-07-01`,
+			`https://${env("AZURE_SEARCH_NAME")}.search.windows.net/indexes/${env("AZURE_SEARCH_INDEX") || "agility-docs-production"}/docs/search?api-version=2024-07-01`,
 			{ method: "POST", headers: { "api-key": env("AZURE_SEARCH_KEY"), "content-type": "application/json" }, body: JSON.stringify(body) }
 		);
 		const j = await res.json();
