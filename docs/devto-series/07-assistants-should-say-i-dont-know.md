@@ -43,7 +43,7 @@ Use your site's chatbot, or any assistant pointed at your docs (an MCP connectio
 
 The principle has four parts, and none of them is specific to a model or a search engine.
 
-1. **Build the assistant on your search, not on the model's memory.** The model gets two tools: search (short query in; titles, URLs, snippets, ids out) and fetch (id in; the whole page as Markdown out). It searches, reads, and answers only from what it read. This is retrieval-augmented generation (RAG), done through tool calls so the model can rephrase and search again.
+1. **Build the assistant on your search, not on the model's memory.** The model gets two tools: search (query in; titles, URLs, snippets out) and fetch (the whole page as Markdown). It answers only from what it read. This is retrieval-augmented generation (RAG), done through tool calls so the model can search again.
 2. **Require citations.** Every page used appears as a link. If the model cannot cite it, it cannot say it.
 3. **Gate on a calibrated confidence score, in code, before the results reach the model.** If the best result scores below a threshold, the model is told there is no confident match and should say so.
 4. **Let the model make the final call.** A score narrows the problem; it does not solve it. The system prompt still says: if the pages you fetched do not answer the question, say you don't know and point to a person.
@@ -54,45 +54,48 @@ Add one more for anything contractual: pricing, contracts, security claims. Rout
 
 Our docs run on Agility CMS, which I co-founded. The search behind our MCP server (the two-tool server from post 6) is Azure AI Search, with embeddings from Azure OpenAI.
 
-First, plainly: **our default setup gives no calibrated confidence signal.** The MCP runs Azure hybrid search (keyword plus vector) without a reranker, because that ranked best on our test set (MRR 0.853, against 0.796 with the reranker; MRR is the average of 1 divided by the rank of the right page). Hybrid scores are fusion scores of around 0.03 that only rank results against each other, so our code does not even pass them on. What the default gives a model is the order of the results, the snippets, and the full pages it can fetch and read. That is enough to answer well. It is not enough to refuse in code.
+Hybrid scores, as above, cannot carry a threshold. A calibrated score costs a reranker call. Azure's **semantic ranker** is a second model that reads the query and each of the top 50 results together and scores how well the passage answers it, from 0 to 4. That number is on a fixed scale, so a threshold can mean something. Standalone reranking models do the same job in front of other engines, at the same price: a billed call and some latency on every search.
 
-A calibrated score is an **option that costs a reranker call.** Azure's **semantic ranker** is a second model that reads the query and each of the top 50 results together and scores how well the passage answers it, from 0 to 4. That number is on a fixed scale, so a threshold can mean something. It is billed per query and adds about 60 milliseconds. Standalone reranking models do the same job in front of other engines, with the same trade.
+The awkward part: on our test set the reranker's *order* was worse than plain hybrid (MRR 0.796 against 0.853; MRR is the average of 1 divided by the rank of the right page). But its *score* was the only signal we found that separates "the docs answer this" from "they don't".
 
-Here is how our code makes it opt-in, and what it does when the quota runs out:
+So the default now pays for the score and throws away the order. Every Azure search runs the ranker, then sorts the results back by the hybrid score:
 
 ```ts
 // lib/search/azure.ts
 /*
-  The semantic ranker re-orders the top 50 and scores each 0 to 4. On these
-  docs it ranked no better than plain hybrid (evals/search, run 7: MRR 0.796 vs
-  0.853), adds latency, is billed per query, and on the free plan answers 402
-  once the monthly allowance is used. So it's off unless
-  AZURE_SEMANTIC_RANKER=on (worth it for its score, e.g. a chatbot deciding
-  when to say "the docs don't cover this"), and a 402 falls back to hybrid.
+  The semantic ranker re-orders the top 50 and scores each 0 to 4. As an
+  order it ranked no better than plain hybrid (evals/search, run 7: MRR 0.796
+  vs 0.853), but its score is the one signal we found that the docs don't
+  answer a query (below 2.3 caught 7 of 9 unanswerable test questions and 1 of
+  51 answerable ones). AZURE_SEMANTIC_RANKER:
+  - unset or "score": run it for the score, keep the hybrid order
+  - "on": use its order too
+  - "off": don't run it
+  It adds ~0.2 s, is billed per query, and on the free plan answers 402 once
+  the monthly allowance is used; a 402 falls back to hybrid with no score.
 */
-const semanticRankerOn = () => env("AZURE_SEMANTIC_RANKER") === "on";
+const semanticRanker = (): "off" | "score" | "on" => {
+	const mode = env("AZURE_SEMANTIC_RANKER");
+	return mode === "on" || mode === "off" ? mode : "score";
+};
 // ...
-	if (semanticRankerOn()) {
-		try {
-			res = await azure(path, {
-				method: "POST",
-				body: { ...hybrid, queryType: "semantic", semanticConfiguration: SEMANTIC_CONFIG, captions: "extractive" },
-			});
-		} catch (err) {
-			if ((err as { status?: number }).status !== 402) throw err;
-			console.warn("Azure semantic ranker quota used up (402); searching without it");
-		}
-	}
-	res ??= await azure(path, { method: "POST", body: hybrid });
+	let sections = res.value || [];
+	const scores = sections.map((h) => h["@search.rerankerScore"]).filter((s): s is number => typeof s === "number");
+	// @search.score is still the hybrid score, so sorting by it restores the
+	// hybrid order (checked: identical to a hybrid-only query).
+	if (ranker === "score") sections = [...sections].sort((a, b) => b["@search.score"] - a["@search.score"]);
 	// ...
-			score: h["@search.rerankerScore"] ?? null,
+	return {
+		engine: "azure",
+		topScore: scores.length ? Math.max(...scores) : null,
+		// ...
 ```
 
-Two things to notice. The score is `null` whenever the ranker is off, which is the default, and our Algolia path always returns `score: null` too. A gate has to handle "no score" as its own case, not as zero. And if we turn the ranker on, it will be for its score, not its ordering, which is the opposite of why most people turn it on.
+Three things to notice. Azure keeps the hybrid score in `@search.score` on a semantic query, so the re-sort gives hybrid's order (we checked). `topScore` is the best reranker score across all results, because the first result is now hybrid's pick. And the score can be `null`: past the free quota (HTTP 402) the search retries without the ranker, and our Algolia path never has one. A gate has to treat "no score" as its own case, not as zero. Most people buy a reranker to reorder. We pay for it to know when to stop.
 
 ### Report the score, gate in the assistant
 
-Our MCP server does not refuse anything. It serves many different assistants, and the refusal policy belongs to whoever is answering the person. When the ranker is on, `search_docs` prints the score next to each result and lets the calling model weigh it. With the default setup the score is `null`, so the line is simply left out:
+Our MCP server does not refuse anything. It serves many different assistants, and the refusal policy belongs to whoever is answering the person. `search_docs` prints each result's reranker score next to it and lets the calling model weigh it. When there is no score, the line is simply left out:
 
 ```ts
 // app/api/mcp/route.ts
@@ -115,11 +118,11 @@ A chatbot we own should go further and gate in code. We have not built it yet, s
 const MIN_SCORE = Number(process.env.SEARCH_MIN_SCORE); // calibrate first, see below
 
 async function searchForModel(query: string) {
-  const { hits } = await searchDocs(query); // lib/search/docsSearch.ts
-  const top = hits[0]?.score ?? null;
+  const { hits, topScore } = await searchDocs(query); // lib/search/docsSearch.ts
+  const top = topScore ?? null;
 
   if (top === null) {
-    // No calibrated score (ranker off, or another engine): the model must judge from the pages.
+    // No calibrated score (quota used up, ranker off, or Algolia): the model must judge from the pages.
     return { hits, note: "No relevance score. Answer only if a fetched page answers the question." };
   }
   if (top < MIN_SCORE) {
@@ -154,13 +157,13 @@ The note was right. We wrote eight more no-answer questions, checked each agains
 
 The 2.0 we nearly adopted would have caught one of nine. The highest-scoring miss, at 2.62, was the WordPress plugins question from the top of this post. The answerable question wrongly refused at 2.3 was "what is your uptime SLA", which scored 2.28 even though the right page ranked first.
 
-So the score is a signal, not a gate on its own. If we pay for the reranker in a chatbot, a threshold around 2.3 plus a model that reads the page and admits when it does not answer is the plan. Without the reranker, the model's own reading of the fetched page is the only check, and the system prompt has to carry all of it. **None of this is settled.** Nine is better than one, but we want about 15 no-answer questions before we let a number refuse real people.
+So the score is a signal, not a gate on its own. For a chatbot, a threshold around 2.3 plus a model that reads the page and admits when it does not answer is the plan. **None of this is settled.** Nine is better than one, but we want about 15 no-answer questions before we let a number refuse real people.
 
 TODO(data): rerun with about 15 no-answer questions and report the threshold.
 
-**Two costs we did not expect.** Our first test run said the semantic ranker improved ordering a little. Once the full content was indexed, it made ordering worse, so we switched it off for the MCP and would pay for it only for the score. And the free semantic plan allows 1,000 queries a month, after which Azure answers HTTP 402. Our evaluation runs used about half of that in one day. A public chatbot needs the paid plan, and code that falls back when the quota runs out.
+**Two costs we did not expect.** Our first test run said the semantic ranker improved ordering a little. Once the full content was indexed, it made ordering worse, so we now pay for it only for the score. In a local check against production, scored searches ran from 30 ms faster to 240 ms slower than plain hybrid, so budget about 0.2 seconds. And the free semantic plan allows 1,000 queries a month, after which Azure answers HTTP 402. Our evaluation runs used about half of that in one day. A public chatbot needs the paid plan, and code that falls back when the quota runs out.
 
-**What we have not done yet:** our PostHog `docs_mcp_tool_call` event records each query and its hit count, which made zero-result searches a content-gap list. On hybrid search that list is empty. The top score should replace it, and we do not log it yet.
+**Where the zero-result alert went.** Our PostHog `docs_mcp_tool_call` event made zero-result agent searches a content-gap list (post 3), and hybrid search emptied it. The event now also carries `top_score` (null when the ranker did not run), plus `engine` and `fallback`. We added `top_score` so we can alert on low confidence: searches below about 2.3 are the new gap list. Unscored searches need their own count, because past the free quota every search is unscored, and silence must not look like "no gaps".
 
 ## For people, too
 

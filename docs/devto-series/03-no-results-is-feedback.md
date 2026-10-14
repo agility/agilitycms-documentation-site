@@ -97,7 +97,7 @@ That becomes a server-side PostHog event, sent after the response so it never sl
 const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 if (!key || !isProduction()) return;
 
-const { query, objectID, hits, blocked } = input.args as Record<string, unknown>;
+const { query, objectID, hits, blocked, engine, fallback, topScore } = input.args as Record<string, unknown>;
 await fetch(`${posthogHost()}/i/v0/e/`, {
 	method: "POST",
 	headers: { "content-type": "application/json" },
@@ -110,6 +110,8 @@ await fetch(`${posthogHost()}/i/v0/e/`, {
 			query: typeof query === "string" ? query.slice(0, 200) : null,
 			hits: typeof hits === "number" ? hits : null,
 			zero_results: hits === 0,
+			// ...
+			top_score: typeof topScore === "number" ? Math.round(topScore * 100) / 100 : null,
 			// ...
 		},
 	}),
@@ -141,7 +143,7 @@ Two fixes came out of it. Our test script now calls the search engine directly w
 
 **What we got wrong: we were about to break our own signal.** Since 7 October, 0 of 61 agent searches have returned nothing. Part of that is the four settings from post 2 working. But on 13 October the agent tool moved to Azure AI Search hybrid search, which combines keywords with vectors (lists of numbers that represent meaning). Vector search always finds a nearest neighbour, so it almost never returns zero results. Our zero-result tile for agents will stay at zero even when the docs have no answer.
 
-We noticed this in our notes before the switch, not after, but we have not replaced the signal yet. The candidates are a low relevance score (Azure's semantic ranker gives each result a score from 0 to 4, and post 7 covers using it as an "I don't know" threshold), and agents that search again straight away with reworded queries, which usually means the first search did not help. If you add vector search, decide what replaces "no results" before you ship it.
+We noticed this in our notes before the switch, not after, and replaced the signal a day later. Two obvious candidates failed against the live index: "no keyword match" (our no-answer test questions still matched ordinary words like "editor" in nearly every top result) and the hybrid score (a fusion score of about 0.03 that ranks results but does not measure them). Watching agents reword a failed search was impossible, because every agent call shares one anonymous ID. What worked was Azure's semantic ranker, which scores each result from 0 to 4 for how well it answers the question. Every agent search now runs it for that score while keeping hybrid's order, and the event carries the best score as `top_score` (the line in the code above), plus `engine` and `fallback`. We added `top_score` so we can alert on low confidence instead of zero results; below about 2.3 the docs probably do not answer, and post 7 covers how far to trust that number. One catch: past the free ranker quota, searches come back unscored and `top_score` is null, so count unscored searches separately, or silence will look like "no gaps". If you add vector search, decide what replaces "no results" before you ship it.
 
 TODO(data): how many zero-result searches turned into new or edited pages. We have not tracked it yet, and we should.
 

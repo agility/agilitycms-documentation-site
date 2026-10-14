@@ -158,7 +158,7 @@ So we tested it. We built a second Algolia index split into sections exactly lik
 
 Measuring once is not the end. Five days later, while looking at one page's stored records, we found that the splitter ignored headings in every article saved with Windows line endings (post 5 has that story). Run 2 had been measured while 211 of our 451 articles were not split at their headings at all.
 
-We fixed it, rebuilt the index from the CMS, excluded five pages that now quoted our test questions word for word, and scored again. Splitting still made no difference to Algolia, so the lesson survived. But one claim did not: on the full corpus, hybrid with the semantic reranker scored 0.796 against plain hybrid's 0.853. The reranker had made ranking worse. We turned it off by default and kept it only for its 0 to 4 score, which is useful for deciding when an assistant should say "I don't know" (post 7). The comment in `lib/search/azure.ts` now records why.
+We fixed it, rebuilt the index from the CMS, excluded five pages that now quoted our test questions word for word, and scored again. Splitting still made no difference to Algolia, so the lesson survived. But one claim did not: on the full corpus, hybrid with the semantic reranker scored 0.796 against plain hybrid's 0.853. The reranker had made ranking worse. We still run it, but for its score, not its order: the agent search re-sorts its results back into hybrid order and keeps the 0 to 4 score, which is useful for deciding when an assistant should say "I don't know" (post 7). The comment in `lib/search/azure.ts` now records why.
 
 Along the way I also found a bug in our own scorer: one engine was quietly sending the vector query, so a "keyword" row was really hybrid. Test your test harness too.
 
