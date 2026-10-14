@@ -177,7 +177,7 @@ The agent questions are sentences. People in a search box type two words and a t
 - Azure AI Search on the **Basic** tier.
 - Embedding the whole docs set took about **8 minutes** the first time and cost **cents**.
 - After storing a hash of each section and skipping unchanged ones, a full rebuild took a little over **two minutes**, and a rebuild with no changes took **2 seconds**.
-- The free semantic reranker plan allows **1,000 queries a month**. Each full test run uses 52 of them, and past the allowance the service returns HTTP 402, so code that always asks for reranking needs a fallback.
+- The free semantic reranker plan allows **1,000 queries a month**. Each full test run uses one per question (52, or 60 once we added eight more no-answer probes), the allowance is shared with production searches, and past the allowance the service returns HTTP 402, so code that always asks for reranking needs a fallback.
 
 ## For people, too
 
