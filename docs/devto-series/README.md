@@ -17,7 +17,7 @@ Your website now has two kinds of readers: people, and the AI agents and assista
    5. **What happened when we tried it.** One number and one thing we got wrong.
 3. **Humans first, agents too.** Every agent-facing change must also say what it does for a person. If it does nothing for people, say so honestly.
 4. **Every number is real and sourced.** Numbers come from `evals/search/` in this repo, PostHog, Algolia analytics or the git history. If a number is not measured yet, the draft says `TODO(data)` instead of guessing.
-5. **Two layers: principle and real stack.** Every post teaches the stack-neutral principle and also shows the real implementation by name: Next.js and React, Agility CMS (disclose that Joel co-founded it), Algolia, Azure AI Search, PostHog, MCP, Vercel. Mention equivalents in other tools where it is easy. No comparisons against other CMS vendors. Full rules in [WRITING-BRIEF.md](WRITING-BRIEF.md).
+5. **Two layers: principle and real stack.** Every post teaches the stack-neutral principle and also shows the real implementation by name: Next.js and React, Agility CMS (disclose that Joel has worked at Agility for 21 years; he did NOT co-found it), Algolia, Azure AI Search, PostHog, MCP, Vercel. Mention equivalents in other tools where it is easy. No comparisons against other CMS vendors. Full rules in [WRITING-BRIEF.md](WRITING-BRIEF.md).
 6. **Disclose AI assistance.** Much of this work was done with an AI coding agent. Say so where it matters to the story, and follow dev.to's guidelines for AI-assisted posts (check the current wording before publishing).
 7. **No secrets.** No instance IDs, API keys, customer names or internal URLs in drafts.
 8. **House style:** plain English, short sentences, no em dashes.
@@ -77,9 +77,14 @@ node docs/devto-series/post-drafts.mjs 03 --update # re-send one post, replacing
   - AI assistant requests: 1,720. AI search requests: 3,981. Together that is 5,701, which is the number post 1 uses.
   - Also counted: AI training 6,842, search engines 5,351, SEO tools 1,058, scripts and SDKs 3,916 (this includes our own test runs), unidentified 4,853, other bots 14,083, MCP tool calls 132.
   - Re-pull these the week post 1 is published.
-- [ ] Every remaining `TODO(data)` in the posts (`grep -n "TODO" 0*.md`). Posts 5, 6, 7 and 8 have them. Post 7's no-answer probes (about 15) and post 8's Firefox replays are the two that change what a post says.
-- [ ] Zero-result searches per week, before and after the query-setting change (PostHog `docs_search` with `results = 0`, plus Algolia analytics). Post 3.
-- [ ] Search click-through: share of searches followed by a result click (`docs_search_result_click`). Posts 3 and 8.
-- [ ] Core Web Vitals for docs pages (PostHog web vitals). Post 8.
-- [ ] An accessibility pass on a typical article page. Post 8.
-- [ ] The search-button rage clicks in PostHog: about 270 Firefox rage clicks across 32 sessions between Sep 17 and Oct 10, all on the collapsed search button. Joel tested Firefox on Oct 13 and search works. Watch a replay to work out what those clicks were before post 8 says anything about it.
+- [x] Post 7's no-answer probes: rerun 2026-10-15 with 16 (evals commits 7d0d1b1, 9f1313d). 2.3 holds: 11/16 refused, 1/51 wrongly refused. Illustration re-rendered.
+- [ ] Post 8's manual screen-reader pass (needs a person). An automated keyboard and ARIA check was done 2026-10-15; see the post.
+- [x] Post 5, how long live search was down to 348: bracketed 2026-10-15 at roughly 4 h to 30 h (no logs on the old route). Details in the post's DRAFT comment.
+- [x] Post 6, MCP use: first logged week (Oct 6 to 11) had 48 real `search_docs` and 30 `fetch_doc` calls, plus 28 test searches. Markdown copies: 5,706 requests Oct 6 to 15, mostly non-AI (our server, a link checker, curl, SEO bots); top page agility-cms-mcp-server.
+- [x] Post 8, Core Web Vitals: production-only (`$host = agilitycms.com`), Sep 17 to Oct 15. Desktop LCP 1,252 ms / INP 64 / CLS 0.005 (344/206/297 samples); mobile 1,079 / 86 / 0.0 (29/10/3). The earlier numbers included preview hosts. Data starts Sep 17, so 90 days equals 30.
+- [x] Post 8, Firefox rage clicks: automated traffic, almost certainly. 41 sessions with a headless-browser signature (viewport height = screen height, new visitor each time, 1 rage click per page, clicks on the hidden "Open menu" button 318 times), no search use at all. Sep 17 is when PostHog went live on production docs. Joel to watch 2 or 3 replays to confirm (links in the post's JOEL note).
+- [x] Post 1 / post 2: the agent retry pattern (long query, then shorter ones) predates PostHog MCP logging (it began Oct 6, after the fix). It's only checkable in App Insights `Agility-Docs-MCP-Server` (1,552 MCP calls from the Algolia era). The human search box shows no such pattern and no profanity (82 queries read). App Insights checked 2026-10-15: 788 searches before the fix, 31 long-then-shorter chains (71 searches); post 1 quotes one.
+- [x] Zero-result searches per week, before and after the query-setting change (PostHog `docs_search` with `results = 0`, plus Algolia analytics). Post 3.
+- [x] Search click-through: share of searches followed by a result click (`docs_search_result_click`). Posts 3 and 8.
+- [x] An automated accessibility pass on a typical article page (axe-core, 2026-10-14). Post 8.
+- [x] Possible MCP logging gap: 0 `docs_mcp_tool_call` events on Oct 15 despite about 1,000 MCP POSTs (Claude-User and Codex). Checked 2026-10-15: no bug. PostHog and App Insights match call for call; Codex (about 900 POSTs a day) and Claude-User connect without calling tools. Zero-result searches: search box 5 total Sep 17 to Oct 15 (mostly staff mid-typing); real agent searches since the fix: 63, 0 zero-result (no PostHog baseline before). Click-through: 29 of 33 search sessions (88%) clicked a result.

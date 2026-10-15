@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" data-loop="10" role="img" aria-labelledby="t d">
 <title id="t">Real-user speed on our docs</title>
-<desc id="d">Desktop, 75th percentile, last 30 days. Largest Contentful Paint 1,258 ms, good is 2.5 s or less. Interaction to Next Paint 64 ms, good is 200 ms or less. Cumulative Layout Shift 0.005, good is 0.1 or less. All three are in the good range. An automated accessibility check found 0 violations, with 1 rule needing a human.</desc>
+<desc id="d">Desktop, 75th percentile, production docs since September 17. Largest Contentful Paint 1,252 ms, good is 2.5 s or less. Interaction to Next Paint 64 ms, good is 200 ms or less. Cumulative Layout Shift 0.005, good is 0.1 or less. All three are in the good range. An automated accessibility check found 0 violations, with 1 rule needing a human.</desc>
 <style>
 text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,sans-serif;fill:#F1EFE9}
 .h{font-size:28px;font-weight:700}
@@ -15,7 +15,7 @@ text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,
 .good{fill:#02A196;fill-opacity:.35}
 .rest{fill:#302E2B}
 .k0{animation:k0 10s ease-in-out infinite}
-@keyframes k0{0%{opacity:0;transform:translate(-189px,0px)}6.00%{opacity:0;transform:translate(-189px,0px)}10.00%{opacity:1;transform:translate(-189px,0px)}15.00%{opacity:1;transform:translate(-189px,0px)}27.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+@keyframes k0{0%{opacity:0;transform:translate(-188px,0px)}6.00%{opacity:0;transform:translate(-188px,0px)}10.00%{opacity:1;transform:translate(-188px,0px)}15.00%{opacity:1;transform:translate(-188px,0px)}27.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
 .k1{animation:k1 10s ease-in-out infinite}
 @keyframes k1{0%{opacity:0;transform:translate(-77px,0px)}20.00%{opacity:0;transform:translate(-77px,0px)}24.00%{opacity:1;transform:translate(-77px,0px)}29.00%{opacity:1;transform:translate(-77px,0px)}39.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
 .k2{animation:k2 10s ease-in-out infinite}
@@ -29,7 +29,7 @@ text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,
 <rect width="1000" height="560" fill="#171615"/>
 <g id="scene">
 	<text x="60" y="66" class="h">Real-user speed on our docs</text>
-	<text x="60" y="96" class="sub">Desktop, 75th percentile, last 30 days, from PostHog web vitals</text>
+	<text x="60" y="96" class="sub">Desktop, 75th percentile, production docs since Sep 17 (PostHog web vitals)</text>
 
 	<!-- LCP: track 0 to 4 s, good up to 2.5 s -->
 	<text x="60" y="168" class="m">LCP</text>
@@ -39,8 +39,8 @@ text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,
 	<text x="671" y="204" text-anchor="end" class="zone">good ≤ 2.5 s</text>
 	<text x="900" y="204" text-anchor="end" class="zone">poor &gt; 4 s</text>
 	<g class="k0">
-		<circle cx="489" cy="173" r="11" fill="#F1EFE9" stroke="#171615" stroke-width="3"/>
-		<text x="489" y="152" text-anchor="middle" class="val">1,258 ms</text>
+		<circle cx="488" cy="173" r="11" fill="#F1EFE9" stroke="#171615" stroke-width="3"/>
+		<text x="488" y="152" text-anchor="middle" class="val">1,252 ms</text>
 	</g>
 
 	<!-- INP: track 0 to 500 ms, good up to 200 ms -->
@@ -73,6 +73,6 @@ text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,
 		<text x="60" y="510" class="a11y"><tspan style="font-weight:700;fill:#02A196">0 violations</tspan> · 1 rule needs a human (contrast) · no skip link yet</text>
 	</g>
 
-	<text x="60" y="540" class="note">383 / 226 / 330 desktop samples. Mobile looked good too, but 26 / 10 / 3 samples is an anecdote.</text>
+	<text x="60" y="540" class="note">344 / 206 / 297 desktop samples. Mobile looked good too, but 29 / 10 / 3 samples is an anecdote.</text>
 </g>
 </svg>

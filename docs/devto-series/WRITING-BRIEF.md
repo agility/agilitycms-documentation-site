@@ -4,7 +4,7 @@ Read this before writing or editing any post. It applies to every file in this f
 
 ## Who is writing, and for whom
 
-- **Byline:** Joel Varty, writing on his personal dev.to account. First person ("I", "we" for the team). Joel co-founded Agility CMS.
+- **Byline:** Joel Varty, writing on his personal dev.to account. First person ("I", "we" for the team). Joel has been at Agility CMS for 21 years and runs its tech and product side. He did NOT co-found it: never say he did.
 - **Readers:** developers and technical content people who run a website or docs site on any stack. Many are on Next.js and React. Some are on WordPress, Contentful, Sanity or a hand-built site.
 - **Purpose:** teach readers to expect more from their own work. It is not us showing off. Our site is the worked example, mistakes included.
 
@@ -83,7 +83,7 @@ Then, in whatever order reads naturally:
 - A test request to the old production reindex endpoint (with a parameter the old code ignored) rebuilt live search with 348 articles. Restored to 437 after the fix deployed.
 - Articles saved with Windows line endings had no headings in the index: 284 of 451 live search records.
 - The first PostHog zero-result alert was triggered by our own test traffic through the live MCP endpoint.
-- Semantic reranker (0 to 4), first probe: every answerable question's top result scored at least 2.16; the one no-answer question scored 1.94, which suggested a threshold near 2.0. Superseded by run 7 with 9 no-answer questions: they scored 1.96 to 2.62, answerable ones 2.28 and up (median 2.95), and the working threshold is about 2.3. Not settled: about 15 no-answer questions are wanted (post 7).
+- Semantic reranker (0 to 4), first probe: every answerable question's top result scored at least 2.16; the one no-answer question scored 1.94, which suggested a threshold near 2.0. Superseded by run 7 with 9 no-answer questions: they scored 1.96 to 2.62, answerable ones 2.28 and up (median 2.95), and the working threshold is about 2.3. Not settled: about 15 no-answer questions are wanted (post 7). Rerun 2026-10-15 with 16 no-answer questions (7 new, mostly near misses): no-answer 1.92 to 2.62 (median 2.16), answerable 2.28 to 3.53 (median 3.04 on the current index); below 2.3 refuses 11 of 16 and wrongly refuses 1 of 51. 2.3 holds.
 - Azure: Basic tier; free semantic ranker plan is 1,000 queries a month; embedding the docs took about 8 minutes at first and cost cents. After adding hashes to skip unchanged sections, a full rebuild took 129 seconds and a no-change rebuild 2 seconds.
 - The MCP server exposes two tools, `search_docs` and `fetch_doc`. The search engine behind it moved from Algolia to Azure hybrid search without changing the tools.
 - Every docs page has a Markdown copy listed in `llms.txt`.
@@ -95,34 +95,51 @@ If you need a number that is not here and not in the repo, write `TODO(data): ..
 ## Style
 
 - Plain English. Explain jargon the first time (MRR, BM25, embeddings, MCP).
-- **No em dashes or en dashes.** Use commas, colons, full stops or brackets.
+- **No em dashes or en dashes** (the long dash characters). Joel's own spaced hyphen (" - ") is fine and is part of his voice.
 - 1,500 to 2,200 words per post, code included.
 - Keep the dev.to front matter at the top of each file (`published: false`).
 
 ## Joel's voice
 
-These posts go out under Joel's name, and they have to sound like him, not like a language model. The reference is his own writing on dev.to (2019 to 2020): "Using a CMS Made Me A Better Developer", "Learn to be a better leader and team member with pair-programming", "DNS 101 For Web Developers", "Upgrading my website to JAMStack - 1 page at a time", "The Genius of NextJS and Gatsby as Static Site Generators", "How to Make Money Building Websites and Apps". Read one before writing.
+These posts go out under Joel's name, and they have to sound like him, not like a language model. There are two references, and the second one wins when they disagree:
 
-How Joel writes:
+1. His published dev.to posts from 2019 to 2020: "Using a CMS Made Me A Better Developer", "Learn to be a better leader and team member with pair-programming", "DNS 101 For Web Developers", "Upgrading my website to JAMStack - 1 page at a time".
+2. **His own edits to this series** (October 2026), especially post 1. Lines Joel wrote himself are the best guide to how he sounds now. Never rewrite them, and leave his typos alone: he keeps them on purpose.
 
-- **Contractions, always.** I've, I'd, you're, don't, it's, that's, we'd, didn't. "I did not" reads like a robot.
-- **Talks to you, like a colleague across the desk.** "Check out...", "go ahead and...", "pop in your keys", "you can just...". He assumes you're smart and busy.
-- **Short beats for effect.** A one-line paragraph after a setup: "Of course, I was dead wrong." "That's it!" "Oops." Use these a few times per post, not after every paragraph.
-- **Real enthusiasm, and real annoyance.** "really", "pretty", "super", "a ton of", "cool", "neat", "I really love this". A few exclamation points per post (3 to 6, never two in one paragraph). The odd word in CAPS for emphasis ("BUILD time", "ZERO-PERCENT-FUN"), at most 2 or 3 per post.
-- **Rhetorical questions** to move things along: "Or do they?", "The big win here?", "Why does this matter?"
-- **Stories about himself, with the self-deprecation left in.** He was "dead wrong", he "put it off until Friday afternoon", he'll "take care of that later". Mistakes are funny and specific, not solemn. But never invent a detail: no made-up days, places, conversations or feelings that aren't in the repo or the journal.
-- **Numerals for small numbers** ("2 people", "3 phases", "4 settings").
+### Who he is in these posts
+
+- He's been at Agility for 21 years and runs its tech and product side. **He did NOT co-found it.** Disclose it casually: "BTW: I've been at Agility for 21 years, so take my enthusiasm with a grain of salt."
+- He's a practitioner sharing what he learned, not an expert lecturing. He'll say "It's kinda hard to measure search performance if you aren't an expert in it (and I am NOT!)". He presumes and guesses out loud ("I presume these visits are on behalf of somebody running an agent").
+- He's a mentor at heart. He likes to step back and give the reader a career-level nudge: "A note on being *wrong*: it's not always bad, even though it feels crappy... Don't be so afraid of being wrong that you never try stuff!" Each post can have one moment like that.
+- He gets excited and wants to share: "I really want to share this stuff - it's super cool!", "I wanna help you improve on yours, too!"
+- He has opinions about tools and says them inline, in a few words: "Awesome tool - there are others that can do this too, but I like Posthog a LOT." "free plan covers a ton of usage on a small site." "great stack for quick iteration."
+- He links today's problem to his own history: "I've written about this since 2019." He's been "touting the server side rendering benefits of Next.js for years", and admits it when he didn't live up to it ("I'm super embarrassed by this... Ouch!").
+- He starts with context and motivation before the problem. For example, post 1 opens with "One of the things that I've been working on is being more data driven", and post 5 explains how the webhook works before saying what broke. He explains how things work and doesn't open with a punchline.
+
+### How it sounds on the page
+
+- **Contractions, always,** plus casual forms: wanna, kinda, gonna, etc, "no?" and "right?" as tag questions.
+- **Spaced hyphens** as his dash: "it's not super high traffic - those are a different story".
+- **Ellipses for a beat:** "So...", "But...", "READERS... they just aren't PEOPLE."
+- **CAPS for emphasis, often:** a word or two in caps in most sections (LOT, FAR, SOMETIMES, WORSE, NOT, SO MANY TIMES). *Italics* for stress too (*NOW*, *use cases*, *feeling*).
+- **Mild swearing and slang** where it fits: "DAMN!", "crappy", "heck", "Ouch!", "meat-suits". A smiley now and then: ":)" ";)".
+- **Exclamation points** are welcome, several per post.
+- **Parenthetical asides** carry a lot of his personality: "(but I was, anyway)", "(or bots disguised as humans)", "(albeit the less popular ones, but still...)".
+- **Rounded numbers with k** in casual prose ("2.5k times", "5.7k"). Keep exact figures in tables, charts and anywhere precision matters.
+- **Numerals** for small numbers ("2 people").
 - **Canadian spelling:** colour, behaviour, favourite, centre, but realize, organize (-ize).
-- **Disclosure is casual:** "BTW: I co-founded Agility CMS, so take my enthusiasm with a grain of salt."
-- **Endings turn to the reader:** "How about you?", "Let me know in the comments", "If you try this, reach out!"
-- Headings are plain and a bit casual ("Fixing it", "Where I messed up", "Step 1: ..."). The two recurring series sections stay: **The standard** and **The 10-minute check**. Everything else is named for what that post is about. No two posts should have the same set of headings.
+- **Sentences can run on a bit.** He strings clauses together with "and" and "but". Not every paragraph needs to be tight and balanced, and too-neat prose reads as AI.
+- **Endings turn to the reader** with a real question, and a closing line about why he cares.
+- Headings are plain and a bit casual. The two recurring series sections stay: **The standard** and **The 10-minute check**. Everything else is named for what that post is about, and no two posts share a set of headings.
 
-What gives a post away as AI-written (cut these):
+### What gives a post away as AI-written (cut these)
 
-- No contractions, and the same sentence rhythm everywhere.
+- No contractions; the same sentence rhythm everywhere; every paragraph the same length.
 - "Not X, but Y" / "It's not X. It's Y." / "X, not Y" antitheses. One per post at most.
-- Everything in threes. Bolded lead-in sentences on every paragraph or bullet.
-- A neat moral at the end of each section ("The lesson: ...", "That is the point."). One "here's what I learned" per post, max.
-- "Here's the thing", "Let's dive in", "It's worth noting", "In today's world", "game-changer", "delve", "crucial", "robust", "leverage", "seamless", "landscape", "unlock", "navigate", "testament", "honest(ly)" used as a flourish ("I want to be honest about that").
-- Over-hedging and over-signposting ("In this post, we will..."). Just say it.
+- Everything in threes. A bolded lead-in on every paragraph or bullet.
+- A neat moral at the end of each section ("The lesson: ...", "That is the point.").
+- Punchy one-word paragraphs used as a device ("Oops.") more than once a post. Joel explains more than he quips.
+- "Here's the thing", "Let's dive in", "It's worth noting", "In today's world", "game-changer", "delve", "crucial", "robust", "leverage", "seamless", "landscape", "unlock", "navigate", "testament", "honest(ly)" as a flourish.
+- Over-hedging and signposting ("In this post, we will...").
 - Identical structure and closing lines across posts.
+- Invented specifics. Never make up a day, place, conversation, feeling or number. Where only Joel can supply a detail, leave a `<!-- JOEL: ... -->` note instead.
