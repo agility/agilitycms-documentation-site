@@ -6,13 +6,15 @@ import Footer from '../common/Footer';
 const FullwidthTemplate = (props) => {
     return (
         <>
-            <div id="FullwidthTemplate" className="lg:grid grid-rows-1 grid-flow-col bg-(--bg) text-(--text) grid-cols-fullWidth">
-                <ContentZone
-                    name="MainContentZone"
-                    {...props}
-                    getModule={getModule}
-                />
-            </div>
+            <main id="main-content" tabIndex={-1} className="focus:outline-hidden">
+                <div id="FullwidthTemplate" className="lg:grid grid-rows-1 grid-flow-col bg-(--bg) text-(--text) grid-cols-fullWidth">
+                    <ContentZone
+                        name="MainContentZone"
+                        {...props}
+                        getModule={getModule}
+                    />
+                </div>
+            </main>
             <Footer languageCode={props.languageCode} isPreview={props.isPreview} />
         </>
     );

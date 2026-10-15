@@ -37,6 +37,14 @@ export default async function LocaleLayout({
 			<GoogleTagManager gtmId="GTM-NJW8WMX" />
 			<ClientInit />
 			<div id="Site" className="flex flex-col min-h-full">
+				{/* First Tab stop on every page, ahead of the marketing bar and the
+				    header. Hidden until focused. */}
+				<a
+					href="#main-content"
+					className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[100] focus:rounded-(--r-sm) focus:bg-(--surface) focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-(--text) focus:shadow-[var(--elev-3)] focus:outline-2 focus:outline-(--primary)"
+				>
+					Skip to content
+				</a>
 				{/* Reserves exactly the bar's 36px so the header doesn't jump when it
 				    streams in. It renders nothing when the bar is switched off, which
 				    costs one empty strip's worth of shift in that case only. */}

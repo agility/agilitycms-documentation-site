@@ -42,23 +42,25 @@ const WithSidebarNavTemplate = (props: any) => {
             />
           </div>
 
-          <div id="ScrollContainer" className="min-w-0 pb-20 pt-2 lg:pt-4">
-            <div id="ContentContainer">
-              <ContentZone
-                name="MainContentZone"
-                {...props}
-                getModule={getModule}
-              />
+          <main id="main-content" tabIndex={-1} className="min-w-0 focus:outline-hidden">
+            <div id="ScrollContainer" className="min-w-0 pb-20 pt-2 lg:pt-4">
+              <div id="ContentContainer">
+                <ContentZone
+                  name="MainContentZone"
+                  {...props}
+                  getModule={getModule}
+                />
+              </div>
+              {hasArticle && (
+                <ArticlePrevNext
+                  dynamicPageItem={props.dynamicPageItem}
+                  sitemapNode={props.sitemapNode}
+                  languageCode={props.languageCode}
+                  isPreview={props.isPreview}
+                />
+              )}
             </div>
-            {hasArticle && (
-              <ArticlePrevNext
-                dynamicPageItem={props.dynamicPageItem}
-                sitemapNode={props.sitemapNode}
-                languageCode={props.languageCode}
-                isPreview={props.isPreview}
-              />
-            )}
-          </div>
+          </main>
 
           {hasArticle && (
             <div className="hidden xl:block">

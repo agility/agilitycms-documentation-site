@@ -9,7 +9,7 @@
   5b): `mode` switches the panel body — an 'ask' mode can stream an agent
   answer over the docs MCP tools without touching the shell.
 */
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { SearchIcon } from "@heroicons/react/solid";
 import { ChevronRightIcon } from "@heroicons/react/outline";
@@ -150,6 +150,7 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 	const router = useRouter();
 	const pathname = usePathname();
 	const inputRef = useRef<HTMLInputElement>(null);
+	const resultId = useId();
 	const listRef = useRef<HTMLDivElement>(null);
 	const sentinelRef = useRef<HTMLLIElement>(null);
 	const queryRef = useRef("");
@@ -385,11 +386,18 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 							No results for “{query}”
 						</div>
 					)}
-					<ul className="m-0 list-none p-2">
+					{/* role="list": Safari drops list semantics from list-none lists, and
+					    the list is what tells a screen reader "result 3 of 15". */}
+					<ul role="list" aria-label={query ? "Search results" : "Suggested pages"} className="m-0 list-none p-2">
 						{items.map((item, idx) => (
 							<li key={item.hit?.objectID || item.quick?.url} data-index={idx}>
 								<button
 									type="button"
+									// Named by the title alone; the snippet and breadcrumb are
+									// its description, so a screen reader doesn't read the whole
+									// card as the button's name.
+									aria-labelledby={`${resultId}-${idx}-title`}
+									aria-describedby={`${resultId}-${idx}-desc`}
 									onClick={() => onSelect(item, idx)}
 									onMouseMove={() => setActiveIndex(idx)}
 									onFocus={() => setActiveIndex(idx)}
@@ -400,29 +408,32 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 									{item.hit ? (
 										<>
 											<span
+												id={`${resultId}-${idx}-title`}
 												className="block text-[.95rem] font-bold text-(--primary-text)"
 												dangerouslySetInnerHTML={renderHTML(
 													item.hit._highlightResult?.title?.value || item.hit.title
 												)}
 											/>
-											{getSnippet(item.hit) && (
-												<span
-													className="mt-0.5 block text-sm leading-normal text-(--text-2)"
-													dangerouslySetInnerHTML={renderHTML(getSnippet(item.hit))}
-												/>
-											)}
-											<span className="mt-1 flex items-center gap-1 font-mono text-[.66rem] uppercase tracking-[.12em] text-(--faint)">
-												{item.hit.category}
-												<ChevronRightIcon className="inline h-2.5 w-2.5" />
-												{item.hit.section}
+											<span id={`${resultId}-${idx}-desc`}>
+												{getSnippet(item.hit) && (
+													<span
+														className="mt-0.5 block text-sm leading-normal text-(--text-2)"
+														dangerouslySetInnerHTML={renderHTML(getSnippet(item.hit))}
+													/>
+												)}
+												<span className="mt-1 flex items-center gap-1 font-mono text-[.66rem] uppercase tracking-[.12em] text-(--faint)">
+													{item.hit.category}
+													<ChevronRightIcon className="inline h-2.5 w-2.5" aria-hidden="true" />
+													{item.hit.section}
+												</span>
 											</span>
 										</>
 									) : (
 										<>
-											<span className="block text-[.95rem] font-bold text-(--primary-text)">
+											<span id={`${resultId}-${idx}-title`} className="block text-[.95rem] font-bold text-(--primary-text)">
 												{item.quick.title}
 											</span>
-											<span className="mt-0.5 block font-mono text-[.66rem] uppercase tracking-[.12em] text-(--faint)">
+											<span id={`${resultId}-${idx}-desc`} className="mt-0.5 block font-mono text-[.66rem] uppercase tracking-[.12em] text-(--faint)">
 												{item.quick.crumb}
 											</span>
 										</>

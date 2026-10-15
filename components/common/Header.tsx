@@ -7,7 +7,7 @@
   own functional content (section nav, ⌘K search, theme toggle, API/SDK
   dropdown) — same chrome and motion as agilitycms.com, docs-specific inside.
 */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { ChevronDownIcon } from "@heroicons/react/solid";
@@ -367,6 +367,8 @@ const ApiSdkDropdown = ({
 	const pathname = usePathname() || "/";
 	const [open, setOpen] = useState(false);
 	const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+	const buttonRef = useRef<HTMLButtonElement>(null);
+	const panelId = useId();
 
 	const openNow = () => {
 		if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -386,14 +388,26 @@ const ApiSdkDropdown = ({
 			className="relative"
 			onMouseEnter={openNow}
 			onMouseLeave={closeSoon}
-			onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
+			// A disclosure, not a menu: hover opens it for the mouse, but the
+			// keyboard opens it with Enter or Space only. Opening on focus made
+			// every Tab through the header walk all of its links, and it stayed
+			// open after focus left.
+			onKeyDown={(e) => {
+				if (e.key === "Escape" && open) {
+					setOpen(false);
+					buttonRef.current?.focus();
+				}
+			}}
+			onBlur={(e) => {
+				if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOpen(false);
+			}}
 		>
 			<button
+				ref={buttonRef}
 				type="button"
 				aria-expanded={open}
-				aria-haspopup="menu"
+				aria-controls={panelId}
 				onClick={() => setOpen((o) => !o)}
-				onFocus={openNow}
 				data-state={open ? "open" : "closed"}
 				className="flex items-center gap-1 whitespace-nowrap rounded-(--r-sm) px-2.5 py-2 text-sm font-medium text-(--text-2) transition-colors hover:bg-(--raised) hover:text-(--text) focus:outline-hidden data-[state=open]:bg-(--raised) data-[state=open]:text-(--text)"
 			>
@@ -408,9 +422,8 @@ const ApiSdkDropdown = ({
 			</button>
 
 			{open && (
-				<div className="absolute right-0 top-full z-50 pt-2">
+				<div id={panelId} className="absolute right-0 top-full z-50 pt-2">
 					<div
-						role="menu"
 						className="flex w-max max-w-[calc(100vw-2rem)] gap-6 rounded-(--r-lg) border border-(--border) bg-(--surface) p-4 shadow-[var(--elev-3)]"
 					>
 						{columns.map((col) => (

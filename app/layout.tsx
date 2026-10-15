@@ -33,16 +33,16 @@ export const metadata: Metadata = {
 /**
  * Root layout: html shell, theme bootstrap, and fonts. The next/font variables
  * live on <html> so they reach the WHOLE document — including page content,
- * which streams in after </main> under cacheComponents and so sits outside
- * <main> in the DOM. styles/tokens.css resolves --font / --serif / --mono from
+ * which streams in after the body wrapper closes under cacheComponents and so
+ * sits outside it in the DOM. styles/tokens.css resolves --font / --serif / --mono from
  * them at :root (a var() reference resolves at its declaring node).
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
-		// The next/font variables live HERE, not on <main>: a var() reference
-		// resolves at its declaring node, and with cacheComponents the page body
-		// streams in after </main>, so anything declared on <main> never reaches
-		// it. See the Type section of styles/tokens.css.
+		// The next/font variables live HERE, not on the body wrapper: a var()
+		// reference resolves at its declaring node, and with cacheComponents the
+		// page body streams in after the wrapper closes, so anything declared on
+		// it never reaches it. See the Type section of styles/tokens.css.
 		<html
 			className={classNames("h-full dark", mulish.variable, firaCode.variable)}
 			lang="en-US"
@@ -69,7 +69,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 			    not a credential (the official Next.js starter renders it the same
 			    way), and the SDK itself only loads in preview (PreviewScripts). */}
 			<body className="h-full" data-agility-guid={process.env.AGILITY_GUID}>
-				<main
+				{/* A plain wrapper, not <main>: wrapping the header too left the page
+				    with no banner landmark and made "skip to main" land at the top.
+				    Each template marks its own content column as <main id="main-content">. */}
+				<div
 					className={classNames(
 						// min-h (not h): the window scrolls, so the chain must be able
 						// to GROW past the viewport or sticky chrome stops at ~100vh
@@ -78,7 +81,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					)}
 				>
 					{children}
-				</main>
+				</div>
 			</body>
 		</html>
 	);

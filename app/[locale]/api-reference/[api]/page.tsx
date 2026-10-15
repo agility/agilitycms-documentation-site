@@ -45,7 +45,7 @@ export default async function ApiOverviewPage({ params }: Props) {
 				type="application/ld+json"
 				dangerouslySetInnerHTML={{ __html: apiSchema(api, operations, spec.info?.version) }}
 			/>
-			<div className="grow bg-(--bg) text-(--text)">
+			<main id="main-content" tabIndex={-1} className="grow bg-(--bg) text-(--text) focus:outline-hidden">
 				<div className="mx-auto max-w-(--wrap) px-4 pb-20 pt-10 lg:px-6">
 					<nav className="mb-4 text-sm" style={{ color: "var(--muted)" }}>
 						<Link href="/api-reference" style={{ color: "var(--primary-text)" }}>
@@ -128,7 +128,7 @@ export default async function ApiOverviewPage({ params }: Props) {
 						</section>
 					))}
 				</div>
-			</div>
+			</main>
 			<Footer languageCode={defaultLocale} isPreview={false} />
 		</>
 	);

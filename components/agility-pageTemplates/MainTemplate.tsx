@@ -34,13 +34,15 @@ const MainTemplate = (props: any) => {
         >
           {/* min-w-0: without it the code panels' overflow-x-auto measures
               against their content and blows the column out of the grid. */}
-          <div id="ContentContainer" className={hasNav ? "min-w-0" : ""}>
-            <ContentZone
-              name="MainContentZone"
-              {...props}
-              getModule={getModule}
-            />
-          </div>
+          <main id="main-content" tabIndex={-1} className={hasNav ? "min-w-0 focus:outline-hidden" : "focus:outline-hidden"}>
+            <div id="ContentContainer" className={hasNav ? "min-w-0" : ""}>
+              <ContentZone
+                name="MainContentZone"
+                {...props}
+                getModule={getModule}
+              />
+            </div>
+          </main>
 
           {hasNav && (
             <div className="hidden xl:block pr-[var(--space)]">
