@@ -332,6 +332,62 @@ That leaves the **semantic ranker's 0–4 score**, the one signal that separated
 - Local check against production: same order as before, and the scores match run 7 (a spell checker 1.96, taking card payments 2.16, WordPress plugins 2.62: the known miss). Latency per search ranged from 30 ms faster to 240 ms slower.
 - Cost: about 70–100 MCP searches a week, inside the free 1,000 ranker requests a month. Eval runs of the `azure semantic` engine share that allowance, as does local testing through the site (set `AZURE_SEMANTIC_RANKER=off` for that). When it runs out, searches answer unscored (402 → plain hybrid), so the alerts count unscored searches separately: silence must not look like "no gaps".
 
+## 2026-10-15: 16 no-answer questions instead of 9 (commit 7d0d1b1)
+
+The 2.3 line (and the low-confidence alert built on it) rested on 9 unanswerable questions. Wrote 7 more, same method as the first batch, and committed them to `probes.json` (7d0d1b1) before scoring.
+
+- Checked each against the full text of all **4,933 sections** of `agility-docs-production` (paged out with keyword-only `*` queries, which don't touch the semantic allowance). Five are near-misses, with real docs on the neighbouring topic: HIPAA (the docs list SOC 2 and Azure's certifications, not HIPAA), watermarks (image transformations exist, no watermark or overlay), right-to-left languages (locales are covered, text direction isn't), email on your own domain (custom asset domains and DNS are covered, email isn't), and recurring publishing (one-off scheduling and a "weekly publishing rhythm" for the team are covered, repeating schedules aren't).
+- Dropped because the docs answer them: importing a Word document (paste from Word), cancelling a subscription (contact support, on About Instances), password-protecting pages (member portal and Auth0 guides), tracking product inventory (headless commerce reference architecture). Dropped as too arguable: Salesforce Marketing Cloud (the webhooks page names Salesforce sync generically) and heatmaps (How Agility Works says analytics tools connect through apps, which is a kind of answer).
+- The first 9 were re-checked against today's index too: still unanswered (dark mode and browser extensions appear only in unrelated senses).
+
+One run of `azure hybrid + semantic` against production, the five search articles excluded as in run 7: 15 queries for `probes.json`, 52 for `questions.json`. **67 semantic queries**, no 402s. Direct to Azure, so nothing reached Algolia analytics or PostHog. The score is the raw top result's, before exclusions, which is what the MCP sees.
+
+| # | No-answer question | Top score | Top page (after exclusions) |
+|---|---|---|---|
+| 111 | can I add a watermark to my images *(new)* | 1.92 | overview/image-best-practices |
+| 103 | is there a spell checker in the content editor | 1.96 | editors/ai-recipe-content-audit |
+| 52 | let site visitors submit their own content (ugc) | 2.01 | developers/content-delivery-and-cdn-architecture |
+| 106 | how do I host a community forum on my site | 2.04 | overview/web-studio |
+| 110 | does agility generate an rss feed for my blog *(new)* | 2.11 | gatsby/using-the-gatsby-blog-starter |
+| 113 | does agility support right-to-left languages like arabic *(new)* | 2.14 | training-guide/developer-internationalization |
+| 112 | can I edit content from my phone *(new)* | 2.15 | editors/reusing-content-across-multiple-web-properties |
+| 105 | does the agility content manager have a dark mode | 2.15 | overview/plenum-ui |
+| 104 | how do I take credit card payments on my website | 2.16 | owners-admins/about-organizations |
+| 102 | how do readers leave comments on my blog posts | 2.25 | editors/versioning |
+| 108 | can I edit content offline without an internet connection | 2.28 | developers/beyond-the-website |
+| 109 | is agility hipaa compliant *(new)* | 2.32 | owners-admins/authentication-and-profiles |
+| 107 | is there an agility browser extension | 2.37 | apps/cloudinary |
+| 114 | how do I set up email addresses on my website's domain *(new)* | 2.37 | owners-admins/global-configuration |
+| 115 | can I set content to publish automatically on a recurring schedule *(new)* | 2.50 | editors/schedule-content-changes |
+| 101 | can I install wordpress plugins in agility | 2.62 | developers/migrate-from-wordpress |
+
+Answerable (51), top score per question id: 1: 2.84, 2: 2.89, 3: 3.20, 4: 3.36, 5: 3.12, 6: 2.92, 7: 3.20, 8: 3.18, 9: 2.71, 10: 2.92, 11: 3.50, 12: 3.04, 13: 2.82, 14: 3.31, 15: 2.94, 16: 2.66, 17: 2.67, 18: 2.45, 19: 2.37, 20: 3.51, 21: 3.43, 22: 2.28, 23: 3.12, 24: 3.23, 25: 3.25, 26: 2.58, 27: 3.08, 28: 3.24, 29: 2.54, 30: 2.67, 31: 3.05, 32: 3.47, 33: 3.21, 34: 3.10, 35: 3.09, 36: 2.72, 37: 2.45, 38: 2.88, 39: 2.88, 40: 2.95, 41: 3.18, 42: 2.39, 43: 3.48, 44: 3.07, 45: 3.23, 46: 2.93, 47: 3.17, 48: 3.53, 49: 2.75, 50: 2.95, 51: 2.92. The lowest: "what is your uptime sla" 2.28 (right page first), "what changed in the latest release" 2.37 (the question every engine misses), "where is my data stored and can I keep it in the EU" 2.39 (right page first).
+
+| Group | n | Range | Median |
+|---|---|---|---|
+| No-answer, all | 16 | 1.92–2.62 | 2.16 |
+| No-answer, first 9 | 9 | 1.96–2.62 | 2.16 |
+| No-answer, new 7 | 7 | 1.92–2.50 | 2.15 |
+| Answerable | 51 | 2.28–3.53 | 3.04 |
+
+| Refuse below | No-answer refused | Answerable wrongly refused |
+|---|---|---|
+| 2.0 | 2 / 16 | 0 / 51 |
+| 2.2 | 9 / 16 | 0 / 51 |
+| 2.25 | 10 / 16 | 0 / 51 |
+| 2.3 | 11 / 16 | 1 / 51 |
+| 2.35 | 12 / 16 | 1 / 51 |
+| 2.4 | 14 / 16 | 3 / 51 |
+| 2.5 | 14 / 16 | 5 / 51 |
+
+What this run showed:
+
+- **The 9-question picture held.** The first 9 scored the same range on the production index as on run 7's preview index (1.96–2.62), and 2.3 still catches 7 of them. The new 7 landed in the same band (median 2.15 vs 2.16), so the first batch wasn't unusually easy.
+- **Still no clean gap.** Six no-answer questions score 2.28 or more; seven answerable ones score 2.62 or less. The near-misses are the ones that cross: recurring publishing (2.50) sits next to the real scheduling pages, email on your domain (2.37) next to the configuration pages, HIPAA (2.32) next to the security pages. That's the shape to expect: the questions a docs bot is most tempted to bluff on are the ones that score like answers.
+- **2.35 is the best line on this data** (12 of 16, 1 of 51), but only because HIPAA scored 2.32 and the next answerable question scored 2.37. A 0.05 window found by looking at the answers is fitting, not calibration. **Keep 2.3**: 11 of 16 (69%) refused, 1 of 51 (2%) wrongly refused, and the alert doesn't change. 2.25 is the line if a wrong refusal costs more than a bluff (10 of 16, none wrongly refused).
+- The score stays a signal, not the whole gate: about a third of unanswerable questions get past any line that keeps answerable ones safe, so the model reading the page still has to say when it doesn't answer.
+- Side note: the semantic engine's ranking on the production index is MRR 0.781 (33 right first, 2 missed), close to run 7's 0.796 on the preview index.
+
 ## Open items
 
 - [x] Merge the CRLF fix and the scorer changes, then reindex the live `doc_site` (done 2026-10-13, above).
