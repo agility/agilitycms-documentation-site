@@ -24,19 +24,21 @@ Every post works at two levels, and both must be concrete:
 
 Name products plainly and say what each did well or badly for us. Show how to do the same thing with other tools in a sentence or two where it is easy (for example, "Typesense and Meilisearch have equivalent settings"). Do not compare against or criticise other CMS vendors.
 
-## Structure (same five parts, in this order)
+## Structure (the same five beats, in this order)
 
-1. **The standard:** one sentence, as something the reader should expect.
-2. **The 10-minute check:** numbered steps, works on any stack, no paid tools.
-3. **Why it usually fails:** blame defaults and deadlines, not developers.
-4. **How to fix it:** principle first, then the real implementation with code.
-5. **What happened when we tried it:** at least one number and one thing we got wrong.
+Every post covers these beats, but only the first 2 use fixed headings. Name the rest for what the post is about, in Joel's words (see "Joel's voice" below).
 
-Then:
-- **For people, too:** what the change does for human readers.
-- **Your turn:** one question for the comments.
+1. **The standard** (fixed heading): one sentence, as something the reader should expect.
+2. **The 10-minute check** (fixed heading): numbered steps, works on any stack, no paid tools.
+3. Why it usually fails: blame defaults and deadlines, not developers.
+4. How to fix it: principle first, then the real implementation with code.
+5. What happened when we tried it: at least one number and one thing we got wrong.
+
+Then, in whatever order reads naturally:
+- What the change does for human readers. This can be its own short section or woven in.
+- One question for the comments.
 - A link line to the next post (use the title; the URL will be added at publish time).
-- The closing disclosure line used in post 1.
+- A short disclosure that an AI coding agent did a lot of the work. Word it a little differently in each post.
 
 ## Code rules
 
@@ -81,7 +83,7 @@ Then:
 - A test request to the old production reindex endpoint (with a parameter the old code ignored) rebuilt live search with 348 articles. Restored to 437 after the fix deployed.
 - Articles saved with Windows line endings had no headings in the index: 284 of 451 live search records.
 - The first PostHog zero-result alert was triggered by our own test traffic through the live MCP endpoint.
-- Semantic reranker (0 to 4): every answerable question's top result scored at least 2.16; the one no-answer question scored 1.94. Suggests a threshold near 2.0, from a single probe, so it is not settled.
+- Semantic reranker (0 to 4), first probe: every answerable question's top result scored at least 2.16; the one no-answer question scored 1.94, which suggested a threshold near 2.0. Superseded by run 7 with 9 no-answer questions: they scored 1.96 to 2.62, answerable ones 2.28 and up (median 2.95), and the working threshold is about 2.3. Not settled: about 15 no-answer questions are wanted (post 7).
 - Azure: Basic tier; free semantic ranker plan is 1,000 queries a month; embedding the docs took about 8 minutes at first and cost cents. After adding hashes to skip unchanged sections, a full rebuild took 129 seconds and a no-change rebuild 2 seconds.
 - The MCP server exposes two tools, `search_docs` and `fetch_doc`. The search engine behind it moved from Algolia to Azure hybrid search without changing the tools.
 - Every docs page has a Markdown copy listed in `llms.txt`.
@@ -92,7 +94,35 @@ If you need a number that is not here and not in the repo, write `TODO(data): ..
 
 ## Style
 
-- Plain English. Short sentences. Explain jargon the first time (MRR, BM25, embeddings, MCP).
+- Plain English. Explain jargon the first time (MRR, BM25, embeddings, MCP).
 - **No em dashes or en dashes.** Use commas, colons, full stops or brackets.
 - 1,500 to 2,200 words per post, code included.
 - Keep the dev.to front matter at the top of each file (`published: false`).
+
+## Joel's voice
+
+These posts go out under Joel's name, and they have to sound like him, not like a language model. The reference is his own writing on dev.to (2019 to 2020): "Using a CMS Made Me A Better Developer", "Learn to be a better leader and team member with pair-programming", "DNS 101 For Web Developers", "Upgrading my website to JAMStack - 1 page at a time", "The Genius of NextJS and Gatsby as Static Site Generators", "How to Make Money Building Websites and Apps". Read one before writing.
+
+How Joel writes:
+
+- **Contractions, always.** I've, I'd, you're, don't, it's, that's, we'd, didn't. "I did not" reads like a robot.
+- **Talks to you, like a colleague across the desk.** "Check out...", "go ahead and...", "pop in your keys", "you can just...". He assumes you're smart and busy.
+- **Short beats for effect.** A one-line paragraph after a setup: "Of course, I was dead wrong." "That's it!" "Oops." Use these a few times per post, not after every paragraph.
+- **Real enthusiasm, and real annoyance.** "really", "pretty", "super", "a ton of", "cool", "neat", "I really love this". A few exclamation points per post (3 to 6, never two in one paragraph). The odd word in CAPS for emphasis ("BUILD time", "ZERO-PERCENT-FUN"), at most 2 or 3 per post.
+- **Rhetorical questions** to move things along: "Or do they?", "The big win here?", "Why does this matter?"
+- **Stories about himself, with the self-deprecation left in.** He was "dead wrong", he "put it off until Friday afternoon", he'll "take care of that later". Mistakes are funny and specific, not solemn. But never invent a detail: no made-up days, places, conversations or feelings that aren't in the repo or the journal.
+- **Numerals for small numbers** ("2 people", "3 phases", "4 settings").
+- **Canadian spelling:** colour, behaviour, favourite, centre, but realize, organize (-ize).
+- **Disclosure is casual:** "BTW: I co-founded Agility CMS, so take my enthusiasm with a grain of salt."
+- **Endings turn to the reader:** "How about you?", "Let me know in the comments", "If you try this, reach out!"
+- Headings are plain and a bit casual ("Fixing it", "Where I messed up", "Step 1: ..."). The two recurring series sections stay: **The standard** and **The 10-minute check**. Everything else is named for what that post is about. No two posts should have the same set of headings.
+
+What gives a post away as AI-written (cut these):
+
+- No contractions, and the same sentence rhythm everywhere.
+- "Not X, but Y" / "It's not X. It's Y." / "X, not Y" antitheses. One per post at most.
+- Everything in threes. Bolded lead-in sentences on every paragraph or bullet.
+- A neat moral at the end of each section ("The lesson: ...", "That is the point."). One "here's what I learned" per post, max.
+- "Here's the thing", "Let's dive in", "It's worth noting", "In today's world", "game-changer", "delve", "crucial", "robust", "leverage", "seamless", "landscape", "unlock", "navigate", "testament", "honest(ly)" used as a flourish ("I want to be honest about that").
+- Over-hedging and over-signposting ("In this post, we will..."). Just say it.
+- Identical structure and closing lines across posts.
