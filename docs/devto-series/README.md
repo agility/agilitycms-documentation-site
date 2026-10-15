@@ -67,7 +67,7 @@ node docs/devto-series/post-drafts.mjs 03 --update # re-send one post, replacing
 
 - Needs `DEVTO_API_KEY` in `.env.local` (dev.to > Settings > Extensions > DEV Community API Keys).
 - Always sends `published: false`. Publishing happens by hand in the dev.to editor.
-- Draft IDs are kept in `devto-ids.json`, so a re-run skips posts already sent. `--update` overwrites the draft on dev.to, including any edits made there, so edit in one place: here, or on dev.to, not both.
+- Draft IDs are kept in `devto-ids.json` (not committed: it holds the drafts' secret preview links, and dev.to draft URLs work for anyone who has them), so a re-run from this checkout skips posts already sent. `--update` overwrites the draft on dev.to, including any edits made there, so edit in one place: here, or on dev.to, not both.
 - Images are served from jsDelivr, pinned to the commit the script runs on, so commit and push first. Before the final publish, re-upload the images through the dev.to editor so the post no longer depends on this branch.
 
 ## Data still to gather
