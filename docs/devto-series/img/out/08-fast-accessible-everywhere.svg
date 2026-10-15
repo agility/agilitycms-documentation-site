@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" data-loop="10" role="img" aria-labelledby="t d">
+<title id="t">Real-user speed on our docs</title>
+<desc id="d">Desktop, 75th percentile, last 30 days. Largest Contentful Paint 1,258 ms, good is 2.5 s or less. Interaction to Next Paint 64 ms, good is 200 ms or less. Cumulative Layout Shift 0.005, good is 0.1 or less. All three are in the good range. An automated accessibility check found 0 violations, with 1 rule needing a human.</desc>
+<style>
+text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,sans-serif;fill:#F1EFE9}
+.h{font-size:28px;font-weight:700}
+.sub{font-size:16px;fill:#C4BFB5}
+.m{font-size:22px;font-weight:800}
+.md{font-size:14px;fill:#C4BFB5}
+.val{font-size:17px;font-weight:700}
+.zone{font-size:12px;fill:#AAA49B}
+.cap{font-size:13px;font-weight:700;letter-spacing:.1em;fill:#AAA49B}
+.a11y{font-size:16px}
+.note{font-size:13px;fill:#AAA49B}
+.good{fill:#02A196;fill-opacity:.35}
+.rest{fill:#302E2B}
+.k0{animation:k0 10s ease-in-out infinite}
+@keyframes k0{0%{opacity:0;transform:translate(-189px,0px)}6.00%{opacity:0;transform:translate(-189px,0px)}10.00%{opacity:1;transform:translate(-189px,0px)}15.00%{opacity:1;transform:translate(-189px,0px)}27.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k1{animation:k1 10s ease-in-out infinite}
+@keyframes k1{0%{opacity:0;transform:translate(-77px,0px)}20.00%{opacity:0;transform:translate(-77px,0px)}24.00%{opacity:1;transform:translate(-77px,0px)}29.00%{opacity:1;transform:translate(-77px,0px)}39.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k2{animation:k2 10s ease-in-out infinite}
+@keyframes k2{0%{opacity:0;transform:translate(-40px,0px)}34.00%{opacity:0;transform:translate(-40px,0px)}38.00%{opacity:1;transform:translate(-40px,0px)}43.00%{opacity:1;transform:translate(-40px,0px)}51.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k3{transform-box:fill-box;animation:k3 10s ease-out infinite}
+@keyframes k3{0%{opacity:0;transform:translateY(14px)}50.00%{opacity:0;transform:translateY(14px)}54.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+#scene{animation:scene 10s linear infinite}
+@keyframes scene{0%{opacity:0}3.00%{opacity:1}95.00%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+<rect width="1000" height="560" fill="#171615"/>
+<g id="scene">
+	<text x="60" y="66" class="h">Real-user speed on our docs</text>
+	<text x="60" y="96" class="sub">Desktop, 75th percentile, last 30 days, from PostHog web vitals</text>
+
+	<!-- LCP: track 0 to 4 s, good up to 2.5 s -->
+	<text x="60" y="168" class="m">LCP</text>
+	<text x="60" y="190" class="md">main content shown</text>
+	<rect x="300" y="166" width="375" height="14" rx="7" class="good"/>
+	<rect x="675" y="166" width="225" height="14" rx="7" class="rest"/>
+	<text x="671" y="204" text-anchor="end" class="zone">good ≤ 2.5 s</text>
+	<text x="900" y="204" text-anchor="end" class="zone">poor &gt; 4 s</text>
+	<g class="k0">
+		<circle cx="489" cy="173" r="11" fill="#F1EFE9" stroke="#171615" stroke-width="3"/>
+		<text x="489" y="152" text-anchor="middle" class="val">1,258 ms</text>
+	</g>
+
+	<!-- INP: track 0 to 500 ms, good up to 200 ms -->
+	<text x="60" y="278" class="m">INP</text>
+	<text x="60" y="300" class="md">response to a click or key</text>
+	<rect x="300" y="276" width="240" height="14" rx="7" class="good"/>
+	<rect x="540" y="276" width="360" height="14" rx="7" class="rest"/>
+	<text x="536" y="314" text-anchor="end" class="zone">good ≤ 200 ms</text>
+	<text x="900" y="314" text-anchor="end" class="zone">poor &gt; 500 ms</text>
+	<g class="k1">
+		<circle cx="377" cy="283" r="11" fill="#F1EFE9" stroke="#171615" stroke-width="3"/>
+		<text x="377" y="262" text-anchor="middle" class="val">64 ms</text>
+	</g>
+
+	<!-- CLS: track 0 to 0.25, good up to 0.1 -->
+	<text x="60" y="388" class="m">CLS</text>
+	<text x="60" y="410" class="md">layout jumping around</text>
+	<rect x="300" y="386" width="240" height="14" rx="7" class="good"/>
+	<rect x="540" y="386" width="360" height="14" rx="7" class="rest"/>
+	<text x="536" y="424" text-anchor="end" class="zone">good ≤ 0.1</text>
+	<text x="900" y="424" text-anchor="end" class="zone">poor &gt; 0.25</text>
+	<g class="k2">
+		<circle cx="312" cy="393" r="11" fill="#F1EFE9" stroke="#171615" stroke-width="3"/>
+		<text x="318" y="372" text-anchor="middle" class="val">0.005</text>
+	</g>
+
+	<line x1="60" y1="450" x2="940" y2="450" stroke="#302E2B"/>
+	<g class="k3">
+		<text x="60" y="482" class="cap">ACCESSIBILITY, AXE-CORE ON A TYPICAL ARTICLE</text>
+		<text x="60" y="510" class="a11y"><tspan style="font-weight:700;fill:#02A196">0 violations</tspan> · 1 rule needs a human (contrast) · no skip link yet</text>
+	</g>
+
+	<text x="60" y="540" class="note">383 / 226 / 330 desktop samples. Mobile looked good too, but 26 / 10 / 3 samples is an anecdote.</text>
+</g>
+</svg>
