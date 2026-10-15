@@ -68,20 +68,42 @@ const getSnippet = (item: any) => {
 	return item._highlightResult?.description?.value || null;
 };
 
+// The header mounts a SearchButton per breakpoint (plus one in the mobile
+// sheet), most of them hidden by CSS. If each answered ⌘K, one press opened a
+// dialog per instance, stacked, and Escape closed only the top one. So a
+// single listener routes the shortcut: close whichever is open, else open the
+// first instance whose trigger is actually on screen.
+type SearchInstance = {
+	trigger: React.RefObject<HTMLButtonElement | null>;
+	isOpen: () => boolean;
+	setOpen: (open: boolean) => void;
+};
+const searchInstances: SearchInstance[] = [];
+const onSearchShortcut = (e: KeyboardEvent) => {
+	if (!((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k")) return;
+	e.preventDefault();
+	const open = searchInstances.find((i) => i.isOpen());
+	if (open) return open.setOpen(false);
+	const visible = searchInstances.find((i) => i.trigger.current?.getClientRects().length);
+	(visible ?? searchInstances[0])?.setOpen(true);
+};
+
 export const SearchButton = ({ variant = "topbar" }: { variant?: "topbar" | "sheet" }) => {
 	const [open, setOpen] = useState(false);
 	const [isMac, setIsMac] = useState(true);
+	const triggerRef = useRef<HTMLButtonElement>(null);
+	const openRef = useRef(open);
+	openRef.current = open;
 
 	useEffect(() => {
 		setIsMac(!/windows/i.test(navigator.userAgent));
-		const onKey = (e: KeyboardEvent) => {
-			if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-				e.preventDefault();
-				setOpen((o) => !o);
-			}
+		const instance: SearchInstance = { trigger: triggerRef, isOpen: () => openRef.current, setOpen };
+		searchInstances.push(instance);
+		if (searchInstances.length === 1) window.addEventListener("keydown", onSearchShortcut);
+		return () => {
+			searchInstances.splice(searchInstances.indexOf(instance), 1);
+			if (searchInstances.length === 0) window.removeEventListener("keydown", onSearchShortcut);
 		};
-		window.addEventListener("keydown", onKey);
-		return () => window.removeEventListener("keydown", onKey);
 	}, []);
 
 	return (
@@ -93,6 +115,7 @@ export const SearchButton = ({ variant = "topbar" }: { variant?: "topbar" | "she
 				// leftward, right-anchored) so the expansion never reflows the header.
 				<div className="relative h-9 w-9 shrink-0">
 					<DialogTrigger
+						ref={triggerRef}
 						aria-label="Search docs"
 						className="group/search absolute right-0 top-0 z-10 flex h-9 w-9 items-center gap-2 overflow-hidden rounded-(--r-sm) border border-(--border-strong) bg-(--surface) px-2.5 text-[.82rem] text-(--muted) transition-[width,padding,border-color] duration-200 ease-out hover:w-48 hover:border-(--primary) hover:px-3 focus-visible:w-48 focus-visible:border-(--primary) focus:outline-hidden"
 					>
@@ -107,6 +130,7 @@ export const SearchButton = ({ variant = "topbar" }: { variant?: "topbar" | "she
 				</div>
 			) : (
 				<DialogTrigger
+					ref={triggerRef}
 					className="flex w-full items-center gap-2 rounded-(--r-sm) border border-(--border-strong) bg-(--surface) px-3 py-2.5 text-sm text-(--muted) focus:outline-hidden"
 					aria-label="Search docs"
 				>
@@ -147,6 +171,9 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(false);
 	const [activeIndex, setActiveIndex] = useState(0);
+	// What a screen reader hears once results settle (the visible count and
+	// "No results" are plain text, so without this a search is silent).
+	const [announcement, setAnnouncement] = useState("");
 	// Future agent experience switches on this — 'search' today, 'ask' next.
 	const [mode] = useState("search");
 
@@ -162,6 +189,7 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 		if (!query) {
 			setHits([]);
 			setTotalHits(0);
+			setAnnouncement("");
 			setHasMore(false);
 			setActiveIndex(0);
 			return;
@@ -180,6 +208,9 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 				setPage(0);
 				setHasMore(result.nbPages > 1);
 				setActiveIndex(0);
+				setAnnouncement(
+					result.nbHits ? `${result.nbHits} result${result.nbHits === 1 ? "" : "s"}` : `No results for ${query}`
+				);
 				if (query.trim().length >= 2) {
 					// Results stay instant (150ms), but analytics waits for the query
 					// to sit still for a second, so typing "webhook" reports one search
@@ -295,8 +326,9 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 			e.preventDefault();
 			setQuery((q) => q.slice(0, -1));
 			inputRef.current?.focus();
-		} else if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey) {
-			// Typing while a result is focused resumes the search.
+		} else if (e.key.length === 1 && e.key !== " " && !e.metaKey && !e.ctrlKey && !e.altKey) {
+			// Typing while a result is focused resumes the search. Space is left
+			// alone so it presses the focused result, as it does any button.
 			e.preventDefault();
 			setQuery((q) => q + e.key);
 			inputRef.current?.focus();
@@ -312,6 +344,9 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 			}}
 		>
 			<DialogTitle className="sr-only">Search documentation</DialogTitle>
+			<div role="status" aria-live="polite" className="sr-only">
+				{announcement}
+			</div>
 
 			{/* Input row */}
 			<div className="flex items-center gap-3 border-b border-(--border) px-4 py-3.5">
