@@ -44,6 +44,32 @@ Your website now has two kinds of readers: people, and the AI agents and assista
 - **Tags** (dev.to allows four): pick from `webdev`, `nextjs`, `ai`, `search`, `seo`, `a11y`, `cms`, `javascript`.
 - **Every post ends with** a link to the next post and one question for the comments, to start a conversation.
 
+## Illustrations
+
+One animated illustration per post, plus a cover image each, in [img/](img/). The sources are hand-written SVGs in `img/src/`, timed with `data-in` / `data-out` attributes (the header of [img/build.mjs](img/build.mjs) explains them). The build compiles them into animated SVGs and renders a GIF, a still PNG and a 1000x420 cover for each post into `img/out/`:
+
+```bash
+npm i --no-save puppeteer-core   # once; needs Google Chrome and ffmpeg
+node docs/devto-series/img/build.mjs        # all, or pass post numbers: 03 07
+```
+
+dev.to gets the GIFs. Its image proxy relabels SVGs as WebP, which browsers will not render, so an animated SVG would show as a broken image. The compiled SVGs are for anywhere that serves SVG as-is (an agilitycms.com copy, for example). Every illustration uses only numbers from the post, and shows its complete picture when animation is off (`prefers-reduced-motion`).
+
+## Sending drafts to dev.to
+
+[post-drafts.mjs](post-drafts.mjs) sends posts to Joel's dev.to account as **unpublished drafts**, through the dev.to API:
+
+```bash
+node docs/devto-series/post-drafts.mjs --dry-run   # see what would be sent
+node docs/devto-series/post-drafts.mjs             # create drafts for posts not sent yet
+node docs/devto-series/post-drafts.mjs 03 --update # re-send one post, replacing its draft
+```
+
+- Needs `DEVTO_API_KEY` in `.env.local` (dev.to > Settings > Extensions > DEV Community API Keys).
+- Always sends `published: false`. Publishing happens by hand in the dev.to editor.
+- Draft IDs are kept in `devto-ids.json`, so a re-run skips posts already sent. `--update` overwrites the draft on dev.to, including any edits made there, so edit in one place: here, or on dev.to, not both.
+- Images are served from jsDelivr, pinned to the commit the script runs on, so commit and push first. Before the final publish, re-upload the images through the dev.to editor so the post no longer depends on this branch.
+
 ## Data still to gather
 
 - [x] Share of docs traffic that is agents vs people. 30 days to 2026-10-14, PostHog docs project:
@@ -51,7 +77,7 @@ Your website now has two kinds of readers: people, and the AI agents and assista
   - AI assistant requests: 1,720. AI search requests: 3,981. Together that is 5,701, which is the number post 1 uses.
   - Also counted: AI training 6,842, search engines 5,351, SEO tools 1,058, scripts and SDKs 3,916 (this includes our own test runs), unidentified 4,853, other bots 14,083, MCP tool calls 132.
   - Re-pull these the week post 1 is published.
-- [ ] Every remaining `TODO(data)` in the posts (`grep -n "TODO" 0*.md`). Posts 3, 5, 6, 7 and 8 have them. Post 7's no-answer probes (about 15) and post 8's Firefox replays are the two that change what a post says.
+- [ ] Every remaining `TODO(data)` in the posts (`grep -n "TODO" 0*.md`). Posts 5, 6, 7 and 8 have them. Post 7's no-answer probes (about 15) and post 8's Firefox replays are the two that change what a post says.
 - [ ] Zero-result searches per week, before and after the query-setting change (PostHog `docs_search` with `results = 0`, plus Algolia analytics). Post 3.
 - [ ] Search click-through: share of searches followed by a result click (`docs_search_result_click`). Posts 3 and 8.
 - [ ] Core Web Vitals for docs pages (PostHog web vitals). Post 8.

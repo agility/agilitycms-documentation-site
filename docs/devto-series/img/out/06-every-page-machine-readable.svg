@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" data-loop="10" role="img" aria-labelledby="t d">
+<title id="t">One content source, four views</title>
+<desc id="d">Content in Agility CMS is rendered by Next.js on Vercel into four views: an HTML page for people, and for agents a Markdown copy of every page, an llms.txt index, and an MCP server with search_docs and fetch_doc tools.</desc>
+<style>
+text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,sans-serif;fill:#F1EFE9}
+.mono{font-family:Menlo,"SF Mono",Consolas,monospace}
+.h{font-size:28px;font-weight:700}
+.sub{font-size:16px;fill:#C4BFB5}
+.bt{font-size:19px;font-weight:700}
+.bd{font-size:14px;fill:#C4BFB5}
+.tag{font-size:13px;font-weight:700;letter-spacing:.06em}
+.note{font-size:13px;fill:#AAA49B}
+.box{fill:#201F1D;stroke:#302E2B;stroke-width:2}
+.wire{fill:none;stroke:#302E2B;stroke-width:4;stroke-linecap:round}
+.pulse{fill:none;stroke-width:6;stroke-linecap:round}
+.k0{transform-box:fill-box;animation:k0 10s ease-out infinite}
+@keyframes k0{0%{opacity:0;transform:translateY(14px)}3.00%{opacity:0;transform:translateY(14px)}7.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k1{transform-box:fill-box;animation:k1 10s ease-out infinite}
+@keyframes k1{0%{opacity:0}6.00%{opacity:0}10.00%{opacity:1}100%{opacity:1}}
+.k2{transform-box:fill-box;animation:k2 10s ease-out infinite}
+@keyframes k2{0%{opacity:0;transform:translateY(14px)}7.00%{opacity:0;transform:translateY(14px)}11.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k3{stroke-dasharray:1;transform-box:fill-box;animation:k3 10s ease-out infinite}
+@keyframes k3{0%{stroke-dashoffset:1}11.00%{stroke-dashoffset:1}17.00%{stroke-dashoffset:0}100%{stroke-dashoffset:0}}
+.k4{stroke-dasharray:1;transform-box:fill-box;animation:k4 10s ease-out infinite}
+@keyframes k4{0%{stroke-dashoffset:1}15.00%{stroke-dashoffset:1}21.00%{stroke-dashoffset:0}100%{stroke-dashoffset:0}}
+.k5{stroke-dasharray:1;transform-box:fill-box;animation:k5 10s ease-out infinite}
+@keyframes k5{0%{stroke-dashoffset:1}19.00%{stroke-dashoffset:1}25.00%{stroke-dashoffset:0}100%{stroke-dashoffset:0}}
+.k6{stroke-dasharray:1;transform-box:fill-box;animation:k6 10s ease-out infinite}
+@keyframes k6{0%{stroke-dashoffset:1}23.00%{stroke-dashoffset:1}29.00%{stroke-dashoffset:0}100%{stroke-dashoffset:0}}
+.k7{transform-box:fill-box;animation:k7 10s ease-out infinite}
+@keyframes k7{0%{opacity:0;transform:translateY(14px)}15.00%{opacity:0;transform:translateY(14px)}19.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k8{transform-box:fill-box;animation:k8 10s ease-out infinite}
+@keyframes k8{0%{opacity:0;transform:translateY(14px)}19.00%{opacity:0;transform:translateY(14px)}23.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k9{transform-box:fill-box;animation:k9 10s ease-out infinite}
+@keyframes k9{0%{opacity:0;transform:translateY(14px)}23.00%{opacity:0;transform:translateY(14px)}27.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k10{transform-box:fill-box;animation:k10 10s ease-out infinite}
+@keyframes k10{0%{opacity:0;transform:translateY(14px)}27.00%{opacity:0;transform:translateY(14px)}31.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k11{transform-box:fill-box;animation:k11 10s ease-out infinite}
+@keyframes k11{0%{opacity:0}32.00%{opacity:0}36.00%{opacity:1}100%{opacity:1}}
+.k12{stroke-dasharray:.06 .94;animation:k12 1.25s linear infinite}
+@keyframes k12{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.k13{stroke-dasharray:.06 .94;animation:k13 2.5s linear infinite}
+@keyframes k13{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.k14{stroke-dasharray:.06 .94;animation:k14 2s linear infinite}
+@keyframes k14{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.k15{stroke-dasharray:.06 .94;animation:k15 2.5s linear infinite}
+@keyframes k15{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.k16{stroke-dasharray:.06 .94;animation:k16 1.25s linear infinite}
+@keyframes k16{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+#scene{animation:scene 10s linear infinite}
+@keyframes scene{0%{opacity:0}3.00%{opacity:1}95.00%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+<rect width="1000" height="560" fill="#171615"/>
+<g id="scene">
+	<text x="60" y="66" class="h">One content source, four views</text>
+	<text x="60" y="96" class="sub">Everything below is rendered on the server from the same CMS content</text>
+
+	<g class="k0">
+		<rect x="60" y="262" width="190" height="86" rx="14" class="box" style="stroke:#02A196"/>
+		<text x="84" y="298" class="bt">Agility CMS</text>
+		<text x="84" y="322" class="bd">content, written once</text>
+	</g>
+	<path d="M250 305H306" class="wire k1"/>
+	<g class="k2">
+		<rect x="306" y="262" width="190" height="86" rx="14" class="box"/>
+		<text x="330" y="298" class="bt">Next.js on Vercel</text>
+		<text x="330" y="322" class="bd">route handlers</text>
+	</g>
+
+	<path d="M496 305C550 305 550 160 600 160" class="wire k3" pathLength="1"/>
+	<path d="M496 305C550 305 550 260 600 260" class="wire k4" pathLength="1"/>
+	<path d="M496 305C550 305 550 360 600 360" class="wire k5" pathLength="1"/>
+	<path d="M496 305C550 305 550 460 600 460" class="wire k6" pathLength="1"/>
+
+	<g class="k7">
+		<rect x="600" y="122" width="340" height="76" rx="12" class="box"/>
+		<text x="624" y="155" class="bt">HTML page</text>
+		<text x="624" y="180" class="mono bd">/docs/…</text>
+		<text x="916" y="155" text-anchor="end" class="tag" style="fill:#02A196">PEOPLE</text>
+	</g>
+	<g class="k8">
+		<rect x="600" y="222" width="340" height="76" rx="12" class="box"/>
+		<text x="624" y="255" class="bt">Markdown copy</text>
+		<text x="624" y="280" class="mono bd">/docs/….md</text>
+		<text x="916" y="255" text-anchor="end" class="tag" style="fill:#5B8DEF">AGENTS</text>
+	</g>
+	<g class="k9">
+		<rect x="600" y="322" width="340" height="76" rx="12" class="box"/>
+		<text x="624" y="355" class="bt">llms.txt</text>
+		<text x="624" y="380" class="bd">one index of every page</text>
+		<text x="916" y="355" text-anchor="end" class="tag" style="fill:#5B8DEF">AGENTS</text>
+	</g>
+	<g class="k10">
+		<rect x="600" y="422" width="340" height="76" rx="12" class="box"/>
+		<text x="624" y="455" class="bt">MCP server</text>
+		<text x="624" y="480" class="mono bd">search_docs · fetch_doc</text>
+		<text x="916" y="455" text-anchor="end" class="tag" style="fill:#5B8DEF">AGENTS</text>
+	</g>
+
+	<g class="k11">
+		<path d="M250 305H306" class="pulse k12" stroke="#02A196" pathLength="1"/>
+		<path d="M496 305C550 305 550 160 600 160" class="pulse k13" stroke="#02A196" pathLength="1"/>
+		<path d="M496 305C550 305 550 260 600 260" class="pulse k14" stroke="#5B8DEF" pathLength="1"/>
+		<path d="M496 305C550 305 550 360 600 360" class="pulse k15" stroke="#5B8DEF" pathLength="1"/>
+		<path d="M496 305C550 305 550 460 600 460" class="pulse k16" stroke="#5B8DEF" pathLength="1"/>
+	</g>
+
+	<text x="60" y="540" class="note">No second site to keep in step: when an editor publishes, every view changes together.</text>
+</g>
+</svg>

@@ -14,6 +14,8 @@ Every search box on the internet has a little message for when it finds nothing.
 
 That message is the most honest thing your site will ever be told. A real person wanted something, described it in their own words, and you did not have it, or had it under a different name. Most sites throw that away.
 
+![Searches that found nothing are sorted into three buckets. "ugc" is a content gap, owned by a writer. "click on the page to edit it" is a vocabulary gap, a five-minute edit. "push pullcli" is a search problem, owned by a developer.](img/out/03-no-results-is-feedback.gif)
+
 ## The standard
 
 **You should be able to list last week's searches that returned nothing, and someone should read that list every week.**

@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" data-loop="14" role="img" aria-labelledby="t d">
+<title id="t">Where should an assistant refuse?</title>
+<desc id="d">Semantic ranker top scores from 0 to 4. The 9 questions our docs cannot answer scored 1.96 to 2.62. The 51 they can answer scored 2.28 and up, median 2.95. Refusing below 2.0 catches 1 of 9 and wrongly refuses 0 of 51. Below 2.2: 5 of 9 and 0 of 51. Below 2.4: 8 of 9 and 3 of 51. Below 2.3, the current plan: 7 of 9 and 1 of 51.</desc>
+<defs>
+	<linearGradient id="tail" x1="0" x2="1">
+		<stop offset="0" stop-color="#02A196" stop-opacity=".45"/>
+		<stop offset=".8" stop-color="#02A196" stop-opacity=".45"/>
+		<stop offset="1" stop-color="#02A196" stop-opacity="0"/>
+	</linearGradient>
+</defs>
+<style>
+text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,sans-serif;fill:#F1EFE9}
+.h{font-size:28px;font-weight:700}
+.sub{font-size:16px;fill:#C4BFB5}
+.lbl{font-size:16px;font-weight:600}
+.pt{font-size:12px;fill:#C4BFB5}
+.tick{font-size:13px;fill:#AAA49B}
+.cap{font-size:13px;font-weight:700;letter-spacing:.08em;fill:#AAA49B}
+.big{font-size:40px;font-weight:800}
+.thr{font-size:14px;font-weight:700;fill:#FFCB28}
+.note{font-size:13px;fill:#AAA49B}
+.k0{transform-box:fill-box;animation:k0 14s ease-out infinite}
+@keyframes k0{0%{opacity:0;transform:translateY(14px)}2.86%{opacity:0;transform:translateY(14px)}5.71%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k1{transform-box:fill-box;animation:k1 14s ease-out infinite}
+@keyframes k1{0%{opacity:0;transform:translateY(14px)}5.71%{opacity:0;transform:translateY(14px)}8.57%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k2{opacity:0;transform-box:fill-box;animation:k2 14s ease-out infinite}
+@keyframes k2{0%{opacity:0}11.43%{opacity:0}14.29%{opacity:1}27.86%{opacity:1}30.71%{opacity:0}100%{opacity:0}}
+.k3{opacity:0;transform-box:fill-box;animation:k3 14s ease-out infinite}
+@keyframes k3{0%{opacity:0}30.71%{opacity:0}33.57%{opacity:1}47.14%{opacity:1}50.00%{opacity:0}100%{opacity:0}}
+.k4{opacity:0;transform-box:fill-box;animation:k4 14s ease-out infinite}
+@keyframes k4{0%{opacity:0}50.00%{opacity:0}52.86%{opacity:1}66.43%{opacity:1}69.29%{opacity:0}100%{opacity:0}}
+.k5{transform-box:fill-box;animation:k5 14s ease-out infinite}
+@keyframes k5{0%{opacity:0}69.29%{opacity:0}72.14%{opacity:1}100%{opacity:1}}
+#scene{animation:scene 14s linear infinite}
+@keyframes scene{0%{opacity:0}2.14%{opacity:1}96.43%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+<rect width="1000" height="560" fill="#171615"/>
+<g id="scene">
+	<text x="60" y="66" class="h">Where should an assistant refuse to answer?</text>
+	<text x="60" y="96" class="sub">Semantic ranker top score (0 to 4) for questions our docs can and can't answer</text>
+
+	<!-- can't answer: 9 questions, 1.96 to 2.62 -->
+	<g class="k0">
+		<circle cx="126" cy="170" r="6" fill="#D9654C"/>
+		<text x="140" y="176" class="lbl">Can't answer (9 questions)</text>
+		<rect x="158" y="190" width="418" height="16" rx="8" fill="#D9654C" fill-opacity=".3" stroke="#D9654C" stroke-width="1.5"/>
+		<circle cx="158" cy="198" r="7" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="285" cy="198" r="7" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="576" cy="198" r="7" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<text x="158" y="228" text-anchor="middle" class="pt">spell checker</text>
+		<text x="285" y="228" text-anchor="middle" class="pt">card payments</text>
+		<text x="576" y="228" text-anchor="middle" class="pt">WordPress plugins</text>
+	</g>
+
+	<!-- can answer: 51 questions, 2.28 and up -->
+	<g class="k1">
+		<circle cx="126" cy="262" r="6" fill="#02A196"/>
+		<text x="140" y="268" class="lbl">Can answer (51 questions)</text>
+		<rect x="361" y="282" width="519" height="16" rx="8" fill="url(#tail)"/>
+		<circle cx="361" cy="290" r="7" fill="#02A196" stroke="#171615" stroke-width="2"/>
+		<line x1="785" y1="280" x2="785" y2="300" stroke="#F1EFE9" stroke-width="3"/>
+		<text x="352" y="320" text-anchor="end" class="pt">uptime SLA</text>
+		<text x="785" y="320" text-anchor="middle" class="pt">median 2.95</text>
+	</g>
+
+	<line x1="120" y1="340" x2="880" y2="340" stroke="#45423E"/>
+	<g class="tick">
+		<text x="183" y="360" text-anchor="middle" class="tick">2.0</text>
+		<text x="310" y="360" text-anchor="middle" class="tick">2.2</text>
+		<text x="437" y="360" text-anchor="middle" class="tick">2.4</text>
+		<text x="563" y="360" text-anchor="middle" class="tick">2.6</text>
+		<text x="690" y="360" text-anchor="middle" class="tick">2.8</text>
+		<text x="817" y="360" text-anchor="middle" class="tick">3.0</text>
+	</g>
+
+	<!-- try thresholds: 2.0, 2.2, 2.4, then settle on 2.3 -->
+	<g class="k2">
+		<line x1="183" y1="146" x2="183" y2="340" stroke="#FFCB28" stroke-width="2.5" stroke-dasharray="6 4"/>
+		<text x="56" y="420" class="cap">REFUSE BELOW</text><text x="56" y="466" class="big" style="fill:#FFCB28">2.0</text>
+		<text x="300" y="420" class="cap">CAN'T-ANSWER REFUSED</text><text x="300" y="466" class="big">1 of 9</text>
+		<text x="620" y="420" class="cap">CAN-ANSWER WRONGLY REFUSED</text><text x="620" y="466" class="big">0 of 51</text>
+	</g>
+	<g class="k3">
+		<line x1="310" y1="146" x2="310" y2="340" stroke="#FFCB28" stroke-width="2.5" stroke-dasharray="6 4"/>
+		<text x="56" y="420" class="cap">REFUSE BELOW</text><text x="56" y="466" class="big" style="fill:#FFCB28">2.2</text>
+		<text x="300" y="420" class="cap">CAN'T-ANSWER REFUSED</text><text x="300" y="466" class="big">5 of 9</text>
+		<text x="620" y="420" class="cap">CAN-ANSWER WRONGLY REFUSED</text><text x="620" y="466" class="big">0 of 51</text>
+	</g>
+	<g class="k4">
+		<line x1="437" y1="146" x2="437" y2="340" stroke="#FFCB28" stroke-width="2.5" stroke-dasharray="6 4"/>
+		<text x="56" y="420" class="cap">REFUSE BELOW</text><text x="56" y="466" class="big" style="fill:#FFCB28">2.4</text>
+		<text x="300" y="420" class="cap">CAN'T-ANSWER REFUSED</text><text x="300" y="466" class="big">8 of 9</text>
+		<text x="620" y="420" class="cap">CAN-ANSWER WRONGLY REFUSED</text><text x="620" y="466" class="big">3 of 51</text>
+	</g>
+	<g class="k5">
+		<line x1="373" y1="146" x2="373" y2="340" stroke="#FFCB28" stroke-width="2.5" stroke-dasharray="6 4"/>
+		<text x="56" y="420" class="cap">REFUSE BELOW</text><text x="56" y="466" class="big" style="fill:#FFCB28">2.3</text>
+		<text x="300" y="420" class="cap">CAN'T-ANSWER REFUSED</text><text x="300" y="466" class="big">7 of 9</text>
+		<text x="620" y="420" class="cap">CAN-ANSWER WRONGLY REFUSED</text><text x="620" y="466" class="big">1 of 51</text>
+		<text x="56" y="494" class="thr">Our plan for now, plus a model that admits when the page doesn't answer. Not settled.</text>
+	</g>
+
+	<text x="60" y="540" class="note">Run 7. Nine no-answer questions is not enough: we want about 15 before a number refuses real people.</text>
+</g>
+</svg>

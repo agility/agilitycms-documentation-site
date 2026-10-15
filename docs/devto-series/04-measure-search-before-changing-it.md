@@ -18,6 +18,8 @@ I have done it myself. It is not a measurement. The person typing already knows 
 
 This post is about replacing that feeling with a number. It is the cheapest thing in this series, and it changed my mind more than anything else we did.
 
+![MRR at 10 on 51 answerable questions, run 7. Algolia one record per article 0.587. Algolia one record per section 0.594, so splitting changed nothing. Azure keyword only 0.762. Azure hybrid 0.853, the best. Azure hybrid plus semantic reranker 0.796, so the reranker made ranking worse.](img/out/04-measure-search-before-changing-it.gif)
+
 ## The standard
 
 **Before you change your search (a new engine, new settings, AI on top), you should have a fixed set of test questions and a score, so you know whether the change helped.**

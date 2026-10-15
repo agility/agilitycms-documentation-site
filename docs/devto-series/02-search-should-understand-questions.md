@@ -16,6 +16,8 @@ Not "scheduling". The whole sentence, the way a new customer would ask it, or th
 
 When we did that on our docs, the answer was zero results. The page that answers it exists. It is called "Scheduling Overview". Search simply could not see it behind all the extra words.
 
+![The query "can I schedule content to publish later" returned 0 results with Algolia's default settings. Dropping filler words, folding plurals and making words optional when nothing matches returned 9 results, with Scheduling Overview first.](img/out/02-search-should-understand-questions.gif)
+
 ## The standard
 
 **When someone types a full question into your site search, they should get an answer, not an empty page.**

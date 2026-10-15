@@ -16,6 +16,8 @@ The worst bug in our docs search did not throw an error. It did not fail a build
 
 Then I made it worse with a test request.
 
+![Before: content lists are read with a default page size of 50, so the longer lists are cut off and a full reindex replaces 437 live articles with 348, with no error. After: the lists are read with take 250 and the rebuild refuses to replace the index if any list comes back exactly full, so all 437 are indexed.](img/out/05-builds-should-not-delete-content.gif)
+
 ## The standard
 
 **Any job that replaces a whole index, sitemap or cache should refuse to run when its input looks wrong, and should never be triggered by an innocent-looking request.**

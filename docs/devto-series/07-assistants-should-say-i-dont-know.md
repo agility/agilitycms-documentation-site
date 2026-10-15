@@ -18,6 +18,8 @@ The docs do not answer that question. There is no plugin system to install WordP
 
 This post is about stopping that.
 
+![Semantic ranker top scores from 0 to 4. The 9 questions our docs cannot answer scored 1.96 to 2.62. The 51 they can answer scored 2.28 and up, median 2.95. Refusing below 2.0 catches 1 of 9 and wrongly refuses 0 of 51. Below 2.2: 5 of 9 and 0 of 51. Below 2.4: 8 of 9 and 3 of 51. Below 2.3, the current plan: 7 of 9 and 1 of 51.](img/out/07-assistants-should-say-i-dont-know.gif)
+
 ## The standard
 
 **An assistant answering from your content should cite the pages it used, and should say "I don't know" when your content does not cover the question, instead of making something up.**

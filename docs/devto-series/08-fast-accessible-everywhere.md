@@ -17,6 +17,8 @@ This last one is about people. None of the agent work is worth much if the page 
 
 It is also the post where I am least sure of one of my own conclusions, and I am going to show you that instead of hiding it.
 
+![Desktop, 75th percentile, last 30 days. Largest Contentful Paint 1,258 ms, good is 2.5 s or less. Interaction to Next Paint 64 ms, good is 200 ms or less. Cumulative Layout Shift 0.005, good is 0.1 or less. All three are in the good range. An automated accessibility check found 0 violations, with 1 rule needing a human.](img/out/08-fast-accessible-everywhere.gif)
+
 ## The standard
 
 **Your site should be fast, usable with a keyboard and a screen reader, and working in every major browser, and you should know this from real-user data, not from testing on your own laptop.**

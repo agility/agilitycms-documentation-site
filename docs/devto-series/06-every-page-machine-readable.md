@@ -17,6 +17,8 @@ It was the page about our MCP server, the page an AI assistant would read to lea
 
 Nobody noticed, because everybody who checked used a browser.
 
+![Content in Agility CMS is rendered by Next.js on Vercel into four views: an HTML page for people, and for agents a Markdown copy of every page, an llms.txt index, and an MCP server with search_docs and fetch_doc tools.](img/out/06-every-page-machine-readable.gif)
+
 ## The standard
 
 **Every page on your site should be available as clean content at a predictable URL, and one index should list them all, generated from the same source as the pages people see.**

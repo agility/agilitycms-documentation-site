@@ -23,6 +23,8 @@ I co-founded a CMS company. I have spent a long time thinking about how people r
 
 This series is about raising the bar for both halves. Not for our site: for yours.
 
+![A docs page sends content to people and to AI agents. People: 2,456 pageviews. AI assistants and AI search: 5,701 requests, about 2.3 times as many.](img/out/01-two-kinds-of-readers.gif)
+
 ## The standard
 
 **Your website should work well for two kinds of reader: the people who visit it, and the AI agents that read it on their behalf.**
