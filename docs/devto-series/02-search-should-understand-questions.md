@@ -218,4 +218,4 @@ Run the check with 5 real questions from your support inbox. How many came back 
 
 Next in the series: **"No results" is feedback, so collect it.**
 
-*An AI coding agent did a big chunk of this work with me. The measurements are ours, and so are the mistakes.*
+*An AI coding agent did a big chunk of this work with me, and helped me write it up. The measurements are ours, and so are the mistakes.*

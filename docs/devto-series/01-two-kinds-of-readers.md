@@ -166,4 +166,4 @@ Go run the 10-minute check on your own site. Which step failed? And if you can m
 
 Next up: **Your search should understand a question, not just keywords.**
 
-*Full disclosure: I did a lot of this work with an AI coding agent. The numbers come from our own measurements, and the mistakes are all mine.*
+*Full disclosure: I did a lot of this work with an AI coding agent, and it helped me draft this post too. The numbers come from our own measurements, and the mistakes are all mine.*

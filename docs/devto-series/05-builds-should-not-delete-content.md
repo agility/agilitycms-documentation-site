@@ -184,4 +184,4 @@ What's the default page size of the API your site is built from, and is any job 
 
 Next in the series: **Every page should be readable by a machine, without a second site**
 
-*How this got built: an AI coding agent did a big chunk of the work alongside me. The numbers are our own measurements, and the mistakes are ours.*
+*How this got built: an AI coding agent did a big chunk of the work alongside me, and helped me write this post. The numbers are our own measurements, and the mistakes are ours.*

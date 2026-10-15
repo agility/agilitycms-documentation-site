@@ -249,4 +249,4 @@ Go run step 5 of the check. How many hostnames serve your site, and how many of 
 
 Next in the series: **An assistant on your site should know when to say "I don't know".**
 
-*An AI coding agent did a big chunk of the work behind this post. The numbers are from our own measurements, and so are the mistakes.*
+*An AI coding agent did a big chunk of the work behind this post, and helped me draft it. The numbers are from our own measurements, and so are the mistakes.*

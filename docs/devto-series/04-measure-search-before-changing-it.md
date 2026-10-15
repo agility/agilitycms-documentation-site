@@ -206,4 +206,4 @@ If you scored your site search tomorrow on 10 real questions, how many do you th
 
 Next in the series: **Your build should not be able to quietly delete content**
 
-*One more thing: an AI coding agent did a lot of the heavy lifting on this one. The measurements are our own, and so are the mistakes.*
+*One more thing: an AI coding agent did a lot of the heavy lifting on this one, and helped me draft the post. The measurements are our own, and so are the mistakes.*

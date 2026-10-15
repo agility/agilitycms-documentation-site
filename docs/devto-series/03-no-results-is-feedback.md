@@ -198,4 +198,4 @@ Can you answer step 1 of the check today? If you can, what's the strangest query
 
 Next in the series: **Measure your search before you change it.**
 
-*BTW, an AI coding agent did a lot of the heavy lifting on this one. Every number here comes from our own site, and so does every mistake.*
+*BTW, an AI coding agent did a lot of the heavy lifting on this one, including the first draft of this post. Every number here comes from our own site, and so does every mistake.*

@@ -213,4 +213,4 @@ Run the checklist on your own site and tell me in the comments which item you co
 
 That's a wrap on the series. If you're new here, start at the beginning: **Your website has two kinds of readers now**.
 
-*One last disclosure: an AI coding agent did a ton of the work behind this post, including the Firefox conclusion I nearly published. The numbers are from our own measurements, and the mistakes are ours.*
+*One last disclosure: an AI coding agent did a ton of the work behind this series, including the Firefox conclusion I nearly published, and it helped me draft these posts. The numbers are from our own measurements, and the mistakes are ours.*

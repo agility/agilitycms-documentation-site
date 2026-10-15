@@ -197,4 +197,4 @@ Ask your own site's assistant a near-miss question today. Did it own up, or did 
 
 Next in the series: **Fast, accessible and working everywhere: measured, not assumed.**
 
-*How this got built: an AI coding agent did a lot of the heavy lifting. The numbers come from our own measurements, and anything wrong in here is on me.*
+*Heads up: an AI coding agent did a lot of the heavy lifting here, from the test runs to the first draft of this post. The numbers come from our own measurements, and anything wrong in here is on me.*
