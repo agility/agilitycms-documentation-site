@@ -132,6 +132,21 @@ export function shouldReport(endpoint: EndpointType | null, match: AgentMatch | 
 const isProduction = () =>
 	process.env.VERCEL_ENV ? process.env.VERCEL_ENV === "production" : process.env.NODE_ENV === "production";
 
+/**
+ * Our own checks against the live MCP (search probes, verifying a deploy)
+ * send this header with any value. Their tool calls are reported with
+ * `test: true`, and the docs search insights and alerts in PostHog skip
+ * events where `test` is set, so a probe question can't fire a content-gap
+ * alert.
+ */
+export const TEST_REQUEST_HEADER = "x-docs-test";
+
+/**
+ * A test run: the request carries TEST_REQUEST_HEADER, or the app is running
+ * outside Vercel (a local `next start`, which counts as production above).
+ */
+export const isTestRun = (testHeader: string | null | undefined): boolean => !!testHeader || !process.env.VERCEL_ENV;
+
 const posthogHost = () => {
 	const host = process.env.POSTHOG_API_HOST || process.env.NEXT_PUBLIC_POSTHOG_HOST || "";
 	// A relative client host (a reverse-proxy path like "/ingest") is useless
@@ -190,13 +205,14 @@ export async function reportAgentRequest(input: {
  * The query is what an agent searched the docs for, so zero-hit searches
  * (Algolia) and low top_score searches (Azure) are a direct list of content
  * gaps. Same no-throw, production-only contract as
- * reportAgentRequest.
+ * reportAgentRequest. `test` marks our own calls (see isTestRun).
  */
 export async function reportMcpToolCall(input: {
 	tool: string;
 	args: Record<string, unknown>;
 	success: boolean;
 	durationMs: number;
+	test?: boolean;
 }): Promise<void> {
 	try {
 		const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
@@ -226,6 +242,9 @@ export async function reportMcpToolCall(input: {
 					top_score: typeof topScore === "number" ? Math.round(topScore * 100) / 100 : null,
 					success: input.success,
 					duration_ms: Math.round(input.durationMs),
+					// Only ever true: the insights filter on `test` being unset,
+					// so sending false would hide real calls too.
+					...(input.test ? { test: true } : {}),
 					$process_person_profile: false,
 					$lib: "docs-server",
 				},

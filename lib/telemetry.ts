@@ -1,6 +1,7 @@
 import * as appInsights from "applicationinsights";
 import { after } from "next/server";
-import { reportMcpToolCall } from "./analytics/agentTraffic";
+import { headers } from "next/headers";
+import { isTestRun, reportMcpToolCall, TEST_REQUEST_HEADER } from "./analytics/agentTraffic";
 
 let telemetryClient: appInsights.TelemetryClient | null = null;
 let initialized = false;
@@ -63,8 +64,18 @@ export function trackMcpToolCall(
 ) {
   // PostHog copy for demand reporting, independent of App Insights being
   // configured. after() keeps it alive past the response on serverless.
+  // Route handlers may read headers() inside after(): that's where the
+  // test header (our own probes) is picked up.
   try {
-    after(() => reportMcpToolCall({ tool: toolName, args, success, durationMs: duration }));
+    after(async () => {
+      let testHeader: string | null = null;
+      try {
+        testHeader = (await headers()).get(TEST_REQUEST_HEADER);
+      } catch {
+        // No request headers here: report it as a normal call.
+      }
+      await reportMcpToolCall({ tool: toolName, args, success, durationMs: duration, test: isTestRun(testHeader) });
+    });
   } catch {
     // Called outside a request scope: nothing to report against.
   }
