@@ -138,7 +138,7 @@ Go easy on that "0 violations", though! So I went a step further and had an agen
 
 None of these showed up in axe, and every one of them is a 1 or 2 line fix. That's kinda the point: automated checks find the easy stuff, and you still need to actually *use* the thing the way your readers do. TODO(data): a real pass with a screen reader (NVDA or VoiceOver) on the same page, to hear the actual wording.
 
-<!-- JOEL: These bugs are real and live on agilitycms.com/docs right now (automated check, 2026-10-15). Claude can fix them in a small PR before this post goes out, and then this section can say "and we fixed them" - way better story. The VoiceOver pass is about 10 minutes on your Mac: Cmd+F5, Tab to Search docs, type a query, arrow through results. -->
+<!-- JOEL: All of these are fixed in PR #85 (not merged yet): silent results, Space, double Cmd+K, the skip link, real landmarks, and the mega menu (search is now the 13th Tab stop at 1440, was 27th). Once it ships, Claude can rewrite this section as "here is what we found, and here is the fix". The VoiceOver pass is about 10 minutes on your Mac: Cmd+F5, Tab to Search docs, type a query, arrow through results. -->
 
 ### The Firefox mystery
 
