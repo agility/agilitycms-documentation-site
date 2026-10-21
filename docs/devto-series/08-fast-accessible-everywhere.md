@@ -17,7 +17,7 @@ Now let's talk about people - like you and me - the meat-suits, if you will. ;)
 
 Because none of that agent work is worth much if the page is slow, or if somebody on a keyboard can't get to search, or if the search button does something weird in one browser and you never find out about it.
 
-This is also the post where I'm the LEAST sure of one of my own conclusions, and I'm gonna show you that part instead of hiding it.
+This is also the post where I came closest to fixing a bug that didn't exist, and I'm gonna show you that part instead of hiding it.
 
 ![Desktop, 75th percentile, production docs since September 17. Largest Contentful Paint 1,252 ms, good is 2.5 s or less. Interaction to Next Paint 64 ms, good is 200 ms or less. Cumulative Layout Shift 0.005, good is 0.1 or less. All three are in the good range. An automated accessibility check found 0 violations, with 1 rule needing a human.](img/out/08-fast-accessible-everywhere.gif)
 
@@ -180,7 +180,10 @@ So I went digging (well... I sent another agent digging, and this time I made it
 - **They clicked buttons you can't see.** Our header has an "Open menu" button that's hidden on wide screens. These sessions clicked it 318 times, at window widths where it isn't visible. No human did that... because a human can't click something that isn't there!
 - **They look like a script.** The browser window height matches the screen height in every one of them (that's a headless or full-screen browser), every session is a brand new visitor arriving direct, there's exactly 1 rage click per page, pages load about 10 seconds apart, and they show up in short bursts on 5 different days. A few more turned up on October 14, so it's still going (41 sessions now). PostHog didn't flag any of them as bots.
 
-My best guess? Somebody's automated test or scraper is running Firefox against our docs and clicking every button on every page, 3 times in a second, which is exactly what a "rage click" looks like. And the replays back that up. In one of them, the search dialog, the mobile navigation drawer AND the side menu are all open at the same time, stacked on top of each other... a person can't do that, because opening one closes the others. (It also shows the search dialog opening just fine, so the button works!)
+So what was it? A bot - and not a friendly one. Something was driving Firefox through our docs and clicking every button on every page, 3 times in a second, probing for anything that would break. And 3 fast clicks on one spot is exactly what a "rage click" looks like.
+
+<!-- JOEL: You confirmed it was a bot trying to hack us (2026-10-21). One sentence on HOW you know makes this land (what gave it away?), but keep out anything that helps the next bot: no IPs, endpoints, or what it was trying. Also worth one line if true: did it get anywhere? "It didn't" is a great sentence. -->
+ And the replays back that up. In one of them, the search dialog, the mobile navigation drawer AND the side menu are all open at the same time, stacked on top of each other... a person can't do that, because opening one closes the others. (It also shows the search dialog opening just fine, so the button works!)
 
 <!-- JOEL: Claude watched 2 replays on 2026-10-15: the Oct 1 one shows search dialog + mobile nav drawer + side "Menu" panel all open at once; the Oct 14 one is a single article page, nothing unusual. Watch one yourself before publishing, since the post is in your voice. Oct 1 (12 pages): https://us.posthog.com/project/33241/replay/01a0f69b-d54d-75c0-993e-081788278e3c  Sep 17 (43 pages): https://us.posthog.com/project/33241/replay/01a0b144-de8f-764f-b77f-1de0a9ed5a7a -->
 

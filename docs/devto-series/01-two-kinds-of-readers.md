@@ -14,6 +14,7 @@ One of the things that I've been working on is being more data driven - and I sp
 
 I shouldn't have been surprised (but I was, anyway) about the ratio of AI and bots hitting the site as opposed to human users.
 
+<!-- JOEL: DATA (2026-10-21): your "bots disguised as humans" is literally true. The 41 Firefox bot sessions from post 8 made 333 of the 2,266 production docs pageviews (Sep 14 to Oct 14, $host agilitycms.com), about 15%. Real humans were closer to 1.9k, so agents outnumber people by more like 3 to 1. Optional callback: "...and some of those 'humans' turned out to be a bot. More on that in post 8." -->
 In the last 30 days, humans (or bots disguised as humans) viewed pages on our documentation site about 2.5k times - it's not super high traffic. In those same 30 days, AI assistants and AI search tools fetched our pages about 5.7k times. That's ChatGPT, Claude, Perplexity etc, reading our docs.  I presume these visits to be on behalf of somebody running an agent and doing research. Those queries may or may not lead to website visits by those users.
 
 That's not counting the training crawlers (another 6.8k requests), the regular search engines (5.4k) or all the scripts that hit any public site - those are a different story - these 5.7k are READERS... they just aren't PEOPLE.
