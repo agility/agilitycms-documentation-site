@@ -122,14 +122,14 @@ export const SearchButton = ({ variant = "topbar" }: { variant?: "topbar" | "she
 		<Dialog open={open} onOpenChange={setOpen}>
 			{variant === "topbar" ? (
 				// Collapsed to just the icon; expands to the full field on hover or
-				// keyboard focus. The relative w-9 wrapper reserves only the icon's
+				// keyboard focus. The relative w-8 wrapper (32px, the same height as the header CTA buttons) reserves only the icon's
 				// footprint, and the trigger expands as an absolute overlay (grows
 				// leftward, right-anchored) so the expansion never reflows the header.
-				<div className="relative h-9 w-9 shrink-0">
+				<div className="relative h-8 w-8 shrink-0">
 					<DialogTrigger
 						ref={triggerRef}
 						aria-label="Search docs"
-						className="group/search absolute right-0 top-0 z-10 flex h-9 w-9 items-center gap-2 overflow-hidden rounded-(--r-sm) border border-(--border-strong) bg-(--surface) px-2.5 text-[.82rem] text-(--muted) transition-[width,padding,border-color] duration-200 ease-out hover:w-48 hover:border-(--primary) hover:px-3 focus-visible:w-48 focus-visible:border-(--primary) focus:outline-hidden"
+						className="group/search absolute right-0 top-0 z-10 flex h-8 w-8 items-center gap-2 overflow-hidden rounded-(--r-sm) border border-(--border-strong) bg-(--surface) px-[7px] text-[.82rem] text-(--muted) transition-[width,padding,border-color] duration-200 ease-out hover:w-48 hover:border-(--primary) hover:px-3 focus-visible:w-48 focus-visible:border-(--primary) focus:outline-hidden"
 					>
 						<SearchIcon className="h-4 w-4 shrink-0 text-(--faint)" aria-hidden="true" />
 						<span className="min-w-0 flex-1 truncate whitespace-nowrap text-left opacity-0 transition-opacity duration-150 group-hover/search:opacity-100 group-focus-visible/search:opacity-100">
