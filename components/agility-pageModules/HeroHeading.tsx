@@ -19,7 +19,7 @@ export default function HeroHeading({ module }: HeroHeadingProps) {
 
   return (
     <div
-      className="bg-(--bg) text-(--text) font-muli order-2 border-b border-(--border)"
+      className="hero-heading bg-(--bg) text-(--text) font-muli order-2 border-b border-(--border)"
       data-agility-component={module.contentID}
     >
       {/* Flush with the shell column — the template provides page padding. */}
