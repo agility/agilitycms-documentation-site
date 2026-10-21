@@ -122,9 +122,10 @@ export const SearchButton = ({ variant = "topbar" }: { variant?: "topbar" | "she
 		<Dialog open={open} onOpenChange={setOpen}>
 			{variant === "topbar" ? (
 				// Collapsed to just the icon; expands to the full field on hover or
-				// keyboard focus. The relative w-8 wrapper (32px, the same height as the header CTA buttons) reserves only the icon's
-				// footprint, and the trigger expands as an absolute overlay (grows
-				// leftward, right-anchored) so the expansion never reflows the header.
+				// keyboard focus. The relative w-8 wrapper reserves only the icon's
+				// footprint (32px square, the height of the header CTA buttons), and
+				// the trigger expands as an absolute overlay (grows leftward,
+				// right-anchored) so the expansion never reflows the header.
 				<div className="relative h-8 w-8 shrink-0">
 					<DialogTrigger
 						ref={triggerRef}
