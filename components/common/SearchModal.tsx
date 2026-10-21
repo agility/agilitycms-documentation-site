@@ -99,7 +99,15 @@ const registerSearchInstance = (instance: SearchInstance) => {
 	};
 };
 
-export const SearchButton = ({ variant = "topbar" }: { variant?: "topbar" | "sheet" }) => {
+export const SearchButton = ({
+	variant = "topbar",
+	onNavigate,
+}: {
+	variant?: "topbar" | "sheet";
+	// Called when a result is chosen, so a container (the mobile menu sheet)
+	// can close too. Otherwise the sheet stays open over the page just opened.
+	onNavigate?: () => void;
+}) => {
 	const [open, setOpen] = useState(false);
 	const [isMac, setIsMac] = useState(true);
 	const triggerRef = useRef<HTMLButtonElement>(null);
@@ -154,12 +162,12 @@ export const SearchButton = ({ variant = "topbar" }: { variant?: "topbar" | "she
 					</kbd>
 				</DialogTrigger>
 			)}
-			{open && <SearchPanel close={() => setOpen(false)} />}
+			{open && <SearchPanel close={() => setOpen(false)} onNavigate={onNavigate} />}
 		</Dialog>
 	);
 };
 
-const SearchPanel = ({ close }: { close: () => void }) => {
+const SearchPanel = ({ close, onNavigate }: { close: () => void; onNavigate?: () => void }) => {
 	const router = useRouter();
 	const pathname = usePathname();
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -278,6 +286,7 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 		// whatever page the searcher was on.
 		if (!url || !/^(https?:\/\/|\/)/.test(url)) return;
 		close();
+		onNavigate?.();
 		// index URLs are absolute site paths including /docs
 		router.push(url.replace(/^https?:\/\/[^/]+/, "").replace(/^\/docs/, "") || "/");
 	};
