@@ -10,11 +10,11 @@ series: Expect More From Your Website
 DRAFT 3. Sources: PostHog project 33241 (2026-10-15): docs_mcp_tool_call Oct 6 to 15 (test traffic from curl/node/agility-search-eval removed by matching docs_agent_request user agents); docs_agent_request endpoint=markdown Oct 6 to 15 (5,706 requests; top page agility-cms-mcp-server, 58).
 -->
 
-Here';'s a fun one! For a while, one of the most important pages in our docs was blank to nearly every machine that read or crawled it.
+Here's a fun one! For a while, one of the most important pages in our docs was blank to nearly every machine that read or crawled it.
 
 It was the page about our MCP server - the one an AI assistant reads to learn how to connect to us. In a browser it looked totally fine. But to `curl`, to a search crawler, or to an assistant fetching it on behalf of somebody, it was a title, a menu, a footer and... no article. We were converting the Markdown to HTML in the browser, *after* the page loaded, so anything that skipped JavaScript never saw it.
 
-And nobody noticed, because everybody who checked it (us included) used a browser. I'm super embarrsed by this, as I've been touting the server side rendering benefits of Next.js for years, and I site that *I'm* accountable for was not working. Ouch! Even with the right framework, you can still make mistakes.
+And nobody noticed, because everybody who checked it (us included) used a browser. I'm super embarrassed by this, as I've been touting the server side rendering benefits of Next.js for years, and a site that *I'm* accountable for was not working. Ouch! Even with the right framework, you can still make mistakes.
 
 ![Content in Agility CMS is rendered by Next.js on Vercel into four views: an HTML page for people, and for agents a Markdown copy of every page, an llms.txt index, and an MCP server with search_docs and fetch_doc tools.](img/out/06-every-page-machine-readable.gif)
 
