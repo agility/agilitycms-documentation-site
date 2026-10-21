@@ -387,13 +387,18 @@ const ApiSdkDropdown = ({
 			onMouseEnter={openNow}
 			onMouseLeave={closeSoon}
 			onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
+			// Close once keyboard focus leaves the menu. It doesn't open on focus:
+			// that made every Tab past it walk through the whole panel (search was
+			// the 27th stop at 1440px). Keyboard users open it with Enter or Space.
+			onBlur={(e) => {
+				if (!e.currentTarget.contains(e.relatedTarget as Node | null)) closeSoon();
+			}}
 		>
 			<button
 				type="button"
 				aria-expanded={open}
 				aria-haspopup="menu"
 				onClick={() => setOpen((o) => !o)}
-				onFocus={openNow}
 				data-state={open ? "open" : "closed"}
 				className="flex items-center gap-1 whitespace-nowrap rounded-(--r-sm) px-2.5 py-2 text-sm font-medium text-(--text-2) transition-colors hover:bg-(--raised) hover:text-(--text) focus:outline-hidden data-[state=open]:bg-(--raised) data-[state=open]:text-(--text)"
 			>

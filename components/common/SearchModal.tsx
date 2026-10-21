@@ -68,20 +68,54 @@ const getSnippet = (item: any) => {
 	return item._highlightResult?.description?.value || null;
 };
 
+// The header renders several SearchButtons (desktop, compact, mobile sheet) and
+// hides all but one with CSS. If each listened for ⌘K, one shortcut opened a
+// stack of dialogs. So there is one listener for all of them, and it toggles a
+// single instance: the one already open, else the one actually on screen, else
+// the first mounted (a narrow window shows no trigger, but ⌘K should still work).
+type SearchInstance = { isOpen: () => boolean; isVisible: () => boolean; toggle: () => void };
+const searchInstances = new Set<SearchInstance>();
+let onShortcut: ((e: KeyboardEvent) => void) | null = null;
+
+const registerSearchInstance = (instance: SearchInstance) => {
+	searchInstances.add(instance);
+	if (!onShortcut) {
+		onShortcut = (e: KeyboardEvent) => {
+			if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== "k") return;
+			const all = Array.from(searchInstances);
+			const target = all.find((i) => i.isOpen()) || all.find((i) => i.isVisible()) || all[0];
+			if (!target) return;
+			e.preventDefault();
+			target.toggle();
+		};
+		window.addEventListener("keydown", onShortcut);
+	}
+	return () => {
+		searchInstances.delete(instance);
+		if (!searchInstances.size && onShortcut) {
+			window.removeEventListener("keydown", onShortcut);
+			onShortcut = null;
+		}
+	};
+};
+
 export const SearchButton = ({ variant = "topbar" }: { variant?: "topbar" | "sheet" }) => {
 	const [open, setOpen] = useState(false);
 	const [isMac, setIsMac] = useState(true);
+	const triggerRef = useRef<HTMLButtonElement>(null);
+	const openRef = useRef(false);
+	useEffect(() => {
+		openRef.current = open;
+	}, [open]);
 
 	useEffect(() => {
 		setIsMac(!/windows/i.test(navigator.userAgent));
-		const onKey = (e: KeyboardEvent) => {
-			if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-				e.preventDefault();
-				setOpen((o) => !o);
-			}
-		};
-		window.addEventListener("keydown", onKey);
-		return () => window.removeEventListener("keydown", onKey);
+		return registerSearchInstance({
+			isOpen: () => openRef.current,
+			// offsetParent is null when the trigger or an ancestor is display:none.
+			isVisible: () => !!triggerRef.current && triggerRef.current.offsetParent !== null,
+			toggle: () => setOpen((o) => !o),
+		});
 	}, []);
 
 	return (
@@ -93,6 +127,7 @@ export const SearchButton = ({ variant = "topbar" }: { variant?: "topbar" | "she
 				// leftward, right-anchored) so the expansion never reflows the header.
 				<div className="relative h-9 w-9 shrink-0">
 					<DialogTrigger
+						ref={triggerRef}
 						aria-label="Search docs"
 						className="group/search absolute right-0 top-0 z-10 flex h-9 w-9 items-center gap-2 overflow-hidden rounded-(--r-sm) border border-(--border-strong) bg-(--surface) px-2.5 text-[.82rem] text-(--muted) transition-[width,padding,border-color] duration-200 ease-out hover:w-48 hover:border-(--primary) hover:px-3 focus-visible:w-48 focus-visible:border-(--primary) focus:outline-hidden"
 					>
@@ -107,6 +142,7 @@ export const SearchButton = ({ variant = "topbar" }: { variant?: "topbar" | "she
 				</div>
 			) : (
 				<DialogTrigger
+					ref={triggerRef}
 					className="flex w-full items-center gap-2 rounded-(--r-sm) border border-(--border-strong) bg-(--surface) px-3 py-2.5 text-sm text-(--muted) focus:outline-hidden"
 					aria-label="Search docs"
 				>
@@ -144,6 +180,9 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 	const [query, setQuery] = useState("");
 	const [hits, setHits] = useState<any[]>([]);
 	const [totalHits, setTotalHits] = useState(0);
+	// The query the current hits belong to, so the live region never announces
+	// "No results" for a query whose request hasn't come back yet.
+	const [resultsFor, setResultsFor] = useState("");
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(false);
 	const [activeIndex, setActiveIndex] = useState(0);
@@ -162,6 +201,7 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 		if (!query) {
 			setHits([]);
 			setTotalHits(0);
+			setResultsFor("");
 			setHasMore(false);
 			setActiveIndex(0);
 			return;
@@ -177,6 +217,7 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 				// to the search that surfaced it (Algolia click analytics).
 				setHits(result.hits.map((h: any) => ({ ...h, __queryID: result.queryID })));
 				setTotalHits(result.nbHits);
+				setResultsFor(query);
 				setPage(0);
 				setHasMore(result.nbPages > 1);
 				setActiveIndex(0);
@@ -295,8 +336,9 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 			e.preventDefault();
 			setQuery((q) => q.slice(0, -1));
 			inputRef.current?.focus();
-		} else if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey) {
-			// Typing while a result is focused resumes the search.
+		} else if (e.key.length === 1 && e.key !== " " && !e.metaKey && !e.ctrlKey && !e.altKey) {
+			// Typing while a result is focused resumes the search. Space is left
+			// alone: on a focused result button it means "open this result".
 			e.preventDefault();
 			setQuery((q) => q + e.key);
 			inputRef.current?.focus();
@@ -312,6 +354,16 @@ const SearchPanel = ({ close }: { close: () => void }) => {
 			}}
 		>
 			<DialogTitle className="sr-only">Search documentation</DialogTitle>
+			{/* The result count and "No results" are visual only; this live region
+			    tells screen reader users the search came back. It stays mounted so
+			    assistive tech is already watching it when the text changes. */}
+			<div role="status" aria-live="polite" className="sr-only">
+				{!query || resultsFor !== query
+					? ""
+					: totalHits === 0
+						? `No results for ${query}`
+						: `${totalHits} ${totalHits === 1 ? "result" : "results"}`}
+			</div>
 
 			{/* Input row */}
 			<div className="flex items-center gap-3 border-b border-(--border) px-4 py-3.5">
