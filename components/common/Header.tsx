@@ -457,9 +457,13 @@ const MobileMenu = ({
 	const sessionUser = useSessionUser();
 	const isActive = (href: string) => href !== "#" && pathname.startsWith(href);
 	const columns = groupNavLinks(primaryDropdownLinks, secondaryDropdownLinks);
+	// Controlled so choosing a search result can close the sheet: the nav links
+	// below close it with SheetClose, but search navigates from inside its own
+	// dialog, which left the sheet open over the new page.
+	const [open, setOpen] = useState(false);
 
 	return (
-	<Sheet>
+	<Sheet open={open} onOpenChange={setOpen}>
 		<SheetTrigger className="inline-flex items-center justify-center rounded-(--r-sm) p-2 text-(--text-2) hover:bg-(--raised) focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-(--primary)">
 			<span className="sr-only">Open menu</span>
 			<MenuIcon className="block h-6 w-6" aria-hidden="true" />
@@ -469,7 +473,7 @@ const MobileMenu = ({
 		<SheetContent side="right" title="Menu">
 			<div className="px-4 py-4">
 				<div className="mb-4">
-					<SearchButton variant="sheet" />
+					<SearchButton variant="sheet" onNavigate={() => setOpen(false)} />
 				</div>
 				<nav aria-label="Global">
 					{navigation.map((item) => (
