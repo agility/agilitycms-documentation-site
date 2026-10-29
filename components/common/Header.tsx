@@ -387,13 +387,18 @@ const ApiSdkDropdown = ({
 			onMouseEnter={openNow}
 			onMouseLeave={closeSoon}
 			onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
+			// Close once keyboard focus leaves the menu. It doesn't open on focus:
+			// that made every Tab past it walk through the whole panel (search was
+			// the 27th stop at 1440px). Keyboard users open it with Enter or Space.
+			onBlur={(e) => {
+				if (!e.currentTarget.contains(e.relatedTarget as Node | null)) closeSoon();
+			}}
 		>
 			<button
 				type="button"
 				aria-expanded={open}
 				aria-haspopup="menu"
 				onClick={() => setOpen((o) => !o)}
-				onFocus={openNow}
 				data-state={open ? "open" : "closed"}
 				className="flex items-center gap-1 whitespace-nowrap rounded-(--r-sm) px-2.5 py-2 text-sm font-medium text-(--text-2) transition-colors hover:bg-(--raised) hover:text-(--text) focus:outline-hidden data-[state=open]:bg-(--raised) data-[state=open]:text-(--text)"
 			>
@@ -452,9 +457,13 @@ const MobileMenu = ({
 	const sessionUser = useSessionUser();
 	const isActive = (href: string) => href !== "#" && pathname.startsWith(href);
 	const columns = groupNavLinks(primaryDropdownLinks, secondaryDropdownLinks);
+	// Controlled so choosing a search result can close the sheet: the nav links
+	// below close it with SheetClose, but search navigates from inside its own
+	// dialog, which left the sheet open over the new page.
+	const [open, setOpen] = useState(false);
 
 	return (
-	<Sheet>
+	<Sheet open={open} onOpenChange={setOpen}>
 		<SheetTrigger className="inline-flex items-center justify-center rounded-(--r-sm) p-2 text-(--text-2) hover:bg-(--raised) focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-(--primary)">
 			<span className="sr-only">Open menu</span>
 			<MenuIcon className="block h-6 w-6" aria-hidden="true" />
@@ -464,7 +473,7 @@ const MobileMenu = ({
 		<SheetContent side="right" title="Menu">
 			<div className="px-4 py-4">
 				<div className="mb-4">
-					<SearchButton variant="sheet" />
+					<SearchButton variant="sheet" onNavigate={() => setOpen(false)} />
 				</div>
 				<nav aria-label="Global">
 					{navigation.map((item) => (
