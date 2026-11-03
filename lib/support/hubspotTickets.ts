@@ -23,8 +23,7 @@ import "server-only";
  *                                   crm.objects.companies.read
  *   HUBSPOT_SUPPORT_PIPELINE        default "0"         (Support)
  *   HUBSPOT_SUPPORT_STAGE           default "1"         (New)
- *   HUBSPOT_SUPPORT_STAGE_CRITICAL  default "66128003"  (Critical/Urgent)
- * Pipeline and stages are env vars so that the support plan's pipeline collapse
+ * Pipeline and stage are env vars so that the support plan's pipeline collapse
  * (system-overview plans/intercom-to-hubspot §2.1) is a config change, not a deploy.
  */
 
@@ -46,7 +45,6 @@ export interface NewTicket {
 	/** The instance it is about, already checked against the user's own instances. */
 	instance?: { guid: string; name: string; orgName?: string };
 	productArea: string;
-	critical: boolean;
 	/** The docs page they came from, if any. */
 	page?: string;
 }
@@ -109,7 +107,6 @@ const ticketBody = (t: NewTicket): string =>
 		"---",
 		`Instance: ${t.instance ? `${t.instance.name} (${t.instance.guid})${t.instance.orgName ? `, ${t.instance.orgName}` : ""}` : "not about a specific instance"}`,
 		`Product area: ${t.productArea}`,
-		`Blocking: ${t.critical ? "yes" : "no"}`,
 		t.page ? `Filed from: ${t.page}` : null,
 		"Source: agilitycms.com/docs/support (signed in to Agility)",
 	]
@@ -131,9 +128,7 @@ export const createSupportTicket = async (t: NewTicket): Promise<{ id: string }>
 	}
 
 	const pipeline = process.env.HUBSPOT_SUPPORT_PIPELINE || "0";
-	const stage = t.critical
-		? process.env.HUBSPOT_SUPPORT_STAGE_CRITICAL || "66128003"
-		: process.env.HUBSPOT_SUPPORT_STAGE || "1";
+	const stage = process.env.HUBSPOT_SUPPORT_STAGE || "1";
 
 	const ticket = await call<{ id: string }>("POST", "/crm/v3/objects/tickets", {
 		properties: {
@@ -141,7 +136,7 @@ export const createSupportTicket = async (t: NewTicket): Promise<{ id: string }>
 			content: ticketBody(t),
 			hs_pipeline: pipeline,
 			hs_pipeline_stage: stage,
-			hs_ticket_priority: t.critical ? "HIGH" : "MEDIUM",
+			hs_ticket_priority: "MEDIUM",
 		},
 		associations,
 	});

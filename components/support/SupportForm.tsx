@@ -82,7 +82,6 @@ export default function SupportForm() {
 	const [description, setDescription] = useState("");
 	const [instanceGuid, setInstanceGuid] = useState("");
 	const [productArea, setProductArea] = useState<string>(PRODUCT_AREAS[0]);
-	const [critical, setCritical] = useState(false);
 	const [status, setStatus] = useState<Status>({ kind: "idle" });
 
 	useEffect(() => {
@@ -114,7 +113,6 @@ export default function SupportForm() {
 					description,
 					instanceGuid,
 					productArea,
-					critical,
 					page: document.referrer || undefined,
 				}),
 			});
@@ -181,7 +179,6 @@ export default function SupportForm() {
 					onClick={() => {
 						setSubject("");
 						setDescription("");
-						setCritical(false);
 						setStatus({ kind: "idle" });
 					}}
 				>
@@ -270,14 +267,6 @@ export default function SupportForm() {
 				className="mt-1.5 w-full px-3 py-2"
 				style={FIELD_STYLE}
 			/>
-
-			<label className="mt-5 flex items-start gap-2.5 text-sm" htmlFor="support-critical">
-				<input id="support-critical" type="checkbox" checked={critical} onChange={(e) => setCritical(e.target.checked)} className="mt-0.5" />
-				<span>
-					<strong>This is blocking us.</strong>{" "}
-					<span style={{ color: "var(--text-2)" }}>For example, the site is down or no one can publish.</span>
-				</span>
-			</label>
 
 			{status.kind === "error" && (
 				<p className="mt-5 text-sm" role="alert" style={{ color: "var(--warn)" }}>
