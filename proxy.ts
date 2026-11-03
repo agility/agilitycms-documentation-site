@@ -113,6 +113,8 @@ const APP_PATHS = new Set([
 	"/llms.txt",
 	"/robots.txt",
 	"/sitemap.xml",
+	// The support request page (app/[locale]/support), website plans/36 §B1.
+	"/support",
 	// The CMS's own error pages. They must pass unconditionally, not via the
 	// sitemap lookup: notFoundResponse fetches /404 for its body, and if that
 	// fetch were itself subject to the check it would recurse the moment the CMS
