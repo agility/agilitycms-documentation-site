@@ -11,7 +11,7 @@ import { getSupportUser } from "lib/support/supportUser";
  *   GET   who is this, and which instances can they file against?
  *         -> { signedIn, resolved, firstName?, instances[], managerUrl, configured }
  *   POST  file a ticket in HubSpot as the signed-in user
- *         { subject, description, instanceGuid?, productArea, critical, page? }
+ *         { subject, description, instanceGuid?, productArea, page? }
  *         -> 201 { ok: true, ticketId } | 4xx/5xx { ok: false, error }
  *
  * The user is ALWAYS the one in the Agility session cookie, read server-side.
@@ -95,7 +95,6 @@ export async function POST(request: NextRequest) {
 			description,
 			instance,
 			productArea,
-			critical: body?.critical === true,
 			page: page?.startsWith("https://agilitycms.com/") ? page : undefined,
 		});
 		return json({ ok: true, ticketId: ticket.id }, 201);
