@@ -17,7 +17,8 @@ import "server-only";
  * tier data, where Customer Success reads it.
  *
  * CONFIGURATION (server-only env vars; never NEXT_PUBLIC_*)
- *   HUBSPOT_SUPPORT_TOKEN           private app "Docs support": tickets,
+ *   HUBSPOT_SUPPORT_TOKEN           service key "Docs support" (created
+ *                                   2026-11-03): crm.objects.tickets.read/write,
  *                                   crm.objects.contacts.read/write,
  *                                   crm.objects.companies.read
  *   HUBSPOT_SUPPORT_PIPELINE        default "0"         (Support)
