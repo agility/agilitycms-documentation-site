@@ -33,7 +33,7 @@ const FALLBACK = {
 		{
 			heading: "Resources",
 			links: [
-				{ text: "Get Support", href: "https://help.agilitycms.com/hc/en-us/requests/new" },
+				{ text: "Get Support", href: "~/support" },
 				{ text: "Submit an Idea", href: "https://roadmap.agilitycms.com/submit-idea" },
 				{ text: "MCP Server", href: "https://mcp.agilitycms.com" },
 				{ text: "System Status", href: "https://status.agilitycms.com/" },
