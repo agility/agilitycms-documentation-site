@@ -50,7 +50,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	const op = getOperation(api.id, opSlug);
 	if (!op) return {};
 
-	const name = op.summary || `${op.method.toUpperCase()} ${op.path}`;
+	// The spec's summary names the page, unless another operation shares it: the
+	// Management API gives GET /locales/all and POST /locales/sort-order the same
+	// one, and SEMrush flagged the two pages as duplicate titles (2026-11-03).
+	// Then the method and path are what tells them apart.
+	const shared = getOperations(api.id).some((o) => o.slug !== op.slug && o.summary === op.summary);
+	const name = op.summary && !shared ? op.summary : `${op.method.toUpperCase()} ${op.path}`;
 	return {
 		title: `${name} — ${api.title} | Agility Docs`,
 		description: `${op.method.toUpperCase()} ${op.path}. ${op.summary}`.trim(),
