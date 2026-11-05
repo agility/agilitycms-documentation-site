@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" data-loop="12" role="img" aria-labelledby="t d">
+<title id="t">Same 51 questions, five search setups</title>
+<desc id="d">MRR at 10 on 51 answerable questions, run 7. Algolia one record per article 0.587. Algolia one record per section 0.594, so splitting changed nothing. Azure keyword only 0.762. Azure hybrid 0.853, the best. Azure hybrid plus semantic reranker 0.796, so the reranker made ranking worse.</desc>
+<style>
+text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,sans-serif;fill:#F1EFE9}
+.h{font-size:28px;font-weight:700}
+.sub{font-size:16px;fill:#C4BFB5}
+.lbl{font-size:16px;font-weight:600}
+.val{font-size:17px;font-weight:700}
+.tick{font-size:13px;fill:#AAA49B}
+.note{font-size:13px;fill:#AAA49B}
+.ann{font-size:14px;font-weight:600;fill:#FFCB28}
+.grid{stroke:#302E2B;stroke-width:1}
+</style>
+<rect width="1000" height="560" fill="#171615"/>
+<g id="scene">
+	<text x="60" y="66" class="h">Same 51 questions, five search setups</text>
+	<text x="60" y="96" class="sub">MRR@10, where 1.0 means the right page always came first. Run 7, 11 Oct 2026.</text>
+
+	<line x1="360" y1="134" x2="360" y2="470" class="grid" stroke="#45423E"/>
+	<line x1="620" y1="134" x2="620" y2="470" class="grid" stroke-dasharray="4 4"/>
+	<line x1="880" y1="134" x2="880" y2="470" class="grid" stroke-dasharray="4 4"/>
+	<text x="360" y="492" text-anchor="middle" class="tick">0</text>
+	<text x="620" y="492" text-anchor="middle" class="tick">0.5</text>
+	<text x="880" y="492" text-anchor="middle" class="tick">1.0</text>
+
+	<text x="60" y="170" class="lbl">Algolia, one record per article</text>
+	<text x="60" y="234" class="lbl">Algolia, one record per section</text>
+	<text x="60" y="298" class="lbl">Azure, keyword only (BM25)</text>
+	<text x="60" y="362" class="lbl">Azure hybrid (keyword + vector)</text>
+	<text x="60" y="426" class="lbl">Azure hybrid + semantic reranker</text>
+
+	<rect x="360" y="150" width="305" height="30" rx="4" fill="#02A196" data-in="0.6" data-anim="grow-x"/>
+	<text x="675" y="171" class="val" data-in="1.4">0.587</text>
+	<rect x="360" y="214" width="309" height="30" rx="4" fill="#02A196" data-in="1.8" data-anim="grow-x"/>
+	<text x="679" y="235" class="val" data-in="2.6">0.594</text>
+	<rect x="360" y="278" width="396" height="30" rx="4" fill="#02A196" data-in="3.4" data-anim="grow-x"/>
+	<text x="766" y="299" class="val" data-in="4.2">0.762</text>
+	<rect x="360" y="342" width="444" height="30" rx="4" fill="#02A196" data-in="4.6" data-anim="grow-x"/>
+	<text x="814" y="363" class="val" data-in="5.4">0.853</text>
+	<rect x="360" y="406" width="414" height="30" rx="4" fill="#02A196" data-in="5.8" data-anim="grow-x"/>
+	<text x="784" y="427" class="val" data-in="6.6">0.796</text>
+
+	<!-- what the numbers overturned -->
+	<g data-in="7.4" data-anim="rise">
+		<path d="M752 160h10v74h-10" fill="none" stroke="#FFCB28" stroke-width="2"/>
+		<text x="772" y="202" class="ann">Splitting into</text>
+		<text x="772" y="220" class="ann">sections: no change</text>
+	</g>
+	<g data-in="8.8" data-anim="rise">
+		<path d="M846 366v40" stroke="#FFCB28" stroke-width="2"/>
+		<path d="M840 398l6 9 6-9" fill="none" stroke="#FFCB28" stroke-width="2"/>
+		<text x="858" y="404" class="ann">Reranker:</text>
+		<text x="858" y="422" class="ann">worse</text>
+	</g>
+
+	<text x="60" y="540" class="note">51 questions with known right pages, committed before anything was scored.</text>
+</g>
+</svg>
