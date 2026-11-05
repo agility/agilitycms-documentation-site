@@ -37,6 +37,12 @@ function fullUrl(path: string): string {
   return `${BASE_URL}${path}`;
 }
 
+// Scripted tests against the live endpoint send `X-Docs-Test: 1`. Their
+// searches are tagged "test" in Algolia (not "mcp") and carry `test: true` in
+// PostHog, so they stay out of the content-gap reports and alerts.
+type ToolExtra = { requestInfo?: { headers?: Record<string, string | string[] | undefined> } };
+const isTestRequest = (extra?: ToolExtra) => extra?.requestInfo?.headers?.["x-docs-test"] === "1";
+
 function toError(err: unknown): Error {
   if (err instanceof Error) return err;
   if (typeof err === "object" && err !== null && "message" in err) {
@@ -86,8 +92,9 @@ const handler = createMcpHandler(
         title: "Search documentation",
         readOnlyHint: true,
       },
-      async ({ query, page }: { query: string; page?: number }) => {
+      async ({ query, page }: { query: string; page?: number }, extra?: ToolExtra) => {
         const startTime = Date.now();
+        const test = isTestRequest(extra);
 
         // Steer callers away from keyword-stuffed queries before they
         // burn an Algolia call. Semantic search is recall-poor on long
@@ -115,7 +122,7 @@ const handler = createMcpHandler(
 
           trackMcpToolCall(
             "search_docs",
-            { query, page: page || 0, blocked: "query_too_long", wordCount },
+            { query, page: page || 0, blocked: "query_too_long", wordCount, test },
             Date.now() - startTime,
             true
           );
@@ -132,7 +139,7 @@ const handler = createMcpHandler(
 
         try {
           const algoliaStart = Date.now();
-          const results = await searchDocs(query, page || 0);
+          const results = await searchDocs(query, page || 0, { test });
           trackAlgoliaCall(
             "search",
             query,
@@ -170,7 +177,7 @@ const handler = createMcpHandler(
 
           trackMcpToolCall(
             "search_docs",
-            { query, page: page || 0, hits: results.total, engine: results.engine, fallback: results.fallback, topScore: results.topScore ?? null },
+            { query, page: page || 0, hits: results.total, engine: results.engine, fallback: results.fallback, topScore: results.topScore ?? null, test },
             Date.now() - startTime,
             true
           );
@@ -188,7 +195,7 @@ const handler = createMcpHandler(
           trackAlgoliaCall("search", query, Date.now() - startTime, false, undefined, error);
           trackMcpToolCall(
             "search_docs",
-            { query, page: page || 0 },
+            { query, page: page || 0, test },
             Date.now() - startTime,
             false,
             error
@@ -220,8 +227,9 @@ const handler = createMcpHandler(
         title: "Fetch document",
         readOnlyHint: true,
       },
-      async ({ objectID }: { objectID: string }) => {
+      async ({ objectID }: { objectID: string }, extra?: ToolExtra) => {
         const startTime = Date.now();
+        const test = isTestRequest(extra);
         try {
           // The full article as Markdown, code included, from the same .md
           // twin agents can fetch directly. The search record's body is capped
@@ -231,7 +239,7 @@ const handler = createMcpHandler(
           trackAlgoliaCall("getObject", objectID, Date.now() - lookupStart, true, path ? 1 : 0);
           const twin = path ? await fetch(`${BASE_URL}${path}.md`, { cache: "no-store" }) : null;
           if (twin?.ok) {
-            trackMcpToolCall("fetch_doc", { objectID }, Date.now() - startTime, true);
+            trackMcpToolCall("fetch_doc", { objectID, test }, Date.now() - startTime, true);
             return { content: [{ type: "text" as const, text: await twin.text() }] };
           }
 
@@ -277,7 +285,7 @@ const handler = createMcpHandler(
 
           trackMcpToolCall(
             "fetch_doc",
-            { objectID },
+            { objectID, test },
             Date.now() - startTime,
             true
           );
@@ -295,7 +303,7 @@ const handler = createMcpHandler(
           trackAlgoliaCall("getObject", objectID, Date.now() - startTime, false, undefined, error);
           trackMcpToolCall(
             "fetch_doc",
-            { objectID },
+            { objectID, test },
             Date.now() - startTime,
             false,
             error

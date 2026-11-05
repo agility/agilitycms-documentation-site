@@ -137,7 +137,7 @@ Nested-list containers so far: `HomeFeatureCardGroup-Cards`, `HomeRoleLinkCards`
 ## Search Indexing
 
 Three indexes, all built from the CMS by the same routes:
-- **Algolia `doc_site`**: one record per article; searchable `title`, `headings`, `body`, `description`. Backs the ⌘K search box (and the MCP by default). Several callers share it: the search box, the MCP's Algolia path and the main agilitycms.com site. Each query carries an `analyticsTags` value (`search-box`, `mcp`) so Algolia's analytics can be filtered by caller; tag any new caller too. The main site is untagged as of 2026-10-14.
+- **Algolia `doc_site`**: one record per article; searchable `title`, `headings`, `body`, `description`. Backs the ⌘K search box (and the MCP by default). Several callers share it: the search box, the MCP's Algolia path and the main agilitycms.com site. Each query carries an `analyticsTags` value (`search-box`, `mcp`) so Algolia's analytics can be filtered by caller; tag any new caller too. **Scripted tests against the live MCP must send `X-Docs-Test: 1`**: their searches are tagged `test` instead of `mcp`, and their PostHog events carry `test: true`, which the content-gap insights and alerts exclude. Evals call the engines directly with `analytics: false` and need neither. The main site is untagged as of 2026-10-14.
 - **Algolia `doc_site_sections`**: one record per H2/H3 section, `distinct` per article. Not read by anything live (opt in with `ALGOLIA_DOCS_INDEX` / `NEXT_PUBLIC_ALGOLIA_INDEX`).
 - **Azure AI Search** (`AZURE_SEARCH_INDEX`): the same sections with `text-embedding-3-large` vectors, searched hybrid (keyword + vector). Only written when the Azure vars are set.
 
