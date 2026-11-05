@@ -104,10 +104,68 @@ async function searchAlgolia(query: string, page: number): Promise<DocsSearchRes
 
 const message = (err: unknown) => (err instanceof Error ? err.message : String(err)).slice(0, 200);
 
+/*
+  Bursts. On 2026-11-04 one Claude conversation sent 120 searches in two
+  minutes (87 in the first) and Azure answered 29 of them with 503 ("request
+  rate ... exceed the limits", "not enough resources ... to cover 100% of the
+  index"). Every Claude connector user reaches us from the same Anthropic proxy
+  IPs (user agent Claude-User), so a per-IP rate limit would throttle all of
+  them at once. Instead each instance runs at most AZURE_MAX_CONCURRENT
+  searches against Azure and queues the rest. A search that waits longer than
+  AZURE_QUEUE_WAIT_MS goes to Algolia, and a 503/429 gets one retry after a
+  short jittered pause before falling back.
+*/
+const AZURE_MAX_CONCURRENT = 4;
+const AZURE_QUEUE_WAIT_MS = 8000;
+let azureInFlight = 0;
+const azureQueue: Array<() => void> = [];
+
+function acquireAzureSlot(): Promise<void> {
+	if (azureInFlight < AZURE_MAX_CONCURRENT) {
+		azureInFlight++;
+		return Promise.resolve();
+	}
+	return new Promise((resolve, reject) => {
+		const grant = () => {
+			clearTimeout(timer);
+			azureInFlight++;
+			resolve();
+		};
+		const timer = setTimeout(() => {
+			azureQueue.splice(azureQueue.indexOf(grant), 1);
+			reject(new Error(`Azure busy: waited ${AZURE_QUEUE_WAIT_MS} ms for a search slot`));
+		}, AZURE_QUEUE_WAIT_MS);
+		azureQueue.push(grant);
+	});
+}
+
+function releaseAzureSlot() {
+	azureInFlight--;
+	azureQueue.shift()?.();
+}
+
+const isThrottled = (err: unknown) => [429, 503].includes((err as { status?: number }).status ?? 0);
+const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function searchAzureThrottled(query: string, page: number): Promise<DocsSearchResult> {
+	await acquireAzureSlot();
+	try {
+		try {
+			return await searchAzure(query, page, PAGE_SIZE);
+		} catch (err) {
+			if (!isThrottled(err)) throw err;
+			await pause(400 + Math.random() * 500);
+			return await searchAzure(query, page, PAGE_SIZE);
+		}
+	} finally {
+		releaseAzureSlot();
+	}
+}
+
 export async function searchDocs(query: string, page = 0): Promise<DocsSearchResult> {
 	if (docsSearchEngine() !== "azure") return searchAlgolia(query, page);
 	try {
-		return await searchAzure(query, page, PAGE_SIZE);
+		return await searchAzureThrottled(query, page);
 	} catch (err) {
 		console.error("Azure docs search failed; answering from Algolia", err);
 		return { ...(await searchAlgolia(query, page)), fallback: message(err) };
