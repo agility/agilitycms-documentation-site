@@ -4,7 +4,7 @@ import { isDevMode } from "lib/cms/isDevMode";
 
 import { cacheLife, cacheTag } from "next/cache";
 import { getAgilitySDK_NonReact } from "lib/cms/getAgilitySDK";
-import { getSitemapFlat, SitemapNode } from "lib/cms/getSitemapFlat";
+import { getSitemapFlat, redirectTarget, SitemapNode } from "lib/cms/getSitemapFlat";
 import { getContentItem } from "lib/cms/getContentItem";
 
 export interface AgilityPageData {
@@ -64,8 +64,9 @@ export const getAgilityPage = async ({ locale, slug, preview }: Params): Promise
 	const node = sitemap[path];
 	if (!node) return notFoundResult;
 
-	if (node.redirect) {
-		return { ...notFoundResult, sitemapNode: node, redirectUrl: node.redirect, notFound: false };
+	const redirectUrl = redirectTarget(node.redirect);
+	if (redirectUrl) {
+		return { ...notFoundResult, sitemapNode: node, redirectUrl, notFound: false };
 	}
 	if (node.isFolder) return notFoundResult;
 
