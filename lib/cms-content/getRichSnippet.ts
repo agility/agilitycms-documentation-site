@@ -1,5 +1,5 @@
 import { cacheLife } from "next/cache";
-import { videosFromMarkdownLines, watchUrl } from "lib/docs/videoEmbed";
+import { parseVideoUrl, videosFromMarkdownLines, watchUrl } from "lib/docs/videoEmbed";
 
 import { AgilityPageData } from "lib/cms/getAgilityPage";
 import { getSitemapFlat } from "lib/cms/getSitemapFlat";
@@ -157,9 +157,13 @@ export const getRichSnippet = async ({
 		// scope — see vimeoOEmbed, it must stay there),
 		// falling back gracefully if that lookup fails. uploadDate isn't tracked
 		// per video, so it falls back to the article's publish date.
+		//
+		// thumbnailUrl is REQUIRED by Google (and flagged by SEMrush as an invalid
+		// "Video" item when absent), so a video whose thumbnail can't be resolved
+		// is left out entirely rather than emitted invalid.
 		const videos = extractVideos(dynamicPageItem);
 		await enrichVimeoThumbnails(videos);
-		videos.forEach((v, i) => {
+		videos.filter((v) => v.thumbnailUrl).forEach((v, i) => {
 			const fallbackName =
 				videos.length > 1
 					? `${dynamicPageItem.fields.title} — Video ${i + 1}`
@@ -222,6 +226,8 @@ const toBcp47 = (locale: string): string => {
 
 interface ExtractedVideo {
 	embedUrl?: string;
+	/** Vimeo privacy hash (unlisted videos). Kept off embedUrl, which stays hash-free. */
+	vimeoHash?: string;
 	contentUrl?: string;
 	name?: string;
 	description?: string;
@@ -252,7 +258,13 @@ const iso8601Duration = (seconds: number): string => {
 // Failures resolve to {} so the VideoObject falls back to whatever the body
 // already provided — note that an empty result is cached like any other, so a
 // Vimeo outage costs a thumbnail until the entry revalidates, not a render.
-const vimeoOEmbed = async (id: string): Promise<Partial<ExtractedVideo>> => {
+//
+// Two things make this lookup succeed for the docs' videos, both verified
+// against the live API: (1) unlisted videos 404 unless the privacy hash is part
+// of the url (vimeo.com/<id>/<hash>), and (2) videos restricted to embedding on
+// agilitycms.com answer 200 with NO title/thumbnail/duration unless the request
+// carries a Referer from an allowed domain.
+const vimeoOEmbed = async (id: string, hash?: string): Promise<Partial<ExtractedVideo>> => {
 	"use cache";
 	// Matches the 86400s this fetch asked for before: revalidate daily.
 	cacheLife("days");
@@ -260,7 +272,8 @@ const vimeoOEmbed = async (id: string): Promise<Partial<ExtractedVideo>> => {
 		// width=1280 makes Vimeo return a large (1280px) thumbnail rather than the
 		// ~295px default — Google prefers high-res thumbnails for video results.
 		const res = await fetch(
-			`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}&width=1280`,
+			`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}${hash ? `/${hash}` : ""}&width=1280`,
+			{ headers: { Referer: `${SITE_URL}/` } },
 		);
 		if (!res.ok) return {};
 		const j: any = await res.json();
@@ -284,7 +297,7 @@ const enrichVimeoThumbnails = async (videos: ExtractedVideo[]): Promise<void> =>
 			if (v.thumbnailUrl || !v.embedUrl) return;
 			const id = vimeoId(v.embedUrl);
 			if (!id) return;
-			const meta = await vimeoOEmbed(id);
+			const meta = await vimeoOEmbed(id, v.vimeoHash);
 			if (meta.thumbnailUrl) v.thumbnailUrl = meta.thumbnailUrl;
 			if (!v.name && meta.name) {
 				v.name = meta.name;
@@ -320,7 +333,10 @@ const normalizeVideoUrl = (url: string): ExtractedVideo | null => {
 		};
 	}
 	const vm = vimeoId(url);
-	if (vm) return { embedUrl: `https://player.vimeo.com/video/${vm}` };
+	if (vm) {
+		const hash = parseVideoUrl(url)?.hash;
+		return { embedUrl: `https://player.vimeo.com/video/${vm}`, ...(hash ? { vimeoHash: hash } : {}) };
+	}
 	if (/\.(mp4|webm|ogg|mov)(?:[?#]|$)/i.test(url)) return { contentUrl: url };
 	return null;
 };
@@ -342,6 +358,8 @@ const videoFromVimeoJson = (obj: any): ExtractedVideo | null => {
 	const id = obj.video_id != null && `${obj.video_id}`.trim() ? `${obj.video_id}`.trim() : idFromHtml;
 	if (!id) return null;
 	const v: ExtractedVideo = { embedUrl: `https://player.vimeo.com/video/${id}` };
+	const hash = parseVideoUrl(attr(html.match(/<iframe\b[^>]*>/i)?.[0] || "", "src")?.replace(/&amp;/g, "&") || "")?.hash;
+	if (hash) v.vimeoHash = hash;
 	if (typeof obj.thumbnail_url === "string" && obj.thumbnail_url.trim())
 		v.thumbnailUrl = obj.thumbnail_url.trim();
 	if (typeof obj.title === "string" && obj.title.trim()) {
@@ -463,6 +481,7 @@ const extractVideos = (item: any): ExtractedVideo[] => {
 			continue;
 		}
 		if (!existing.thumbnailUrl) existing.thumbnailUrl = v.thumbnailUrl;
+		if (!existing.vimeoHash) existing.vimeoHash = v.vimeoHash;
 		if (!existing.name) existing.name = v.name;
 		if (!existing.description) existing.description = v.description;
 		if (!existing.duration) existing.duration = v.duration;
