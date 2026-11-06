@@ -4,6 +4,7 @@ import nextConfig from "next.config";
 import { defaultLocale, getLocaleFromPathname } from "lib/i18n/config";
 import { apiReferencePaths } from "lib/api-specs/loadSpec";
 import { isDevMode } from "lib/cms/isDevMode";
+import { redirectTarget } from "lib/cms/redirectTarget";
 import { reportAgentRequest } from "lib/analytics/agentTraffic";
 
 /**
@@ -14,7 +15,7 @@ import { reportAgentRequest } from "lib/analytics/agentTraffic";
  *  2. Agility preview exit:   ?AgilityPreview=0       -> /api/preview/exit
  *  3. Dynamic-content deep link: ?ContentID=n         -> /api/dynamic-redirect
  *  4. Clean markdown (T7):     /{article-path}.md     -> /api/article-md
- *  5. Unknown paths -> a real 404 (see notFoundResponse)
+ *  5. Unknown paths -> a real 404 (see notFoundResponse); link pages -> a 308
  *  6. Locale routing: unprefixed paths REWRITE to /{defaultLocale}/... so the
  *     default locale serves clean URLs while routing into app/[locale].
  *
@@ -180,6 +181,8 @@ const MISS_MIN_AGE_MS = 2_000;
 
 interface KnownPaths {
 	paths: Set<string>;
+	/** Link pages: path -> target URL (basePath not yet applied). */
+	redirects: Map<string, string>;
 	fetchedAt: number;
 }
 
@@ -199,15 +202,20 @@ const fetchKnownPaths = async (locale: string): Promise<KnownPaths | null> => {
 		});
 
 		// Folders have no page of their own — getAgilityPage 404s them too, so
-		// they are not valid paths. Redirect nodes ARE kept: the page handles the
-		// redirect, and 404ing them here would break every legacy URL.
+		// they are not valid paths. Link pages ARE kept, and their targets are
+		// collected so the redirect can be answered here (see step 5).
 		const paths = Object.keys(sitemap || {}).filter((p) => sitemap[p]?.isFolder !== true);
+		const redirects = new Map<string, string>();
+		for (const p of paths) {
+			const target = redirectTarget(sitemap[p]?.redirect);
+			if (target) redirects.set(p, target);
+		}
 
 		// An empty sitemap means the fetch went wrong upstream, not that the docs
 		// have no pages. Never let that 404 the entire site.
 		if (paths.length === 0) return null;
 
-		const entry: KnownPaths = { paths: new Set(paths), fetchedAt: Date.now() };
+		const entry: KnownPaths = { paths: new Set(paths), redirects, fetchedAt: Date.now() };
 		pathCache.set(locale, entry);
 		return entry;
 	} catch {
@@ -439,6 +447,21 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
 			// we can't know — fall through and let the page render as before.
 			const published = await isPublishedPath(locale, lookup);
 			if (published === false) return await notFoundResponse(request);
+
+			// A link page. The page route can redirect too, but by then the layout
+			// has started streaming, so it arrives as a 200 with a meta refresh —
+			// search engines need the real status, and only the proxy can send it.
+			// Draft mode skips this block and falls back to the page's redirect.
+			const target = published ? pathCache.get(locale)?.redirects.get(lookup) : undefined;
+			if (target) {
+				const url = /^https?:\/\//.test(target)
+					? new URL(target)
+					: new URL(
+							`${nextConfig.basePath || ""}${hasLocalePrefix ? `/${locale}` : ""}${target}`,
+							request.url
+						);
+				return NextResponse.redirect(url, 308);
+			}
 		}
 	}
 

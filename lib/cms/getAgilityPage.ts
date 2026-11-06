@@ -4,7 +4,8 @@ import { isDevMode } from "lib/cms/isDevMode";
 
 import { cacheLife, cacheTag } from "next/cache";
 import { getAgilitySDK_NonReact } from "lib/cms/getAgilitySDK";
-import { getSitemapFlat, redirectTarget, SitemapNode } from "lib/cms/getSitemapFlat";
+import { getSitemapFlat, SitemapNode } from "lib/cms/getSitemapFlat";
+import { redirectTarget } from "lib/cms/redirectTarget";
 import { getContentItem } from "lib/cms/getContentItem";
 
 export interface AgilityPageData {

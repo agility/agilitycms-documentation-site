@@ -2,6 +2,7 @@ import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
 import { getAgilitySDK_NonReact } from "lib/cms/getAgilitySDK";
+import type { SitemapRedirect } from "lib/cms/redirectTarget";
 
 export interface SitemapNode {
 	title: string;
@@ -10,21 +11,11 @@ export interface SitemapNode {
 	menuText: string;
 	visible: { menu: boolean; sitemap: boolean };
 	path: string;
-	/** Set on a link page. The Fetch API sends `{ url, target }`; read it with redirectTarget(). */
-	redirect: string | { url: string; target?: string } | null;
+	/** Set on a link page; read it with redirectTarget(). */
+	redirect: SitemapRedirect;
 	isFolder: boolean;
 	contentID?: number;
 }
-
-/**
- * The URL a link page points at, or null. Agility writes in-site links as
- * `~/path`; `~` is the site root, which basePath (/docs) already covers.
- */
-export const redirectTarget = (redirect: SitemapNode["redirect"]): string | null => {
-	const url = typeof redirect === "string" ? redirect : redirect?.url;
-	if (!url) return null;
-	return url.startsWith("~/") ? url.slice(1) : url;
-};
 
 export type SitemapFlat = { [path: string]: SitemapNode };
 
