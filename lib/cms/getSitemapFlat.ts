@@ -2,6 +2,7 @@ import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
 import { getAgilitySDK_NonReact } from "lib/cms/getAgilitySDK";
+import type { SitemapRedirect } from "lib/cms/redirectTarget";
 
 export interface SitemapNode {
 	title: string;
@@ -10,7 +11,8 @@ export interface SitemapNode {
 	menuText: string;
 	visible: { menu: boolean; sitemap: boolean };
 	path: string;
-	redirect: string | null;
+	/** Set on a link page; read it with redirectTarget(). */
+	redirect: SitemapRedirect;
 	isFolder: boolean;
 	contentID?: number;
 }

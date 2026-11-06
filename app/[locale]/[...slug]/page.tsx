@@ -1,6 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 
 import { getAgilityContext } from "lib/cms/getAgilityContext";
 import { getAgilityPage } from "lib/cms/getAgilityPage";
@@ -61,8 +61,10 @@ export default async function Page({ params }: PageProps) {
 
 	const agilityData = await getAgilityPage({ locale, slug, preview: isPreview });
 
+	// A link page replaces the page that used to live at this path, so the
+	// move is permanent (308) and search engines carry the URL's rank across.
 	if (agilityData.redirectUrl) {
-		redirect(agilityData.redirectUrl);
+		permanentRedirect(agilityData.redirectUrl);
 	}
 	if (agilityData.notFound || !agilityData.page) {
 		notFound();
