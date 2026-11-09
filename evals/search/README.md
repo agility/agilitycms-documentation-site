@@ -4,7 +4,7 @@ Fixed test sets for comparing docs search engines, and later for checking the do
 
 - `questions.json`: 52 agent-style questions, each listing every docs page that counts as a correct answer. Committed (d3846da) before any engine was scored. Sources: real docs searches (staff excluded), pages AI agents fetch, the most-read pages, agent-style phrasing, and one gap probe with no correct page.
 - `searchbox.json`: 36 search-box queries: 28 copied as typed from 90 days of Algolia analytics (typos and half-typed words included), 8 real queries cut off mid-word. Committed (ca8a134) before scoring.
-- `probes.json`: 8 questions the docs don't answer, checked against the full indexed text, for calibrating a chatbot's "not covered" threshold. Committed (97f963e) before scoring.
+- `probes.json`: 15 questions the docs don't answer (with question 52 in `questions.json`, 16 in all), checked against the full indexed text, for calibrating a chatbot's "not covered" threshold. The first 8 were committed (97f963e) before scoring, and 7 more (7d0d1b1) before the 2026-10-15 rerun. Refusing below 2.3 caught 11 of 16, and wrongly refused 1 of 51 answerable questions (JOURNAL.md, 2026-10-15).
 - `score.mjs`: runs a set against each engine and reports hit@1/3/5 (the first correct page is in the top 1, 3 or 5 distinct pages), MRR@10 and p50/p95 latency. Read-only, and sends `analytics: false` so runs stay out of Algolia's search analytics.
 
 ```

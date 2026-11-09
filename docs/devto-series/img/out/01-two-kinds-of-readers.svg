@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" data-loop="10" role="img" aria-labelledby="t d">
+<title id="t">Who read our docs in the last 30 days</title>
+<desc id="d">A docs page sends content to people and to AI agents. People: 2,456 pageviews. AI assistants and AI search: 5,701 requests, about 2.3 times as many.</desc>
+<style>
+text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,sans-serif;fill:#F1EFE9}
+.h{font-size:28px;font-weight:700}
+.sub{font-size:16px;fill:#C4BFB5}
+.lbl{font-size:16px;font-weight:600}
+.val{font-size:18px;font-weight:700}
+.note{font-size:13px;fill:#AAA49B}
+.ink{fill:none;stroke:#C4BFB5;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.flow{fill:none;stroke-width:6;stroke-linecap:round}
+.k0{transform-box:fill-box;animation:k0 10s ease-out infinite}
+@keyframes k0{0%{opacity:0;transform:translateY(14px)}4.00%{opacity:0;transform:translateY(14px)}8.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k1{transform-box:fill-box;animation:k1 10s ease-out infinite}
+@keyframes k1{0%{opacity:0;transform:translateY(14px)}9.00%{opacity:0;transform:translateY(14px)}13.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k2{transform-box:fill-box;animation:k2 10s ease-out infinite}
+@keyframes k2{0%{opacity:0;transform:translateY(14px)}11.00%{opacity:0;transform:translateY(14px)}15.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k3{transform-box:fill-box;animation:k3 10s ease-out infinite}
+@keyframes k3{0%{opacity:0}16.00%{opacity:0}20.00%{opacity:1}100%{opacity:1}}
+.k4{stroke-dasharray:.06 .94;animation:k4 2.5s linear infinite}
+@keyframes k4{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.k5{stroke-dasharray:.06 .94;animation:k5 1.25s linear infinite}
+@keyframes k5{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.k6{stroke-dasharray:.06 .94;animation:k6 2s linear infinite}
+@keyframes k6{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.k7{stroke-dasharray:.06 .94;animation:k7 2.5s linear infinite}
+@keyframes k7{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.k8{transform-box:fill-box;animation:k8 10s ease-out infinite}
+@keyframes k8{0%{opacity:0}28.00%{opacity:0}32.00%{opacity:1}100%{opacity:1}}
+.k9{transform-box:fill-box;transform-origin:left center;animation:k9 10s ease-out infinite}
+@keyframes k9{0%{opacity:1;transform:scaleX(0)}30.00%{opacity:1;transform:scaleX(0)}41.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k10{transform-box:fill-box;animation:k10 10s ease-out infinite}
+@keyframes k10{0%{opacity:0}39.00%{opacity:0}43.00%{opacity:1}100%{opacity:1}}
+.k11{transform-box:fill-box;animation:k11 10s ease-out infinite}
+@keyframes k11{0%{opacity:0}44.00%{opacity:0}48.00%{opacity:1}100%{opacity:1}}
+.k12{transform-box:fill-box;transform-origin:left center;animation:k12 10s ease-out infinite}
+@keyframes k12{0%{opacity:1;transform:scaleX(0)}46.00%{opacity:1;transform:scaleX(0)}62.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k13{transform-box:fill-box;animation:k13 10s ease-out infinite}
+@keyframes k13{0%{opacity:0}60.00%{opacity:0}64.00%{opacity:1}100%{opacity:1}}
+.k14{transform-box:fill-box;animation:k14 10s ease-out infinite}
+@keyframes k14{0%{opacity:0;transform:translateY(14px)}68.00%{opacity:0;transform:translateY(14px)}72.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+#scene{animation:scene 10s linear infinite}
+@keyframes scene{0%{opacity:0}3.00%{opacity:1}95.00%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+<rect width="1000" height="560" fill="#171615"/>
+<g id="scene">
+	<text x="60" y="66" class="h">Who read our docs in the last 30 days</text>
+	<text x="60" y="96" class="sub">People viewing pages, against AI assistants and AI search fetching them</text>
+
+	<!-- the page -->
+	<g class="k0">
+		<rect x="440" y="140" width="120" height="150" rx="10" fill="#201F1D" stroke="#45423E" stroke-width="2"/>
+		<rect x="462" y="162" width="56" height="8" rx="4" fill="#02A196"/>
+		<rect x="462" y="184" width="76" height="6" rx="3" fill="#45423E"/>
+		<rect x="462" y="200" width="70" height="6" rx="3" fill="#45423E"/>
+		<rect x="462" y="216" width="76" height="6" rx="3" fill="#45423E"/>
+		<rect x="462" y="232" width="50" height="6" rx="3" fill="#45423E"/>
+		<rect x="462" y="256" width="76" height="16" rx="3" fill="#302E2B"/>
+		<text x="500" y="316" text-anchor="middle" class="note">a docs page</text>
+	</g>
+
+	<!-- people -->
+	<g class="k1">
+		<circle cx="170" cy="190" r="22" class="ink"/>
+		<path d="M128 262c0-26 19-42 42-42s42 16 42 42" class="ink"/>
+		<text x="170" y="300" text-anchor="middle" class="lbl">People</text>
+	</g>
+
+	<!-- agents -->
+	<g class="k2">
+		<line x1="830" y1="160" x2="830" y2="176" class="ink"/>
+		<circle cx="830" cy="156" r="4" fill="#C4BFB5"/>
+		<rect x="792" y="176" width="76" height="62" rx="14" class="ink"/>
+		<circle cx="815" cy="204" r="6" fill="#5B8DEF"/>
+		<circle cx="845" cy="204" r="6" fill="#5B8DEF"/>
+		<path d="M814 222h32" class="ink"/>
+		<path d="M800 262h60" class="ink"/>
+		<text x="830" y="300" text-anchor="middle" class="lbl">AI assistants and AI search</text>
+	</g>
+
+	<!-- traffic: one stream to people, a heavier one to agents -->
+	<g class="k3">
+		<path d="M430 215H232" stroke="#302E2B" class="flow"/>
+		<path d="M430 215H232" stroke="#02A196" class="flow k4" pathLength="1"/>
+		<path d="M570 200H782" stroke="#302E2B" class="flow"/>
+		<path d="M570 215H782" stroke="#302E2B" class="flow"/>
+		<path d="M570 230H782" stroke="#302E2B" class="flow"/>
+		<path d="M570 200H782" stroke="#5B8DEF" class="flow k5" pathLength="1"/>
+		<path d="M570 215H782" stroke="#5B8DEF" class="flow k6" pathLength="1"/>
+		<path d="M570 230H782" stroke="#5B8DEF" class="flow k7" pathLength="1"/>
+	</g>
+
+	<!-- the numbers -->
+	<line x1="60" y1="350" x2="940" y2="350" stroke="#302E2B" stroke-width="1"/>
+	<g class="k8">
+		<text x="60" y="390" class="lbl">People</text>
+		<text x="60" y="410" class="note">pageviews</text>
+	</g>
+	<rect x="290" y="372" width="302" height="32" rx="4" fill="#02A196" class="k9"/>
+	<text x="604" y="395" class="val k10">2,456</text>
+
+	<g class="k11">
+		<text x="60" y="458" class="lbl">AI assistants + AI search</text>
+		<text x="60" y="478" class="note">requests</text>
+	</g>
+	<rect x="290" y="440" width="560" height="32" rx="4" fill="#5B8DEF" class="k12"/>
+	<text x="862" y="463" class="val k13">5,701</text>
+
+	<text x="940" y="522" text-anchor="end" class="val k14" fill="#FFCB28" style="fill:#FFCB28">AI readers: about 2.3× people</text>
+	<text x="60" y="540" class="note">PostHog, docs site, 30 days to 14 Oct 2026. Training crawlers, search engines and scripts not included.</text>
+</g>
+</svg>

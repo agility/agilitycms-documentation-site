@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" data-loop="12" role="img" aria-labelledby="t d">
+<title id="t">Three buckets for zero-result searches</title>
+<desc id="d">Searches that found nothing are sorted into three buckets. "ugc" is a content gap, owned by a writer. "click on the page to edit it" is a vocabulary gap, a five-minute edit. "push pullcli" is a search problem, owned by a developer.</desc>
+<style>
+text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,sans-serif;fill:#F1EFE9}
+.h{font-size:28px;font-weight:700}
+.sub{font-size:16px;fill:#C4BFB5}
+.bt{font-size:20px;font-weight:700}
+.bd{font-size:15px;fill:#C4BFB5}
+.own{font-size:15px;font-weight:600}
+.chip{font-size:16px;font-weight:500}
+.note{font-size:13px;fill:#AAA49B}
+.cap{font-size:13px;font-weight:700;letter-spacing:.1em;fill:#AAA49B}
+.box{fill:#201F1D;stroke:#302E2B;stroke-width:2}
+</style>
+<rect width="1000" height="560" fill="#171615"/>
+<g id="scene">
+	<text x="60" y="66" class="h">Every search that finds nothing goes in a bucket</text>
+	<text x="60" y="96" class="sub">Sort them, and each one has an owner</text>
+
+	<text x="500" y="140" text-anchor="middle" class="cap">NO RESULTS FOR…</text>
+	<rect x="330" y="156" width="340" height="48" rx="24" fill="none" stroke="#302E2B" stroke-width="2" stroke-dasharray="6 6"/>
+
+	<!-- buckets -->
+	<g data-in="0.4" data-anim="rise">
+		<rect x="60" y="250" width="260" height="250" rx="14" class="box"/>
+		<rect x="60" y="250" width="260" height="6" rx="3" fill="#02A196"/>
+		<text x="84" y="292" class="bt">Content gap</text>
+		<text x="84" y="318" class="bd">The answer is not</text>
+		<text x="84" y="338" class="bd">on the site at all</text>
+	</g>
+	<g data-in="0.6" data-anim="rise">
+		<rect x="370" y="250" width="260" height="250" rx="14" class="box"/>
+		<rect x="370" y="250" width="260" height="6" rx="3" fill="#5B8DEF"/>
+		<text x="394" y="292" class="bt">Vocabulary gap</text>
+		<text x="394" y="318" class="bd">The page exists, but</text>
+		<text x="394" y="338" class="bd">in different words</text>
+	</g>
+	<g data-in="0.8" data-anim="rise">
+		<rect x="680" y="250" width="260" height="250" rx="14" class="box"/>
+		<rect x="680" y="250" width="260" height="6" rx="3" fill="#D9654C"/>
+		<text x="704" y="292" class="bt">Search problem</text>
+		<text x="704" y="318" class="bd">The page has the words,</text>
+		<text x="704" y="338" class="bd">and search missed it</text>
+	</g>
+
+	<!-- queries drop from the top into their bucket -->
+	<g data-in="1.4" data-anim="move" data-from="310,-206" data-dur="0.9">
+		<rect x="150" y="362" width="80" height="40" rx="20" fill="#171615" stroke="#02A196" stroke-width="2"/>
+		<text x="190" y="388" text-anchor="middle" class="chip">ugc</text>
+	</g>
+	<g data-in="4.0" data-anim="move" data-from="0,-206" data-dur="0.9">
+		<rect x="384" y="362" width="232" height="40" rx="20" fill="#171615" stroke="#5B8DEF" stroke-width="2"/>
+		<text x="500" y="388" text-anchor="middle" class="chip">click on the page to edit it</text>
+	</g>
+	<g data-in="6.6" data-anim="move" data-from="-310,-206" data-dur="0.9">
+		<rect x="745" y="362" width="130" height="40" rx="20" fill="#171615" stroke="#D9654C" stroke-width="2"/>
+		<text x="810" y="388" text-anchor="middle" class="chip">push pullcli</text>
+	</g>
+
+	<!-- owners -->
+	<g data-in="3.4" data-anim="rise">
+		<line x1="84" y1="442" x2="296" y2="442" stroke="#302E2B"/>
+		<text x="84" y="474" class="own">→ a writer</text>
+	</g>
+	<g data-in="6.0" data-anim="rise">
+		<line x1="394" y1="442" x2="606" y2="442" stroke="#302E2B"/>
+		<text x="394" y="474" class="own">→ a five-minute edit</text>
+	</g>
+	<g data-in="8.6" data-anim="rise">
+		<line x1="704" y1="442" x2="916" y2="442" stroke="#302E2B"/>
+		<text x="704" y="474" class="own">→ a developer</text>
+	</g>
+
+	<text x="60" y="540" class="note">Real queries from our docs search log and test set. One undivided list goes to nobody.</text>
+</g>
+</svg>

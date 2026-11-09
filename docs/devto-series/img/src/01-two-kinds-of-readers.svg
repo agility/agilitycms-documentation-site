@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" data-loop="10" role="img" aria-labelledby="t d">
+<title id="t">Who read our docs in the last 30 days</title>
+<desc id="d">A docs page sends content to people and to AI agents. People: 2,456 pageviews. AI assistants and AI search: 5,701 requests, about 2.3 times as many.</desc>
+<style>
+text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,sans-serif;fill:#F1EFE9}
+.h{font-size:28px;font-weight:700}
+.sub{font-size:16px;fill:#C4BFB5}
+.lbl{font-size:16px;font-weight:600}
+.val{font-size:18px;font-weight:700}
+.note{font-size:13px;fill:#AAA49B}
+.ink{fill:none;stroke:#C4BFB5;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.flow{fill:none;stroke-width:6;stroke-linecap:round}
+</style>
+<rect width="1000" height="560" fill="#171615"/>
+<g id="scene">
+	<text x="60" y="66" class="h">Who read our docs in the last 30 days</text>
+	<text x="60" y="96" class="sub">People viewing pages, against AI assistants and AI search fetching them</text>
+
+	<!-- the page -->
+	<g data-in="0.4" data-anim="rise">
+		<rect x="440" y="140" width="120" height="150" rx="10" fill="#201F1D" stroke="#45423E" stroke-width="2"/>
+		<rect x="462" y="162" width="56" height="8" rx="4" fill="#02A196"/>
+		<rect x="462" y="184" width="76" height="6" rx="3" fill="#45423E"/>
+		<rect x="462" y="200" width="70" height="6" rx="3" fill="#45423E"/>
+		<rect x="462" y="216" width="76" height="6" rx="3" fill="#45423E"/>
+		<rect x="462" y="232" width="50" height="6" rx="3" fill="#45423E"/>
+		<rect x="462" y="256" width="76" height="16" rx="3" fill="#302E2B"/>
+		<text x="500" y="316" text-anchor="middle" class="note">a docs page</text>
+	</g>
+
+	<!-- people -->
+	<g data-in="0.9" data-anim="rise">
+		<circle cx="170" cy="190" r="22" class="ink"/>
+		<path d="M128 262c0-26 19-42 42-42s42 16 42 42" class="ink"/>
+		<text x="170" y="300" text-anchor="middle" class="lbl">People</text>
+	</g>
+
+	<!-- agents -->
+	<g data-in="1.1" data-anim="rise">
+		<line x1="830" y1="160" x2="830" y2="176" class="ink"/>
+		<circle cx="830" cy="156" r="4" fill="#C4BFB5"/>
+		<rect x="792" y="176" width="76" height="62" rx="14" class="ink"/>
+		<circle cx="815" cy="204" r="6" fill="#5B8DEF"/>
+		<circle cx="845" cy="204" r="6" fill="#5B8DEF"/>
+		<path d="M814 222h32" class="ink"/>
+		<path d="M800 262h60" class="ink"/>
+		<text x="830" y="300" text-anchor="middle" class="lbl">AI assistants and AI search</text>
+	</g>
+
+	<!-- traffic: one stream to people, a heavier one to agents -->
+	<g data-in="1.6">
+		<path d="M430 215H232" stroke="#302E2B" class="flow"/>
+		<path d="M430 215H232" stroke="#02A196" class="flow" pathLength="1" data-anim="pulse" data-period="2.5"/>
+		<path d="M570 200H782" stroke="#302E2B" class="flow"/>
+		<path d="M570 215H782" stroke="#302E2B" class="flow"/>
+		<path d="M570 230H782" stroke="#302E2B" class="flow"/>
+		<path d="M570 200H782" stroke="#5B8DEF" class="flow" pathLength="1" data-anim="pulse" data-period="1.25"/>
+		<path d="M570 215H782" stroke="#5B8DEF" class="flow" pathLength="1" data-anim="pulse" data-period="2"/>
+		<path d="M570 230H782" stroke="#5B8DEF" class="flow" pathLength="1" data-anim="pulse" data-period="2.5"/>
+	</g>
+
+	<!-- the numbers -->
+	<line x1="60" y1="350" x2="940" y2="350" stroke="#302E2B" stroke-width="1"/>
+	<g data-in="2.8">
+		<text x="60" y="390" class="lbl">People</text>
+		<text x="60" y="410" class="note">pageviews</text>
+	</g>
+	<rect x="290" y="372" width="302" height="32" rx="4" fill="#02A196" data-in="3.0" data-anim="grow-x" data-dur="1.1"/>
+	<text x="604" y="395" class="val" data-in="3.9">2,456</text>
+
+	<g data-in="4.4">
+		<text x="60" y="458" class="lbl">AI assistants + AI search</text>
+		<text x="60" y="478" class="note">requests</text>
+	</g>
+	<rect x="290" y="440" width="560" height="32" rx="4" fill="#5B8DEF" data-in="4.6" data-anim="grow-x" data-dur="1.6"/>
+	<text x="862" y="463" class="val" data-in="6.0">5,701</text>
+
+	<text x="940" y="522" text-anchor="end" class="val" fill="#FFCB28" style="fill:#FFCB28" data-in="6.8" data-anim="rise">AI readers: about 2.3× people</text>
+	<text x="60" y="540" class="note">PostHog, docs site, 30 days to 14 Oct 2026. Training crawlers, search engines and scripts not included.</text>
+</g>
+</svg>
