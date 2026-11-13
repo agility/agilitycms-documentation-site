@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
+import { DEFAULT_CONSENT_COPY, mergeConsentCopy, type ConsentCopy } from "lib/analytics/consent-copy";
 
 /**
  * Content read from the MAIN marketing instance (`MAIN_AGILITY_SITE_GUID` —
@@ -135,5 +136,80 @@ const fetchBanner = async (preview: boolean): Promise<MainSiteBanner | null> => 
 		// A marketing-instance outage must never take the docs chrome with it.
 		console.error("getMainSiteBanner failed:", error);
 		return null;
+	}
+};
+
+// ---- Cookie banner copy ------------------------------------------------------
+
+const CONSENT_QUERY = `
+{
+	cookieconsent {
+		fields {
+			message
+			acceptLabel
+			declineLabel
+			chooseLabel
+			privacyLink { href text target }
+			chooseTitle
+			chooseIntro
+			necessaryLabel
+			necessaryDescription
+			analyticsLabel
+			analyticsDescription
+			marketingLabel
+			marketingDescription
+			saveLabel
+			settingsLinkLabel
+		}
+	}
+}`;
+
+/**
+ * The cookie banner's words from the marketing instance's `CookieConsent` item,
+ * the one the marketing site's own banner reads, so the two banners never
+ * disagree. Merged over DEFAULT_CONSENT_COPY: unconfigured, unreachable or
+ * unpublished all fall back to the defaults, so the banner always has words.
+ * Same caching and the same no-webhook caveat as the banner above.
+ */
+export const getMainSiteCookieConsent = async ({ preview }: { preview: boolean }): Promise<ConsentCopy> => {
+	if (!process.env.MAIN_AGILITY_SITE_GUID) return DEFAULT_CONSENT_COPY;
+	if (preview) return fetchCookieConsent(true);
+	return cachedCookieConsent();
+};
+
+const cachedCookieConsent = async (): Promise<ConsentCopy> => {
+	"use cache";
+	cacheTag("main-site-cookie-consent");
+	cacheLife("hours");
+	return fetchCookieConsent(false);
+};
+
+const fetchCookieConsent = async (preview: boolean): Promise<ConsentCopy> => {
+	const apiKey = preview
+		? process.env.MAIN_AGILITY_SITE_API_PREVIEW_KEY
+		: process.env.MAIN_AGILITY_SITE_API_FETCH_KEY;
+	if (!apiKey) return DEFAULT_CONSENT_COPY;
+
+	try {
+		const res = await fetch(
+			`https://api.aglty.io/v1/${process.env.MAIN_AGILITY_SITE_GUID}/${
+				preview ? "preview" : "fetch"
+			}/${MAIN_SITE_LOCALE}/graphql`,
+			{
+				method: "POST",
+				headers: { "Content-Type": "application/json", apiKey },
+				body: JSON.stringify({ query: CONSENT_QUERY }),
+			}
+		);
+		if (!res.ok) {
+			console.error(`getMainSiteCookieConsent: Agility returned ${res.status}`);
+			return DEFAULT_CONSENT_COPY;
+		}
+		const json = await res.json();
+		return mergeConsentCopy(json?.data?.cookieconsent?.[0]?.fields, toMainSiteUrl);
+	} catch (error) {
+		// A marketing-instance outage must never take the banner's words with it.
+		console.error("getMainSiteCookieConsent failed:", error);
+		return DEFAULT_CONSENT_COPY;
 	}
 };

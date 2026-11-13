@@ -1,4 +1,3 @@
-import { GoogleTagManager } from "@next/third-parties/google";
 
 import nextConfig from "next.config";
 import { defaultLocale } from "lib/i18n/config";
@@ -6,6 +5,8 @@ import { getHeaderData } from "lib/cms-content/getHeaderData";
 import Header from "components/common/Header";
 import Footer from "components/common/Footer";
 import ClientInit from "components/common/ClientInit";
+import CookieConsent from "components/common/CookieConsent";
+import GtmLoader from "components/common/GtmLoader";
 
 /**
  * The 404 page — and, since proxy.ts started validating paths, the one the site
@@ -42,7 +43,8 @@ export default async function NotFound() {
 
 	return (
 		<div id="SiteWrapper" className="min-h-full font-muli">
-			<GoogleTagManager gtmId="GTM-NJW8WMX" />
+			<CookieConsent preview={false} />
+			<GtmLoader gtmId="GTM-NJW8WMX" />
 			<ClientInit />
 			<div id="Site" className="flex flex-col min-h-full">
 				<Header {...headerData} />
