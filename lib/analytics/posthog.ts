@@ -21,18 +21,58 @@ import { getSessionUser } from "lib/auth/getSessionUser";
 let initialized = false;
 
 /**
- * Initialize the PostHog client once (idempotent). Returns the client, or
- * null when disabled / not in the browser. Autocapture is on, so element
- * clicks, rageclicks, and form interactions are tracked automatically; we add
- * structured events (search, result clicks) on top for the queries we care
- * about.
+ * CONSENT — the same three modes as the marketing site's src/lib/analytics/posthog.ts
+ * (plans/32 D4 there). Nothing initializes until ClientInit calls setPostHogConsent:
+ *   - "full":       analytics permitted. Cookies, identify, as before.
+ *   - "cookieless": analytics not permitted, in an OPT-OUT region (a Decline).
+ *                   PostHog's `cookieless_mode: "on_reject"`: no cookies or storage,
+ *                   a daily server-side hash counts readers, no identify. The
+ *                   project's "cookieless server hash mode" is already on (shared
+ *                   project with the marketing site).
+ *   - "off":        analytics not permitted in an OPT-IN region. Nothing at all.
+ */
+export type PostHogMode = "full" | "cookieless" | "off";
+
+let mode: PostHogMode | null = null;
+let optOutRegion = false;
+
+/** Set from consent by ClientInit. Starts PostHog when it may run, and switches a running one. */
+export function setPostHogConsent(next: PostHogMode, { optOutRegion: optOut }: { optOutRegion: boolean }): void {
+	optOutRegion = optOut;
+	mode = next;
+	if (next === "off") {
+		// An opt-in region's Decline stops a running PostHog dead (no on_reject there).
+		if (initialized) posthog.opt_out_capturing();
+		return;
+	}
+	const first = !initialized;
+	const ph = initPostHog();
+	if (!ph) return;
+	if (next === "full") ph.opt_in_capturing({ captureEventName: false });
+	else ph.opt_out_capturing();
+	// The page view for the page consent arrived on: ClientInit's route-change
+	// capture ran before PostHog could start.
+	if (first) track("$pageview");
+}
+
+/**
+ * Initialize the PostHog client once (idempotent), when consent allows. Returns
+ * the client, or null when disabled, not in the browser, or not permitted.
+ * Autocapture is on, so element clicks, rageclicks, and form interactions are
+ * tracked automatically; we add structured events (search, result clicks) on top
+ * for the queries we care about.
  */
 export function initPostHog(): typeof posthog | null {
 	if (typeof window === "undefined") return null;
 	const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 	if (!key) return null;
+	if (mode !== "full" && mode !== "cookieless") return null;
 	if (!initialized) {
+		// Fixed at init: an opt-out region gets on_reject, so a later Decline turns
+		// into cookieless counting; an opt-in region doesn't.
+		const cookielessOnReject = mode === "cookieless" || optOutRegion;
 		posthog.init(key, {
+			...(cookielessOnReject ? { cookieless_mode: "on_reject" as const } : {}),
 			api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
 			ui_host: "https://us.posthog.com",
 			// App Router SPA navigations don't fire posthog's default pageview —
@@ -79,7 +119,8 @@ const SIGNED_IN_PROBE_KEY = "aglty-signedin-probed";
  * gets the corrected value on their next session rather than being stuck.
  */
 export async function identifySignedInState(): Promise<void> {
-	if (typeof window === "undefined" || !initialized) return;
+	// Identifying sets a person profile: only with analytics consent ("full").
+	if (typeof window === "undefined" || !initialized || mode !== "full") return;
 
 	try {
 		if (sessionStorage.getItem(SIGNED_IN_PROBE_KEY)) return;

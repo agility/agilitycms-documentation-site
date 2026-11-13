@@ -5,7 +5,9 @@ import Link from "next/link";
 import nextConfig from "next.config";
 import { getFooterData } from "lib/cms-content/getFooterData";
 import { defaultLocale } from "lib/i18n/config";
+import { getMainSiteCookieConsent } from "lib/cms/getMainSiteContent";
 import ThemeControl from "./ThemeControl";
+import CookieSettingsLink from "./CookieSettingsLink";
 
 /*
   Lean docs footer (Stripe/Vercel docs pattern): same brand tokens as the
@@ -100,12 +102,14 @@ interface FooterProps {
 }
 
 const Footer = async ({ languageCode, isPreview }: FooterProps) => {
-	const [data, year] = await Promise.all([
+	const [data, year, consentCopy] = await Promise.all([
 		getFooterData({
 			locale: languageCode || defaultLocale,
 			preview: !!isPreview,
 		}),
 		getYear(),
+		// The "Cookie settings" label, from the same item as the banner's words.
+		getMainSiteCookieConsent({ preview: !!isPreview }),
 	]);
 	const { tagline, columns, legal } = data || FALLBACK;
 
@@ -160,6 +164,7 @@ const Footer = async ({ languageCode, isPreview }: FooterProps) => {
 								{link.text}
 							</a>
 						))}
+						<CookieSettingsLink label={consentCopy.settingsLinkLabel} className="hover:text-(--primary-text)" />
 						<ThemeControl />
 					</div>
 				</div>

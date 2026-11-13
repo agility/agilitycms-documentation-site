@@ -25,6 +25,7 @@ Whichever deployment serves the `agilitycms.com` apex MUST:
 1. Reverse-proxy `/docs/*` (and `/docs` itself) to the docs deployment, preserving **path, query string, cookies, and request headers**. Cookie forwarding matters: signed-in detection reads the `.agilitycms.com` auth cookie server-side.
 2. NOT cache responses beyond what the docs origin's `CDN-Cache-Control` header allows.
 3. NOT rewrite or buffer response bodies (streaming responses must pass through).
+4. Answer `GET /api/consent-region` with `{ "regime": "opt-in" | "opt-out" }` from the visitor's **real** location. On agilitycms.com the cookie banner asks the apex, not this app ([lib/analytics/consent-region.ts](lib/analytics/consent-region.ts)): behind the proxy, this app's geo headers describe the proxy, so an EU reader could come out opt-out. The marketing repo provides it (`netlify/edge-functions/consent-region.ts`). The two sites also share the `agility_cookie_consent` cookie (Path=/), so a choice made on either holds on both, and its format must stay identical.
 
 Any host that can express this is a valid apex. Recipes:
 

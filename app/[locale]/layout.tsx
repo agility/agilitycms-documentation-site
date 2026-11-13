@@ -1,6 +1,5 @@
 import React, { Suspense } from "react";
 import Script from "next/script";
-import { GoogleTagManager } from "@next/third-parties/google";
 
 import { getAgilityContext } from "lib/cms/getAgilityContext";
 import { getHeaderData } from "lib/cms-content/getHeaderData";
@@ -8,6 +7,8 @@ import { getMainSiteBanner } from "lib/cms/getMainSiteContent";
 import Header from "components/common/Header";
 import MarketingBanner from "components/common/MarketingBanner";
 import ClientInit from "components/common/ClientInit";
+import CookieConsent from "components/common/CookieConsent";
+import GtmLoader from "components/common/GtmLoader";
 
 export async function generateStaticParams() {
 	const { locales } = await import("lib/i18n/config");
@@ -34,7 +35,14 @@ export default async function LocaleLayout({
 
 	return (
 		<div id="SiteWrapper" className="min-h-full font-muli">
-			<GoogleTagManager gtmId="GTM-NJW8WMX" />
+			{/* The cookie banner, words from the marketing instance; first in the DOM
+			    so keyboard and screen-reader users reach it before the page. Its own
+			    boundary: a cross-instance fetch never blocks the shell. */}
+			<Suspense>
+				<CookieConsent requestedLocale={locale} />
+			</Suspense>
+			{/* GTM only when consent allows, Consent Mode defaults first. */}
+			<GtmLoader gtmId="GTM-NJW8WMX" />
 			<ClientInit />
 			<div id="Site" className="flex flex-col min-h-full">
 				{/* Reserves exactly the bar's 36px so the header doesn't jump when it
