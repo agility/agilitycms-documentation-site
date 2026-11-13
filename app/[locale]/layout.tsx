@@ -8,6 +8,7 @@ import { getMainSiteBanner } from "lib/cms/getMainSiteContent";
 import Header from "components/common/Header";
 import MarketingBanner from "components/common/MarketingBanner";
 import ClientInit from "components/common/ClientInit";
+import GoogleTag from "components/common/GoogleTag";
 
 export async function generateStaticParams() {
 	const { locales } = await import("lib/i18n/config");
@@ -35,6 +36,11 @@ export default async function LocaleLayout({
 	return (
 		<div id="SiteWrapper" className="min-h-full font-muli">
 			<GoogleTagManager gtmId="GTM-NJW8WMX" />
+			{/* GA4 directly, not through GTM's Ads tag. Inert until GOOGLE_TAG_ID
+			    is set; see components/common/GoogleTag.tsx before setting it. */}
+			{process.env.GOOGLE_TAG_ID && (
+				<GoogleTag tagId={process.env.GOOGLE_TAG_ID} gateway={process.env.GOOGLE_TAG_GATEWAY === "on"} />
+			)}
 			<ClientInit />
 			<div id="Site" className="flex flex-col min-h-full">
 				{/* Reserves exactly the bar's 36px so the header doesn't jump when it

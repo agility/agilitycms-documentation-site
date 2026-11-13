@@ -25,6 +25,7 @@ Whichever deployment serves the `agilitycms.com` apex MUST:
 1. Reverse-proxy `/docs/*` (and `/docs` itself) to the docs deployment, preserving **path, query string, cookies, and request headers**. Cookie forwarding matters: signed-in detection reads the `.agilitycms.com` auth cookie server-side.
 2. NOT cache responses beyond what the docs origin's `CDN-Cache-Control` header allows.
 3. NOT rewrite or buffer response bodies (streaming responses must pass through).
+4. Serve the Google tag gateway at `/api/gw/*`, when this site sets `GOOGLE_TAG_GATEWAY=on`. Docs pages on agilitycms.com load GA4 from there ([components/common/GoogleTag.tsx](components/common/GoogleTag.tsx)); the marketing repo provides it (`netlify/edge-functions/google-tag-gateway.ts`, PR #407). If the apex stops serving it, unset `GOOGLE_TAG_GATEWAY` here and the tag loads from googletagmanager.com.
 
 Any host that can express this is a valid apex. Recipes:
 
