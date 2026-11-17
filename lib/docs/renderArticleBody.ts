@@ -23,6 +23,7 @@ import rehypeStringify from "rehype-stringify";
 import { visit } from "unist-util-visit";
 import hljs from "highlight.js";
 
+import { ARTICLE_IMAGE_SIZES, articleImageSrcset } from "lib/docs/imageSrcset";
 import { isGifImage, isSvgImage } from "lib/docs/passthroughImage";
 import { remarkVideoEmbeds } from "lib/docs/videoEmbed";
 
@@ -108,20 +109,6 @@ function rehypeHighlightCode() {
 }
 
 /**
- * The `?format=auto&w=…` ladder, matching components/common/blocks/Image.tsx exactly.
- * Each step is gated on the image's real pixel width because **the image CDN upscales**:
- * measured on a 1280x720 source, `w=2000` returns a genuine 2000x1125 image. Emitting
- * every step unconditionally would ship upscaled bytes to large screens.
- */
-const SRCSET_STEPS: { w: number; media: string }[] = [
-	{ w: 2000, media: "(min-width: 1200px) and (min-resolution: 2x)" },
-	{ w: 1600, media: "(min-width: 800px) and (min-resolution: 2x)" },
-	{ w: 1200, media: "(min-width: 1200px)" },
-	{ w: 800, media: "(min-width: 800px)" },
-	{ w: 600, media: "(min-width: 600px)" },
-];
-
-/**
  * Give Markdown images the same treatment the EditorJS path has always had.
  *
  * Markdown had NO image handling: `![](url)` became a bare `<img>` serving the full
@@ -131,10 +118,13 @@ const SRCSET_STEPS: { w: number; media: string }[] = [
  *
  * Width comes from the `width` attribute, which is why the EditorJS converter emits
  * `<img src width height alt>` rather than `![]()` -- Markdown's image syntax has
- * nowhere to put the pixel width, and without it the gate above cannot work. Absent a
- * width we fall back to 800, which is precisely what Image.tsx does.
+ * nowhere to put the pixel width, and without it the ladder can't be capped at the
+ * original (lib/docs/imageSrcset.ts). Absent a width we fall back to 800, which is
+ * precisely what Image.tsx does.
  *
- * GIFs and SVGs skip the ladder (see lib/docs/passthroughImage.ts). GIFs are left
+ * The `<img>` keeps its place and its alt text, and gains `srcset` + `sizes` (it used
+ * to be wrapped in a media-query `<picture>`; see imageSrcset.ts for why that failed
+ * phones). GIFs and SVGs skip the ladder (see lib/docs/passthroughImage.ts). GIFs are left
  * untouched: the image service does not support them. SVGs keep a plain `<img>` of the
  * original URL, plus lazy loading: the image service rasterizes them to a PNG of
  * scrambled colour blocks, and drops the in-file dark theme.
@@ -143,7 +133,6 @@ function rehypeImage() {
 	return (tree: any) => {
 		visit(tree, "element", (node: any, index: any, parent: any) => {
 			if (node.tagName !== "img" || !parent || typeof index !== "number") return;
-			if (parent.tagName === "picture") return; // already converted
 
 			const src: string = String(node.properties?.src || "");
 			if (!src || isGifImage(src)) return;
@@ -153,28 +142,19 @@ function rehypeImage() {
 				return;
 			}
 
-			const width = Number(node.properties?.width) || 800;
+			if (node.properties?.srcSet) return; // already converted
+
 			let url = src.replaceAll(" ", "%20");
 			if (!url.includes("?format=auto")) url += "?format=auto";
 
-			const sources = SRCSET_STEPS.filter((step) => width >= step.w).map((step) => ({
-				type: "element",
-				tagName: "source",
-				properties: { srcSet: `${url}&w=${step.w}`, media: step.media },
-				children: [],
-			}));
-
-			// The <img> stays as the final fallback, and keeps its alt text.
-			const fallback = {
-				...node,
-				properties: { ...node.properties, src: `${url}&w=400`, loading: "lazy", decoding: "async" },
-			};
-
-			parent.children[index] = {
-				type: "element",
-				tagName: "picture",
-				properties: {},
-				children: [...sources, fallback],
+			const { src: fallback, srcSet } = articleImageSrcset(url, Number(node.properties?.width) || undefined);
+			node.properties = {
+				...node.properties,
+				src: fallback,
+				srcSet,
+				sizes: ARTICLE_IMAGE_SIZES,
+				loading: "lazy",
+				decoding: "async",
 			};
 		});
 	};
