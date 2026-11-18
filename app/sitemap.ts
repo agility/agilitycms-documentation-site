@@ -4,6 +4,7 @@ import { getSitemapLastModifiedMap } from "lib/cms/getSitemapLastModifiedMap";
 import { locales, localizeUrl } from "lib/i18n/config";
 import { API_LIST } from "lib/api-specs/registry";
 import { getOperations } from "lib/api-specs/loadSpec";
+import { isNoIndexPath } from "lib/docs/legacyFrameworks";
 
 // Canonical base, matching the rest of the docs site (getRichSnippet /
 // resolveAgilityMetaData). basePath /docs is baked in because MetadataRoute
@@ -39,9 +40,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		});
 
 		visiblePaths.forEach((path, index) => {
-			// The first sitemap node is the home page, served at the locale root.
+			// Archived and superseded articles are noindex (lib/docs/legacyFrameworks.ts),
+			// and a sitemap must list only indexable URLs: Ahrefs reported all 54 as
+			// "noindex page in sitemap" errors (Nov 2026). Filtered here, not before the
+			// loop, so `index === 0` still finds the home page.
+			if (index !== 0 && isNoIndexPath(path)) return;
+			// The first sitemap node is the home page, served at the locale root. The
+			// root is /docs with no trailing slash: /docs/ answers 308 to /docs, and
+			// Semrush counts a redirecting sitemap URL as an error.
 			const relative = index === 0 ? localizeUrl("/", locale) : localizeUrl(path, locale);
-			const url = `${SITE_URL}${relative}`;
+			const url = relative === "/" ? SITE_URL : `${SITE_URL}${relative}`;
 			const lastModified = lastModMap[path];
 			entries.push(lastModified ? { url, lastModified: new Date(lastModified) } : { url });
 		});
