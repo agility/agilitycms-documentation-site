@@ -1,144 +1,114 @@
-# Plan: one docs site (move demo.agilitycms.com/docs into agilitycms.com/docs)
+# Plan: one docs site (retire demo.agilitycms.com/docs)
 
-Joel, 2026-11-20: "I'd actually just like to bring the demo site content into our main docs site. Weird to have 2 places for docs."
+Joel, 2026-11-20: "pull ALL of the text out of the [demo] docs site and repurpose it into the docs site. It's too complicated to keep everything all over the place. Some of the stuff doesn't make sense anymore anyways." And: "we can just redirect demo.agilitycms.com/docs over to the /docs/nextjs section."
 
-Status: **proposed**. Three decisions are needed before any work (section 2).
+Status: **approved direction, not started.**
 
-## 1. What exists today
+## 1. Decisions (Joel, 2026-11-20)
 
-**demo.agilitycms.com/docs** is a second docs site. It is rendered by the demo repo (`agility/nextjs-demo-site-2026`) from 35 Markdown files in its `docs/` folder, about 25,000 words. It has its own renderer (`src/app/docs`, `src/lib/docs`), navigation, header and sitemap entries. It is the only part of the demo site that Google and Bing are allowed to index (demo `robots.txt` and the `X-Robots-Tag` in `src/proxy.ts`).
+1. **The docs CMS (`67bc73e6-u`) is the only home.** The demo repo keeps no docs: its `docs/` folder and its `/docs` renderer are deleted. No sync script.
+2. **Repurpose, don't port.** Each piece of demo text is merged into the existing docs article that covers it, becomes a new article, or is dropped. Nothing moves verbatim, and there is no separate "demo site" section.
+3. **demo.agilitycms.com/docs redirects to `/docs/nextjs`.** Where an old page's content now lives in a specific article, that page redirects to the article. Everything else goes to `/docs/nextjs`.
 
-**It is the second half of something we already moved.** The docs site's Training Guide (`/docs/training-guide`, 41 articles) is the generic half of the same material: the same four roles (content editor, admin, architect, developer), and the same screenshots, already on our CDN under `agility-cms-docs/images/training-guide/`. The demo docs are the demo-specific half that was never moved. The demo `README.md` says so: "For generic Agility CMS concepts and training, see the official Agility CMS Training Guide."
+## 2. What we found (triage of all 35 files, 2026-11-20)
 
-**Some of it is already in the docs site twice:**
+Four reviewers read every demo doc against the current demo code (Next 16.3.5, `main` at 640f686) and against the docs articles that cover the same ground. In short:
 
-| Demo file | Already in docs as | Notes |
+- **Most of it is already in the docs site, in better shape.** The Training Guide (`/training-guide/*`) is the generic half of this same material, ported earlier, with the same four roles and screenshots. The editor, admin and architect files are thin demo wrappers that defer back to it. Several files are near-verbatim duplicates: `admin/workflows.md` of `/training-guide/admin-workflow`, `AB_TESTING.md` of `/owners-admins/a-b-n-testing-in-agility-cms`, and `POSTHOG_IMPLEMENTATION.md` of `/apps/posthog`.
+- **Most of the code docs are out of date.** Nearly all the developer files predate the demo's Next 16 / Cache Components rewrite (demo #29, 2026-09-22). Examples: `unstable_ViewTransition` and a removed experimental flag; eager PostHog init (now lazy); a footer `language-toggle.tsx` that no longer exists; personalization helper functions that were never in the current code; environment variable names (`AZURE_OPENAI_*`, `ALGOLIA_API_KEY`) the code never reads; Node 20.
+- **Some of it is wrong in ways that matter.**
+  - `api-routes.md`, `deployment.md`, `admin/configuration.md` and the demo `README.md` (line ~424) all say `AGILITY_SECURITY_KEY` secures the revalidate webhook. The code never checks it; webhooks are signed with a per-webhook `whsec_` secret.
+  - Component and model counts disagree across files. The code registers 21 components; files and the hub say 20 or 21, and 22 or 24 models.
+  - Two files carry a private PostHog project and dashboard URL.
+  - `MULTI_LOCALE_IMPLEMENTATION.md` links to the old `nextjs-demo-site-2025` repo.
+- **One correction runs the other way.** The demo's copies of the AgilityPic and image best-practices articles are *newer* than the published ones. They fix focal-point cropping: setting `height` on every source makes focal points work. The published AgilityPic article tells readers to hand-write a `<picture>` instead, which is wrong.
+- **Real reference material that exists nowhere else on the docs site:**
+  - the audience/region personalization pattern;
+  - the proxy's query-string contract (`?lang=`, the whitelist, the `~~~` path encoding that keeps pages static);
+  - shared-element page transitions with React `<ViewTransition>`;
+  - the platform-agnostic `analytics` layer with lazy PostHog loading;
+  - the AI agent, clean-markdown (`/{path}.md`) and MCP endpoints;
+  - the Agility app's URL patterns (`app.agilitycms.com/instance/...`).
+
+## 3. Where every file goes
+
+**New and rewritten articles must be written from the current code, not from the demo text** (the code samples in the demo files don't match the real files). CMS-side facts (model lists, field names, page composition) are checked in the demo instance with the Agility MCP before they are published.
+
+### 3.1 Changes to existing docs articles
+
+| Docs article | Change | From |
 |---|---|---|
-| `agility-pic-component.md` | `/nextjs/using-the-agilitypic-component-for-responsive-images` | Same article; the two copies have drifted (about 130 lines differ) |
-| `image-recos.md` | `/overview/image-best-practices` | Generic, not demo-specific |
+| `/nextjs/using-the-advanced-next-js-demo-site` (1377, the demo hub) | Becomes the one demo overview. Add: a content map (component to content model wiring; Post to Author/Category/Tags; page to components); "Where things live" (folders, what `proxy.ts` owns); the integration list (Azure OpenAI or OpenAI, Algolia, PostHog, `/api/mcp`, `llms.txt`); an environment variable table regenerated from the code. Fix: 21 components (count from the code), the model count from the instance, caching is `cacheLife("days")` plus tag revalidation (not "60-second TTL"). Repoint every `demo.agilitycms.com/docs` link to the articles below | content-editor/*, admin/configuration, architect/*, developer/README, codebase/README, project-structure, components, ENVIRONMENT_VARIABLES |
+| `/nextjs/using-the-agilitypic-component-for-responsive-images` | Replace the focal-point section with the demo's corrected one (width and height per source; a worked PostCard example; the upscaling caveat). Add performance tip 6 (set `height` on every `object-cover` source). Remove "upload at 72 DPI" | agility-pic-component.md (newer than the published copy) |
+| `/overview/image-best-practices` | Add the focal-point TL;DR row and section, and qualify "won't upscale". Keep the docs copy's newer SVG section. Fix "AgilityPic appends `format=auto` to all URLs" (only when `fallbackWidth` > 0 or a source has `w`/`h`) | image-recos.md (forked copy) |
+| `/nextjs/multi-locale-support-with-next-js` | New section: handling `?lang=` and filtering query strings in the proxy (whitelist, tracking parameters, 500-character cap, `~~~` encoding) | developer/MULTI_LOCALE_IMPLEMENTATION.md |
+| `/training-guide/admin-component-models` | One paragraph: registration via `allModules`, name matching is case-insensitive | admin/component-setup.md |
+| `/apps/posthog` and `/owners-admins/a-b-n-testing-in-agility-cms` (1443) | A link to the new analytics article. Check 1443's demo links | AB_TESTING.md, POSTHOG_IMPLEMENTATION.md |
 
-**The docs site already points at the demo docs.** "Using the Advanced Next.js Demo Site" (`/docs/nextjs/using-the-advanced-next-js-demo-site`, item 1377 in `NextjsArticles`) is the entry point, with about 12 links into `demo.agilitycms.com/docs/...`. "A/B/n Testing in Agility CMS" (1443, `OwnersAdminsArticles`) uses the demo as its reference implementation. The marketing instance has no links to the demo docs.
+### 3.2 New articles
 
-**The docs site can take this content without code changes.** `DocArticle` has a `markdownContent` field. It renders GFM and raw HTML, strips the leading `# H1` and uses it as the title, and the same Markdown comes back from `/docs/{path}.md` and the MCP server. A category is a pair of containers (`*Articles` + `*Sections`) plus a sitemap folder with a dynamic page. That is CMS content, not code. (Confirm in phase 1 that `SideBarNav`, the header nav and `doccategories` pick up a new category without code; nothing found hard-codes the current ones.)
+| Proposed path | Title (working) | Written from |
+|---|---|---|
+| `/nextjs/audience-and-region-personalization-with-next-js` | Audience and region personalization with Next.js | `src/lib/hooks/useAudienceRegionParams.ts`, `src/lib/utils/audienceRegionUtils.ts`, `src/lib/cms-content/get*ListingWithContentID.ts`, `PersonalizedBackgroundHero`, `PersonalizedLogoStrip`, the proxy contract. Edge detection with `@agility/geo` is future work (it isn't imported yet) |
+| `/nextjs/view-transitions-with-next-js` | Shared-element page transitions with React ViewTransition | `src/lib/hooks/useViewTransition.ts`, `PostCard.tsx`, `PostImage.tsx`, `src/styles/view-transitions.css`. Re-check browser support |
+| `/nextjs/analytics-layer-with-posthog-in-next-js` | A platform-agnostic analytics layer with PostHog in Next.js | `src/lib/analytics/*`, `src/components/analytics/*`, `src/instrumentation-client.ts` (lazy load), the event and property reference (from ANALYTICS_DASHBOARD.md, without the private dashboard URL), `experiment_exposure`/`experiment_interaction` |
+| `/nextjs/ai-search-markdown-and-mcp-endpoints` | AI search, clean Markdown and an MCP server in a Next.js site | `src/app/api/ai/*`, `src/lib/ai/*` (CMS-held prompt, Algolia tool, contact-capture tool, Azure/OpenAI switch), `src/app/api/page-md`, `src/app/api/mcp`, `src/app/llms.txt` |
+| `/developers/agility-app-url-patterns` | Agility app URL patterns | AGILITY_CMS_URL_PATTERNS.md, generic part only (no demo instance IDs). Useful for deep links and agents |
 
-## 2. Decisions for Joel
+Titles and copy go through the brand-voice check. The docs rules apply too: no em dashes, Staging first, a named reviewer publishes.
 
-### D1. Where the text is maintained
+### 3.3 Dropped (content already covered, wrong, or internal)
 
-The demo docs describe the demo code: environment variables, API routes, project structure. The demo `AGENTS.md` tells agents to update `docs/` in the same PR as a code change. And when sales clones the demo for a prospect's POC, the docs travel with the repo.
-
-- **A. The repo stays the source; a script publishes it to the docs instance (recommended).** Docs keep changing in the same PR as the code, POC clones keep their docs, and readers see one site. The cost is a sync script (phase 2). Editing those articles in the CMS would be overwritten, so each item's `NoteInternal` says "generated from nextjs-demo-site-2026/docs; edit there".
-- **B. Move once; the CMS becomes the source; delete `docs/` from the repo.** Simpler now, no script. But docs drift from the code (an agent changing the code can't update them in its PR), and POC clones ship with no docs.
-
-### D2. Where the pages live
-
-- **A. A new category, `/docs/demo-site/...` (recommended).** Containers `DemoSiteArticles` + `DemoSiteSections`, with sections that mirror the Training Guide: Overview, Content editors, Administrators, Architects, Developers. Hidden from the top nav, reached from the Next.js category's demo article (1377) and from each Training Guide track ("see it in the demo site").
-- **B. Inside the Next.js category, `/docs/nextjs/demo-site-...`.** No new category, but it more than doubles Next.js (21 articles now), and the editor/admin/architect pages aren't Next.js content.
-
-### D3. Publishing
-
-The docs rule (execution plan, "Rules for every item") is that everything is saved to Staging and a named person reviews and publishes.
-
-- **Recommended:** the first import is saved to Staging and reviewed once as a batch. After that, the sync publishes changes on merge to the demo repo's `main`, since the PR review is the review.
-- **Alternative:** every sync saves to Staging and someone publishes by hand.
-
-## 3. What moves
-
-Article slugs follow the Training Guide's pattern (`{role}-{topic}`). With D2-A the URLs are `/docs/demo-site/{slug}`.
-
-| Demo file | Words | Slug in /docs/demo-site | Action |
-|---|---|---|---|
-| `README.md` | 283 | (category landing) | Move. Becomes the `/demo-site` landing text |
-| `content-editor/README.md` | 359 | `content-editor-overview` | Move |
-| `content-editor/pages.md` | 463 | `content-editor-pages` | Move |
-| `content-editor/components.md` | 860 | `content-editor-components` | Move |
-| `content-editor/content-models.md` | 733 | `content-editor-content-models` | Move |
-| `content-editor/common-tasks.md` | 732 | `content-editor-common-tasks` | Move |
-| `admin/README.md` | 119 | `admin-overview` | Move |
-| `admin/configuration.md` | 259 | `admin-configuration` | Move |
-| `admin/content-setup.md` | 357 | `admin-content-setup` | Move |
-| `admin/component-setup.md` | 215 | `admin-component-setup` | Move |
-| `admin/workflows.md` | 300 | `admin-workflows` | Move |
-| `architect/README.md` | 167 | `architect-overview` | Move |
-| `architect/architecture.md` | 474 | `architect-architecture` | Move |
-| `architect/content-architecture.md` | 605 | `architect-content-architecture` | Move |
-| `architect/component-architecture.md` | 479 | `architect-component-architecture` | Move |
-| `architect/integrations.md` | 345 | `architect-integrations` | Move |
-| `developer/README.md` | 297 | `developer-overview` | Move |
-| `developer/codebase/README.md` | 366 | `developer-codebase` | Move |
-| `developer/codebase/project-structure.md` | 901 | `developer-project-structure` | Move |
-| `developer/codebase/components.md` | 671 | `developer-components` | Move |
-| `developer/codebase/content-models.md` | 626 | `developer-content-models` | Move |
-| `developer/codebase/api-routes.md` | 631 | `developer-api-routes` | Move |
-| `developer/codebase/deployment.md` | 542 | `developer-deployment` | Move |
-| `developer/ENVIRONMENT_VARIABLES.md` | 487 | `developer-environment-variables` | Move |
-| `developer/MULTI_LOCALE_IMPLEMENTATION.md` | 825 | `developer-multi-locale` | Move. Cross-link the generic `/nextjs/multi-locale-support-with-next-js` |
-| `developer/AUDIENCE_REGION_SYSTEM.md` | 985 | `developer-audience-and-region` | Move |
-| `developer/VIEW_TRANSITIONS.md` | 334 | `developer-view-transitions` | Move |
-| `developer/AB_TESTING.md` | 1,042 | `developer-ab-testing` | Move. Cross-link `/owners-admins/a-b-n-testing-in-agility-cms` |
-| `developer/ANALYTICS_INTEGRATION.md` | 1,983 | `developer-analytics` | Move. Cross-link `/apps/posthog` |
-| `agility-pic-component.md` | 1,905 | (none) | **Drop.** Already at `/nextjs/using-the-agilitypic-component-for-responsive-images`; fold any newer demo-side edits into that article first |
-| `image-recos.md` | 3,817 | (none) | **Drop.** Already at `/overview/image-best-practices`; same check |
-| `AGILITY_CMS_URL_PATTERNS.md` | 1,049 | (none, or a generic developers article) | Not demo-specific: it documents the Agility app's URLs. Keep in the repo as an agent reference; optionally publish once as a generic `/developers` article |
-| `POSTHOG_IMPLEMENTATION.md` | 832 | (none) | **Review.** Dated 2026-01-28; `ANALYTICS_INTEGRATION.md` and `AB_TESTING.md` look like its successors. Fold anything still true into those, then delete |
-| `developer/ANALYTICS_DASHBOARD.md` | 934 | (none) | **Keep in the repo only.** It describes our private PostHog dashboard (project and dashboard IDs), which readers can't open |
-| `assets/README.md` | 217 | (none) | Repo-internal. Keep |
-
-That's 28 articles plus the landing, about 16,500 words. Text moves verbatim. The brand-voice check exempts verbatim ports, but the "Contact our sales team ... we'll clone this solution for you" block in the README gets a voice check because it's a CTA.
-
-**Images:** all 13 image references are already absolute URLs on `cdn.aglty.io/agility-cms-docs/...`, so nothing to upload. The 60 files in `docs/assets/` (with `.jpeg`/`.png` duplicates) aren't referenced by the Markdown. They stay in the repo.
+| Demo file | Why |
+|---|---|
+| `README.md`, `admin/README.md`, `architect/README.md`, `developer/README.md`, `developer/codebase/README.md` | Index pages. The hub covers them |
+| `content-editor/pages.md`, `components.md`, `content-models.md`, `common-tasks.md`, `README.md` | Generic parts duplicate `/training-guide/content-editor-*`. The demo-specific catalogue goes into the hub's content map |
+| `admin/configuration.md`, `content-setup.md`, `workflows.md` | Wrong webhook-security claim; contradicts the other model docs; `workflows.md` duplicates `/training-guide/admin-workflow` |
+| `architect/architecture.md`, `content-architecture.md`, `component-architecture.md`, `integrations.md` | Generic parts duplicate `/training-guide/architect-*` and `/nextjs/caching-with-next-js-and-agility`. The facts that hold go into the hub |
+| `developer/codebase/content-models.md`, `deployment.md`, `api-routes.md` | Out of date and partly wrong. Deployment is covered by `/nextjs/deploying-next-js-to-vercel` and `-netlify`. The useful endpoints are rewritten from code in section 3.2 |
+| `developer/AB_TESTING.md`, `POSTHOG_IMPLEMENTATION.md`, `developer/ANALYTICS_DASHBOARD.md` | Weaker duplicates of `/owners-admins/a-b-n-testing-in-agility-cms` and `/apps/posthog`; the dashboard file is a private dashboard. The event reference goes into the analytics article |
+| `assets/README.md` and `docs/assets/` (60 images) | Internal. The screenshots the docs use are already on the CDN |
 
 ## 4. Work
 
-### Phase 1: docs instance (`67bc73e6-u`)
+### Phase 1: docs content (instance `67bc73e6-u`, all saved to Staging)
 
-1. Containers `DemoSiteArticles` (model `DocArticle`) and `DemoSiteSections` (model `DocSection`). Five sections: Overview, Content editors, Administrators, Architects, Developers.
-2. Sitemap folder page `/demo-site` (landing: README text, plus a link card per section) and its dynamic page bound to `DemoSiteArticles`. Hidden from the menu (D2-A).
-3. A `doccategories` item so search indexing and category cards include it.
-4. Check on a preview, with no code change: sidebar, breadcrumbs, `.md` output, `llms.txt`, sitemap.xml, JSON-LD, canonical.
+1. Verify the demo's CMS-side facts in the demo instance (model list and count, component list, page composition, model types for Author and Category).
+2. The six article changes in section 3.1. The two image fixes come first, because the published AgilityPic advice is wrong today.
+3. The five new articles in section 3.2, written from the demo code at a pinned commit.
+4. A reviewer reads and publishes. Search (Algolia) reindexes on publish.
 
-Known traps for this instance, from the website repo's memory: a management-API save replaces the whole field set; `save_page` can stamp a `pullDate` that auto-unpublishes; `reorder_page_modules` re-parents a page to the root.
+Known traps for this instance: a management-API save replaces the whole field set; `save_page` can stamp a `pullDate` that auto-unpublishes the page; `reorder_page_modules` re-parents a page.
 
-### Phase 2: the sync script (D1-A)
+### Phase 2: demo repo PR (after phase 1 is published)
 
-`scripts/publish-docs.mts` in the demo repo. For each file in the section 3 mapping:
+1. **Redirects (301)** in `next.config.mjs`, for `/docs`, each old path, and its `.md` variant:
 
-- Rewrite links: relative `.md` links to `/docs/demo-site/{slug}` (resolved from the **file's** location, the bug PR #37 fixed in the demo renderer); links to dropped files to their docs-site equivalents; `#anchors` kept.
-- Upsert the `DocArticle` by slug: `title` from the H1, `description` from the first paragraph (or front matter if added), `markdownContent`, `section`. The mapping table lives in the script, so a new file fails loudly until it's mapped.
-- Save to Staging; publish only with `--publish` (D3).
-- `--dry-run` prints the diff per article.
+   | Old demo path | Redirect to |
+   |---|---|
+   | `/docs/developer/MULTI_LOCALE_IMPLEMENTATION` | `/docs/nextjs/multi-locale-support-with-next-js` |
+   | `/docs/developer/AUDIENCE_REGION_SYSTEM` | `/docs/nextjs/audience-and-region-personalization-with-next-js` |
+   | `/docs/developer/VIEW_TRANSITIONS` | `/docs/nextjs/view-transitions-with-next-js` |
+   | `/docs/developer/ANALYTICS_INTEGRATION`, `ANALYTICS_DASHBOARD`, `/docs/POSTHOG_IMPLEMENTATION` | `/docs/nextjs/analytics-layer-with-posthog-in-next-js` |
+   | `/docs/developer/AB_TESTING` | `/docs/owners-admins/a-b-n-testing-in-agility-cms` |
+   | `/docs/developer/codebase/api-routes` | `/docs/nextjs/ai-search-markdown-and-mcp-endpoints` |
+   | `/docs/agility-pic-component` | `/docs/nextjs/using-the-agilitypic-component-for-responsive-images` |
+   | `/docs/image-recos` | `/docs/overview/image-best-practices` |
+   | `/docs/AGILITY_CMS_URL_PATTERNS` | `/docs/developers/agility-app-url-patterns` |
+   | everything else under `/docs` | `https://agilitycms.com/docs/nextjs` |
 
-The first run is the import. Then a GitHub Action on `main`, path filter `docs/**`, with a docs-instance management token as a repo secret, and Algolia reindex via the existing `indexArticle` webhook (automatic on publish).
+   All targets are on `https://agilitycms.com`. The final paths are whatever phase 1 publishes.
+2. Delete `docs/`, `src/app/docs/`, `src/lib/docs/`, the docs entries in `src/app/sitemap.tsx`, and `"/docs"` in `src/lib/cms/publishedPaths.ts`.
+3. Robots: after this, nothing on the demo site is meant for Google or Bing. Update the `robots.txt` comment and the proxy's `isDocsPath` exception (`src/proxy.ts`) so the noindex rule covers the whole site.
+4. `AGENTS.md` and `README.md`: remove the in-site docs section; point to agilitycms.com/docs (the hub article). Fix the `README.md` webhook-security claim (the key isn't used).
 
-(D1-B instead: run the same script once, then delete `docs/` from the repo.)
+### Phase 3: verify
 
-### Phase 3: links into the new pages
+- Every old demo docs URL returns a 301 to a page that returns 200 (scripted from the table).
+- The hub article has no `demo.agilitycms.com/docs` links left (`search_instance` on the docs instance).
+- Docs search, the MCP `search_docs`, and `/docs/llms.txt` list the new articles.
+- The next Ahrefs (Tuesday) and Semrush (Monday) crawls show no new 404s.
 
-- Docs 1377 ("Using the Advanced Next.js Demo Site"): every `demo.agilitycms.com/docs/...` link becomes `/docs/demo-site/...`. Check 1443 the same way.
-- Training Guide track landings: one "See it in the demo site" link each.
-- Demo repo `README.md`, `AGENTS.md`, and the GitHub repo description.
+## 5. Order
 
-### Phase 4: retire the demo's /docs (demo repo PR)
-
-1. Redirects (301) in `next.config.mjs`: `/docs` to `https://agilitycms.com/docs/demo-site`, and every old path (and its `.md` variant) to its new URL, from the same mapping table. Dropped files go to their docs-site equivalents; anything unmapped goes to the landing.
-2. Delete `src/app/docs/`, `src/lib/docs/`, the docs entries in `src/app/sitemap.tsx`, and `"/docs"` in `src/lib/cms/publishedPaths.ts`.
-3. Robots: after the move, nothing on the demo site is meant for Google or Bing. Update the `robots.txt` comment and the proxy's `isDocsPath` exception (`src/proxy.ts`) so the noindex rule covers the whole site.
-4. `AGENTS.md`: replace the "In-Site Documentation System" section with: docs live in `docs/`, publish to agilitycms.com/docs/demo-site, edit the Markdown and the sync does the rest.
-
-### Phase 5: verify
-
-- Every old demo URL returns a 301 to a page that returns 200 (scripted from the mapping table).
-- Ahrefs (Tuesday crawl) and Semrush (Monday): no new 404s; the demo 404 group is gone for good.
-- Docs search, the MCP `search_docs`, and `/docs/llms.txt` find the new articles.
-
-## 5. Order and size
-
-Phase 1 then 2 then 3 then 4, with 4 shipped only after the new pages are published (the redirects point at them). Rough size: phase 1 is an hour of CMS work; phase 2 is the bulk (script, mapping, review of 28 imported articles); phases 3 and 4 are small PRs.
-
-Demo PR #37 (Ahrefs fixes, 2026-11-20) is still worth merging first: its hreflang and language-switcher fixes are unrelated to this, and its docs-link fix keeps the old pages correct until phase 4.
-
-## 6. Not in scope
-
-- Changing what the demo docs say (verbatim port; corrections go through the normal repo PR afterwards).
-- The 60 local screenshots in `docs/assets/`.
-- Merging the demo or docs repos (Joel kept the docs repo separate on 2026-11-13).
+Phase 1, then phase 2, then phase 3. The redirects only ship once their targets are published. Demo PR #37 (Ahrefs fixes) can merge first and independently.
