@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" data-loop="12" role="img" aria-labelledby="t d">
+<title id="t">A whole question in a keyword search</title>
+<desc id="d">The query "can I schedule content to publish later" returned 0 results with Algolia's default settings. Dropping filler words, folding plurals and making words optional when nothing matches returned 9 results, with Scheduling Overview first.</desc>
+<style>
+text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,sans-serif;fill:#F1EFE9}
+.mono{font-family:Menlo,"SF Mono",Consolas,monospace}
+.h{font-size:28px;font-weight:700}
+.sub{font-size:16px;fill:#C4BFB5}
+.q{font-size:22px}
+.step{font-size:18px;font-weight:600}
+.set{font-size:14px;fill:#C4BFB5}
+.n{font-size:14px;font-weight:700;fill:#171615}
+.note{font-size:13px;fill:#AAA49B}
+.cap{font-size:13px;font-weight:700;letter-spacing:.1em;fill:#AAA49B}
+.big{font-size:60px;font-weight:800}
+.ink{fill:none;stroke:#C4BFB5;stroke-width:2.5;stroke-linecap:round}
+.k0{transform-box:fill-box;animation:k0 12s ease-out infinite}
+@keyframes k0{0%{opacity:0}35.00%{opacity:0}38.33%{opacity:1}100%{opacity:1}}
+.k1{stroke-dasharray:1;transform-box:fill-box;animation:k1 12s ease-out infinite}
+@keyframes k1{0%{stroke-dashoffset:1}33.33%{stroke-dashoffset:1}38.33%{stroke-dashoffset:0}100%{stroke-dashoffset:0}}
+.k2{transform-box:fill-box;animation:k2 12s ease-out infinite}
+@keyframes k2{0%{opacity:0}60.00%{opacity:0}63.33%{opacity:1}100%{opacity:1}}
+.k3{transform-box:fill-box;animation:k3 12s ease-out infinite}
+@keyframes k3{0%{opacity:0;transform:translateY(14px)}6.67%{opacity:0;transform:translateY(14px)}10.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k4{transform-box:fill-box;animation:k4 12s ease-out infinite}
+@keyframes k4{0%{opacity:0;transform:translateY(14px)}30.00%{opacity:0;transform:translateY(14px)}33.33%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k5{transform-box:fill-box;animation:k5 12s ease-out infinite}
+@keyframes k5{0%{opacity:0;transform:translateY(14px)}45.00%{opacity:0;transform:translateY(14px)}48.33%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k6{transform-box:fill-box;animation:k6 12s ease-out infinite}
+@keyframes k6{0%{opacity:0;transform:translateY(14px)}55.00%{opacity:0;transform:translateY(14px)}58.33%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k7{transform-box:fill-box;animation:k7 12s ease-out infinite}
+@keyframes k7{0%{opacity:0;transform:translateY(14px)}13.33%{opacity:0;transform:translateY(14px)}16.67%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k8{transform-box:fill-box;animation:k8 12s ease-out infinite}
+@keyframes k8{0%{opacity:0;transform:translateY(14px)}70.00%{opacity:0;transform:translateY(14px)}73.33%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+#scene{animation:scene 12s linear infinite}
+@keyframes scene{0%{opacity:0}2.50%{opacity:1}95.83%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+<rect width="1000" height="560" fill="#171615"/>
+<g id="scene">
+	<text x="60" y="66" class="h">Type a whole question into a keyword search</text>
+	<text x="60" y="96" class="sub">Algolia, the same docs index: default settings, then four query settings</text>
+
+	<rect x="60" y="120" width="880" height="70" rx="12" fill="#201F1D" stroke="#45423E" stroke-width="2"/>
+	<circle cx="82" cy="152" r="8" class="ink"/>
+	<path d="M88 158l6 6" class="ink"/>
+	<text x="104" y="163" class="mono q">can I schedule content to publish later</text>
+
+	<!-- filler words dropped -->
+	<g class="k0">
+		<rect x="102" y="140" width="42" height="32" fill="#201F1D" opacity=".65"/>
+		<rect x="155" y="140" width="16" height="32" fill="#201F1D" opacity=".65"/>
+		<rect x="407" y="140" width="29" height="32" fill="#201F1D" opacity=".65"/>
+	</g>
+	<path d="M102 156h42M155 156h16M407 156h29" stroke="#D9654C" stroke-width="3" pathLength="1" class="k1"/>
+	<!-- the remaining words become optional -->
+	<path d="M183 176h106M302 176h92M447 176h92M553 176h66" stroke="#5B8DEF" stroke-width="3" stroke-dasharray="6 5" class="k2"/>
+
+	<!-- the steps -->
+	<g class="k3">
+		<circle cx="74" cy="244" r="13" fill="#AAA49B"/><text x="74" y="249" text-anchor="middle" class="n">1</text>
+		<text x="100" y="250" class="step">Default: every word must match</text>
+		<text x="100" y="272" class="set">no settings changed</text>
+	</g>
+	<g class="k4">
+		<circle cx="74" cy="314" r="13" fill="#D9654C"/><text x="74" y="319" text-anchor="middle" class="n">2</text>
+		<text x="100" y="320" class="step">Drop filler words</text>
+		<text x="100" y="342" class="mono set">queryLanguages: ["en"], removeStopWords: true</text>
+	</g>
+	<g class="k5">
+		<circle cx="74" cy="384" r="13" fill="#AAA49B"/><text x="74" y="389" text-anchor="middle" class="n">3</text>
+		<text x="100" y="390" class="step">Treat plurals as the same word</text>
+		<text x="100" y="412" class="mono set">ignorePlurals: true</text>
+	</g>
+	<g class="k6">
+		<circle cx="74" cy="454" r="13" fill="#5B8DEF"/><text x="74" y="459" text-anchor="middle" class="n">4</text>
+		<text x="100" y="460" class="step">Still nothing? Make words optional</text>
+		<text x="100" y="482" class="mono set">removeWordsIfNoResults: "allOptional"</text>
+	</g>
+
+	<!-- results -->
+	<g class="k7">
+		<rect x="640" y="222" width="300" height="118" rx="12" fill="#201F1D" stroke="#302E2B" stroke-width="2"/>
+		<text x="664" y="252" class="cap">BEFORE</text>
+		<text x="664" y="318" class="big" style="fill:#D9654C">0</text>
+		<text x="712" y="316" class="step">results</text>
+	</g>
+	<g class="k8">
+		<rect x="640" y="360" width="300" height="140" rx="12" fill="#201F1D" stroke="#02A196" stroke-width="2"/>
+		<text x="664" y="390" class="cap">AFTER</text>
+		<text x="664" y="456" class="big" style="fill:#02A196">9</text>
+		<text x="712" y="454" class="step">results</text>
+		<text x="664" y="484" class="set">First: <tspan style="fill:#F1EFE9;font-weight:600">Scheduling Overview</tspan></text>
+	</g>
+
+	<text x="60" y="540" class="note">Live index, before and after. The settings ended the empty page; putting the right page first took vector search.</text>
+</g>
+</svg>

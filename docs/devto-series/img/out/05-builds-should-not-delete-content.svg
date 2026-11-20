@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" data-loop="12" role="img" aria-labelledby="t d">
+<title id="t">A list default of 50 dropped 89 articles</title>
+<desc id="d">Before: content lists are read with a default page size of 50, so the longer lists are cut off and a full reindex replaces 437 live articles with 348, with no error. After: the lists are read with take 250 and the rebuild refuses to replace the index if any list comes back exactly full, so all 437 are indexed.</desc>
+<style>
+text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,sans-serif;fill:#F1EFE9}
+.mono{font-family:Menlo,"SF Mono",Consolas,monospace}
+.h{font-size:28px;font-weight:700}
+.sub{font-size:16px;fill:#C4BFB5}
+.lane{font-size:20px;font-weight:700}
+.lbl{font-size:14px;fill:#C4BFB5}
+.cap{font-size:13px;font-weight:700;letter-spacing:.1em;fill:#AAA49B}
+.big{font-size:52px;font-weight:800}
+.msg{font-size:15px;font-weight:600}
+.note{font-size:13px;fill:#AAA49B}
+.flow{fill:none;stroke-width:6;stroke-linecap:round}
+.k0{transform-box:fill-box;animation:k0 12s ease-out infinite}
+@keyframes k0{0%{opacity:0}3.33%{opacity:0}6.67%{opacity:1}100%{opacity:1}}
+.k1{opacity:0;transform-box:fill-box;animation:k1 12s ease-out infinite}
+@keyframes k1{0%{opacity:0}3.33%{opacity:0}6.67%{opacity:1}31.67%{opacity:1}35.00%{opacity:0}100%{opacity:0}}
+.k2{transform-box:fill-box;animation:k2 12s ease-out infinite}
+@keyframes k2{0%{opacity:0}11.67%{opacity:0}15.00%{opacity:1}100%{opacity:1}}
+.k3{transform-box:fill-box;animation:k3 12s ease-out infinite}
+@keyframes k3{0%{opacity:0}11.67%{opacity:0}15.00%{opacity:1}100%{opacity:1}}
+.k4{transform-box:fill-box;animation:k4 12s ease-out infinite}
+@keyframes k4{0%{opacity:0}18.33%{opacity:0}21.67%{opacity:1}100%{opacity:1}}
+.k5{stroke-dasharray:.06 .94;animation:k5 1s linear infinite}
+@keyframes k5{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.k6{opacity:0;transform-box:fill-box;animation:k6 12s ease-out infinite}
+@keyframes k6{0%{opacity:0}5.00%{opacity:0}8.33%{opacity:1}35.00%{opacity:1}38.33%{opacity:0}100%{opacity:0}}
+.k7{transform-box:fill-box;animation:k7 12s ease-out infinite}
+@keyframes k7{0%{opacity:0}38.33%{opacity:0}41.67%{opacity:1}100%{opacity:1}}
+.k8{transform-box:fill-box;animation:k8 12s ease-out infinite}
+@keyframes k8{0%{opacity:0;transform:translateY(14px)}43.33%{opacity:0;transform:translateY(14px)}46.67%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k9{transform-box:fill-box;animation:k9 12s ease-out infinite}
+@keyframes k9{0%{opacity:0}53.33%{opacity:0}56.67%{opacity:1}100%{opacity:1}}
+.k10{transform-box:fill-box;transform-origin:center bottom;animation:k10 12s ease-out infinite}
+@keyframes k10{0%{opacity:1;transform:scaleY(0)}55.00%{opacity:1;transform:scaleY(0)}62.50%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k11{transform-box:fill-box;animation:k11 12s ease-out infinite}
+@keyframes k11{0%{opacity:0}63.33%{opacity:0}66.67%{opacity:1}100%{opacity:1}}
+.k12{stroke-dasharray:.06 .94;animation:k12 1s linear infinite}
+@keyframes k12{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.k13{transform-box:fill-box;animation:k13 12s ease-out infinite}
+@keyframes k13{0%{opacity:0}53.33%{opacity:0}56.67%{opacity:1}100%{opacity:1}}
+.k14{transform-box:fill-box;animation:k14 12s ease-out infinite}
+@keyframes k14{0%{opacity:0}68.33%{opacity:0}71.67%{opacity:1}100%{opacity:1}}
+.k15{transform-box:fill-box;animation:k15 12s ease-out infinite}
+@keyframes k15{0%{opacity:0;transform:translateY(14px)}75.00%{opacity:0;transform:translateY(14px)}78.33%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+#scene{animation:scene 12s linear infinite}
+@keyframes scene{0%{opacity:0}2.50%{opacity:1}95.83%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+<rect width="1000" height="560" fill="#171615"/>
+<g id="scene">
+	<text x="60" y="66" class="h">A list default of 50 quietly dropped 89 articles</text>
+	<text x="60" y="96" class="sub">What a full search reindex did, before and after the guard</text>
+
+	<!-- BEFORE -->
+	<text x="60" y="150" class="lane">Before</text>
+	<text x="60" y="172" class="lbl">CMS lists, read</text>
+	<text x="60" y="190" class="lbl">with the default</text>
+	<g class="k0">
+		<rect x="200" y="250" width="40" height="40" rx="3" fill="#5B8DEF"/>
+		<rect x="256" y="220" width="40" height="70" rx="3" fill="#5B8DEF"/>
+		<rect x="312" y="220" width="40" height="70" rx="3" fill="#5B8DEF"/>
+		<rect x="368" y="220" width="40" height="70" rx="3" fill="#5B8DEF"/>
+		<rect x="424" y="245" width="40" height="45" rx="3" fill="#5B8DEF"/>
+	</g>
+	<!-- the part of each long list past the 50th item -->
+	<g class="k1">
+		<rect x="256" y="170" width="40" height="48" rx="3" fill="#D9654C"/>
+		<rect x="312" y="208" width="40" height="10" rx="3" fill="#D9654C"/>
+		<rect x="368" y="140" width="40" height="78" rx="3" fill="#D9654C"/>
+	</g>
+	<line x1="190" y1="219" x2="476" y2="219" stroke="#FFCB28" stroke-width="2" stroke-dasharray="6 4" class="k2"/>
+	<text x="476" y="212" text-anchor="end" class="mono lbl k3" style="fill:#FFCB28">first 50 only</text>
+
+	<path d="M490 230H566" stroke="#302E2B" class="flow k4"/>
+	<path d="M490 230H566" stroke="#5B8DEF" class="flow k5" pathLength="1"/>
+	<rect x="580" y="130" width="360" height="190" rx="14" fill="#201F1D" stroke="#302E2B" stroke-width="2"/>
+	<text x="604" y="162" class="cap">LIVE SEARCH INDEX</text>
+	<g class="k6">
+		<text x="604" y="232" class="big">437</text>
+		<text x="720" y="230" class="lbl">articles</text>
+	</g>
+	<g class="k7">
+		<text x="604" y="232" class="big" style="fill:#D9654C">348</text>
+		<text x="720" y="230" class="lbl">articles after the rebuild</text>
+	</g>
+	<g class="k8">
+		<text x="604" y="272" class="msg">89 articles gone. No error.</text>
+		<text x="604" y="294" class="lbl">Search still looked normal.</text>
+	</g>
+
+	<line x1="60" y1="340" x2="940" y2="340" stroke="#302E2B"/>
+
+	<!-- AFTER -->
+	<g class="k9">
+		<text x="60" y="380" class="lane">After</text>
+		<text x="60" y="402" class="mono lbl">take: 250</text>
+		<text x="60" y="420" class="lbl">and a guard</text>
+	</g>
+	<g class="k10">
+		<rect x="200" y="460" width="40" height="40" rx="3" fill="#5B8DEF"/>
+		<rect x="256" y="382" width="40" height="118" rx="3" fill="#5B8DEF"/>
+		<rect x="312" y="420" width="40" height="80" rx="3" fill="#5B8DEF"/>
+		<rect x="368" y="352" width="40" height="148" rx="3" fill="#5B8DEF"/>
+		<rect x="424" y="455" width="40" height="45" rx="3" fill="#5B8DEF"/>
+	</g>
+	<path d="M490 440H566" stroke="#302E2B" class="flow k11"/>
+	<path d="M490 440H566" stroke="#5B8DEF" class="flow k12" pathLength="1"/>
+	<g class="k13">
+		<rect x="580" y="358" width="360" height="164" rx="14" fill="#201F1D" stroke="#02A196" stroke-width="2"/>
+		<text x="604" y="392" class="cap">LIVE SEARCH INDEX</text>
+	</g>
+	<g class="k14">
+		<text x="604" y="450" class="big" style="fill:#02A196">437</text>
+		<text x="720" y="448" class="lbl">articles</text>
+	</g>
+	<g class="k15">
+		<text x="604" y="488" class="lbl">If a list comes back exactly full,</text>
+		<text x="604" y="506" class="lbl">refuse to replace the index.</text>
+	</g>
+
+	<text x="60" y="540" class="note">List heights are schematic. The counts are real.</text>
+</g>
+</svg>

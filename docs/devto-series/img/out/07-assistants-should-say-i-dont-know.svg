@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" data-loop="14" role="img" aria-labelledby="t d">
+<title id="t">Where should an assistant refuse?</title>
+<desc id="d">Semantic ranker top scores from 0 to 4. The 16 questions our docs cannot answer scored 1.92 to 2.62. The 51 they can answer scored 2.28 to 3.53, median 3.04. Refusing below 2.0 catches 2 of 16 and wrongly refuses 0 of 51. Below 2.2: 9 of 16 and 0 of 51. Below 2.4: 14 of 16 and 3 of 51. Below 2.3, the current plan: 11 of 16 and 1 of 51.</desc>
+<defs>
+	<linearGradient id="band" x1="0" x2="1">
+		<stop offset="0" stop-color="#02A196" stop-opacity=".45"/>
+		<stop offset="1" stop-color="#02A196" stop-opacity=".45"/>
+	</linearGradient>
+</defs>
+<style>
+text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,sans-serif;fill:#F1EFE9}
+.h{font-size:28px;font-weight:700}
+.sub{font-size:16px;fill:#C4BFB5}
+.lbl{font-size:16px;font-weight:600}
+.pt{font-size:12px;fill:#C4BFB5}
+.tick{font-size:13px;fill:#AAA49B}
+.cap{font-size:13px;font-weight:700;letter-spacing:.08em;fill:#AAA49B}
+.big{font-size:40px;font-weight:800}
+.thr{font-size:14px;font-weight:700;fill:#FFCB28}
+.note{font-size:13px;fill:#AAA49B}
+.k0{transform-box:fill-box;animation:k0 14s ease-out infinite}
+@keyframes k0{0%{opacity:0;transform:translateY(14px)}2.86%{opacity:0;transform:translateY(14px)}5.71%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k1{transform-box:fill-box;animation:k1 14s ease-out infinite}
+@keyframes k1{0%{opacity:0;transform:translateY(14px)}5.71%{opacity:0;transform:translateY(14px)}8.57%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k2{opacity:0;transform-box:fill-box;animation:k2 14s ease-out infinite}
+@keyframes k2{0%{opacity:0}11.43%{opacity:0}14.29%{opacity:1}27.86%{opacity:1}30.71%{opacity:0}100%{opacity:0}}
+.k3{opacity:0;transform-box:fill-box;animation:k3 14s ease-out infinite}
+@keyframes k3{0%{opacity:0}30.71%{opacity:0}33.57%{opacity:1}47.14%{opacity:1}50.00%{opacity:0}100%{opacity:0}}
+.k4{opacity:0;transform-box:fill-box;animation:k4 14s ease-out infinite}
+@keyframes k4{0%{opacity:0}50.00%{opacity:0}52.86%{opacity:1}66.43%{opacity:1}69.29%{opacity:0}100%{opacity:0}}
+.k5{transform-box:fill-box;animation:k5 14s ease-out infinite}
+@keyframes k5{0%{opacity:0}69.29%{opacity:0}72.14%{opacity:1}100%{opacity:1}}
+#scene{animation:scene 14s linear infinite}
+@keyframes scene{0%{opacity:0}2.14%{opacity:1}96.43%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+<rect width="1000" height="560" fill="#171615"/>
+<g id="scene">
+	<text x="60" y="66" class="h">Where should an assistant refuse to answer?</text>
+	<text x="60" y="96" class="sub">Semantic ranker top score (0 to 4) for questions our docs can and can't answer</text>
+
+	<!-- can't answer: 16 questions, each a dot -->
+	<g class="k0">
+		<circle cx="126" cy="170" r="6" fill="#D9654C"/>
+		<text x="140" y="176" class="lbl">Can't answer (16 questions)</text>
+		<line x1="128.9" y1="198" x2="441.9" y2="198" stroke="#D9654C" stroke-opacity=".4" stroke-width="2"/>
+		<circle cx="128.9" cy="198" r="6" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="146.8" cy="198" r="6" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="169.2" cy="198" r="6" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="182.6" cy="198" r="6" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="213.9" cy="198" r="6" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="227.3" cy="198" r="6" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="231.8" cy="198" r="6" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="231.8" cy="198" r="6" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="236.2" cy="198" r="6" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="276.5" cy="198" r="6" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="289.9" cy="198" r="6" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="307.8" cy="198" r="6" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="330.1" cy="198" r="6" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="330.1" cy="198" r="6" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="388.2" cy="198" r="6" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<circle cx="441.9" cy="198" r="6" fill="#D9654C" stroke="#171615" stroke-width="2"/>
+		<text x="128.9" y="228" text-anchor="middle" class="pt">watermark</text>
+		<text x="236.2" y="228" text-anchor="middle" class="pt">card payments</text>
+		<text x="308" y="228" text-anchor="start" class="pt">HIPAA, email</text>
+		<text x="441.9" y="228" text-anchor="middle" class="pt">WordPress plugins</text>
+	</g>
+
+	<!-- can answer: 51 questions, 2.28 to 3.53 -->
+	<g class="k1">
+		<circle cx="126" cy="262" r="6" fill="#02A196"/>
+		<text x="140" y="268" class="lbl">Can answer (51 questions)</text>
+		<rect x="289.9" y="282" width="558.8" height="16" rx="8" fill="url(#band)"/>
+		<circle cx="289.9" cy="290" r="7" fill="#02A196" stroke="#171615" stroke-width="2"/>
+		<line x1="629.6" y1="280" x2="629.6" y2="300" stroke="#F1EFE9" stroke-width="3"/>
+		<text x="280.9" y="320" text-anchor="end" class="pt">uptime SLA</text>
+		<text x="629.6" y="320" text-anchor="middle" class="pt">median 3.04</text>
+	</g>
+
+	<line x1="120" y1="340" x2="880" y2="340" stroke="#45423E"/>
+	<g>
+		<text x="164.7" y="360" text-anchor="middle" class="tick">2.0</text>
+		<text x="254.1" y="360" text-anchor="middle" class="tick">2.2</text>
+		<text x="343.5" y="360" text-anchor="middle" class="tick">2.4</text>
+		<text x="432.9" y="360" text-anchor="middle" class="tick">2.6</text>
+		<text x="522.4" y="360" text-anchor="middle" class="tick">2.8</text>
+		<text x="611.8" y="360" text-anchor="middle" class="tick">3.0</text>
+		<text x="701.2" y="360" text-anchor="middle" class="tick">3.2</text>
+		<text x="790.6" y="360" text-anchor="middle" class="tick">3.4</text>
+	</g>
+
+	<!-- try thresholds: 2.0, 2.2, 2.4, then settle on 2.3 -->
+	<g class="k2">
+		<line x1="164.7" y1="146" x2="164.7" y2="340" stroke="#FFCB28" stroke-width="2.5" stroke-dasharray="6 4"/>
+		<text x="56" y="420" class="cap">REFUSE BELOW</text><text x="56" y="466" class="big" style="fill:#FFCB28">2.0</text>
+		<text x="300" y="420" class="cap">CAN'T-ANSWER REFUSED</text><text x="300" y="466" class="big">2 of 16</text>
+		<text x="620" y="420" class="cap">CAN-ANSWER WRONGLY REFUSED</text><text x="620" y="466" class="big">0 of 51</text>
+	</g>
+	<g class="k3">
+		<line x1="254.1" y1="146" x2="254.1" y2="340" stroke="#FFCB28" stroke-width="2.5" stroke-dasharray="6 4"/>
+		<text x="56" y="420" class="cap">REFUSE BELOW</text><text x="56" y="466" class="big" style="fill:#FFCB28">2.2</text>
+		<text x="300" y="420" class="cap">CAN'T-ANSWER REFUSED</text><text x="300" y="466" class="big">9 of 16</text>
+		<text x="620" y="420" class="cap">CAN-ANSWER WRONGLY REFUSED</text><text x="620" y="466" class="big">0 of 51</text>
+	</g>
+	<g class="k4">
+		<line x1="343.5" y1="146" x2="343.5" y2="340" stroke="#FFCB28" stroke-width="2.5" stroke-dasharray="6 4"/>
+		<text x="56" y="420" class="cap">REFUSE BELOW</text><text x="56" y="466" class="big" style="fill:#FFCB28">2.4</text>
+		<text x="300" y="420" class="cap">CAN'T-ANSWER REFUSED</text><text x="300" y="466" class="big">14 of 16</text>
+		<text x="620" y="420" class="cap">CAN-ANSWER WRONGLY REFUSED</text><text x="620" y="466" class="big">3 of 51</text>
+	</g>
+	<g class="k5">
+		<line x1="298.8" y1="146" x2="298.8" y2="340" stroke="#FFCB28" stroke-width="2.5" stroke-dasharray="6 4"/>
+		<text x="56" y="420" class="cap">REFUSE BELOW</text><text x="56" y="466" class="big" style="fill:#FFCB28">2.3</text>
+		<text x="300" y="420" class="cap">CAN'T-ANSWER REFUSED</text><text x="300" y="466" class="big">11 of 16</text>
+		<text x="620" y="420" class="cap">CAN-ANSWER WRONGLY REFUSED</text><text x="620" y="466" class="big">1 of 51</text>
+		<text x="56" y="494" class="thr">Our plan for now, plus a model that admits when the page doesn&#39;t answer.</text>
+	</g>
+
+	<text x="60" y="540" class="note">Rerun 15 Oct 2026 with 16 no-answer questions. Most of the ones that cross the line are near misses.</text>
+</g>
+</svg>

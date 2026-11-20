@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" data-loop="12" role="img" aria-labelledby="t d">
+<title id="t">Same 51 questions, five search setups</title>
+<desc id="d">MRR at 10 on 51 answerable questions, run 7. Algolia one record per article 0.587. Algolia one record per section 0.594, so splitting changed nothing. Azure keyword only 0.762. Azure hybrid 0.853, the best. Azure hybrid plus semantic reranker 0.796, so the reranker made ranking worse.</desc>
+<style>
+text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,sans-serif;fill:#F1EFE9}
+.h{font-size:28px;font-weight:700}
+.sub{font-size:16px;fill:#C4BFB5}
+.lbl{font-size:16px;font-weight:600}
+.val{font-size:17px;font-weight:700}
+.tick{font-size:13px;fill:#AAA49B}
+.note{font-size:13px;fill:#AAA49B}
+.ann{font-size:14px;font-weight:600;fill:#FFCB28}
+.grid{stroke:#302E2B;stroke-width:1}
+.k0{transform-box:fill-box;transform-origin:left center;animation:k0 12s ease-out infinite}
+@keyframes k0{0%{opacity:1;transform:scaleX(0)}5.00%{opacity:1;transform:scaleX(0)}12.50%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k1{transform-box:fill-box;animation:k1 12s ease-out infinite}
+@keyframes k1{0%{opacity:0}11.67%{opacity:0}15.00%{opacity:1}100%{opacity:1}}
+.k2{transform-box:fill-box;transform-origin:left center;animation:k2 12s ease-out infinite}
+@keyframes k2{0%{opacity:1;transform:scaleX(0)}15.00%{opacity:1;transform:scaleX(0)}22.50%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k3{transform-box:fill-box;animation:k3 12s ease-out infinite}
+@keyframes k3{0%{opacity:0}21.67%{opacity:0}25.00%{opacity:1}100%{opacity:1}}
+.k4{transform-box:fill-box;transform-origin:left center;animation:k4 12s ease-out infinite}
+@keyframes k4{0%{opacity:1;transform:scaleX(0)}28.33%{opacity:1;transform:scaleX(0)}35.83%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k5{transform-box:fill-box;animation:k5 12s ease-out infinite}
+@keyframes k5{0%{opacity:0}35.00%{opacity:0}38.33%{opacity:1}100%{opacity:1}}
+.k6{transform-box:fill-box;transform-origin:left center;animation:k6 12s ease-out infinite}
+@keyframes k6{0%{opacity:1;transform:scaleX(0)}38.33%{opacity:1;transform:scaleX(0)}45.83%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k7{transform-box:fill-box;animation:k7 12s ease-out infinite}
+@keyframes k7{0%{opacity:0}45.00%{opacity:0}48.33%{opacity:1}100%{opacity:1}}
+.k8{transform-box:fill-box;transform-origin:left center;animation:k8 12s ease-out infinite}
+@keyframes k8{0%{opacity:1;transform:scaleX(0)}48.33%{opacity:1;transform:scaleX(0)}55.83%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k9{transform-box:fill-box;animation:k9 12s ease-out infinite}
+@keyframes k9{0%{opacity:0}55.00%{opacity:0}58.33%{opacity:1}100%{opacity:1}}
+.k10{transform-box:fill-box;animation:k10 12s ease-out infinite}
+@keyframes k10{0%{opacity:0;transform:translateY(14px)}61.67%{opacity:0;transform:translateY(14px)}65.00%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.k11{transform-box:fill-box;animation:k11 12s ease-out infinite}
+@keyframes k11{0%{opacity:0;transform:translateY(14px)}73.33%{opacity:0;transform:translateY(14px)}76.67%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+#scene{animation:scene 12s linear infinite}
+@keyframes scene{0%{opacity:0}2.50%{opacity:1}95.83%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+<rect width="1000" height="560" fill="#171615"/>
+<g id="scene">
+	<text x="60" y="66" class="h">Same 51 questions, five search setups</text>
+	<text x="60" y="96" class="sub">MRR@10, where 1.0 means the right page always came first. Run 7, 11 Oct 2026.</text>
+
+	<line x1="360" y1="134" x2="360" y2="470" class="grid" stroke="#45423E"/>
+	<line x1="620" y1="134" x2="620" y2="470" class="grid" stroke-dasharray="4 4"/>
+	<line x1="880" y1="134" x2="880" y2="470" class="grid" stroke-dasharray="4 4"/>
+	<text x="360" y="492" text-anchor="middle" class="tick">0</text>
+	<text x="620" y="492" text-anchor="middle" class="tick">0.5</text>
+	<text x="880" y="492" text-anchor="middle" class="tick">1.0</text>
+
+	<text x="60" y="170" class="lbl">Algolia, one record per article</text>
+	<text x="60" y="234" class="lbl">Algolia, one record per section</text>
+	<text x="60" y="298" class="lbl">Azure, keyword only (BM25)</text>
+	<text x="60" y="362" class="lbl">Azure hybrid (keyword + vector)</text>
+	<text x="60" y="426" class="lbl">Azure hybrid + semantic reranker</text>
+
+	<rect x="360" y="150" width="305" height="30" rx="4" fill="#02A196" class="k0"/>
+	<text x="675" y="171" class="val k1">0.587</text>
+	<rect x="360" y="214" width="309" height="30" rx="4" fill="#02A196" class="k2"/>
+	<text x="679" y="235" class="val k3">0.594</text>
+	<rect x="360" y="278" width="396" height="30" rx="4" fill="#02A196" class="k4"/>
+	<text x="766" y="299" class="val k5">0.762</text>
+	<rect x="360" y="342" width="444" height="30" rx="4" fill="#02A196" class="k6"/>
+	<text x="814" y="363" class="val k7">0.853</text>
+	<rect x="360" y="406" width="414" height="30" rx="4" fill="#02A196" class="k8"/>
+	<text x="784" y="427" class="val k9">0.796</text>
+
+	<!-- what the numbers overturned -->
+	<g class="k10">
+		<path d="M752 160h10v74h-10" fill="none" stroke="#FFCB28" stroke-width="2"/>
+		<text x="772" y="202" class="ann">Splitting into</text>
+		<text x="772" y="220" class="ann">sections: no change</text>
+	</g>
+	<g class="k11">
+		<path d="M846 366v40" stroke="#FFCB28" stroke-width="2"/>
+		<path d="M840 398l6 9 6-9" fill="none" stroke="#FFCB28" stroke-width="2"/>
+		<text x="858" y="404" class="ann">Reranker:</text>
+		<text x="858" y="422" class="ann">worse</text>
+	</g>
+
+	<text x="60" y="540" class="note">51 questions with known right pages, committed before anything was scored.</text>
+</g>
+</svg>

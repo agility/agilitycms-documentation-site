@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" data-loop="10" role="img" aria-labelledby="t d">
+<title id="t">One content source, four views</title>
+<desc id="d">Content in Agility CMS is rendered by Next.js on Vercel into four views: an HTML page for people, and for agents a Markdown copy of every page, an llms.txt index, and an MCP server with search_docs and fetch_doc tools.</desc>
+<style>
+text{font-family:-apple-system,"SF Pro Text","Inter","Segoe UI",Helvetica,Arial,sans-serif;fill:#F1EFE9}
+.mono{font-family:Menlo,"SF Mono",Consolas,monospace}
+.h{font-size:28px;font-weight:700}
+.sub{font-size:16px;fill:#C4BFB5}
+.bt{font-size:19px;font-weight:700}
+.bd{font-size:14px;fill:#C4BFB5}
+.tag{font-size:13px;font-weight:700;letter-spacing:.06em}
+.note{font-size:13px;fill:#AAA49B}
+.box{fill:#201F1D;stroke:#302E2B;stroke-width:2}
+.wire{fill:none;stroke:#302E2B;stroke-width:4;stroke-linecap:round}
+.pulse{fill:none;stroke-width:6;stroke-linecap:round}
+</style>
+<rect width="1000" height="560" fill="#171615"/>
+<g id="scene">
+	<text x="60" y="66" class="h">One content source, four views</text>
+	<text x="60" y="96" class="sub">Everything below is rendered on the server from the same CMS content</text>
+
+	<g data-in="0.3" data-anim="rise">
+		<rect x="60" y="262" width="190" height="86" rx="14" class="box" style="stroke:#02A196"/>
+		<text x="84" y="298" class="bt">Agility CMS</text>
+		<text x="84" y="322" class="bd">content, written once</text>
+	</g>
+	<path d="M250 305H306" class="wire" data-in="0.6"/>
+	<g data-in="0.7" data-anim="rise">
+		<rect x="306" y="262" width="190" height="86" rx="14" class="box"/>
+		<text x="330" y="298" class="bt">Next.js on Vercel</text>
+		<text x="330" y="322" class="bd">route handlers</text>
+	</g>
+
+	<path d="M496 305C550 305 550 160 600 160" class="wire" pathLength="1" data-in="1.1" data-anim="draw" data-dur="0.6"/>
+	<path d="M496 305C550 305 550 260 600 260" class="wire" pathLength="1" data-in="1.5" data-anim="draw" data-dur="0.6"/>
+	<path d="M496 305C550 305 550 360 600 360" class="wire" pathLength="1" data-in="1.9" data-anim="draw" data-dur="0.6"/>
+	<path d="M496 305C550 305 550 460 600 460" class="wire" pathLength="1" data-in="2.3" data-anim="draw" data-dur="0.6"/>
+
+	<g data-in="1.5" data-anim="rise">
+		<rect x="600" y="122" width="340" height="76" rx="12" class="box"/>
+		<text x="624" y="155" class="bt">HTML page</text>
+		<text x="624" y="180" class="mono bd">/docs/…</text>
+		<text x="916" y="155" text-anchor="end" class="tag" style="fill:#02A196">PEOPLE</text>
+	</g>
+	<g data-in="1.9" data-anim="rise">
+		<rect x="600" y="222" width="340" height="76" rx="12" class="box"/>
+		<text x="624" y="255" class="bt">Markdown copy</text>
+		<text x="624" y="280" class="mono bd">/docs/….md</text>
+		<text x="916" y="255" text-anchor="end" class="tag" style="fill:#5B8DEF">AGENTS</text>
+	</g>
+	<g data-in="2.3" data-anim="rise">
+		<rect x="600" y="322" width="340" height="76" rx="12" class="box"/>
+		<text x="624" y="355" class="bt">llms.txt</text>
+		<text x="624" y="380" class="bd">one index of every page</text>
+		<text x="916" y="355" text-anchor="end" class="tag" style="fill:#5B8DEF">AGENTS</text>
+	</g>
+	<g data-in="2.7" data-anim="rise">
+		<rect x="600" y="422" width="340" height="76" rx="12" class="box"/>
+		<text x="624" y="455" class="bt">MCP server</text>
+		<text x="624" y="480" class="mono bd">search_docs · fetch_doc</text>
+		<text x="916" y="455" text-anchor="end" class="tag" style="fill:#5B8DEF">AGENTS</text>
+	</g>
+
+	<g data-in="3.2">
+		<path d="M250 305H306" class="pulse" stroke="#02A196" pathLength="1" data-anim="pulse" data-period="1.25"/>
+		<path d="M496 305C550 305 550 160 600 160" class="pulse" stroke="#02A196" pathLength="1" data-anim="pulse" data-period="2.5"/>
+		<path d="M496 305C550 305 550 260 600 260" class="pulse" stroke="#5B8DEF" pathLength="1" data-anim="pulse" data-period="2"/>
+		<path d="M496 305C550 305 550 360 600 360" class="pulse" stroke="#5B8DEF" pathLength="1" data-anim="pulse" data-period="2.5"/>
+		<path d="M496 305C550 305 550 460 600 460" class="pulse" stroke="#5B8DEF" pathLength="1" data-anim="pulse" data-period="1.25"/>
+	</g>
+
+	<text x="60" y="540" class="note">No second site to keep in step: when an editor publishes, every view changes together.</text>
+</g>
+</svg>
