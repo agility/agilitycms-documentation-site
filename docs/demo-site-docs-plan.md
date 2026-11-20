@@ -2,7 +2,7 @@
 
 Joel, 2026-11-20: "pull ALL of the text out of the [demo] docs site and repurpose it into the docs site. It's too complicated to keep everything all over the place. Some of the stuff doesn't make sense anymore anyways." And: "we can just redirect demo.agilitycms.com/docs over to the /docs/nextjs section."
 
-Status: **approved direction, not started.**
+Status: **phase 1 done in Staging (2026-11-20); awaiting review and publish.** See section 6.
 
 ## 1. Decisions (Joel, 2026-11-20)
 
@@ -42,7 +42,6 @@ Four reviewers read every demo doc against the current demo code (Next 16.3.5, `
 | `/nextjs/using-the-agilitypic-component-for-responsive-images` | Replace the focal-point section with the demo's corrected one (width and height per source; a worked PostCard example; the upscaling caveat). Add performance tip 6 (set `height` on every `object-cover` source). Remove "upload at 72 DPI" | agility-pic-component.md (newer than the published copy) |
 | `/overview/image-best-practices` | Add the focal-point TL;DR row and section, and qualify "won't upscale". Keep the docs copy's newer SVG section. Fix "AgilityPic appends `format=auto` to all URLs" (only when `fallbackWidth` > 0 or a source has `w`/`h`) | image-recos.md (forked copy) |
 | `/nextjs/multi-locale-support-with-next-js` | New section: handling `?lang=` and filtering query strings in the proxy (whitelist, tracking parameters, 500-character cap, `~~~` encoding) | developer/MULTI_LOCALE_IMPLEMENTATION.md |
-| `/training-guide/admin-component-models` | One paragraph: registration via `allModules`, name matching is case-insensitive | admin/component-setup.md |
 | `/apps/posthog` and `/owners-admins/a-b-n-testing-in-agility-cms` (1443) | A link to the new analytics article. Check 1443's demo links | AB_TESTING.md, POSTHOG_IMPLEMENTATION.md |
 
 ### 3.2 New articles
@@ -112,3 +111,33 @@ Known traps for this instance: a management-API save replaces the whole field se
 ## 5. Order
 
 Phase 1, then phase 2, then phase 3. The redirects only ship once their targets are published. Demo PR #37 (Ahrefs fixes) can merge first and independently.
+
+## 6. Progress
+
+**2026-11-20, phase 1:**
+
+- **Published:** the two image fixes. `/nextjs/using-the-agilitypic-component-for-responsive-images` (1378) and `/overview/image-best-practices` (1400).
+- **In Staging, to publish together** (the overview links to the new articles):
+
+  | Item | Change |
+  |---|---|
+  | 1958 | New: Audience and Region Personalization with Next.js |
+  | 1959 | New: Shared-Element Page Transitions with React ViewTransition |
+  | 1960 | New: A Provider-Agnostic Analytics Layer with PostHog in Next.js |
+  | 1961 | New: AI Search, Clean Markdown and an MCP Server in a Next.js Site |
+  | 1962 | New: Agility App URL Patterns (`/developers`) |
+  | 1377 | Rewritten demo overview |
+  | 529 | Multi-locale: new step 9 |
+  | 1443 | A/B testing: links |
+  | 1393 | PostHog: links |
+
+- **Dropped:** the `/training-guide/admin-component-models` row. It already covers registration and case-insensitive matching.
+- **Model and component counts:** checked in the demo instance (`13f09fe2-u`). It has 24 content models and 22 components. Two components, Pricing Offers for Accounts and Service Listing, are deprecated placeholders with no code. That leaves 20 in use, plus Rich Text Area, which matches the 21 the code registers.
+- **Demo code issues found while writing** (not fixed; for a demo PR). The first is a security fix:
+  - `/api/revalidate` verifies no webhook signature, so anyone can clear caches or trigger `BUILD_HOOK_URL`.
+  - `/api/ai/agent` has no `stopWhen` and ignores the CMS prompt.
+  - The `~~~` decoder doesn't decode `+`.
+  - `getAudienceRegionFromSearchParams` compares raw names.
+  - Trackers poll forever without PostHog keys.
+  - PostHog init may double-count pageviews.
+  - `README.md` says `AGILITY_SECURITY_KEY` secures webhooks. It doesn't.
