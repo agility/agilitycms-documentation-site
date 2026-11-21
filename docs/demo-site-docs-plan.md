@@ -2,7 +2,7 @@
 
 Joel, 2026-11-20: "pull ALL of the text out of the [demo] docs site and repurpose it into the docs site. It's too complicated to keep everything all over the place. Some of the stuff doesn't make sense anymore anyways." And: "we can just redirect demo.agilitycms.com/docs over to the /docs/nextjs section."
 
-Status: **phase 1 done in Staging (2026-11-20); awaiting review and publish.** See section 6.
+Status: **done (2026-11-21).** Phase 1 published; phase 2 merged (demo #40, #39) and verified in production. Open: demo code fixes (section 6).
 
 ## 1. Decisions (Joel, 2026-11-20)
 
@@ -141,3 +141,12 @@ Phase 1, then phase 2, then phase 3. The redirects only ship once their targets 
   - Trackers poll forever without PostHog keys.
   - PostHog init may double-count pageviews.
   - `README.md` says `AGILITY_SECURITY_KEY` secures webhooks. It doesn't.
+
+**2026-11-20, phase 1 published.** All nine Staging items went live, and every internal link returns 200.
+
+**2026-11-21, phase 2 merged:**
+
+- Demo #40, from another session, redirected `/docs` to `/docs/nextjs`. It also removed the docs route and its packages, cleaned the sitemap and noindexed the site, but kept `docs/`.
+- Demo #37, rebased on #40: hreflang lists only locales that have the page, and the language switcher link is `nofollow`.
+- Demo #39, rebuilt on both: per-page redirects to the new articles, the old sections and `/docs` to the overview, `docs/` removed, AGENTS.md and README repointed.
+- Verified in production: 10 redirect cases, a sitemap with no `/docs` URLs, no `fr` alternate on the English-only post, and `/`, `/blog`, `/pricing` and `/fr` return 200.
